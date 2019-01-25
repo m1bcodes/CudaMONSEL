@@ -19,6 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\Element.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\Material.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\NISTMonte\Electron.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\NISTMonte\MonteCarloSS.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\Utility\LinkedList.cu" />
     <CudaCompile Include="gov\nist\microanalysis\Utility\UncertainValue2.cu" />
     <CudaCompile Include="SimRunner.cu" />
   </ItemGroup>
@@ -39,6 +44,8 @@
     <ClCompile Include="gov\nist\microanalysis\EPQLibrary\ToSI.cpp" />
     <ClCompile Include="gov\nist\microanalysis\NISTMonte\MonteCarloSS.cpp" />
     <ClCompile Include="gov\nist\microanalysis\Utility\CSVReader.cpp" />
+    <ClCompile Include="gov\nist\microanalysis\Utility\LinkedList.cpp" />
+    <ClCompile Include="gov\nist\microanalysis\Utility\UncertainValue2.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{B6F1D1AF-8BE5-4ADD-AFF0-9D8E723B303B}</ProjectGuid>
@@ -54,7 +61,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -68,7 +75,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />

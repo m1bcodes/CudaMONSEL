@@ -24,6 +24,8 @@ __global__ void spawnElectrons(unsigned int *d_arr, size_t size_x, size_t size_y
    int idx_x = threadIdx.x + blockDim.x * blockIdx.x;
    int idx_y = threadIdx.y + blockDim.y * blockIdx.y;
 
+   printf("%d, %d", idx_x, idx_y);
+
    spawnElectron << <1, 1 >> >(d_arr, idx_x, idx_y, size_x, size_y);
 }
 

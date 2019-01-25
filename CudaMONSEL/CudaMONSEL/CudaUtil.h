@@ -1,5 +1,5 @@
-#ifndef UTILS_H__
-#define UTILS_H__
+#ifndef CUDA_UTIL_H
+#define CUDA_UTIL_H
 
 #include <iostream>
 #include <iomanip>
