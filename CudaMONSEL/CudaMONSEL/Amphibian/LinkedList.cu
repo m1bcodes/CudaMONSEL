@@ -12,12 +12,14 @@ public:
 
    __host__ __device__ static void RemoveAll(Node** head);
 
-   __host__ __device__ static void PrintList(Node* head);
+   __host__ __device__ Key GetKey();
+   __host__ __device__ Value GetValue();
+   __host__ __device__ Node<Key, Value>* GetNext();
 
 private:
-   Node* next;
    Key key;
    Value val;
+   Node* next;
 };
 
 #endif
