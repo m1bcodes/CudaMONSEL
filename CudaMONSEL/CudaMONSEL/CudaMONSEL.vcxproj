@@ -29,6 +29,8 @@
     <CudaCompile Include="SimRunner.cu" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Amphibian\LinkedList.cuh" />
+    <ClInclude Include="Amphibian\String.cuh" />
     <ClInclude Include="CudaUtil.h" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\Composition.h" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\PhysicalConstants.h" />
@@ -39,8 +41,6 @@
     <ClInclude Include="TimeUtil.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Amphibian\LinkedList.cpp" />
-    <ClCompile Include="Amphibian\String.cpp" />
     <ClCompile Include="gov\nist\microanalysis\EPQLibrary\Composition.cpp" />
     <ClCompile Include="gov\nist\microanalysis\EPQLibrary\Element.cpp" />
     <ClCompile Include="gov\nist\microanalysis\EPQLibrary\PhysicalConstants.cpp" />
@@ -121,6 +121,8 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     <CudaCompile>
       <GenerateRelocatableDeviceCode>true</GenerateRelocatableDeviceCode>
       <CodeGeneration>compute_61,sm_61</CodeGeneration>
+      <Runtime>InheritFromHost</Runtime>
+      <PtxAsOptionV>true</PtxAsOptionV>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

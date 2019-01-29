@@ -6,8 +6,8 @@
 //#include "gov/nist/microanalysis/NISTMonte/Electron.cu"
 //#include "gov/nist/microanalysis/Utility/CSVReader.h"
 
-#include "gov/nist/microanalysis/Utility/LinkedList.cu"
-#include "Amphibian/String.cu"
+#include "Amphibian\String.cuh"
+#include "Amphibian\LinkedList.cuh"
 
 #include "CudaUtil.h"
 #include "ImageUtil.h"
@@ -71,22 +71,187 @@ void PrintArray2D(unsigned int *h_arr, size_t img_x, size_t img_y)
 //   return 0;
 //}
 
-__host__ __device__ void BuildListTest(Node<String, float>** head)
+//__host__ __device__ void BuildListTest(Node<String, float>** head)
+//{
+//   String a("a");
+//   String b("b");
+//   String c("c");
+//   Node<String, float>::InsertHead(head, a, 0.0f);
+//   Node<String, float>::InsertHead(head, b, 1.0f);
+//   Node<String, float>::InsertHead(head, c, 2.0f);
+//}
+//
+//__host__ __device__ void PrintList(Node<String, float>* head)
+//{
+//   if (head != NULL) {
+//      printf("%s: %f\n", head->GetKey().Get(), head->GetValue());
+//      //PrintList(head->GetNext());
+//   }
+//}
+//
+//__global__ void Test1()
+//{
+//#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+//   __syncthreads();
+//#endif
+//
+//   Node<String, float>* head = NULL;
+//   printf("A\n");
+//   BuildListTest(&head);
+//   printf("B\n");
+//   PrintList(head);
+//   printf("C\n");
+//   Node<String, float>::RemoveAll(&head);
+//
+//#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+//   __syncthreads();
+//#endif
+//}
+
+//template<typename Key, typename Value>
+//class Node
+//{
+//public:
+//   __host__ __device__ static void InsertHead(Node** head, Key key, Value val);
+//   __host__ __device__ static void RemoveHead(Node** head);
+//
+//   __host__ __device__ static void RemoveAll(Node** head);
+//
+//   __host__ __device__ Node(Key, Value, Node *);
+//
+//   __host__ __device__ Key GetKey();
+//   __host__ __device__ Value GetValue();
+//   __host__ __device__ Node<Key, Value>* GetNext();
+//
+//private:
+//   Key key;
+//   Value val;
+//   Node* next;
+//};
+//
+//template<typename Key, typename Value>
+//__host__ __device__ void Node<Key, Value>::InsertHead(Node<Key, Value>** head, Key k, Value v)
+//{
+//   //printf("inserting %c: %f\n", k, v);
+//   Node<Key, Value>* newOne = new Node<Key, Value>(k, v, NULL);
+//   printf("%s?\n", newOne->GetKey().Get());
+//
+//   if (*head == NULL) {
+//      *head = newOne;
+//   }
+//   else {
+//      newOne->next = *head;
+//      *head = newOne;
+//   }
+//   printf("%s\n", (*head)->GetKey().Get());
+//}
+//
+//template<typename Key, typename Value>
+//__host__ __device__ void Node<Key, Value>::RemoveHead(Node<Key, Value>** head)
+//{
+//   if (head == NULL) {
+//      return;
+//   }
+//
+//   Node<Key, Value>* tmp = (*head)->next;
+//   //printf("removing %c: %f\n", (*head)->key, (*head)->val);
+//   delete *head;
+//   *head = tmp;
+//}
+//
+//template<typename Key, typename Value>
+//__host__ __device__ void Node<Key, Value>::RemoveAll(Node<Key, Value>** head)
+//{
+//   while (*head != NULL) {
+//      Node<Key, Value>::RemoveHead(head);
+//   }
+//}
+//
+//template<typename Key, typename Value>
+//__host__ __device__ Node<Key, Value>::Node<Key, Value>(Key k, Value v, Node* n)
+//{
+//   key = k;
+//   val = v;
+//   next = n;
+//   printf("%s\n", key.Get());
+//}
+//
+//template<typename Key, typename Value>
+//__host__ __device__ Key Node<Key, Value>::GetKey()
+//{
+//   return key;
+//}
+//
+//template<typename Key, typename Value>
+//__host__ __device__ Value Node<Key, Value>::GetValue()
+//{
+//   return val;
+//}
+//
+//template<typename Key, typename Value>
+//__host__ __device__ Node<Key, Value>* Node<Key, Value>::GetNext()
+//{
+//   return next;
+//}
+
+template<typename Key, typename Value>
+__host__ __device__ void Node<Key, Value>::InsertHead(Node<Key, Value>** head, Key k, Value v)
 {
-   String a("a");
-   String b("b");
-   String c("c");
-   Node<String, float>::InsertHead(head, a, 0.0f);
-   Node<String, float>::InsertHead(head, b, 1.0f);
-   Node<String, float>::InsertHead(head, c, 2.0f);
+   Node<Key, Value>* newOne = new Node<Key, Value>(k, v, NULL);
+
+   if (*head == NULL) {
+      *head = newOne;
+   }
+   else {
+      newOne->next = *head;
+      *head = newOne;
+   }
 }
 
-__host__ __device__ void PrintList(Node<String, float>* head)
+template<typename Key, typename Value>
+__host__ __device__ void Node<Key, Value>::RemoveHead(Node<Key, Value>** head)
 {
-   if (head != NULL) {
-      printf("%c: %f\n", head->GetKey(), head->GetValue());
-      PrintList(head->GetNext());
+   if (head == NULL) {
+      return;
    }
+
+   Node<Key, Value>* tmp = (*head)->next;
+   delete *head;
+   *head = tmp;
+}
+
+template<typename Key, typename Value>
+__host__ __device__ void Node<Key, Value>::RemoveAll(Node<Key, Value>** head)
+{
+   while (*head != NULL) {
+      Node<Key, Value>::RemoveHead(head);
+   }
+}
+
+template<typename Key, typename Value>
+__host__ __device__ Node<Key, Value>::Node<Key, Value>(Key k, Value v, Node* n)
+{
+   key = k;
+   val = v;
+   next = n;
+}
+
+template<typename Key, typename Value>
+__host__ __device__ Key Node<Key, Value>::GetKey()
+{
+   return key;
+}
+
+template<typename Key, typename Value>
+__host__ __device__ Value Node<Key, Value>::GetValue()
+{
+   return val;
+}
+
+template<typename Key, typename Value>
+__host__ __device__ Node<Key, Value>* Node<Key, Value>::GetNext()
+{
+   return next;
 }
 
 __global__ void Test1()
@@ -94,13 +259,11 @@ __global__ void Test1()
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
    __syncthreads();
 #endif
-
    Node<String, float>* head = NULL;
-   printf("A\n");
-   BuildListTest(&head);
-   printf("B\n");
-   PrintList(head);
-   printf("C\n");
+   String a("a");
+   Node<String, float>::InsertHead(&head, a, 0.0f);
+   printf("%s\n", head->GetKey().Get());
+   printf("%s: %f\n", head->GetKey().Get(), head->GetValue());
    Node<String, float>::RemoveAll(&head);
 
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
@@ -108,7 +271,17 @@ __global__ void Test1()
 #endif
 }
 
+//__global__ void kernel()
+//{
+//   String s("aa\n");
+//   printf("%s", s.Get());
+//}
+
 int main()
 {
+   //kernel << <1, 1 >> >();
+   Test1 << < 1, 1 >> > ();
+   checkCudaErrors(cudaDeviceSynchronize());
+   checkCudaErrors(cudaGetLastError());
    return 0;
 }

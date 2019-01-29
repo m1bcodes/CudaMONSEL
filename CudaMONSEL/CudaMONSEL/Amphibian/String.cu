@@ -1,19 +1,32 @@
-#ifndef STRING_H
-#define STRING_H
+#include "String.cuh"
 
-#include "cuda_runtime.h"
-
-class String
+__host__ __device__ void String::Copy(char const * s)
 {
-public:
-   static const int MAX_LEN = 15;
+   int k;
+   for (k = 0; *s != NULL; ++s, ++k) {
+      if (k == MAX_LEN - 1) {
+         break;
+      }
+      str[k] = *s;
+   }
+   str[k] = '\0';
+}
 
-   __host__ __device__ String(char const * s);
-   __host__ __device__ ~String();
-   __host__ __device__ char* Get();
+__host__ __device__ String::String()
+{
+}
 
-private:
-   char* str;
-};
+__host__ __device__ String::String(char const * s)
+{
+   Copy(s);
+}
 
-#endif
+__host__ __device__ void String::operator=(String s)
+{
+   Copy(s.Get());
+}
+
+__host__ __device__ char* String::Get()
+{
+   return str;
+}
