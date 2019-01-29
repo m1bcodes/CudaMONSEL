@@ -1,9 +1,9 @@
 # monsel_cuda
 Monte Carlo Simulation of SEM Signals using CUDA.
 
-## Citing MONSEL_CUDA:
+## Citing CudaMONSEL:
 
-If you use MONSEL_CUDA in your research, please cite with:
+If you use CudaMONSEL in your research, please cite with:
 ```
 @misc{villarrubia2015jmonsel,
   title={Scanning electron microscope measurement of width and shape of 10 nm patterned lines using a JMONSEL-modeled library},
