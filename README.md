@@ -11,4 +11,11 @@ If you use CudaMONSEL in your research, please cite with:
   howpublished={\url{https://ws680.nist.gov/publication/get_pdf.cfm?pub_id=916512}},
   year={2015}
 }
+
+@misc{zeng2019cudamonsel,
+  title={CudaMONSEL},
+  author={Ruizi, Zeng},
+  howpublished={\url{https://github.com/zengrz/CudaMONSEL/}},
+  year={2019}
+}
 ```
