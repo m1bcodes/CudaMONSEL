@@ -12,7 +12,7 @@ public:
    __host__ __device__ char* Get();
 
 private:
-   static const int MAX_LEN = 16;
+   static const int MAX_LEN = sizeof(char) * 31;
 
    __host__ __device__ void Copy(char const *);
 
