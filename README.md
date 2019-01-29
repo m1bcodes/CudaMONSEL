@@ -1,4 +1,4 @@
-# monsel_cuda
+# CudaMONSEL
 Monte Carlo Simulation of SEM Signals using CUDA.
 
 ## Citing CudaMONSEL:
