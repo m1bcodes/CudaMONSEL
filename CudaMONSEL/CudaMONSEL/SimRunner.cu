@@ -108,10 +108,17 @@ __global__ void Test1()
 #endif
 }
 
+__global__ void kernel(int n)
+{
+   char n_a[16] = "\0";
+   String::IToA(n_a, n);
+   printf("%s\n", n_a);
+}
+
 int main()
 {
-   //kernel << <1, 1 >> >();
-   Test1 << < 1, 1 >> > ();
+   kernel << <1, 1 >> >(12345678);
+   //Test1 << < 1, 1 >> > ();
    checkCudaErrors(cudaDeviceSynchronize());
    checkCudaErrors(cudaGetLastError());
 

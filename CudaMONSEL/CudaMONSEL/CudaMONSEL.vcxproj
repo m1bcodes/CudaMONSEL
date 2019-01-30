@@ -36,6 +36,7 @@
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\ToSI.h" />
     <ClInclude Include="gov\nist\microanalysis\NISTMonte\IMaterialScatterModel.h" />
     <ClInclude Include="gov\nist\microanalysis\Utility\CSVReader.h" />
+    <ClInclude Include="gov\nist\microanalysis\Utility\UncertainValue2.cuh" />
     <ClInclude Include="ImageUtil.h" />
     <ClInclude Include="TimeUtil.h" />
   </ItemGroup>
@@ -46,7 +47,6 @@
     <ClCompile Include="gov\nist\microanalysis\EPQLibrary\ToSI.cpp" />
     <ClCompile Include="gov\nist\microanalysis\NISTMonte\MonteCarloSS.cpp" />
     <ClCompile Include="gov\nist\microanalysis\Utility\CSVReader.cpp" />
-    <ClCompile Include="gov\nist\microanalysis\Utility\UncertainValue2.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{B6F1D1AF-8BE5-4ADD-AFF0-9D8E723B303B}</ProjectGuid>

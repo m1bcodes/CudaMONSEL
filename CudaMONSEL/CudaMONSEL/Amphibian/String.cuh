@@ -6,9 +6,15 @@
 class String
 {
 public:
+   __host__ __device__ static void IToA(char*, int, int maxLen = 11 /* integer limit */);
+   __host__ __device__ static bool IsEqual(String, String);
+
+
    __host__ __device__ String();
-   __host__ __device__ String(char const * s);
+   __host__ __device__ String(char const *);
+
    __host__ __device__ void operator=(String);
+
    __host__ __device__ char* Get();
 
 private:
