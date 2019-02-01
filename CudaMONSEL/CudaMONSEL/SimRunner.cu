@@ -71,7 +71,7 @@ void PrintArray2D(unsigned int *h_arr, size_t img_x, size_t img_y)
 //   return 0;
 //}
 
-__host__ __device__ void BuildListTest(Node<String, float>** head)
+__host__ __device__ void BuildList1(Node<String, float>** head)
 {
    String a("a");
    String b("b");
@@ -79,6 +79,16 @@ __host__ __device__ void BuildListTest(Node<String, float>** head)
    Node<String, float>::InsertHead(head, a, 0.0f);
    Node<String, float>::InsertHead(head, b, 1.0f);
    Node<String, float>::InsertHead(head, c, 2.0f);
+}
+
+__host__ __device__ void BuildList2(Node<String, float>** head)
+{
+   String a("a");
+   String b("b");
+   String a1("a");
+   Node<String, float>::InsertHead(head, a, 0.0f);
+   Node<String, float>::InsertHead(head, b, 1.0f);
+   Node<String, float>::InsertHead(head, a1, 0.1f);
 }
 
 __host__ __device__ void PrintListInOrder(Node<String, float>* head)
@@ -89,36 +99,46 @@ __host__ __device__ void PrintListInOrder(Node<String, float>* head)
    }
 }
 
-__global__ void Test1()
+__global__ void Test1(String::pAreEqual h_strCmpPointFunction)
 {
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
    __syncthreads();
 #endif
-
-   Node<String, float>* head = NULL;
+   Node<String, float>* head1 = NULL;
+   Node<String, float>* head2 = NULL;
    printf("A\n");
-   BuildListTest(&head);
+   BuildList1(&head1);
+   BuildList2(&head2);
    printf("B\n");
-   PrintListInOrder(head);
+   PrintListInOrder(head1);
+   PrintListInOrder(head2);
    printf("C\n");
-   Node<String, float>::RemoveAll(&head);
+   printf("%d\n", Node<String, float>::IsSet(head1, h_strCmpPointFunction, [](float a, float b) { return a == b; }));
+   printf("%d\n", Node<String, float>::IsSet(head2, h_strCmpPointFunction, [](float a, float b) { return a == b; }));
+   printf("D\n");
+   printf("%d\n", Node<String, float>::AreEquivalentSets(head1, head2, h_strCmpPointFunction, [](float a, float b) { return a == b; }));
+   Node<String, float>::RemoveRepeatedNodes(&head2, h_strCmpPointFunction, [](float a, float b) { return a == b; });
+   PrintListInOrder(head2);
+   printf("E\n");
+   Node<String, float>::Remove(&head2, String("a"), h_strCmpPointFunction);
+   PrintListInOrder(head2);
+   printf("%d\n", Node<String, float>::AreEquivalentSets(head1, head2, h_strCmpPointFunction, [](float a, float b) { return a == b; }));
+   Node<String, float>::RemoveAll(&head1);
+   Node<String, float>::RemoveAll(&head2);
 
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
    __syncthreads();
 #endif
 }
 
-__global__ void kernel(int n)
-{
-   char n_a[16] = "\0";
-   String::IToA(n_a, n);
-   printf("%s\n", n_a);
-}
+__device__ String::pAreEqual pEqual = String::AreEqual;
 
 int main()
 {
-   kernel << <1, 1 >> >(12345678);
-   //Test1 << < 1, 1 >> > ();
+   String::pAreEqual h_1;
+   cudaMemcpyFromSymbol(&h_1, pEqual, sizeof(String::pAreEqual));
+
+   Test1 << < 1, 1 >> >(h_1);
    checkCudaErrors(cudaDeviceSynchronize());
    checkCudaErrors(cudaGetLastError());
 

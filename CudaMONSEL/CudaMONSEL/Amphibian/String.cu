@@ -29,23 +29,6 @@ __host__ __device__ void String::IToA(char* d, int n, int maxLen)
    d[idx] = '\0';
 }
 
-__host__ __device__ bool String::IsEqual(String a, String b)
-{
-   int idx = 0;
-   while (true) {
-      if (a.Get()[idx] == '\0' && b.Get()[idx] == '\0') {
-         return true;
-      }
-      if (a.Get()[idx] == '\0' || b.Get()[idx] == '\0') {
-         return false;
-      }
-      if (a.Get()[idx] != b.Get()[idx]) {
-         return false;
-      }
-      ++idx;
-   }
-}
-
 __host__ __device__ String::String()
 {
    Copy("");
@@ -76,4 +59,24 @@ __host__ __device__ void String::Copy(char const * s)
       str[k] = *s;
    }
    str[k] = '\0';
+}
+
+__host__ __device__ bool String::AreEqual(String a, String b)
+{
+   char* aStr = a.Get();
+   char* bStr = b.Get();
+   int idx = 0;
+   while (true) {
+      if (aStr[idx] == '\0' && bStr[idx] == '\0') {
+         return true;
+      }
+      if (aStr[idx] == '\0' || bStr[idx] == '\0') {
+         return false;
+      }
+      if (aStr[idx] != bStr[idx]) {
+         return false;
+      }
+      ++idx;
+   }
+   return true;
 }

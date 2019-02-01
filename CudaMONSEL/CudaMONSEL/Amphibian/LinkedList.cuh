@@ -1,5 +1,5 @@
-#ifndef LINKED_LIST_CUH
-#define LINKED_LIST_CUH
+#ifndef _LINKED_LIST_CUH_
+#define _LINKED_LIST_CUH_
 
 #include "cuda_runtime.h"
 
@@ -13,9 +13,11 @@ public:
    __host__ __device__ static void Remove(Node** head, Key k, bool equals(Key, Key));
    __host__ __device__ static void RemoveAll(Node** head);
 
-   __host__ __device__ static bool AreEquivalentNodes(Node*, Node*, bool equalKeys(Key, Key), bool equalValues(Value, Value));
-   __host__ __device__ static bool IsSet(Node*, bool equalKeys(Key, Key), bool equalValues(Value, Value));
-   __host__ __device__ static bool AreEquivalentSets(Node*, Node*, bool equalKeys(Key, Key), bool equalValues(Value, Value));
+   __host__ __device__ static bool AreEquivalentNodes(Node*, Node*, bool (*equalKeys)(Key, Key), bool equalValues(Value, Value));
+
+   __host__ __device__ static void RemoveRepeatedNodes(Node**, bool(*equalKeys)(Key, Key), bool equalValues(Value, Value));
+   __host__ __device__ static bool IsSet(Node*, bool(*equalKeys)(Key, Key), bool equalValues(Value, Value));
+   __host__ __device__ static bool AreEquivalentSets(Node*, Node*, bool(*equalKeys)(Key, Key), bool equalValues(Value, Value));
 
    __host__ __device__ Node();
    __host__ __device__ Node(Key, Value, Node *);
@@ -57,41 +59,92 @@ __host__ __device__ void Node<Key, Value>::RemoveHead(Node<Key, Value>** head)
 }
 
 template<typename Key, typename Value>
-__host__ __device__ static void Remove(Node<Key, Value>** head, Key k, bool equals(Key, Key))
+__host__ __device__ void Node<Key, Value>::Remove(Node<Key, Value>** head, Key k, bool equals(Key, Key))
 {
    while (*head != NULL) {
       if (equals((*head)->GetKey(), k)) {
          Node<Key, Value>::RemoveHead(head);
       }
       else {
-         Node<Key, Value>::Remove((*head)->GetNext(), k, equals);
+         head = &((*head)->next);
       }
    }
 }
 
 template<typename Key, typename Value>
-__host__ __device__ static bool Node<Key, Value>::AreEquivalentNodes(Node<Key, Value>* head1, Node<Key, Value>* head2, bool equalKeys(Key, Key), bool equalValues(Value, Value))
+__host__ __device__ bool Node<Key, Value>::AreEquivalentNodes(Node<Key, Value>* head1, Node<Key, Value>* head2, bool equalKeys(Key, Key), bool equalValues(Value, Value))
 {
-   if ((*head1) == NULL && (*head2) == NULL) {
+   if (head1 == NULL && head2 == NULL) {
       return true;
    }
 
-   if ((*head1) == NULL || (*head2) == NULL) {
+   if (head1 == NULL || head2 == NULL) {
       return false;
    }
-
    return (equalKeys(head1->GetKey(), head2->GetKey()) && equalValues(head1->GetValue(), head2->GetValue()));
 }
 
 template<typename Key, typename Value>
-__host__ __device__ static bool Node<Key, Value>::IsSet(Node<Key, Value>* head, bool equalKeys(Key, Key), bool equalValues(Value, Value))
+__host__ __device__ void Node<Key, Value>::RemoveRepeatedNodes(Node<Key, Value>** head, bool equalKeys(Key, Key), bool equalValues(Value, Value))
 {
-   return false;
+   if (IsSet(*head, equalKeys, equalValues)) {
+      return;
+   }
+
+   Node<Key, Value>** head1 = head;
+   while ((*head1) != NULL) {
+      Node<Key, Value>** head2 = &((*head1)->next);
+      while ((*head2) == NULL) {
+         if (AreEquivalentNodes(*head1, *head2, equalKeys, equalValues)) {
+            RemoveHead(head2);
+         }
+         else {
+            head2 = &((*head2)->next);
+         }
+      }
+      head1 = &((*head1)->next);
+   }
 }
 
 template<typename Key, typename Value>
-__host__ __device__ static bool Node<Key, Value>::AreEquivalentSets(Node<Key, Value>* head1, Node<Key, Value>* head2, bool equalKeys(Key, Key), bool equalValues(Value, Value))
+__host__ __device__ bool Node<Key, Value>::IsSet(Node<Key, Value>* head, bool equalKeys(Key, Key), bool equalValues(Value, Value))
 {
+   Node<Key, Value>* head1 = head;
+   while (head1 != NULL) {
+      Node<Key, Value>* head2 = head1->GetNext();
+      while (head2 != NULL) {
+         if (AreEquivalentNodes(head1, head2, equalKeys, equalValues)) {
+            return false;
+         }
+         head2 = head2->GetNext();
+      }
+      head1 = head1->GetNext();
+   }
+   return true;
+}
+
+template<typename Key, typename Value>
+__host__ __device__ bool Node<Key, Value>::AreEquivalentSets(Node<Key, Value>* h1, Node<Key, Value>* h2, bool equalKeys(Key, Key), bool equalValues(Value, Value))
+{
+   if (!IsSet(h1, equalKeys, equalValues) || !IsSet(h2, equalKeys, equalValues)) {
+      return false;
+   }
+
+   Node<Key, Value>* head1 = h1;
+   while (head1 != NULL) {
+      Node<Key, Value>* head2 = h2;
+      while (true) {
+         if (head2 == NULL) {
+            return false;
+         }
+         if (AreEquivalentNodes(head1, head2, equalKeys, equalValues)) {
+            break;
+         }
+         head2 = head2->GetNext();
+      }
+      head1 = head1->GetNext();
+   }
+   return true;
 }
 
 template<typename Key, typename Value>
