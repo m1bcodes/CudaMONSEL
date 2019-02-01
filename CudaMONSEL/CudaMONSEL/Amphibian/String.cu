@@ -44,6 +44,11 @@ __host__ __device__ void String::operator=(String s)
    Copy(s.Get());
 }
 
+__host__ __device__ bool String::operator==(String a)
+{
+
+}
+
 __host__ __device__ char* String::Get()
 {
    return str;
