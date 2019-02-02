@@ -242,7 +242,6 @@ __host__ __device__ Node<Key, Value>* Node<Key, Value>::GetNext()
 //   __syncthreads();
 //#endif
 //}
-
 //__device__ String::pAreEqual pEqual = String::AreEqual;
 //
 //int main()

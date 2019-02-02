@@ -34,19 +34,26 @@ __device__ UncertainValue2::UncertainValue2(double v, char source[], double dv) 
 
 __device__ UncertainValue2::UncertainValue2(double v, Node<String, double>* sigmas) : mValue(v)
 {
-   while (sigmas != NULL) {
-      assignComponent(sigmas->GetKey(), sigmas->GetValue());
-      sigmas = sigmas->GetNext();
+   for (thrust::device_vector<struct Sigma>::iterator iter = sigmas.begin(); iter < sigmas.end(); ++iter) {
+      struct Sigma curr = *iter;
+      assignComponent(curr.name, curr.val);
    }
 }
 
 __device__ void UncertainValue2::assignComponent(String name, double sigma)
 {
    if (sigma != 0.0) {
-      Node<String, double>::InsertHead(&mSigmas, name, sigma);
+      Sigma s = { name, sigma };
+      mSigmas.push_back(s);
    }
    else {
-      Node<String, double>::Remove(&mSigmas, name, String::AreEqual);
+      for (thrust::device_vector<struct Sigma>::iterator iter = mSigmas.begin(); iter < mSigmas.end(); ++iter) {
+         struct Sigma curr = *iter;
+         if (String::AreEqual(name, curr.name) && sigma == curr.val) {
+            mSigmas.erase(iter);
+            break;
+         }
+      }
    }
 }
 

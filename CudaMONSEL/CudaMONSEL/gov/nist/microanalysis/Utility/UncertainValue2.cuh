@@ -1,12 +1,18 @@
 #ifndef _UNCERTAIN_VALUE_2_CUH_
 #define _UNCERTAIN_VALUE_2_CUH_
 
-#include "..\..\..\..\Amphibian\LinkedList.cuh"
 #include "..\..\..\..\Amphibian\String.cuh"
+
+#include <thrust\device_vector.h>
 
 class UncertainValue2
 {
 public:
+   typedef struct Sigma {
+      String name;
+      double val;
+   };
+
    static const char DEFAULT[];
 
    static const UncertainValue2 ONE;
@@ -45,7 +51,7 @@ private:
    static const long long serialVersionUID;
 
    const double mValue;
-   Node<String, double>* mSigmas;
+   thrust::device_vector<Sigma> mSigmas;
 
    //bool mNotANumber;
    //bool mPosInfinity, mNegInfinity;
