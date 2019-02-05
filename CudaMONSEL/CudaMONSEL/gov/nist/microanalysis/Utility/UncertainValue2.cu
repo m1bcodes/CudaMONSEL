@@ -1,7 +1,6 @@
 #include "UncertainValue2.cuh"
 
 #include <math_constants.h>
-#include <limits>
 
 const char UncertainValue2::DEFAULT[] = "Default";
 
@@ -34,27 +33,31 @@ __device__ UncertainValue2::UncertainValue2(double v, char source[], double dv) 
 
 __device__ UncertainValue2::UncertainValue2(double v, Node<String, double>* sigmas) : mValue(v)
 {
-   for (thrust::device_vector<struct Sigma>::iterator iter = sigmas.begin(); iter < sigmas.end(); ++iter) {
-      struct Sigma curr = *iter;
-      assignComponent(curr.name, curr.val);
+   while (sigmas != NULL) {
+      assignComponent(sigmas->GetKey(), sigmas->GetValue());
+      sigmas = sigmas->GetNext();
    }
 }
 
 __device__ void UncertainValue2::assignComponent(String name, double sigma)
 {
    if (sigma != 0.0) {
-      Sigma s = { name, sigma };
-      mSigmas.push_back(s);
+      Node<String, double>::InsertHead(&mSigmas, name, sigma);
    }
    else {
-      for (thrust::device_vector<struct Sigma>::iterator iter = mSigmas.begin(); iter < mSigmas.end(); ++iter) {
-         struct Sigma curr = *iter;
-         if (String::AreEqual(name, curr.name) && sigma == curr.val) {
-            mSigmas.erase(iter);
-            break;
-         }
-      }
+      Node<String, double>::Remove(&mSigmas, name, String::AreEqual);
    }
+}
+
+__device__ double UncertainValue2::getComponent(String src)
+{
+   double v = Node<String, double>::GetNode(mSigmas, src, String::AreEqual);
+   return v != NULL ? v : 0.0;
+}
+
+__device__ bool UncertainValue2::hasComponent(String src)
+{
+   return Node<String, double>::GetNode(mSigmas, src, String::AreEqual) != NULL;
 }
 
 __device__ double UncertainValue2::doubleValue()
@@ -76,7 +79,7 @@ __device__ double UncertainValue2::variance()
 {
    double sigma2 = 0.0;
    Node<String, double>* head = mSigmas;
-   while(head != NULL) {
+   while (head != NULL) {
       double v = head->GetValue();
       sigma2 += v * v;
       head = head->GetNext();

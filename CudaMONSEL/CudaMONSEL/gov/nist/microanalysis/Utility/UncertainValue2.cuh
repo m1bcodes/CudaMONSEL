@@ -2,17 +2,11 @@
 #define _UNCERTAIN_VALUE_2_CUH_
 
 #include "..\..\..\..\Amphibian\String.cuh"
-
-#include <thrust\device_vector.h>
+#include "..\..\..\..\Amphibian\LinkedList.cuh"
 
 class UncertainValue2
 {
 public:
-   typedef struct Sigma {
-      String name;
-      double val;
-   };
-
    static const char DEFAULT[];
 
    static const UncertainValue2 ONE;
@@ -27,6 +21,10 @@ public:
    __device__ UncertainValue2(double v, Node<String, double>* sigmas);
 
    __device__ void assignComponent(String name, double sigma);
+   __device__ double getComponent(String src);
+   __device__ bool hasComponent(String src);
+
+
    __device__ double doubleValue();
    __device__ bool isUncertain();
    __device__ double uncertainty();
@@ -51,7 +49,7 @@ private:
    static const long long serialVersionUID;
 
    const double mValue;
-   thrust::device_vector<Sigma> mSigmas;
+   Node<String, double>* mSigmas;
 
    //bool mNotANumber;
    //bool mPosInfinity, mNegInfinity;

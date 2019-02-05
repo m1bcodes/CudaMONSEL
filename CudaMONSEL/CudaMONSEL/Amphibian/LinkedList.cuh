@@ -7,20 +7,21 @@ template<typename Key, typename Value>
 class Node
 {
 public:
-   __host__ __device__ static void InsertHead(Node** head, Key key, Value val);
-   __host__ __device__ static void RemoveHead(Node** head);
+   __host__ __device__ static void InsertHead(Node**, Key, Value);
+   __host__ __device__ static void RemoveHead(Node**);
 
-   __host__ __device__ static void Remove(Node** head, Key k, bool equals(Key, Key));
-   __host__ __device__ static void RemoveAll(Node** head);
+   __host__ __device__ static void Remove(Node**, Key, bool(*equalKeys)(Key, Key));
+   __host__ __device__ static void RemoveAll(Node**);
 
-   __host__ __device__ static bool AreEquivalentNodes(Node*, Node*, bool (*equalKeys)(Key, Key), bool equalValues(Value, Value));
+   __host__ __device__ static Value GetNode(Node*, Key, bool (*equalKeys)(Key, Key));
+   __host__ __device__ static bool AreEquivalentNodes(Node*, Node*, bool (*equalKeys)(Key, Key), bool (*equalValues)(Value, Value));
 
-   __host__ __device__ static void RemoveRepeatedNodes(Node**, bool(*equalKeys)(Key, Key), bool equalValues(Value, Value));
-   __host__ __device__ static bool IsSet(Node*, bool(*equalKeys)(Key, Key), bool equalValues(Value, Value));
-   __host__ __device__ static bool AreEquivalentSets(Node*, Node*, bool(*equalKeys)(Key, Key), bool equalValues(Value, Value));
+   __host__ __device__ static void RemoveRepeatedNodes(Node**, bool(*equalKeys)(Key, Key), bool (*equalValues)(Value, Value));
+   __host__ __device__ static bool IsSet(Node*, bool(*equalKeys)(Key, Key), bool (*equalValues)(Value, Value));
+   __host__ __device__ static bool AreEquivalentSets(Node*, Node*, bool(*equalKeys)(Key, Key), bool (*equalValues)(Value, Value));
 
    __host__ __device__ Node();
-   __host__ __device__ Node(Key, Value, Node *);
+   __host__ __device__ Node(Key, Value, Node*);
 
    __host__ __device__ Key GetKey();
    __host__ __device__ Value GetValue();
@@ -69,6 +70,18 @@ __host__ __device__ void Node<Key, Value>::Remove(Node<Key, Value>** head, Key k
          head = &((*head)->next);
       }
    }
+}
+
+template<typename Key, typename Value>
+__host__ __device__ Value Node<Key, Value>::GetNode(Node<Key, Value>* head, Key k, bool equalKeys(Key, Key))
+{
+   while (head != NULL) {
+      if (equalKeys(head->GetKey(), k)) {
+         return head->GetValue();
+      }
+      head = head->GetNext();
+   }
+   return NULL;
 }
 
 template<typename Key, typename Value>

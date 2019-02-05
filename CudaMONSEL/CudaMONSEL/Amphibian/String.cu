@@ -46,7 +46,7 @@ __host__ __device__ void String::operator=(String s)
 
 __host__ __device__ bool String::operator==(String a)
 {
-
+   return AreEqual(a, str);
 }
 
 __host__ __device__ char* String::Get()

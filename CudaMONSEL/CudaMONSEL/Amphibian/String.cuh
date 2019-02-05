@@ -12,10 +12,11 @@ public:
    __host__ __device__ String(char const *);
 
    __host__ __device__ void operator=(String);
+   __host__ __device__ bool operator==(String a);
 
    __host__ __device__ char* Get();
 
-   typedef bool(*pAreEqual)(String, String);
+   typedef bool(*pStrCmp)(String, String);
    __host__ __device__ static bool AreEqual(String, String);
 
 private:
