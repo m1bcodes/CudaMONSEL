@@ -5,10 +5,10 @@
 #include "gov/nist/microanalysis/NISTMonte/MonteCarloSS.cu"
 //#include "gov/nist/microanalysis/NISTMonte/Electron.cu"
 //#include "gov/nist/microanalysis/Utility/CSVReader.h"
+#include "gov\nist\microanalysis\Utility\UncertainValue2.cuh"
 
 #include "Amphibian\String.cuh"
 #include "Amphibian\LinkedList.cuh"
-#include "gov\nist\microanalysis\Utility\UncertainValue2.cuh"
 
 #include "CudaUtil.h"
 #include "ImageUtil.h"
@@ -72,6 +72,29 @@ void PrintArray2D(unsigned int *h_arr, size_t img_x, size_t img_y)
 //   return 0;
 //}
 
+__device__ void doThings()
+{
+   LinkedList::Node<int> * head = NULL;
+   LinkedList::Node<int>** newHeadAddr = &head;
+   LinkedList::InsertNext(newHeadAddr, 0);
+   LinkedList::InsertNext(newHeadAddr, 1);
+   newHeadAddr = (*newHeadAddr)->GetNextAddr();
+   LinkedList::InsertNext(newHeadAddr, 2);
+
+   LinkedList::Node<int> * headTmp = head;
+   while (headTmp != NULL) {
+      printf("%d\n", headTmp->GetValue());
+      headTmp = headTmp->GetNext();
+   }
+   printf("---------------\n");
+   LinkedList::Node<int> * head2 = LinkedList::DeepCopy(head);
+   LinkedList::Node<int> * head2Tmp = head2;
+   while (head2Tmp != NULL) {
+      printf("%d\n", head2Tmp->GetValue());
+      head2Tmp = head2Tmp->GetNext();
+   }
+}
+
 __global__ void kernel()
 {
    //UncertainValue2 v0(0, "abc", 5);
@@ -80,6 +103,7 @@ __global__ void kernel()
    //UncertainValue2 v3(2, 10);
 
    //printf("%d\n", v2.equals(&v3));
+   doThings();
 }
 
 int main()

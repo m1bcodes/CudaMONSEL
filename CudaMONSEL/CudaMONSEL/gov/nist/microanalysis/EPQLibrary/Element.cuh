@@ -159,128 +159,472 @@ namespace Element
    const int elmUub = 112;
    const int elmEndOfElements = 113;
 
-   const Element None;
-   const Element H;
-   const Element He;
-   const Element Li;
-   const Element Be;
-   const Element B;
-   const Element C;
-   const Element N;
-   const Element O;
-   const Element F;
-   const Element Ne;
-   const Element Na;
-   const Element Mg;
-   const Element Al;
-   const Element Si;
-   const Element P;
-   const Element S;
-   const Element Cl;
-   const Element Ar;
-   const Element K;
-   const Element Ca;
-   const Element Sc;
-   const Element Ti;
-   const Element V;
-   const Element Cr;
-   const Element Mn;
-   const Element Fe;
-   const Element Co;
-   const Element Ni;
-   const Element Cu;
-   const Element Zn;
-   const Element Ga;
-   const Element Ge;
-   const Element As;
-   const Element Se;
-   const Element Br;
-   const Element Kr;
-   const Element Rb;
-   const Element Sr;
-   const Element Y;
-   const Element Zr;
-   const Element Nb;
-   const Element Mo;
-   const Element Tc;
-   const Element Ru;
-   const Element Rh;
-   const Element Pd;
-   const Element Ag;
-   const Element Cd;
-   const Element In;
-   const Element Sn;
-   const Element Sb;
-   const Element Te;
-   const Element I;
-   const Element Xe;
-   const Element Cs;
-   const Element Ba;
-   const Element La;
-   const Element Ce;
-   const Element Pr;
-   const Element Nd;
-   const Element Pm;
-   const Element Sm;
-   const Element Eu;
-   const Element Gd;
-   const Element Tb;
-   const Element Dy;
-   const Element Ho;
-   const Element Er;
-   const Element Tm;
-   const Element Yb;
-   const Element Lu;
-   const Element Hf;
-   const Element Ta;
-   const Element W;
-   const Element Re;
-   const Element Os;
-   const Element Ir;
-   const Element Pt;
-   const Element Au;
-   const Element Hg;
-   const Element Tl;
-   const Element Pb;
-   const Element Bi;
-   const Element Po;
-   const Element At;
-   const Element Rn;
-   const Element Fr;
-   const Element Ra;
-   const Element Ac;
-   const Element Th;
-   const Element Pa;
-   const Element U;
-   const Element Np;
-   const Element Pu;
-   const Element Am;
-   const Element Cm;
-   const Element Bk;
-   const Element Cf;
-   const Element Es;
-   const Element Fm;
-   const Element Md;
-   const Element No;
-   const Element Lr;
-   const Element Rf;
-   const Element Db;
-   const Element Sg;
-   const Element Bh;
-   const Element Hs;
-   const Element Mt;
-   const Element Uun;
-   const Element Uuu;
-   const Element Uub;
-
-   const long long serialVersionUID;
-
-   const Element mAllElements[elmEndOfElements + 1];
-   char const * const mElementNames[elmEndOfElements + 1];
-   char const * const mAbbreviations[elmEndOfElements + 1];
+   const long long serialVersionUID = 0x987360133793L;
 
    float mIonizationEnergy[104]; // Nominal in Joules, IonizationEnergies.csv
    float mAtomicWeight[112]; // nominal, in AMU, AtomicWeights.csv
 
+   const Element None(0);
+   const Element H(1);
+   const Element He(2);
+   const Element Li(3);
+   const Element Be(4);
+   const Element B(5);
+   const Element C(6);
+   const Element N(7);
+   const Element O(8);
+   const Element F(9);
+   const Element Ne(10);
+   const Element Na(11);
+   const Element Mg(12);
+   const Element Al(13);
+   const Element Si(14);
+   const Element P(15);
+   const Element S(16);
+   const Element Cl(17);
+   const Element Ar(18);
+   const Element K(19);
+   const Element Ca(20);
+   const Element Sc(21);
+   const Element Ti(22);
+   const Element V(23);
+   const Element Cr(24);
+   const Element Mn(25);
+   const Element Fe(26);
+   const Element Co(27);
+   const Element Ni(28);
+   const Element Cu(29);
+   const Element Zn(30);
+   const Element Ga(31);
+   const Element Ge(32);
+   const Element As(33);
+   const Element Se(34);
+   const Element Br(35);
+   const Element Kr(36);
+   const Element Rb(37);
+   const Element Sr(38);
+   const Element Y(39);
+   const Element Zr(40);
+   const Element Nb(41);
+   const Element Mo(42);
+   const Element Tc(43);
+   const Element Ru(44);
+   const Element Rh(45);
+   const Element Pd(46);
+   const Element Ag(47);
+   const Element Cd(48);
+   const Element In(49);
+   const Element Sn(50);
+   const Element Sb(51);
+   const Element Te(52);
+   const Element I(53);
+   const Element Xe(54);
+   const Element Cs(55);
+   const Element Ba(56);
+   const Element La(57);
+   const Element Ce(58);
+   const Element Pr(59);
+   const Element Nd(60);
+   const Element Pm(61);
+   const Element Sm(62);
+   const Element Eu(63);
+   const Element Gd(64);
+   const Element Tb(65);
+   const Element Dy(66);
+   const Element Ho(67);
+   const Element Er(68);
+   const Element Tm(69);
+   const Element Yb(70);
+   const Element Lu(71);
+   const Element Hf(72);
+   const Element Ta(73);
+   const Element W(74);
+   const Element Re(75);
+   const Element Os(76);
+   const Element Ir(77);
+   const Element Pt(78);
+   const Element Au(79);
+   const Element Hg(80);
+   const Element Tl(81);
+   const Element Pb(82);
+   const Element Bi(83);
+   const Element Po(84);
+   const Element At(85);
+   const Element Rn(86);
+   const Element Fr(87);
+   const Element Ra(88);
+   const Element Ac(89);
+   const Element Th(90);
+   const Element Pa(91);
+   const Element U(92);
+   const Element Np(93);
+   const Element Pu(94);
+   const Element Am(95);
+   const Element Cm(96);
+   const Element Bk(97);
+   const Element Cf(98);
+   const Element Es(99);
+   const Element Fm(100);
+   const Element Md(101);
+   const Element No(102);
+   const Element Lr(103);
+   const Element Rf(104);
+   const Element Db(105);
+   const Element Sg(106);
+   const Element Bh(107);
+   const Element Hs(108);
+   const Element Mt(109);
+   const Element Uun(110);
+   const Element Uuu(111);
+   const Element Uub(112);
+
+   const Element mAllElements[] = {
+      H,
+      He,
+      Li,
+      Be,
+      B,
+      C,
+      N,
+      O,
+      F,
+      Ne,
+      Na,
+      Mg,
+      Al,
+      Si,
+      P,
+      S,
+      Cl,
+      Ar,
+      K,
+      Ca,
+      Sc,
+      Ti,
+      V,
+      Cr,
+      Mn,
+      Fe,
+      Co,
+      Ni,
+      Cu,
+      Zn,
+      Ga,
+      Ge,
+      As,
+      Se,
+      Br,
+      Kr,
+      Rb,
+      Sr,
+      Y,
+      Zr,
+      Nb,
+      Mo,
+      Tc,
+      Ru,
+      Rh,
+      Pd,
+      Ag,
+      Cd,
+      In,
+      Sn,
+      Sb,
+      Te,
+      I,
+      Xe,
+      Cs,
+      Ba,
+      La,
+      Ce,
+      Pr,
+      Nd,
+      Pm,
+      Sm,
+      Eu,
+      Gd,
+      Tb,
+      Dy,
+      Ho,
+      Er,
+      Tm,
+      Yb,
+      Lu,
+      Hf,
+      Ta,
+      W,
+      Re,
+      Os,
+      Ir,
+      Pt,
+      Au,
+      Hg,
+      Tl,
+      Pb,
+      Bi,
+      Po,
+      At,
+      Rn,
+      Fr,
+      Ra,
+      Ac,
+      Th,
+      Pa,
+      U,
+      Np,
+      Pu,
+      Am,
+      Cm,
+      Bk,
+      Cf,
+      Es,
+      Fm,
+      Md,
+      No,
+      Lr,
+      Rf,
+      Db,
+      Sg,
+      Bh,
+      Hs,
+      Mt,
+      Uun,
+      Uuu,
+      Uub
+   };
+
+   char const * const mElementNames[] = {
+      "None",
+      "Hydrogen",
+      "Helium",
+      "Lithium",
+      "Beryllium",
+      "Boron",
+      "Carbon",
+      "Nitrogen",
+      "Oxygen",
+      "Fluorine",
+      "Neon",
+      "Sodium",
+      "Magnesium",
+      "Aluminum",
+      "Silicon",
+      "Phosphorus",
+      "Sulfur",
+      "Chlorine",
+      "Argon",
+      "Potassium",
+      "Calcium",
+      "Scandium",
+      "Titanium",
+      "Vanadium",
+      "Chromium",
+      "Manganese",
+      "Iron",
+      "Cobalt",
+      "Nickel",
+      "Copper",
+      "Zinc",
+      "Gallium",
+      "Germanium",
+      "Arsenic",
+      "Selenium",
+      "Bromine",
+      "Krypton",
+      "Rubidium",
+      "Strontium",
+      "Yttrium",
+      "Zirconium",
+      "Niobium",
+      "Molybdenum",
+      "Technetium",
+      "Ruthenium",
+      "Rhodium",
+      "Palladium",
+      "Silver",
+      "Cadmium",
+      "Indium",
+      "Tin",
+      "Antimony",
+      "Tellurium",
+      "Iodine",
+      "Xenon",
+      "Cesium",
+      "Barium",
+      "Lanthanum",
+      "Cerium",
+      "Praseodymium",
+      "Neodymium",
+      "Promethium",
+      "Samarium",
+      "Europium",
+      "Gadolinium",
+      "Terbium",
+      "Dysprosium",
+      "Holmium",
+      "Erbium",
+      "Thulium",
+      "Ytterbium",
+      "Lutetium",
+      "Hafnium",
+      "Tantalum",
+      "Tungsten",
+      "Rhenium",
+      "Osmium",
+      "Iridium",
+      "Platinum",
+      "Gold",
+      "Mercury",
+      "Thallium",
+      "Lead",
+      "Bismuth",
+      "Polonium",
+      "Astatine",
+      "Radon",
+      "Francium",
+      "Radium",
+      "Actinium",
+      "Thorium",
+      "Protactinium",
+      "Uranium",
+      "Neptunium",
+      "Plutonium",
+      "Americium",
+      "Curium",
+      "Berkelium",
+      "Californium",
+      "Einsteinium",
+      "Fermium",
+      "Mendelevium",
+      "Nobelium",
+      "Lawrencium",
+      "Rutherfordium",
+      "Dubnium",
+      "Seaborgium",
+      "Bohrium",
+      "Hassium",
+      "Meitnerium",
+      "Ununnilium",
+      "Unununium",
+      "Ununbium",
+      "End-of-elements"
+   };
+
+   char const * const mAbbreviations[] = {
+      "",
+      "H",
+      "He",
+      "Li",
+      "Be",
+      "B",
+      "C",
+      "N",
+      "O",
+      "F",
+      "Ne",
+      "Na",
+      "Mg",
+      "Al",
+      "Si",
+      "P",
+      "S",
+      "Cl",
+      "Ar",
+      "K",
+      "Ca",
+      "Sc",
+      "Ti",
+      "V",
+      "Cr",
+      "Mn",
+      "Fe",
+      "Co",
+      "Ni",
+      "Cu",
+      "Zn",
+      "Ga",
+      "Ge",
+      "As",
+      "Se",
+      "Br",
+      "Kr",
+      "Rb",
+      "Sr",
+      "Y",
+      "Zr",
+      "Nb",
+      "Mo",
+      "Tc",
+      "Ru",
+      "Rh",
+      "Pd",
+      "Ag",
+      "Cd",
+      "In",
+      "Sn",
+      "Sb",
+      "Te",
+      "I",
+      "Xe",
+      "Cs",
+      "Ba",
+      "La",
+      "Ce",
+      "Pr",
+      "Nd",
+      "Pm",
+      "Sm",
+      "Eu",
+      "Gd",
+      "Tb",
+      "Dy",
+      "Ho",
+      "Er",
+      "Tm",
+      "Yb",
+      "Lu",
+      "Hf",
+      "Ta",
+      "W",
+      "Re",
+      "Os",
+      "Ir",
+      "Pt",
+      "Au",
+      "Hg",
+      "Tl",
+      "Pb",
+      "Bi",
+      "Po",
+      "At",
+      "Rn",
+      "Fr",
+      "Ra",
+      "Ac",
+      "Th",
+      "Pa",
+      "U",
+      "Np",
+      "Pu",
+      "Am",
+      "Cm",
+      "Bk",
+      "Cf",
+      "Es",
+      "Fm",
+      "Md",
+      "No",
+      "Lr",
+      "Rf",
+      "Db",
+      "Sg",
+      "Bh",
+      "Hs",
+      "Mt",
+      "Uun",
+      "Uuu",
+      "Uub",
+      "EOE"
+   };
 }
 #endif
