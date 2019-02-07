@@ -89,6 +89,30 @@ namespace LinkedList
       }
       return newHead;
    }
+
+   template<typename T>
+   __host__ __device__ T RemoveHead(Node<T>** headAddr)
+   {
+      if (*headAddr == NULL) {
+         return NULL;
+      }
+
+      T v = (*headAddr)->GetValue();
+
+      Node<T>* next = (*headAddr)->GetNext();
+      delete (*headAddr);
+      *headAddr = next;
+
+      return v;
+   }
+
+   template<typename T>
+   __host__ __device__ void RemoveAll(Node<T>** headAddr)
+   {
+      while (*headAddr != NULL) {
+         RemoveHead(headAddr);
+      }
+   }
 }
 
 namespace LinkedListKV
@@ -314,7 +338,7 @@ namespace LinkedListKV
    __host__ __device__ void RemoveAll(Node<Key, Value>** head)
    {
       while (*head != NULL) {
-         Node<Key, Value>::RemoveHead(head);
+         RemoveHead(head);
       }
    }
 }

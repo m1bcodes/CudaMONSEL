@@ -88,9 +88,17 @@ __device__ void doThings()
    }
    printf("---------------\n");
    LinkedList::Node<int> * head2 = LinkedList::DeepCopy(head);
+
+   LinkedList::RemoveAll(&head);
+   headTmp = head;
+   while (headTmp != NULL) {
+      printf("+ %d\n", headTmp->GetValue());
+      headTmp = headTmp->GetNext();
+   }
+
    LinkedList::Node<int> * head2Tmp = head2;
    while (head2Tmp != NULL) {
-      printf("%d\n", head2Tmp->GetValue());
+      printf("- %d\n", head2Tmp->GetValue());
       head2Tmp = head2Tmp->GetNext();
    }
 }
