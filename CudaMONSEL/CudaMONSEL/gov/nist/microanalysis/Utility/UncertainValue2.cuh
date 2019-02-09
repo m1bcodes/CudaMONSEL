@@ -15,13 +15,18 @@ namespace UncertainValue2
       __device__ UncertainValue2(double v, char source[], double dv);
       __device__ UncertainValue2(double v);
       __device__ UncertainValue2(double v, double dv);
-      __device__ UncertainValue2(double v, LinkedListKV::Node<String, double>* sigmas);
+      __device__ UncertainValue2(double v, LinkedListKV::Node<String::String, double>* sigmas);
 
-      __device__ void assignComponent(String name, double sigma);
-      __device__ double getComponent(String src);
-      __device__ LinkedListKV::Node<String, double> const * getComponents() const;
-      __device__ bool hasComponent(String src);
-      __device__ void renameComponent(String oldName, String newName);
+      __device__ double GetValue();
+      __device__ LinkedListKV::Node<String::String, double>* GetSigmas();
+
+      __device__ void assignComponent(String::String name, double sigma);
+      __device__ double getComponent(String::String src);
+      __device__ LinkedListKV::Node<String::String, double> const * getComponents() const;
+      __device__ bool hasComponent(String::String src);
+      __device__ void renameComponent(String::String oldName, String::String newName);
+
+
 
       __device__ double doubleValue();
       __device__ bool isUncertain();
@@ -36,15 +41,9 @@ namespace UncertainValue2
       __device__ bool lessThanOrEqual(UncertainValue2 uv2);
       __device__ bool greaterThanOrEqual(UncertainValue2 uv2);
 
-      //__device__ static UncertainValue2 sqr(UncertainValue2 uv);
-      //__device__ static UncertainValue2 negate(UncertainValue2 uv);
-      //__device__ static UncertainValue2 atan(UncertainValue2 uv);
-      //__device__ static UncertainValue2 atan2(UncertainValue2 y, UncertainValue2 x);
-      //__device__ static UncertainValue2 positiveDefinite(UncertainValue2 uv);
-
    private:
       double mValue;
-      LinkedListKV::Node<String, double>* mSigmas;
+      LinkedListKV::Node<String::String, double>* mSigmas;
    };
 
    extern __device__ const char DEFAULT[8];
@@ -60,6 +59,14 @@ namespace UncertainValue2
    extern __device__ const int MAX_LEN;
 
    //__device__ add(Node<UncertainValue2> uvs;
+   //__device__ UncertainValue2 sqr(UncertainValue2 uv);
+   //__device__ UncertainValue2 negate(UncertainValue2 uv);
+   //__device__ UncertainValue2 atan(UncertainValue2 uv);
+   //__device__ UncertainValue2 atan2(UncertainValue2 y, UncertainValue2 x);
+   //__device__ UncertainValue2 positiveDefinite(UncertainValue2 uv);
+
+   //__device__ UncertainValue2 add(LinkedList::Node<UncertainValue2> uvs);
+   __device__ UncertainValue2 add(double a, UncertainValue2 uva, double b, UncertainValue2 uvb);
 }
 
 #endif

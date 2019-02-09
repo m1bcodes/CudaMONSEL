@@ -3,29 +3,34 @@
 
 #include "cuda_runtime.h"
 
-class String
+namespace String
 {
-public:
-   __host__ __device__ static void IToA(char*, int, int maxLen = 11 /* integer limit */);
+   class String
+   {
+   public:
+      __host__ __device__ String();
+      __host__ __device__ String(char const *);
 
-   __host__ __device__ String();
-   __host__ __device__ String(char const *);
+      __host__ __device__ void operator=(String);
+      __host__ __device__ bool operator==(String a);
 
-   __host__ __device__ void operator=(String);
-   __host__ __device__ bool operator==(String a);
+      __host__ __device__ char* Get();
 
-   __host__ __device__ char* Get();
+   private:
+      static const int MAX_LEN = sizeof(char) * 31;
+
+      __host__ __device__ void Copy(char const *);
+
+      char str[MAX_LEN];
+   };
+
+   __host__ __device__ void IToA(char*, int, int maxLen = 11 /* integer limit */);
 
    typedef bool(*pStrCmp)(String, String);
-   __host__ __device__ static bool AreEqual(String, String);
+   __host__ __device__ bool AreEqual(String, String);
 
-private:
-   static const int MAX_LEN = sizeof(char) * 31;
-
-   __host__ __device__ void Copy(char const *);
-
-   char str[MAX_LEN];
-};
+   //__host__ __device__ static void Concatenate(String, String);
+}
 
 //__global__ void kernel(int n)
 //{

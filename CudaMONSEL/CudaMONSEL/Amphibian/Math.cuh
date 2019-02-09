@@ -3,10 +3,11 @@
 
 #include "cuda_runtime.h"
 
-class Math
+namespace Math
 {
-public:
-   __device__ __host__ static double sqrt(double, double);
-   __device__ __host__ static double abs(double);
+   __device__ __host__ double sqrt(double, double);
+   __device__ __host__ double abs(double);
+
+   __device__ __host__ double signum(double);
 };
 #endif
