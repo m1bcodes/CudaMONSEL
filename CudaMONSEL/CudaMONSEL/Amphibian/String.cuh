@@ -1,7 +1,7 @@
 #ifndef _STRING_CUH_
 #define _STRING_CUH_
 
-#include "cuda_runtime.h"
+#include <cuda_runtime.h>
 
 namespace String
 {

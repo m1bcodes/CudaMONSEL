@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include "cuda_runtime.h"
+#include <cuda_runtime.h>
 
 #include "gov/nist/microanalysis/NISTMonte/MonteCarloSS.cu"
 //#include "gov/nist/microanalysis/NISTMonte/Electron.cu"

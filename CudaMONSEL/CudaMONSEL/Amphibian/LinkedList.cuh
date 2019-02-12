@@ -1,7 +1,7 @@
 #ifndef _LINKED_LIST_CUH_
 #define _LINKED_LIST_CUH_
 
-#include "cuda_runtime.h"
+#include <cuda_runtime.h>
 
 namespace LinkedList
 {
@@ -134,6 +134,17 @@ namespace LinkedList
          head = head->GetNext();
       }
       return false;
+   }
+
+   template<typename T>
+   __host__ __device__ int Size(Node<T>* head)
+   {
+      int c = 0;
+      while (head != NULL) {
+         head = head->GetNext();
+         c++;
+      }
+      return c;
    }
 }
 

@@ -1,7 +1,7 @@
 #ifndef _MATH_CUH_
 #define _MATH_CUH_
 
-#include "cuda_runtime.h"
+#include <cuda_runtime.h>
 
 namespace Math
 {
