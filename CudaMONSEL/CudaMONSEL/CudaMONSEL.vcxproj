@@ -23,6 +23,7 @@
     <CudaCompile Include="Amphibian\String.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\Element.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\Material.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\EPQTests\UncertainValue2Test.cu" />
     <CudaCompile Include="gov\nist\microanalysis\NISTMonte\Electron.cu" />
     <CudaCompile Include="gov\nist\microanalysis\NISTMonte\MonteCarloSS.cu" />
     <CudaCompile Include="gov\nist\microanalysis\Utility\UncertainValue2.cu" />
@@ -37,6 +38,7 @@
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\Element.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\PhysicalConstants.h" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\ToSI.h" />
+    <ClInclude Include="gov\nist\microanalysis\EPQTests\UncertainValue2Test.cuh" />
     <ClInclude Include="gov\nist\microanalysis\NISTMonte\IMaterialScatterModel.h" />
     <ClInclude Include="gov\nist\microanalysis\Utility\CSVReader.h" />
     <ClInclude Include="gov\nist\microanalysis\Utility\UncertainValue2.cuh" />

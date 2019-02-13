@@ -60,7 +60,7 @@ namespace UncertainValue2
    
    __device__ bool UncertainValue2::hasComponent(String::String src)
    {
-      return LinkedListKV::GetValue<String::String, double>(mSigmas, src, String::AreEqual) != NULL;
+      return getComponent(src) != 0.0;
    }
 
    __device__ void UncertainValue2::renameComponent(String::String oldName, String::String newName)
@@ -498,5 +498,77 @@ namespace UncertainValue2
    {
       UncertainValue2 ret(0.0, uv.getComponents());
       return uv.doubleValue() >= 0.0 ? uv : ret;
+   }
+
+   __device__ Key::Key(String::String src1, String::String src2)
+   {
+      mSource1 = src1;
+      mSource2 = src2;
+   }
+
+   __device__ bool Key::operator==(const Key& k2)
+   {
+      return (mSource1 == k2.mSource1 && mSource2 == k2.mSource2) || (mSource1 == k2.mSource2 && mSource2 == k2.mSource1);
+   }
+
+   __device__ bool Key::AreEqual(Key k1, Key k2)
+   {
+      return k1 == k2;
+   }
+
+   __device__ Correlations::Correlations() : mCorrelations(NULL)
+   {
+   }
+
+   __device__ void Correlations::add(String::String src1, String::String src2, double corr)
+   {
+      if (!(corr >= -1.0) && (corr <= 1.0)) {
+         printf("%s\n", "Correlations::add: invalid bound");
+         return;
+      }
+      corr = fmaxf(corr, 1.0);
+      corr = fminf(corr, -1.0);
+      LinkedListKV::InsertHead<Key, double>(&mCorrelations, Key(src1, src2), corr);
+   }
+   
+   __device__ double Correlations::get(String::String src1, String::String src2)
+   {
+      double r = LinkedListKV::GetValue<Key, double>(mCorrelations, Key(src1, src2), Key::AreEqual);
+      return r == NULL ? 0.0 : r;
+   }
+
+   __device__ double UncertainValue2::variance(Correlations corr)
+   {
+      LinkedList::Node<String::String>* keys = NULL;
+      LinkedListKV::Node<String::String, double>* sigmas = getComponents();
+      AdvancedLinkedList::AddAllKeys(&keys, sigmas, String::AreEqual);
+      double res = 0.0;
+      auto tmpKeys = keys;
+      while (tmpKeys != NULL) {
+         String::String key = tmpKeys->GetValue();
+         auto val = LinkedListKV::GetValue(sigmas, key, String::AreEqual);
+         res += val * val;
+         tmpKeys = tmpKeys->GetNext();
+      }
+      auto tmpKeys1 = keys, tmpKeys2 = tmpKeys1->GetNext();
+      while (tmpKeys1 != NULL) {
+         while (tmpKeys2 != NULL) {
+            auto key1 = tmpKeys1->GetValue();
+            auto key2 = tmpKeys2->GetValue();
+            auto sigma1 = LinkedListKV::GetValue(sigmas, key1, String::AreEqual);
+            auto sigma2 = LinkedListKV::GetValue(sigmas, key2, String::AreEqual);
+            res += 2.0 * sigma1 * sigma2 * corr.get(key1, key2);
+            tmpKeys2 = tmpKeys2->GetNext();
+         }
+         tmpKeys1 = tmpKeys1->GetNext();
+         tmpKeys2 = tmpKeys1->GetNext();
+      }
+            
+      return res;
+   }
+
+   __device__ double UncertainValue2::uncertainty(Correlations corr)
+   {
+      return sqrtf(variance(corr));
    }
 }

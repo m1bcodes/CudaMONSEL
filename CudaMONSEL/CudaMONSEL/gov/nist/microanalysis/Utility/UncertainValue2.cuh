@@ -9,6 +9,30 @@
 
 namespace UncertainValue2
 {
+   class Key
+   {
+   private:
+      String::String mSource1, mSource2;
+
+   public:
+      __device__ Key(String::String src1, String::String src2);
+      __device__ bool operator==(const Key& k2);
+
+      __device__ static bool AreEqual(Key k1, Key k2);
+   };
+
+   class Correlations
+   {
+   private:
+      LinkedListKV::Node<Key, double>* mCorrelations;
+
+   public:
+      __device__ Correlations();
+
+      __device__ void add(String::String src1, String::String src2, double corr);
+      __device__ double get(String::String src1, String::String src2);
+   };
+
    class UncertainValue2
    {
    public:
@@ -39,65 +63,8 @@ namespace UncertainValue2
       __device__ UncertainValue2 sqrt();
       __device__ UncertainValue2 sqrt(UncertainValue2 uv);
 
-      //class Correlations {
-      //   static private class Key {
-      //      private final String mSource1;
-      //      private final String mSource2;
-
-      //      Key(String src1, String src2) {
-      //         mSource1 = src1;
-      //         mSource2 = src2;
-      //      }
-
-      //      @Override
-      //         public int hashCode() {
-      //         return mSource1.hashCode() + mSource2.hashCode();
-      //      }
-
-      //      @Override
-      //         public boolean equals(Object obj) {
-      //         if (obj instanceof Key) {
-      //            Key k2 = (Key)obj;
-      //            return (mSource1.equals(k2.mSource1) && mSource2.equals(k2.mSource2))
-      //               || (mSource1.equals(k2.mSource2) && mSource2.equals(k2.mSource1));
-      //         }
-      //         else
-      //            return false;
-      //      }
-      //   }
-
-      //   private final HashMap<Key, Double> mCorrelations;
-
-      //   public Correlations() {
-      //      mCorrelations = new HashMap<Key, Double>();
-      //   }
-
-      //   /**
-      //   * Adds a correlation between src1 and src2 (order does not matter.)
-      //   *
-      //   * @param src1
-      //   * @param src2
-      //   * @param corr The correlation on the range [-1.0,1.0]
-      //   */
-      //   public void add(String src1, String src2, double corr) {
-      //      assert(corr >= -1.0) && (corr <= 1.0);
-      //      mCorrelations.put(new Key(src1, src2), Math2.bound(corr, -1.0, 1.0));
-      //   }
-
-      //   /**
-      //   * Returns the correlation associated with src1 and src2 (order does not
-      //   * matter) or zero if one has not been specified.
-      //   *
-      //   * @param src1
-      //   * @param src2
-      //   * @return [-1.0,1.0] with 0.0 as default
-      //   */
-      //   public double get(String src1, String src2) {
-      //      Double r = mCorrelations.get(new Correlations.Key(src1, src2));
-      //      return r == null ? 0.0 : r.doubleValue();
-      //   }
-      //}
-
+      __device__ double variance(Correlations corr);
+      __device__ double uncertainty(Correlations corr);
 
    private:
       double mValue;

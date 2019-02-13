@@ -12,7 +12,7 @@ namespace String
       __host__ __device__ String(char const *);
 
       __host__ __device__ void operator=(String);
-      __host__ __device__ bool operator==(String a);
+      __host__ __device__ bool operator==(String);
 
       __host__ __device__ char* Get();
 
