@@ -4,7 +4,7 @@
 
 #include <stdio.h>
 
-extern double __longlong_as_double(long long);
+extern __device__ double __longlong_as_double(long long int);
 extern __device__ double atan(double);
 extern __device__ double atan2(double, double);
 extern __device__ double sqrt(double);
