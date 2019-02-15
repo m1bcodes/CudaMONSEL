@@ -88,16 +88,13 @@ namespace LinkedList
    }
 
    template<typename T>
-   __host__ __device__ Node<T>* DeepCopy(Node<T>* head)
+   __host__ __device__ void DeepCopy(Node<T>** newHeadAddr, Node<T>* head)
    {
-      Node<T>* newHead = NULL;
-      Node<T>** newHeadAddr = &newHead;
       while (head != NULL) {
          InsertNext<T>(newHeadAddr, head->GetValue());
          newHeadAddr = (*newHeadAddr)->GetNextAddr();
          head = head->GetNext();
       }
-      return newHead;
    }
 
    template<typename T>
@@ -241,16 +238,13 @@ namespace LinkedListKV
    }
 
    template<typename KeyT, typename ValueT>
-   __host__ __device__ Node<KeyT, ValueT>* DeepCopy(Node<KeyT, ValueT>* head)
+   __host__ __device__ void DeepCopy(Node<KeyT, ValueT>** newHeadAddr, Node<KeyT, ValueT>* head)
    {
-      Node<KeyT, ValueT>* newHead = NULL;
-      Node<KeyT, ValueT>** newHeadAddr = &newHead;
       while (head != NULL) {
-         InsertNext<KeyT, ValueT>(*newHeadAddr, head->GetKey(), head->GetValue());
+         InsertNext<KeyT, ValueT>(newHeadAddr, head->GetKey(), head->GetValue());
          newHeadAddr = (*newHeadAddr)->GetNextAddr();
          head = head->GetNext();
       }
-      return newHead;
    }
 
    template<typename KeyT, typename ValueT>

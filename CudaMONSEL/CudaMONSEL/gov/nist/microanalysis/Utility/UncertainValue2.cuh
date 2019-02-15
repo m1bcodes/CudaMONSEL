@@ -40,6 +40,8 @@ namespace UncertainValue2
       __device__ UncertainValue2(double v);
       __device__ UncertainValue2(double v, double dv);
       __device__ UncertainValue2(double v, LinkedListKV::Node<String::String, double>* sigmas);
+      __device__ UncertainValue2(UncertainValue2&);
+      __device__ UncertainValue2& operator=(UncertainValue2&);
 
       __device__ void assignComponent(String::String name, double sigma);
       __device__ double getComponent(String::String src);
@@ -52,7 +54,8 @@ namespace UncertainValue2
       __device__ double uncertainty();
       __device__ double variance();
       __device__ double fractionalUncertainty();
-      __device__ bool equals(UncertainValue2 const * uv);
+      __device__ bool equals(UncertainValue2* uv);
+      //__device__ bool operator==(UncertainValue2&);
 
       __device__ int compareTo(UncertainValue2 o);
       __device__ bool lessThan(UncertainValue2 uv2);
@@ -74,7 +77,7 @@ namespace UncertainValue2
    extern __device__ const char DEFAULT[8];
    extern __device__ int sDefIndex; // transient
 
-   //extern __device__ const UncertainValue2 ONE;
+   //extern __device__ const UncertainValue2 ONE(1.0);
    //extern __device__ const UncertainValue2 NaN(CUDART_NAN);
    //extern __device__ const UncertainValue2 POSITIVE_INFINITY(CUDART_INF);
    //extern __device__ const UncertainValue2 NEGATIVE_INFINITY(-CUDART_INF);
@@ -83,7 +86,8 @@ namespace UncertainValue2
    extern __device__ const long long serialVersionUID;
    extern __device__ const int MAX_LEN;
 
-   __device__ UncertainValue2 add(LinkedList::Node<UncertainValue2> uvs);
+   __device__ UncertainValue2 add(LinkedList::Node<UncertainValue2>* uvs);
+   //__device__ UncertainValue2 add(UncertainValue2*, int);
    __device__ UncertainValue2 add(double a, UncertainValue2 uva, double b, UncertainValue2 uvb);
    __device__ UncertainValue2 subtract(UncertainValue2 uva, UncertainValue2 uvb);
    __device__ UncertainValue2 mean(LinkedList::Node<UncertainValue2>* uvs);
@@ -94,6 +98,7 @@ namespace UncertainValue2
    __device__ UncertainValue2 add(double v1, UncertainValue2 v2);
    __device__ UncertainValue2 add(UncertainValue2 v1, UncertainValue2 v2);
    __device__ UncertainValue2 multiply(double v1, UncertainValue2 v2);
+   __device__ UncertainValue2 multiply(UncertainValue2 v1, UncertainValue2 v2);
    __device__ UncertainValue2 invert(UncertainValue2 v);
    __device__ UncertainValue2 divide(UncertainValue2 a, UncertainValue2 b);
    __device__ UncertainValue2 divide(double a, UncertainValue2 b);

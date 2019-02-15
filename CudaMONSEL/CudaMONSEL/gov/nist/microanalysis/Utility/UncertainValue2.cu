@@ -4,6 +4,22 @@
 
 #include <stdio.h>
 
+extern double __longlong_as_double(long long);
+extern __device__ double atan(double);
+extern __device__ double atan2(double, double);
+extern __device__ double sqrt(double);
+extern __device__ double fmax(double, double);
+extern __device__ double fmin(double, double);
+extern __device__ double log(double);
+extern __device__ double fabs(double);
+extern __device__ double pow(double, double);
+extern __device__ double exp(double);
+extern __device__ double copysign(double, double);
+extern __device__ bool isnan(double);
+extern __device__ bool isinf(double);
+
+extern __device__ int atomicAdd(int* address, int val);
+
 namespace UncertainValue2
 {
    __device__ const char DEFAULT[] = "Default";
@@ -18,7 +34,7 @@ namespace UncertainValue2
       String::IToA(tmpName, atomicAdd(&sDefIndex, 1));
       UncertainValue2::UncertainValue2(v, tmpName, dv);
    }
-   
+
    __device__ UncertainValue2::UncertainValue2(double v) : mValue(v), mSigmas(NULL)
    {
       UncertainValue2::UncertainValue2(v, 0.0);
@@ -36,7 +52,21 @@ namespace UncertainValue2
          sigmas = sigmas->GetNext();
       }
    }
-   
+
+   __device__ UncertainValue2::UncertainValue2(UncertainValue2& other) : mValue(other.doubleValue()), mSigmas(NULL)
+   {
+      LinkedListKV::DeepCopy<String::String, double>(&mSigmas, other.getComponents());
+   }
+
+   __device__ UncertainValue2& UncertainValue2::operator=(UncertainValue2& other)
+   {
+      mValue = other.doubleValue();
+      mSigmas = NULL;
+      LinkedListKV::DeepCopy<String::String, double>(&mSigmas, other.getComponents());
+
+      return *this;
+   }
+
    __device__ void UncertainValue2::assignComponent(String::String name, double sigma)
    {
       if (sigma != 0.0) {
@@ -46,7 +76,7 @@ namespace UncertainValue2
          LinkedListKV::Remove<String::String, double>(&mSigmas, name, String::AreEqual);
       }
    }
-   
+
    __device__ double UncertainValue2::getComponent(String::String src)
    {
       auto v = LinkedListKV::GetValue<String::String, double>(mSigmas, src, String::AreEqual);
@@ -57,7 +87,7 @@ namespace UncertainValue2
    {
       return mSigmas;
    }
-   
+
    __device__ bool UncertainValue2::hasComponent(String::String src)
    {
       return getComponent(src) != 0.0;
@@ -102,8 +132,13 @@ namespace UncertainValue2
       return res;
    }
 
-   //UncertainValue2 add(UncertainValue2[] uvs) {
-   //   return add(Arrays.asList(uvs));
+   //__device__ UncertainValue2 add(UncertainValue2* uvs, size_t n)
+   //{
+   //   LinkedList::Node<UncertainValue2>* head = NULL;
+   //   for (int k = 0; k < n; ++k) {
+   //      LinkedList::InsertHead(&head, uvs[k]);
+   //   }
+   //   return add(head);
    //}
 
    __device__ UncertainValue2 add(double a, UncertainValue2 uva, double b, UncertainValue2 uvb)
@@ -145,7 +180,7 @@ namespace UncertainValue2
          cuv = cuv->GetNext();
       }
       const double iVarSum = 1.0 / varSum;
-      return (isnan(iVarSum) || isinf(iVarSum)) ? NULL : UncertainValue2(sum / varSum, "WM", sqrtf(1.0 / varSum));
+         return (isnan(iVarSum) || isinf(iVarSum)) ? NULL : UncertainValue2(sum / varSum, "WM", ::sqrt(1.0 / varSum));
    }
 
    __device__ UncertainValue2 min(LinkedList::Node<UncertainValue2>* uvs)
@@ -247,8 +282,8 @@ namespace UncertainValue2
          LinkedList::Node<String::String>* srcs = NULL;
          AdvancedLinkedList::AddAllKeys(&srcs, a.getComponents(), String::AreEqual);
          AdvancedLinkedList::AddAllKeys(&srcs, b.getComponents(), String::AreEqual);
-         const double ua = abs(1.0 / b.doubleValue());
-         const double ub = abs(a.doubleValue() / (b.doubleValue() * b.doubleValue()));
+         const double ua = fabs(1.0 / b.doubleValue());
+         const double ub = fabs(a.doubleValue() / (b.doubleValue() * b.doubleValue()));
 
          while (srcs != NULL) {
             auto src = srcs->GetValue();
@@ -263,7 +298,7 @@ namespace UncertainValue2
    {
       UncertainValue2 res(a / b.doubleValue());
       if (!(isnan(res.doubleValue()) || isinf(res.doubleValue()))) {
-         const double ub = abs(a / (b.doubleValue() * b.doubleValue()));
+         const double ub = fabs(a / (b.doubleValue() * b.doubleValue()));
          auto bSigmas = b.getComponents();
          while (bSigmas != NULL) {
             res.assignComponent(bSigmas->GetKey(), ub * bSigmas->GetValue());
@@ -281,7 +316,7 @@ namespace UncertainValue2
          return UncertainValue2(CUDART_INF);
       }
       UncertainValue2 res(a.doubleValue() / b);
-      const double ua = abs(1.0 / b);
+      const double ua = fabs(1.0 / b);
       auto sigmaItrHead = a.getComponents();
       while (sigmaItrHead != NULL) {
          res.assignComponent(sigmaItrHead->GetKey(), ua * sigmaItrHead->GetValue());
@@ -297,7 +332,7 @@ namespace UncertainValue2
          return NULL;
       }
 
-      double ex = expf(x.doubleValue());
+      double ex = ::exp(x.doubleValue());
       UncertainValue2 res(ex);
       auto sigmas = x.getComponents();
       while (sigmas != NULL) {
@@ -310,7 +345,7 @@ namespace UncertainValue2
    __device__ UncertainValue2 log(UncertainValue2 v2)
    {
       double tmp = 1.0 / v2.doubleValue();
-      const double lv = logf(v2.doubleValue());
+      const double lv = ::log(v2.doubleValue());
       if (isnan(tmp) || isnan(lv)) {
          return UncertainValue2(CUDART_NAN);
       }
@@ -332,8 +367,8 @@ namespace UncertainValue2
       if (v1.doubleValue() == 0.0) {
          return UncertainValue2(0.0);
       }
-      const double f = powf(v1.doubleValue(), n);
-      const double df = n * powf(v1.doubleValue(), n - 1.0);
+      const double f = ::pow(v1.doubleValue(), n);
+      const double df = n * ::pow(v1.doubleValue(), n - 1.0);
       UncertainValue2 res(f);
       auto v1sigmas = v1.getComponents();
       while (v1sigmas != NULL) {
@@ -380,7 +415,7 @@ namespace UncertainValue2
    
    __device__ double UncertainValue2::uncertainty()
    {
-      return sqrtf(variance());
+      return ::sqrt(variance());
    }
    
    __device__ double UncertainValue2::variance()
@@ -403,19 +438,18 @@ namespace UncertainValue2
       if (isinf(1.0 / mValue)) {
          return CUDART_INF;
       }
-      return abs(uncertainty() / mValue);
+      return fabs(uncertainty() / mValue);
    }
    
-   __device__ bool UncertainValue2::equals(UncertainValue2 const * obj)
+   __device__ bool UncertainValue2::equals(UncertainValue2* other)
    {
-      if (this == obj) {
-         return true;
-      }
-      if (obj == NULL) {
+      if (other == NULL) {
          return false;
       }
-      UncertainValue2 other = (UncertainValue2)*obj;
-      return LinkedListKV::AreEquivalentSets<String::String, double>(mSigmas, other.mSigmas, String::AreEqual, [](double a, double b) { return a == b; }) && (mValue == other.mValue);
+      if (this == other) {
+         return true;
+      }
+      return LinkedListKV::AreEquivalentSets<String::String, double>(mSigmas, other->getComponents(), String::AreEqual, [](double a, double b) { return a == b; }) && (mValue == other->doubleValue());
    }
    
    __device__ int UncertainValue2::compareTo(UncertainValue2 o)
@@ -450,13 +484,12 @@ namespace UncertainValue2
    
    __device__ UncertainValue2 negate(UncertainValue2 uv)
    {
-      UncertainValue2 ret = UncertainValue2(-uv.doubleValue(), uv.getComponents());
-      return ret;
+      return UncertainValue2(-uv.doubleValue(), uv.getComponents());
    }
    
    __device__ UncertainValue2 atan(UncertainValue2 uv)
    {
-      double f = atanf(uv.doubleValue());
+      double f = ::atan(uv.doubleValue());
       double df = 1.0 / (1.0 + uv.doubleValue() * uv.doubleValue());
    
       if (isnan(f)) {
@@ -476,8 +509,8 @@ namespace UncertainValue2
 
    __device__ UncertainValue2 atan2(UncertainValue2 y, UncertainValue2 x)
    {
-      double f = atan2f(y.doubleValue(), x.doubleValue());
-      double df = 1.0 / (1.0 + powf(y.doubleValue() / x.doubleValue(), 2.0));
+      double f = ::atan2(y.doubleValue(), x.doubleValue());
+      double df = 1.0 / (1.0 + ::pow(y.doubleValue() / x.doubleValue(), 2.0));
    
       if (isnan(f)) {
          return UncertainValue2(CUDART_NAN);
@@ -526,8 +559,8 @@ namespace UncertainValue2
          printf("%s\n", "Correlations::add: invalid bound");
          return;
       }
-      corr = fmaxf(corr, 1.0);
-      corr = fminf(corr, -1.0);
+      corr = ::fmax(corr, 1.0);
+      corr = ::fmin(corr, -1.0);
       LinkedListKV::InsertHead<Key, double>(&mCorrelations, Key(src1, src2), corr);
    }
    
@@ -569,6 +602,6 @@ namespace UncertainValue2
 
    __device__ double UncertainValue2::uncertainty(Correlations corr)
    {
-      return sqrtf(variance(corr));
+      return ::sqrt(variance(corr));
    }
 }

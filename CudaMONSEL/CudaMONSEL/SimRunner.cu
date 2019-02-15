@@ -6,6 +6,7 @@
 //#include "gov/nist/microanalysis/NISTMonte/Electron.cu"
 //#include "gov/nist/microanalysis/Utility/CSVReader.h"
 #include "gov\nist\microanalysis\Utility\UncertainValue2.cuh"
+#include "gov\nist\microanalysis\EPQTests\UncertainValue2Test.cuh"
 
 #include "Amphibian\String.cuh"
 #include "Amphibian\LinkedList.cuh"
@@ -74,12 +75,23 @@ void PrintArray2D(unsigned int *h_arr, size_t img_x, size_t img_y)
 
 __global__ void kernel()
 {
-   UncertainValue2::UncertainValue2 v0(0, "abc", 5);
-   UncertainValue2::UncertainValue2 v1(1);
-   UncertainValue2::UncertainValue2 v2(2, 10);
-   UncertainValue2::UncertainValue2 v3(2, 10);
+   //UncertainValue2::UncertainValue2 v0(0, "abc", 5);
+   //UncertainValue2::UncertainValue2 v1(1);
+   //UncertainValue2::UncertainValue2 v2(2, 10);
+   //UncertainValue2::UncertainValue2 v3(2, 10);
+   //printf("%d\n", v1.equals(&v2));
 
-   printf("%d\n", v1.equals(&v2));
+   UncertainValue2Test::UncertainValue2Test uvTest;
+   //uvTest.testA();
+   uvTest.testB();
+   //uvTest.testC();
+   //uvTest.testAB();
+   //uvTest.testAdd1();
+   //uvTest.testAdd2();
+   //uvTest.testAdd3();
+   //uvTest.testMultiply();
+   //uvTest.testDivide();
+   //uvTest.testFunctions();
 }
 
 int main()
