@@ -7,6 +7,11 @@ namespace String
       Copy("");
    }
 
+   __host__ __device__ String::String(String& s)
+   {
+      Copy(s.Get());
+   }
+
    __host__ __device__ String::String(char const * s)
    {
       Copy(s);
@@ -19,7 +24,7 @@ namespace String
 
    __host__ __device__ bool String::operator==(String a)
    {
-      return AreEqual(a, str);
+      return AreEqual(a, *this);
    }
 
    __host__ __device__ char* String::Get()
@@ -36,7 +41,7 @@ namespace String
          }
          str[k] = *s;
       }
-      str[k] = '\0';
+      str[k] = NULL;
    }
 
    __host__ __device__ void IToA(char* d, int n, int maxLen)
@@ -44,7 +49,7 @@ namespace String
       if (maxLen < 1) {
          return;
       }
-      d[0] = '\0';
+      d[0] = NULL;
       if (maxLen == 1) {
          return;
       }
@@ -56,7 +61,7 @@ namespace String
          char a = '0' + m;
          d[idx] = a;
          ++idx;
-      } while (n != 0);
+      } while (n != 0 && n < maxLen);
 
       for (int k = 0; k < idx / 2; ++k) {
          int lastIdx = (idx - 1) - k;
@@ -64,7 +69,7 @@ namespace String
          d[lastIdx] = d[k];
          d[k] = a;
       }
-      d[idx] = '\0';
+      d[idx] = NULL;
    }
 
    __host__ __device__ bool AreEqual(String a, String b)
@@ -73,10 +78,10 @@ namespace String
       char* bStr = b.Get();
       int idx = 0;
       while (true) {
-         if (aStr[idx] == '\0' && bStr[idx] == '\0') {
+         if (aStr[idx] == NULL && bStr[idx] == NULL) {
             return true;
          }
-         if (aStr[idx] == '\0' || bStr[idx] == '\0') {
+         if (aStr[idx] == NULL || bStr[idx] == NULL) {
             return false;
          }
          if (aStr[idx] != bStr[idx]) {

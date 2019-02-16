@@ -149,6 +149,7 @@ namespace UncertainValue2Test
    {
       UncertainValue2::UncertainValue2 a(1.0, "A", 0.1);
       UncertainValue2::UncertainValue2 b(2.0, "A", 0.2);
+
       assertEquals(UncertainValue2::add(a, b), UncertainValue2::UncertainValue2(3.0, 0.3), 0.0001);
       assertEquals(UncertainValue2::add(1.0, a, 1.0, b), UncertainValue2::UncertainValue2(3.0, 0.3), 0.0001);
       assertEquals(UncertainValue2::add(2.0, a, 1.0, b), UncertainValue2::UncertainValue2(4.0, 0.4), 0.0001);
@@ -156,6 +157,7 @@ namespace UncertainValue2Test
       assertEquals(UncertainValue2::add(1.0, a, -1.0, b), UncertainValue2::UncertainValue2(-1.0, 0.1), 0.0001);
       assertEquals(UncertainValue2::add(-1.0, a, 1.0, b), UncertainValue2::UncertainValue2(1.0, 0.1), 0.0001);
       assertEquals(UncertainValue2::add(-2.0, a, 1.0, b), UncertainValue2::UncertainValue2(0.0, 0.0), 0.0001);
+
       // Example page 22 GUM
       //UncertainValue2::UncertainValue2 rsc[] = {
       //   UncertainValue2::UncertainValue2(1000.0, "R", 0.1),
@@ -233,6 +235,7 @@ namespace UncertainValue2Test
       UncertainValue2::UncertainValue2 a(1.0, "A", 0.1);
       UncertainValue2::UncertainValue2 b(2.0, "B", 0.2);
       UncertainValue2::UncertainValue2 c(3.0, "A", 0.15);
+
       //UncertainValue2[] uvs = new UncertainValue2[] {
       //   a,
       //      b,
@@ -253,6 +256,7 @@ namespace UncertainValue2Test
       UncertainValue2::UncertainValue2 a(1.1, "A", 0.1);
       UncertainValue2::UncertainValue2 b(2.3, "B", 0.2);
       UncertainValue2::UncertainValue2 c(3.6, "A", 0.15);
+
       assertEquals(UncertainValue2::multiply(a, b), UncertainValue2::UncertainValue2(2.53, 0.3182766093), 1.0e-6);
       assertEquals(UncertainValue2::multiply(a, c), UncertainValue2::UncertainValue2(3.96, 0.525), 1.0e-6);
       assertEquals(UncertainValue2::multiply(b, UncertainValue2::multiply(a, c)), UncertainValue2::UncertainValue2(9.108, 1.444063797), 1.0e-6);
@@ -266,6 +270,7 @@ namespace UncertainValue2Test
       UncertainValue2::UncertainValue2 a(1.1, "A", 0.1);
       UncertainValue2::UncertainValue2 b(2.3, "B", 0.2);
       UncertainValue2::UncertainValue2 c(3.6, "A", 0.15);
+
       assertEquals(UncertainValue2::divide(b, a), UncertainValue2::UncertainValue2(2.090909091, 0.26303852), 1.0e-6);
       assertEquals(UncertainValue2::divide(b, c), UncertainValue2::UncertainValue2(0.6388888889, 0.06160408973), 1.0e-6);
       assertEquals(UncertainValue2::divide(a, c), UncertainValue2::UncertainValue2(0.3055555556, (0.1 / 1.1 + 0.15 / 3.6) * 0.3055555556), 1.0e-6);
@@ -284,6 +289,7 @@ namespace UncertainValue2Test
       UncertainValue2::UncertainValue2 a(1.1, "A", 0.1);
       UncertainValue2::UncertainValue2 b(2.3, "B", 0.2);
       UncertainValue2::UncertainValue2 c(-3.6, "A", 0.15);
+
       assertEquals(UncertainValue2::exp(a), UncertainValue2::UncertainValue2(exp(1.1), exp(1.1) * 0.1), 1.0e-8);
       assertEquals(UncertainValue2::exp(b), UncertainValue2::UncertainValue2(exp(2.3), exp(2.3) * 0.2), 1.0e-8);
       assertEquals(UncertainValue2::pow(a, 3), UncertainValue2::multiply(UncertainValue2::multiply(a, a), a), 1.0e-8);

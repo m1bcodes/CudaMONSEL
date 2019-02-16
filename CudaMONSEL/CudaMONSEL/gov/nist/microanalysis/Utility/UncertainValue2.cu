@@ -32,12 +32,11 @@ namespace UncertainValue2
    {
       char tmpName[MAX_LEN];
       String::IToA(tmpName, atomicAdd(&sDefIndex, 1));
-      UncertainValue2::UncertainValue2(v, tmpName, dv);
+      assignComponent(tmpName, dv);
    }
 
    __device__ UncertainValue2::UncertainValue2(double v) : mValue(v), mSigmas(NULL)
    {
-      UncertainValue2::UncertainValue2(v, 0.0);
    }
    
    __device__ UncertainValue2::UncertainValue2(double v, char source[], double dv) : mValue(v), mSigmas(NULL)
@@ -149,7 +148,7 @@ namespace UncertainValue2
       AdvancedLinkedList::AddAllKeys<String::String, double>(&srcs, uvb.getComponents(), String::AreEqual);
       while (srcs != NULL) {
          String::String src = srcs->GetValue();
-         res.assignComponent(src, copysign(a, uva.doubleValue()) * uva.getComponent(src) + copysign(b, uvb.doubleValue()) * uvb.getComponent(src));
+         res.assignComponent(src, a * copysign(1.0, uva.doubleValue()) * uva.getComponent(src) + b * copysign(1.0, uvb.doubleValue()) * uvb.getComponent(src));
          srcs = srcs->GetNext();
       }
       return res;
@@ -262,8 +261,11 @@ namespace UncertainValue2
       LinkedList::Node<String::String>* srcs = NULL;
       AdvancedLinkedList::AddAllKeys<String::String, double>(&srcs, v1.getComponents(), String::AreEqual);
       AdvancedLinkedList::AddAllKeys<String::String, double>(&srcs, v2.getComponents(), String::AreEqual);
+      
       while (srcs != NULL) {
          auto src = srcs->GetValue();
+         //printf("%s: ", src.Get());
+         //printf("%lf\n", v1.doubleValue() * v2.getComponent(src) + v2.doubleValue() * v1.getComponent(src));
          res.assignComponent(src, v1.doubleValue() * v2.getComponent(src) + v2.doubleValue() * v1.getComponent(src));
          srcs = srcs->GetNext();
       }
@@ -302,6 +304,7 @@ namespace UncertainValue2
          auto bSigmas = b.getComponents();
          while (bSigmas != NULL) {
             res.assignComponent(bSigmas->GetKey(), ub * bSigmas->GetValue());
+            bSigmas = bSigmas->GetNext();
          }
       }
       return res;
@@ -539,7 +542,7 @@ namespace UncertainValue2
       mSource2 = src2;
    }
 
-   __device__ bool Key::operator==(const Key& k2)
+   __device__ bool Key::operator==(Key& k2)
    {
       return (mSource1 == k2.mSource1 && mSource2 == k2.mSource2) || (mSource1 == k2.mSource2 && mSource2 == k2.mSource1);
    }
@@ -603,5 +606,14 @@ namespace UncertainValue2
    __device__ double UncertainValue2::uncertainty(Correlations corr)
    {
       return ::sqrt(variance(corr));
+   }
+
+   __device__ void UncertainValue2::PrintSigmas()
+   {
+      auto sigmas = mSigmas;
+      while (sigmas != NULL) {
+         printf("%s: %lf\n", sigmas->GetKey().Get(), sigmas->GetValue());
+         sigmas = sigmas->GetNext();
+      }
    }
 }

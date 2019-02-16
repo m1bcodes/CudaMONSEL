@@ -15,7 +15,7 @@
 #include "ImageUtil.h"
 #include "TimeUtil.h"
 
-__global__ void spawnElectron(unsigned int *d_arr, int idx_x, int idx_y, size_t size_x, size_t size_y)
+__global__ void spawnElectron(int *d_arr, int idx_x, int idx_y, int size_x, int size_y)
 {
    int idx = idx_y * size_x + idx_x;
    //MonteCarloSS::RegionBase e(idx);
@@ -24,7 +24,7 @@ __global__ void spawnElectron(unsigned int *d_arr, int idx_x, int idx_y, size_t 
    d_arr[idx] = idx;
 }
 
-__global__ void spawnElectrons(unsigned int *d_arr, size_t size_x, size_t size_y)
+__global__ void spawnElectrons(int *d_arr, int size_x, int size_y)
 {
    int idx_x = threadIdx.x + blockDim.x * blockIdx.x;
    int idx_y = threadIdx.y + blockDim.y * blockIdx.y;
@@ -34,7 +34,7 @@ __global__ void spawnElectrons(unsigned int *d_arr, size_t size_x, size_t size_y
    spawnElectron << <1, 1 >> >(d_arr, idx_x, idx_y, size_x, size_y);
 }
 
-void PrintArray2D(unsigned int *h_arr, size_t img_x, size_t img_y)
+void PrintArray2D(int *h_arr, int img_x, int img_y)
 {
    for (int k = 0; k < img_y; ++k) {
       for (int l = 0; l < img_x; ++l) {
@@ -82,15 +82,15 @@ __global__ void kernel()
    //printf("%d\n", v1.equals(&v2));
 
    UncertainValue2Test::UncertainValue2Test uvTest;
-   //uvTest.testA();
+   uvTest.testA();
    uvTest.testB();
-   //uvTest.testC();
-   //uvTest.testAB();
-   //uvTest.testAdd1();
-   //uvTest.testAdd2();
-   //uvTest.testAdd3();
-   //uvTest.testMultiply();
-   //uvTest.testDivide();
+   uvTest.testC();
+   uvTest.testAB();
+   uvTest.testAdd1();
+   uvTest.testAdd2();
+   uvTest.testAdd3();
+   uvTest.testMultiply();
+   uvTest.testDivide();
    //uvTest.testFunctions();
 }
 

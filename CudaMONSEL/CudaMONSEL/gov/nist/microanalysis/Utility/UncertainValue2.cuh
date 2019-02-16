@@ -16,7 +16,7 @@ namespace UncertainValue2
 
    public:
       __device__ Key(String::String src1, String::String src2);
-      __device__ bool operator==(const Key& k2);
+      __device__ bool operator==(Key& k2);
 
       __device__ static bool AreEqual(Key k1, Key k2);
    };
@@ -68,6 +68,8 @@ namespace UncertainValue2
 
       __device__ double variance(Correlations corr);
       __device__ double uncertainty(Correlations corr);
+
+      __device__ void PrintSigmas();
 
    private:
       double mValue;

@@ -9,6 +9,7 @@ namespace String
    {
    public:
       __host__ __device__ String();
+      __host__ __device__ String(String&);
       __host__ __device__ String(char const *);
 
       __host__ __device__ void operator=(String);

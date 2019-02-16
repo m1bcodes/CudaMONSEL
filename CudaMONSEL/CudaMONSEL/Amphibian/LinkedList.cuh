@@ -278,10 +278,10 @@ namespace LinkedListKV
    }
 
    template<typename KeyT, typename ValueT>
-   __host__ __device__ ValueT GetValue(Node<KeyT, ValueT>* head, KeyT k, bool equalKeys(KeyT, KeyT))
+   __host__ __device__ ValueT GetValue(Node<KeyT, ValueT>* head, KeyT target, bool equalKeys(KeyT, KeyT))
    {
       while (head != NULL) {
-         if (equalKeys(head->GetKey(), k)) {
+         if (equalKeys(head->GetKey(), target)) {
             return head->GetValue();
          }
          head = head->GetNext();
@@ -388,9 +388,12 @@ namespace AdvancedLinkedList
    template<typename K, typename V>
    __host__ __device__ void AddAllKeys(LinkedList::Node<K>** headAddr, LinkedListKV::Node<K, V>* dataHead, bool (*KeyCmp)(K, K))
    {
+      if (dataHead == NULL) {
+         return;
+      }
       while (dataHead != NULL) {
-         if (!LinkedList::Exists(*headAddr, dataHead->GetKey(), KeyCmp)) {
-            LinkedList::InsertHead(headAddr, dataHead->GetKey());
+         if (!LinkedList::Exists<K>(*headAddr, dataHead->GetKey(), KeyCmp)) {
+            LinkedList::InsertHead<K>(headAddr, dataHead->GetKey());
          }
          dataHead = dataHead->GetNext();
       }
