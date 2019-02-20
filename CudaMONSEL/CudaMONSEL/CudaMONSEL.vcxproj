@@ -21,8 +21,12 @@
   <ItemGroup>
     <CudaCompile Include="Amphibian\Math.cu" />
     <CudaCompile Include="Amphibian\String.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\Composition.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\Element.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\Material.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\PhysicalConstants.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\ToSI.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\EPQTests\ElementTest.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQTests\UncertainValue2Test.cu" />
     <CudaCompile Include="gov\nist\microanalysis\NISTMonte\Electron.cu" />
     <CudaCompile Include="gov\nist\microanalysis\NISTMonte\MonteCarloSS.cu" />
@@ -34,10 +38,11 @@
     <ClInclude Include="Amphibian\Math.cuh" />
     <ClInclude Include="Amphibian\String.cuh" />
     <ClInclude Include="CudaUtil.h" />
-    <ClInclude Include="gov\nist\microanalysis\EPQLibrary\Composition.h" />
+    <ClInclude Include="gov\nist\microanalysis\EPQLibrary\Composition.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\Element.cuh" />
-    <ClInclude Include="gov\nist\microanalysis\EPQLibrary\PhysicalConstants.h" />
-    <ClInclude Include="gov\nist\microanalysis\EPQLibrary\ToSI.h" />
+    <ClInclude Include="gov\nist\microanalysis\EPQLibrary\PhysicalConstants.cuh" />
+    <ClInclude Include="gov\nist\microanalysis\EPQLibrary\ToSI.cuh" />
+    <ClInclude Include="gov\nist\microanalysis\EPQTests\ElementTest.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQTests\UncertainValue2Test.cuh" />
     <ClInclude Include="gov\nist\microanalysis\NISTMonte\IMaterialScatterModel.h" />
     <ClInclude Include="gov\nist\microanalysis\Utility\CSVReader.h" />
@@ -47,8 +52,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="gov\nist\microanalysis\EPQLibrary\Composition.cpp" />
-    <ClCompile Include="gov\nist\microanalysis\EPQLibrary\PhysicalConstants.cpp" />
-    <ClCompile Include="gov\nist\microanalysis\EPQLibrary\ToSI.cpp" />
     <ClCompile Include="gov\nist\microanalysis\NISTMonte\MonteCarloSS.cpp" />
     <ClCompile Include="gov\nist\microanalysis\Utility\CSVReader.cpp" />
   </ItemGroup>
