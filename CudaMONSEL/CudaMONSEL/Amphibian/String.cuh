@@ -1,3 +1,6 @@
+/**
+ * An immutable string class.
+ */
 #ifndef _STRING_CUH_
 #define _STRING_CUH_
 
@@ -25,7 +28,8 @@ namespace String
       char str[MAX_LEN];
    };
 
-   __host__ __device__ void IToA(char*, int, int maxLen = 11 /* integer limit */);
+   __host__ __device__ void IToA(char*, int, int maxArrayLen = 11 /* integer limit */);
+   __host__ __device__ int AToI(char*);
 
    typedef bool(*pStrCmp)(String, String);
    __host__ __device__ bool AreEqual(String, String);

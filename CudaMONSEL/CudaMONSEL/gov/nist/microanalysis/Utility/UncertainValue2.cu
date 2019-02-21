@@ -3,20 +3,9 @@
 #include "..\..\..\..\Amphibian\Math.cuh"
 
 #include <stdio.h>
+#include <math.h>
 
 extern __device__ double __longlong_as_double(long long int);
-extern __device__ double atan(double);
-extern __device__ double atan2(double, double);
-extern __device__ double sqrt(double);
-extern __device__ double fmax(double, double);
-extern __device__ double fmin(double, double);
-extern __device__ double log(double);
-extern __device__ double fabs(double);
-extern __device__ double pow(double, double);
-extern __device__ double exp(double);
-extern __device__ double copysign(double, double);
-extern __device__ bool isnan(double);
-extern __device__ bool isinf(double);
 
 extern __device__ int atomicAdd(int* address, int val);
 

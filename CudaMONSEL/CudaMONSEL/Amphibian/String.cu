@@ -1,5 +1,7 @@
 #include "String.cuh"
 
+#include <stdio.h>
+
 namespace String
 {
    __host__ __device__ String::String()
@@ -37,6 +39,7 @@ namespace String
       int k;
       for (k = 0; *s != NULL; ++s, ++k) {
          if (k == MAX_LEN - 1) {
+            printf("Length of string exceeded %d.", MAX_LEN);
             break;
          }
          str[k] = *s;
@@ -44,25 +47,34 @@ namespace String
       str[k] = NULL;
    }
 
-   __host__ __device__ void IToA(char* d, int n, int maxLen)
+   __host__ __device__ void IToA(char* d, int n, int maxArrayLen)
    {
-      if (maxLen < 1) {
+      if (maxArrayLen < 1) {
          return;
       }
       d[0] = NULL;
-      if (maxLen == 1) {
+      if (maxArrayLen == 1) {
          return;
       }
 
       int idx = 0;
+      if (n < 0) {
+         d[0] = '-';
+         idx = 1;
+      }
+
       do {
          int m = n % 10;
          n /= 10;
          char a = '0' + m;
          d[idx] = a;
          ++idx;
-      } while (n != 0 && n < maxLen);
+      } while (n != 0 && idx < maxArrayLen);
 
+      if (idx == maxArrayLen) {
+         printf("array too small to contain the entire integer\n");
+      }
+      
       for (int k = 0; k < idx / 2; ++k) {
          int lastIdx = (idx - 1) - k;
          char a = d[lastIdx];
@@ -70,6 +82,34 @@ namespace String
          d[k] = a;
       }
       d[idx] = NULL;
+   }
+
+   __host__ __device__ int AToI(char* d)
+   {
+      static const int MAX_SIGNED_INTEGER = 2147483648;
+      int mult = 1;
+      int idx = 0;
+      if (d[0] == '-') {
+         mult *= -1;
+         idx = 1;
+      }
+
+      int res = 0;
+      do {
+         char di = d[idx];
+         if (di < '0' || di > '9') {
+            printf("invalid digit");
+         }
+         int n = di - '0';
+         if (res > (MAX_SIGNED_INTEGER - 1 - n) / 10) {
+            printf("array contains a number that is out of the integer range\n");
+            break;
+         }
+         res = res * 10 + n;
+         ++idx;
+      } while (d[idx] != NULL);
+
+      return res*mult;
    }
 
    __host__ __device__ bool AreEqual(String a, String b)

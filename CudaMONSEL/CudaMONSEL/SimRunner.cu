@@ -96,9 +96,9 @@ __global__ void kernel()
 
 int main()
 {
-   kernel << <1, 1 >> >();
-   checkCudaErrors(cudaDeviceSynchronize());
-   checkCudaErrors(cudaGetLastError());
+   //kernel << <1, 1 >> >();
+   //checkCudaErrors(cudaDeviceSynchronize());
+   //checkCudaErrors(cudaGetLastError());
 
    return 0;
 }
