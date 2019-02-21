@@ -1,5 +1,5 @@
-#ifndef _ELEMENT_CUH_
-#define _ELEMENT_CUH_
+#ifndef _ELEMENT_TEST_CUH_
+#define _ELEMENT_TEST_CUH_
 
 #include <cuda_runtime.h>
 
