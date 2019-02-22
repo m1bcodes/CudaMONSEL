@@ -1,6 +1,7 @@
 #include "UncertainValue2.cuh"
 #include "..\..\..\..\Amphibian\LinkedList.cuh"
 #include "..\..\..\..\Amphibian\Math.cuh"
+#include "..\..\..\..\CudaUtil.h"
 
 #include <stdio.h>
 #include <math.h>
@@ -16,6 +17,16 @@ namespace UncertainValue2
 
    __device__ const long long serialVersionUID = 119495064970078787L;
    __device__ const int MAX_LEN = 11;
+
+   __device__ UncertainValue2 ONE;
+   __device__ UncertainValue2 NaN;
+   __device__ UncertainValue2 POSITIVE_INFINITY;
+   __device__ UncertainValue2 NEGATIVE_INFINITY;
+   __device__ UncertainValue2 ZERO;
+
+   __device__ UncertainValue2::UncertainValue2()
+   {
+   }
 
    __device__ UncertainValue2::UncertainValue2(double v, double dv) : mValue(v), mSigmas(NULL)
    {
@@ -53,6 +64,12 @@ namespace UncertainValue2
       LinkedListKV::DeepCopy<String::String, double>(&mSigmas, other.getComponents());
 
       return *this;
+   }
+
+   __device__ void UncertainValue2::assignInitialValue(double v)
+   {
+      mValue = v;
+      mSigmas = NULL;
    }
 
    __device__ void UncertainValue2::assignComponent(String::String name, double sigma)
@@ -604,5 +621,14 @@ namespace UncertainValue2
          printf("%s: %lf\n", sigmas->GetKey().Get(), sigmas->GetValue());
          sigmas = sigmas->GetNext();
       }
+   }
+
+   __device__ void InitializeSpecialUncertainValues()
+   {
+      ONE.assignInitialValue(1.0);
+      NaN.assignInitialValue(CUDART_NAN);
+      POSITIVE_INFINITY.assignInitialValue(CUDART_INF);
+      NEGATIVE_INFINITY.assignInitialValue(-CUDART_INF);
+      ZERO.assignInitialValue(0.0);
    }
 }

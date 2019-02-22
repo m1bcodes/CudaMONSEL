@@ -1,8 +1,12 @@
 #include "Element.cuh"
 #include "..\..\..\..\CudaUtil.h"
+#include "..\..\..\..\Amphibian\String.cuh"
 
 namespace Element
 {
+   static const int numIonizationEnergy = 104;
+   static const int numAtomicWeight = 112;
+
    __device__ const long long serialVersionUID = 0x987360133793L;
 
    __device__ const int elmNone = 0;
@@ -234,7 +238,8 @@ namespace Element
    __device__ const Element Uuu;
    __device__ const Element Uub;
 
-   __device__ const Element mAllElements[] = {
+   __device__ const Element mAllElements[112];
+   /* = {
       H,
       He,
       Li,
@@ -347,7 +352,7 @@ namespace Element
       Uun,
       Uuu,
       Uub
-   };
+   };*/
 
    __device__ char const * const mElementNames[] = {
       "None",
@@ -466,7 +471,7 @@ namespace Element
       "End-of-elements"
    };
 
-   char const * const mAbbreviations[] = {
+   __device__ char const * const mAbbreviations[] = {
       "",
       "H",
       "He",
@@ -583,7 +588,10 @@ namespace Element
       "EOE"
    };
 
-   Element::Element(int atomicNo)
+   __device__ float mIonizationEnergy[104];
+   __device__ float mAtomicWeight[112];
+
+   __host__ __device__ Element::Element(int atomicNo)
    {
       if ((atomicNo >= elmNone) && (atomicNo < elmEndOfElements)) {
          mAtomicNumber = atomicNo;
@@ -593,74 +601,80 @@ namespace Element
       }
    }
 
-   Element::Element()
+   __host__ __device__ Element::Element()
    {
       // mAtomicNumber = elmNone;
    }
 
-   void Element::readAtomicWeights()
+   __host__ void readAtomicWeights()
    {
+      float hAtomicWeight[112];
       try {
-         std::ifstream file("AtomicWeights.csv");
-
+         std::ifstream file(".\\gov\\nist\\microanalysis\\EPQLibrary\\AtomicWeights.csv");
          int idx = 0;
          for (CSVIterator loop(file); loop != CSVIterator(); ++loop) { // TODO: check if the first line should be removed
-            mAtomicWeight[idx] = std::stof((*loop)[0]);
+            if ((*loop)[0][0] == '/' && (*loop)[0][1] == '/') {
+               continue;
+            }
+            hAtomicWeight[idx] = std::stof((*loop)[0]);
+            ++idx;
          }
-         ++idx;
       }
       catch (std::exception&) {
+         printf("didnt see file AtomicWeights.csv\n");
          throw 0; //throw new EPQFatalException("Fatal error while attempting to load the atomic weights data file.");
       }
+      checkCudaErrors(cudaMemcpyToSymbol(mAtomicWeight, &hAtomicWeight, sizeof(float) * 112));
    }
 
-   int Element::atomicNumberForName(char* name)
+   __device__ int atomicNumberForName(char* name)
    {
       for (int i = 0; i < elmEndOfElements + 1; ++i) {
-         if ((strcmp(mElementNames[i], name) == 0) || (strcmp(mAbbreviations[i], name) == 0)) { // TODO: make it case insensitive
+         if (String::AreEqual(mElementNames[i], name) || String::AreEqual(mAbbreviations[i], name)) { // TODO: make it case insensitive
             return i;
          }
       }
-      try {
-         return std::stoi(name);
-      }
-      catch (std::exception&) {
-         return elmNone;
-      }
+      return String::AToI(name);
    }
 
-   Element Element::byName(char* name)
+   __device__ Element byName(char* name)
    {
       int z = atomicNumberForName(name);
       return z == 0 ? None : mAllElements[z - 1];
    }
 
-   Element Element::byAtomicNumber(int an)
+   __device__ Element byAtomicNumber(int an)
    {
       return (an >= 1) && (an < elmEndOfElements - 1) ? mAllElements[an - 1] : None;
    }
 
-   double Element::getAtomicWeight(int atomicNo)
+   __device__ double getAtomicWeight(int atomicNo)
    {
       if (mAtomicWeight == NULL) {
-         readAtomicWeights();
+         printf("need to load mAtomicWeight array by calling readAtomicWeights first"); //readAtomicWeights();
       }
       return mAtomicWeight[atomicNo - 1];
    }
 
-   Element const * Element::allElements()
+   __device__ Element const * allElements()
    {
       return mAllElements;
    }
 
-   //Element* Element::range(Element min, Element max)
-   //{
-   //   if (min.getAtomicNumber() <= max.getAtomicNumber()) {
-   //      throw 0;
-   //   }
-   //   return Arrays.copyOfRange(mAllElements, min.getAtomicNumber() - 1, max.getAtomicNumber() - 1);
-   //}
-   //
+   __device__ Element* range(Element min, Element max)
+   {
+      if (min.getAtomicNumber() <= max.getAtomicNumber()) {
+         printf("make sure min < max when calling range");
+         return NULL;
+      }
+      int numElem = max.getAtomicNumber() - min.getAtomicNumber() + 1;
+      Element* res = new Element[numElem];
+      for (int k = 0; k < numElem; ++k) {
+         res[k] = mAllElements[min.getAtomicNumber() - 1 + k];
+      }
+      return res;
+   }
+
    //double Element::meanIonizationPotential(int atomicNo) {
    //   try {
    //      return MeanIonizationPotential.Berger64.compute(Element.byAtomicNumber(atomicNo));
@@ -670,31 +684,31 @@ namespace Element
    //   }
    //}
 
-   int Element::getAtomicNumber() {
+   __device__ int Element::getAtomicNumber() {
       return mAtomicNumber;
    }
 
-   double Element::getAtomicWeight()
+   __device__ double Element::getAtomicWeight()
    {
-      return getAtomicWeight(mAtomicNumber);
+      return ::Element::getAtomicWeight(mAtomicNumber);
    }
 
-   double Element::getMass()
+   __device__ double Element::getMass()
    {
-      return ToSI::AMU(getAtomicWeight(mAtomicNumber));
+      return ToSI::AMU(::Element::getAtomicWeight(mAtomicNumber));
    }
 
-   char const * Element::toAbbrev()
+   __device__ char const * Element::toAbbrev()
    {
       return mAbbreviations[mAtomicNumber];
    }
 
-   char const * Element::toAbbrev(int atomicNo)
+   __device__ char const * toAbbrev(int atomicNo)
    {
       return mAbbreviations[atomicNo];
    }
 
-   char const * Element::toString(int el)
+   __device__ char const * toString(int el)
    {
       return mElementNames[el];
    }
@@ -725,17 +739,17 @@ namespace Element
    //}
    //
 
-   bool Element::isValid(int atomicNo)
+   __device__ bool isValid(int atomicNo)
    {
       return (atomicNo >= elmH) && (atomicNo < elmEndOfElements);
    }
 
-   bool Element::isValid()
+   __device__ bool Element::isValid()
    {
       return (mAtomicNumber >= elmH) && (mAtomicNumber < elmEndOfElements);
    }
 
-   int Element::compareTo(Element e)
+   __device__ int Element::compareTo(Element e)
    {
       if (mAtomicNumber < e.mAtomicNumber) {
          return -1;
@@ -745,56 +759,64 @@ namespace Element
       }
    }
 
-   int Element::hashCode()
+   __device__ int Element::hashCode()
    {
       // mAtomicNumber is always less than 128 (1<<7). Int has 31 + 1 bits. 31-7
       // = 24
       return mAtomicNumber << 24;
    }
 
-   bool Element::equals(Element el)
+   __device__ bool Element::equals(Element el)
    {
       return el.mAtomicNumber == mAtomicNumber;
    }
 
-   char const * Element::toString()
+   __device__ char const * Element::toString()
    {
       return mElementNames[mAtomicNumber];
    }
 
-   double Element::getIonizationEnergy()
+   __host__ void readIonizationEnergy()
    {
-      int idx = 0;
+      float hIonizationEnergy[104];
       try {
-         std::ifstream file("IonizationEnergies.csv");
-
+         std::ifstream file(".\\gov\\nist\\microanalysis\\EPQLibrary\\IonizationEnergies.csv");
+         int idx = 0;
          for (CSVIterator loop(file); loop != CSVIterator(); ++loop) { // TODO: check if the first line should be removed
             if ((*loop)[0][0] == '/' && (*loop)[0][1] == '/') {
                continue;
             }
             if (CSVIterator::IsNaN((*loop)[0])) {
-               mIonizationEnergy[idx] = -1.0;
+               hIonizationEnergy[idx] = -1.0;
             }
             else {
-               mIonizationEnergy[idx] = std::stof((*loop)[0]);
+               hIonizationEnergy[idx] = std::stof((*loop)[0]);
             }
          }
          ++idx;
       }
       catch (std::exception&) {
-         throw 0; // throw new EPQFatalException("Fatal error while attempting to load the atomic weights data file.");
+         printf("Fatal error while attempting to load the atomic weights data file.");
+      }
+      checkCudaErrors(cudaMemcpyToSymbol(mIonizationEnergy, &hIonizationEnergy, sizeof(float) * 104));
+   }
+
+   __device__ double Element::getIonizationEnergy()
+   {
+      if (mIonizationEnergy == NULL) {
+         printf("load mIonizationEnergy by calling readIonizationEnergy first");
       }
 
       double res = (mAtomicNumber - 1 <= 104) ? mIonizationEnergy[mAtomicNumber - 1] : -1.0;
       if (res == -1.0) {
-         throw 0; // new EPQFatalException("The ionization energy is not available for " + toAbbrev());
+         printf("The ionization energy is not available for %s", toAbbrev()); // new EPQFatalException(");
       }
       return res;
    }
 
-   Element Element::readResolve()
+   __device__ Element Element::readResolve()
    {
-      return Element::byAtomicNumber(mAtomicNumber);
+      return ::Element::byAtomicNumber(mAtomicNumber);
    }
 
    //char * const Element::getListOfAbbreviations(Element minEl, Element maxEl)
@@ -814,7 +836,7 @@ namespace Element
    //   return res;
    //}
    
-   void InitializeElements()
+   __host__ void InitializeElements()
    {
       const Element hNone(0);
       const Element hH(1);
@@ -1043,5 +1065,121 @@ namespace Element
       checkCudaErrors(cudaMemcpyToSymbol(Uun, &hUun, sizeof(Element)));
       checkCudaErrors(cudaMemcpyToSymbol(Uuu, &hUuu, sizeof(Element)));
       checkCudaErrors(cudaMemcpyToSymbol(Uub, &hUub, sizeof(Element)));
+
+      Element hAllElements[] = {
+         hH,
+         hHe,
+         hLi,
+         hBe,
+         hB,
+         hC,
+         hN,
+         hO,
+         hF,
+         hNe,
+         hNa,
+         hMg,
+         hAl,
+         hSi,
+         hP,
+         hS,
+         hCl,
+         hAr,
+         hK,
+         hCa,
+         hSc,
+         hTi,
+         hV,
+         hCr,
+         hMn,
+         hFe,
+         hCo,
+         hNi,
+         hCu,
+         hZn,
+         hGa,
+         hGe,
+         hAs,
+         hSe,
+         hBr,
+         hKr,
+         hRb,
+         hSr,
+         hY,
+         hZr,
+         hNb,
+         hMo,
+         hTc,
+         hRu,
+         hRh,
+         hPd,
+         hAg,
+         hCd,
+         hIn,
+         hSn,
+         hSb,
+         hTe,
+         hI,
+         hXe,
+         hCs,
+         hBa,
+         hLa,
+         hCe,
+         hPr,
+         hNd,
+         hPm,
+         hSm,
+         hEu,
+         hGd,
+         hTb,
+         hDy,
+         hHo,
+         hEr,
+         hTm,
+         hYb,
+         hLu,
+         hHf,
+         hTa,
+         hW,
+         hRe,
+         hOs,
+         hIr,
+         hPt,
+         hAu,
+         hHg,
+         hTl,
+         hPb,
+         hBi,
+         hPo,
+         hAt,
+         hRn,
+         hFr,
+         hRa,
+         hAc,
+         hTh,
+         hPa,
+         hU,
+         hNp,
+         hPu,
+         hAm,
+         hCm,
+         hBk,
+         hCf,
+         hEs,
+         hFm,
+         hMd,
+         hNo,
+         hLr,
+         hRf,
+         hDb,
+         hSg,
+         hBh,
+         hHs,
+         hMt,
+         hUun,
+         hUuu,
+         hUub
+      };
+      checkCudaErrors(cudaMemcpyToSymbol(mAllElements, &hAllElements, sizeof(Element) * 112));
    }
 }

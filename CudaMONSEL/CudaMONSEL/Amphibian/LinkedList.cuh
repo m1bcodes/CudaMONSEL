@@ -331,6 +331,25 @@ namespace LinkedListKV
    }
 
    template<typename KeyT, typename ValueT>
+   __host__ __device__ void RemoveAll(Node<KeyT, ValueT>** head)
+   {
+      while (*head != NULL) {
+         RemoveHead(head);
+      }
+   }
+
+   template<typename KeyT, typename ValueT>
+   __host__ __device__ int Size(Node<KeyT, ValueT>* head)
+   {
+      int sz = 0;
+      while (head != NULL) {
+         head = head->GetNext();
+         sz++;
+      }
+      return sz;
+   }
+
+   template<typename KeyT, typename ValueT>
    __host__ __device__ bool IsSet(Node<KeyT, ValueT>* head, bool equalKeys(KeyT, KeyT), bool equalValues(ValueT, ValueT))
    {
       Node<KeyT, ValueT>* head1 = head;
@@ -358,7 +377,6 @@ namespace LinkedListKV
       while (head1 != NULL) {
          Node<KeyT, ValueT>* head2 = h2;
          while (true) {
-
             if (head2 == NULL) {
                return false;
             }
@@ -371,20 +389,13 @@ namespace LinkedListKV
       }
       return true;
    }
-
-   template<typename KeyT, typename ValueT>
-   __host__ __device__ void RemoveAll(Node<KeyT, ValueT>** head)
-   {
-      while (*head != NULL) {
-         RemoveHead(head);
-      }
-   }
 }
 
 // Advanced Templates
 
 namespace AdvancedLinkedList
 {
+
    template<typename K, typename V>
    __host__ __device__ void AddAllKeys(LinkedList::Node<K>** headAddr, LinkedListKV::Node<K, V>* dataHead, bool (*KeyCmp)(K, K))
    {

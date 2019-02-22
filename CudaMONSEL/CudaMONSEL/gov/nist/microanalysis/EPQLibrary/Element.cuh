@@ -135,37 +135,40 @@ namespace Element
       __host__ __device__ Element(int atomicNo);
       __host__ __device__ Element();
 
-      int getAtomicNumber();
-      double getAtomicWeight();
-      double getMass();
-      char const * toAbbrev();
+      __device__ int getAtomicNumber();
+      __device__ double getAtomicWeight();
+      __device__ double getMass();
+      __device__ char const * toAbbrev();
 
-      bool isValid();
-      int compareTo(Element e);
-      int hashCode();
-      bool equals(Element el);
-      char const * toString();
-      double getIonizationEnergy();
+      __device__ bool isValid();
+      __device__ int compareTo(Element e);
+      __device__ int hashCode();
+      __device__ bool equals(Element el);
+      __device__ char const * toString();
+      __device__  double getIonizationEnergy();
 
    private:
       int mAtomicNumber;
 
-      static void readAtomicWeights();
-      Element readResolve();
+      __device__ Element readResolve();
    };
 
-   int atomicNumberForName(char* name);
-   Element byName(char* name);
-   Element byAtomicNumber(int an);
-   double getAtomicWeight(int atomicNo);
-   Element const * allElements();
-   Element* range(Element min, Element max);
-   double meanIonizationPotential(int atomicNo);
+   __host__ void readAtomicWeights();
+   __host__ void readIonizationEnergy();
+   __device__ int atomicNumberForName(char* name);
+   __device__ Element byName(char* name);
+   __device__ Element byAtomicNumber(int an);
+   __device__ double getAtomicWeight(int atomicNo);
+   __device__ Element const * allElements();
+   __device__ Element* range(Element min, Element max);
+   //__device__ double meanIonizationPotential(int atomicNo);
 
-   char const * toAbbrev(int atomicNo);
-   char const * toString(int el);
-   bool isValid(int atomicNo);
+   __device__ char const * toAbbrev(int atomicNo);
+   __device__ char const * toString(int el);
+   __device__ bool isValid(int atomicNo);
 
-   char* const getListOfAbbreviations(Element minEl, Element maxEl);
+   //__device__ char* const getListOfAbbreviations(Element minEl, Element maxEl);
+
+   __host__ void InitializeElements();
 }
 #endif

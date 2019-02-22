@@ -5,8 +5,10 @@
 #include "gov/nist/microanalysis/NISTMonte/MonteCarloSS.cu"
 //#include "gov/nist/microanalysis/NISTMonte/Electron.cu"
 //#include "gov/nist/microanalysis/Utility/CSVReader.h"
+#include "gov\nist\microanalysis\EPQLibrary\Element.cuh"
 #include "gov\nist\microanalysis\Utility\UncertainValue2.cuh"
 #include "gov\nist\microanalysis\EPQTests\UncertainValue2Test.cuh"
+#include "gov\nist\microanalysis\EPQTests\ElementTest.cuh"
 
 #include "Amphibian\String.cuh"
 #include "Amphibian\LinkedList.cuh"
@@ -91,14 +93,21 @@ __global__ void kernel()
    uvTest.testAdd3();
    uvTest.testMultiply();
    uvTest.testDivide();
-   //uvTest.testFunctions();
+   uvTest.testFunctions();
+
+   ElementTest::ElementTest elementTest;
+   elementTest.testOne();
 }
 
 int main()
 {
-   //kernel << <1, 1 >> >();
-   //checkCudaErrors(cudaDeviceSynchronize());
-   //checkCudaErrors(cudaGetLastError());
+
+   Element::readAtomicWeights();
+   Element::readIonizationEnergy();
+   Element::InitializeElements();
+   kernel << <1, 1 >> >();
+   checkCudaErrors(cudaDeviceSynchronize());
+   checkCudaErrors(cudaGetLastError());
 
    return 0;
 }

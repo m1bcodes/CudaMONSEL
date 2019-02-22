@@ -36,6 +36,7 @@ namespace UncertainValue2
    class UncertainValue2
    {
    public:
+      __device__ UncertainValue2();
       __device__ UncertainValue2(double v, char source[], double dv);
       __device__ UncertainValue2(double v);
       __device__ UncertainValue2(double v, double dv);
@@ -43,6 +44,7 @@ namespace UncertainValue2
       __device__ UncertainValue2(UncertainValue2&);
       __device__ UncertainValue2& operator=(UncertainValue2&);
 
+      __device__ void assignInitialValue(double);
       __device__ void assignComponent(String::String name, double sigma);
       __device__ double getComponent(String::String src);
       __device__ LinkedListKV::Node<String::String, double> * getComponents();
@@ -79,11 +81,11 @@ namespace UncertainValue2
    extern __device__ const char DEFAULT[8];
    extern __device__ int sDefIndex; // transient
 
-   //extern __device__ const UncertainValue2 ONE(1.0);
-   //extern __device__ const UncertainValue2 NaN(CUDART_NAN);
-   //extern __device__ const UncertainValue2 POSITIVE_INFINITY(CUDART_INF);
-   //extern __device__ const UncertainValue2 NEGATIVE_INFINITY(-CUDART_INF);
-   //extern __device__ const UncertainValue2 ZERO(0.0);
+   extern __device__ UncertainValue2 ONE;
+   extern __device__ UncertainValue2 NaN;
+   extern __device__ UncertainValue2 POSITIVE_INFINITY;
+   extern __device__ UncertainValue2 NEGATIVE_INFINITY;
+   extern __device__ UncertainValue2 ZERO;
 
    extern __device__ const long long serialVersionUID;
    extern __device__ const int MAX_LEN;
@@ -115,6 +117,8 @@ namespace UncertainValue2
    __device__ UncertainValue2 atan(UncertainValue2 uv);
    __device__ UncertainValue2 atan2(UncertainValue2 y, UncertainValue2 x);
    __device__ UncertainValue2 positiveDefinite(UncertainValue2 uv);
+
+   __device__ void InitializeSpecialUncertainValues();
 }
 
 #endif

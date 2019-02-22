@@ -5,11 +5,12 @@
 
 namespace ElementTest
 {
-   //class ElementTest
-   //{
-   //public:
-   //   __device__ void testOne();
-   //};
+   class ElementTest
+   {
+   public:
+      __device__ ElementTest();
+      __device__ void testOne();
+   };
 
    __device__ void assertEquals(double, double, double);
    __device__ void assertEquals(int src, int target);

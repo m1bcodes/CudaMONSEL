@@ -99,6 +99,7 @@ namespace String
          char di = d[idx];
          if (di < '0' || di > '9') {
             printf("invalid digit");
+            return 0;
          }
          int n = di - '0';
          if (res > (MAX_SIGNED_INTEGER - 1 - n) / 10) {

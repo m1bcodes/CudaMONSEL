@@ -24,6 +24,7 @@
     <CudaCompile Include="Amphibian\Tests\StringTest.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\Composition.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\Element.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\FromSI.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\Material.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\PhysicalConstants.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\ToSI.cu" />
@@ -42,6 +43,7 @@
     <ClInclude Include="CudaUtil.h" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\Composition.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\Element.cuh" />
+    <ClInclude Include="gov\nist\microanalysis\EPQLibrary\FromSI.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\PhysicalConstants.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\ToSI.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQTests\ElementTest.cuh" />
@@ -53,7 +55,6 @@
     <ClInclude Include="TimeUtil.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="gov\nist\microanalysis\EPQLibrary\Composition.cpp" />
     <ClCompile Include="gov\nist\microanalysis\NISTMonte\MonteCarloSS.cpp" />
     <ClCompile Include="gov\nist\microanalysis\Utility\CSVReader.cpp" />
   </ItemGroup>
