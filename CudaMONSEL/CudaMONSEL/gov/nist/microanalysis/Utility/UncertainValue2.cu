@@ -112,14 +112,15 @@ namespace UncertainValue2
 
    __device__ UncertainValue2 add(LinkedList::Node<UncertainValue2>* uvs)
    {
-      LinkedList::Node<String::String>* srcs;
+      LinkedList::Node<String::String>* srcs, * srcsHead;
       double sum = 0.0;
       auto uvItrHead = uvs;
       while (uvItrHead != NULL) {
-         AdvancedLinkedList::AddAllKeys<String::String, double>(&srcs, uvItrHead->GetValue().getComponents(), String::AreEqual);
+         AdvancedLinkedList::AddAllKeys(&srcsHead, uvItrHead->GetValue().getComponents(), String::AreEqual);
          sum += uvItrHead->GetValue().doubleValue();
          uvItrHead = uvItrHead->GetNext();
       }
+      srcs = srcsHead;
       UncertainValue2 res(sum);
       while (srcs != NULL) {
          auto src = srcs->GetValue();
@@ -134,6 +135,7 @@ namespace UncertainValue2
          }
          res.assignComponent(src, unc);
       }
+      LinkedList::RemoveAll(&srcsHead);
       return res;
    }
 
@@ -149,14 +151,16 @@ namespace UncertainValue2
    __device__ UncertainValue2 add(double a, UncertainValue2 uva, double b, UncertainValue2 uvb)
    {
       UncertainValue2 res(a * uva.doubleValue() + b * uvb.doubleValue());
-      LinkedList::Node<String::String>* srcs = NULL;
-      AdvancedLinkedList::AddAllKeys<String::String, double>(&srcs, uva.getComponents(), String::AreEqual);
-      AdvancedLinkedList::AddAllKeys<String::String, double>(&srcs, uvb.getComponents(), String::AreEqual);
+      LinkedList::Node<String::String>* srcs = NULL, * srcsHead = NULL;
+      AdvancedLinkedList::AddAllKeys(&srcsHead, uva.getComponents(), String::AreEqual);
+      AdvancedLinkedList::AddAllKeys(&srcsHead, uvb.getComponents(), String::AreEqual);
+      srcs = srcsHead;
       while (srcs != NULL) {
          String::String src = srcs->GetValue();
          res.assignComponent(src, a * copysign(1.0, uva.doubleValue()) * uva.getComponent(src) + b * copysign(1.0, uvb.doubleValue()) * uvb.getComponent(src));
          srcs = srcs->GetNext();
       }
+      LinkedList::RemoveAll(&srcsHead);
       return res;
    }
 
@@ -264,10 +268,10 @@ namespace UncertainValue2
    __device__ UncertainValue2 multiply(UncertainValue2 v1, UncertainValue2 v2)
    {
       UncertainValue2 res(v1.doubleValue() * v2.doubleValue());
-      LinkedList::Node<String::String>* srcs = NULL;
-      AdvancedLinkedList::AddAllKeys<String::String, double>(&srcs, v1.getComponents(), String::AreEqual);
-      AdvancedLinkedList::AddAllKeys<String::String, double>(&srcs, v2.getComponents(), String::AreEqual);
-      
+      LinkedList::Node<String::String>* srcs = NULL, * srcsHead = NULL;
+      AdvancedLinkedList::AddAllKeys(&srcsHead, v1.getComponents(), String::AreEqual);
+      AdvancedLinkedList::AddAllKeys(&srcsHead, v2.getComponents(), String::AreEqual);
+      srcs = srcsHead;
       while (srcs != NULL) {
          auto src = srcs->GetValue();
          //printf("%s: ", src.Get());
@@ -275,6 +279,7 @@ namespace UncertainValue2
          res.assignComponent(src, v1.doubleValue() * v2.getComponent(src) + v2.doubleValue() * v1.getComponent(src));
          srcs = srcs->GetNext();
       }
+      LinkedList::RemoveAll(&srcsHead);
       return res;
    }
 
@@ -287,17 +292,18 @@ namespace UncertainValue2
    {
       UncertainValue2 res(a.doubleValue() / b.doubleValue());
       if (!(isnan(res.doubleValue()) || isinf(res.doubleValue()))) {
-         LinkedList::Node<String::String>* srcs = NULL;
-         AdvancedLinkedList::AddAllKeys(&srcs, a.getComponents(), String::AreEqual);
-         AdvancedLinkedList::AddAllKeys(&srcs, b.getComponents(), String::AreEqual);
+         LinkedList::Node<String::String>* srcs = NULL, * srcsHead = NULL;
+         AdvancedLinkedList::AddAllKeys(&srcsHead, a.getComponents(), String::AreEqual);
+         AdvancedLinkedList::AddAllKeys(&srcsHead, b.getComponents(), String::AreEqual);
          const double ua = fabs(1.0 / b.doubleValue());
          const double ub = fabs(a.doubleValue() / (b.doubleValue() * b.doubleValue()));
-
+         srcs = srcsHead;
          while (srcs != NULL) {
             auto src = srcs->GetValue();
             res.assignComponent(src, ua * a.getComponent(src) + ub * b.getComponent(src));
             srcs = srcs->GetNext();
          }
+         LinkedList::RemoveAll(&srcsHead);
       }
       return res;
    }
@@ -605,7 +611,7 @@ namespace UncertainValue2
          tmpKeys1 = tmpKeys1->GetNext();
          tmpKeys2 = tmpKeys1->GetNext();
       }
-            
+      LinkedList::RemoveAll(&keys);
       return res;
    }
 

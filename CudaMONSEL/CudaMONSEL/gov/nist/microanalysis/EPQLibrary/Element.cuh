@@ -169,6 +169,7 @@ namespace Element
 
    //__device__ char* const getListOfAbbreviations(Element minEl, Element maxEl);
 
+   __device__ bool AreEqual(Element e1, Element e2);
    __host__ void InitializeElements();
 }
 #endif

@@ -185,7 +185,7 @@ namespace LinkedListKV
       val = rhs.val;
       next = rhs.next;
    }
-
+   
    template<typename KeyT, typename ValueT>
    __host__ __device__ KeyT Node<KeyT, ValueT>::GetKey()
    {
@@ -395,7 +395,6 @@ namespace LinkedListKV
 
 namespace AdvancedLinkedList
 {
-
    template<typename K, typename V>
    __host__ __device__ void AddAllKeys(LinkedList::Node<K>** headAddr, LinkedListKV::Node<K, V>* dataHead, bool (*KeyCmp)(K, K))
    {

@@ -768,7 +768,7 @@ namespace Element
 
    __device__ bool Element::equals(Element el)
    {
-      return el.mAtomicNumber == mAtomicNumber;
+      return ::Element::AreEqual(el, *this);
    }
 
    __device__ char const * Element::toString()
@@ -835,6 +835,11 @@ namespace Element
    //      res.add(toString(z));
    //   return res;
    //}
+
+   __device__ bool AreEqual(Element e1, Element e2)
+   {
+      return e1.getAtomicNumber() == e2.getAtomicNumber();
+   }
    
    __host__ void InitializeElements()
    {
