@@ -21,6 +21,7 @@
   <ItemGroup>
     <CudaCompile Include="Amphibian\Math.cu" />
     <CudaCompile Include="Amphibian\String.cu" />
+    <CudaCompile Include="Amphibian\Tests\LinkedListTest.cu" />
     <CudaCompile Include="Amphibian\Tests\StringTest.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\Composition.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\Element.cu" />
@@ -39,11 +40,13 @@
     <ClInclude Include="Amphibian\LinkedList.cuh" />
     <ClInclude Include="Amphibian\Math.cuh" />
     <ClInclude Include="Amphibian\String.cuh" />
+    <ClInclude Include="Amphibian\Tests\LinkedListTest.cuh" />
     <ClInclude Include="Amphibian\Tests\StringTest.cuh" />
     <ClInclude Include="CudaUtil.h" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\Composition.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\Element.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\FromSI.cuh" />
+    <ClInclude Include="gov\nist\microanalysis\EPQLibrary\Material.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\PhysicalConstants.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\ToSI.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQTests\ElementTest.cuh" />

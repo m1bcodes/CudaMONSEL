@@ -42,6 +42,9 @@ namespace Composition
       __device__ void defineByWeightFraction(Element::Element elms[], int elmsLen, double wgtFracs[], int wgtFracsLen);
       __device__ void defineByWeightFraction(Element::Element elms[], int elmsLen, UncertainValue2::UncertainValue2 wgtFracs[], int wgtFracsLen);
       __device__ void defineByWeightFraction(LinkedListKV::Node<Element::Element, double> map);
+      __device__ UncertainValue2::UncertainValue2 stoichiometryU(Element::Element elm);
+      __device__ double atomsPerKg(Element::Element elm, bool normalized);
+      __device__ UncertainValue2::UncertainValue2 atomsPerKgU(Element::Element elm, bool normalized);
 
       template<typename T>
       __device__ Element::Element GetElementBy(T k)
@@ -89,7 +92,43 @@ namespace Composition
       }
 
       __device__ void defineByMoleFraction(Element::Element elms[], int elmsLen, double moleFracs[], int moleFracsLen);
-
+      __device__ void setOptimalRepresentation(Representation opt);
+      __device__ void defineByMaterialFraction(Composition compositions[], int compLen, double matFracs[], int matFracsLen);
+      __device__ void removeElement(Element::Element el);
+      __device__ bool containsElement(Element::Element el);
+      __device__ bool containsAll(LinkedList::Node<Element::Element>* elms);
+      __device__ double atomicPercent(Element::Element elm);
+      __device__ double stoichiometry(Element::Element elm);
+      __device__ UncertainValue2::UncertainValue2 weightAvgAtomicNumberU();
+      __device__ double weightAvgAtomicNumber();
+      __device__ double sumWeightFraction();
+      __device__ UncertainValue2::UncertainValue2 sumWeightFractionU();
+      //__device__ String::String toString();
+      //__device__ String::String stoichiometryString();
+      //__device__ String::String weightPercentString(bool normalize);
+      //__device__ String::String descriptiveString(bool normalize);
+      __device__ Element::Element getNthElementByWeight(int n);
+      __device__ Element::Element getNthElementByAtomicFraction(int n);
+      __device__ void setName(String::String name);
+      __device__ String::String getName();
+      __device__ int compareTo(Composition comp);
+      __device__ Composition asComposition();
+      __device__ Composition clone();
+      __device__ UncertainValue2::UncertainValue2 differenceU(Composition comp);
+      __device__ double difference(Composition comp);
+      __device__ Representation getOptimalRepresentation();
+      //__device__ int hashCode();
+      __device__ bool equals(Composition other);
+      __device__ bool almostEquals(Composition other, double tol);
+      __device__ LinkedListKV::Node<Element::Element, double>* absoluteError(Composition std, bool normalize);
+      __device__ LinkedListKV::Node<Element::Element, double>* relativeError(Composition std, bool normalize);
+      __device__ bool isUncertain();
+      __device__ UncertainValue2::UncertainValue2 meanAtomicNumberU();
+      __device__ double meanAtomicNumber();
+      __device__ void forceNormalization();
+      __device__ Composition randomize(double offset, double proportional);
+      __device__ long indexHashCodeS();
+      __device__ long indexHashCodeL();
 
    private:
       __device__ Composition readResolve();
@@ -115,7 +154,7 @@ namespace Composition
 
    __device__ Composition positiveDefinite(Composition comp);
    __device__ UncertainValue2::UncertainValue2 normalize(UncertainValue2::UncertainValue2 val, UncertainValue2::UncertainValue2 norm, bool positive);
-
-
+   __device__ Composition parseGlass(char str[], int numlines);
+   void createProjectors(long seed);
 }
 #endif

@@ -122,10 +122,10 @@ namespace LinkedList
    }
 
    template<typename T>
-   __host__ __device__ bool Exists(Node<T>* head, T target, bool (*KeyCmp)(T, T))
+   __host__ __device__ bool Exists(Node<T>* head, T target, bool (*cmp)(T, T))
    {
       while (head != NULL) {
-         if (KeyCmp(head->GetValue(), target)) {
+         if (cmp(head->GetValue(), target)) {
             return true;
          }
          head = head->GetNext();
@@ -142,6 +142,33 @@ namespace LinkedList
          c++;
       }
       return c;
+   }
+
+   template<typename T>
+   __host__ __device__ void AddAllAsSet(Node<T>** res, Node<T>* other, bool(*cmp)(T, T))
+   {
+      while (other != NULL) {
+         Node<T>* resHead = *res;
+         bool found = false;
+         while (resHead != NULL) {
+            if (cmp(resHead->GetValue(), other->GetValue())) {
+               found = true;
+               break;
+            }
+            resHead = resHead->GetNext();
+         }
+         if (!found) {
+            InsertHead(res, other->GetValue());
+         }
+         other = other->GetNext();
+      }
+   }
+
+   template<typename T>
+   __host__ __device__ void BuildList(Node<T>** res, T list[], int len) {
+      for (int k = 0; k < len; ++k) {
+         InsertHead(res, list[k]);
+      }
    }
 }
 
@@ -292,7 +319,8 @@ namespace LinkedListKV
    template<typename KeyT, typename ValueT>
    __host__ __device__ bool ContainsKey(Node<KeyT, ValueT>* head, KeyT k, bool(*equalKeys)(KeyT, KeyT))
    {
-      return !(GetValue(head, k, equalKeys) == NULL);
+      auto r = GetValue(head, k, equalKeys);
+      return !(*((int*)&r) == NULL);
    }
 
    template<typename KeyT, typename ValueT>

@@ -456,15 +456,15 @@ namespace UncertainValue2
       return fabs(uncertainty() / mValue);
    }
    
-   __device__ bool UncertainValue2::equals(UncertainValue2* other)
+   __device__ bool UncertainValue2::equals(UncertainValue2 other)
    {
-      if (other == NULL) {
+      if (*((int*)&other) == NULL) {
          return false;
       }
-      if (this == other) {
+      if (this == &other) {
          return true;
       }
-      return LinkedListKV::AreEquivalentSets<String::String, double>(mSigmas, other->getComponents(), String::AreEqual, [](double a, double b) { return a == b; }) && (mValue == other->doubleValue());
+      return LinkedListKV::AreEquivalentSets<String::String, double>(mSigmas, other.getComponents(), String::AreEqual, [](double a, double b) { return a == b; }) && (mValue == other.doubleValue());
    }
    
    __device__ int UncertainValue2::compareTo(UncertainValue2 o)
@@ -636,5 +636,10 @@ namespace UncertainValue2
       POSITIVE_INFINITY.assignInitialValue(CUDART_INF);
       NEGATIVE_INFINITY.assignInitialValue(-CUDART_INF);
       ZERO.assignInitialValue(0.0);
+   }
+
+   __device__ bool AreEqual(UncertainValue2 a, UncertainValue2 b)
+   {
+      return a.equals(b);
    }
 }

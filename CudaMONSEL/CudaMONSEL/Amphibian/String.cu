@@ -26,12 +26,34 @@ namespace String
 
    __host__ __device__ bool String::operator==(String a)
    {
-      return AreEqual(a, *this);
+      int idx = 0;
+      while (true) {
+         if (str[idx] == NULL && a.str[idx] == NULL) {
+            return true;
+         }
+         if (str[idx] == NULL || a.str[idx] == NULL) {
+            return false;
+         }
+         if (str[idx] != a.str[idx]) {
+            return false;
+         }
+         ++idx;
+      }
+      return true;
    }
 
    __host__ __device__ char* String::Get()
    {
       return str;
+   }
+
+   __host__ __device__ int String::Length()
+   {
+      int c = 0;
+      while (str[c] != NULL) {
+         ++c;
+      }
+      return c;
    }
 
    __host__ __device__ void String::Copy(char const * s)
@@ -59,8 +81,9 @@ namespace String
 
       int idx = 0;
       if (n < 0) {
-         d[0] = '-';
+         d[idx] = '-';
          idx = 1;
+         n *= -1;
       }
 
       do {
@@ -75,18 +98,27 @@ namespace String
          printf("array too small to contain the entire integer\n");
       }
       
-      for (int k = 0; k < idx / 2; ++k) {
-         int lastIdx = (idx - 1) - k;
-         char a = d[lastIdx];
-         d[lastIdx] = d[k];
-         d[k] = a;
+      if (d[0] != '-') {
+         for (int k = 0; k < idx / 2; ++k) {
+            int lastIdx = (idx - 1) - k;
+            char a = d[lastIdx];
+            d[lastIdx] = d[k];
+            d[k] = a;
+         }
+      }
+      else {
+         for (int k = 1; k < idx / 2 + 1; ++k) {
+            int lastIdx = idx - k;
+            char a = d[lastIdx];
+            d[lastIdx] = d[k];
+            d[k] = a;
+         }
       }
       d[idx] = NULL;
    }
 
    __host__ __device__ int AToI(char* d)
    {
-      static const int MAX_SIGNED_INTEGER = 2147483648;
       int mult = 1;
       int idx = 0;
       if (d[0] == '-') {
@@ -115,21 +147,23 @@ namespace String
 
    __host__ __device__ bool AreEqual(String a, String b)
    {
-      char* aStr = a.Get();
-      char* bStr = b.Get();
-      int idx = 0;
+      return a == b;
+   }
+
+   __host__ __device__ bool StartsWith(char* src, char* target)
+   {
+      int c = 0;
       while (true) {
-         if (aStr[idx] == NULL && bStr[idx] == NULL) {
+         if (target[c] == NULL) {
             return true;
          }
-         if (aStr[idx] == NULL || bStr[idx] == NULL) {
+         if (src[c] == NULL) {
             return false;
          }
-         if (aStr[idx] != bStr[idx]) {
+         if (src[c] != target[c]) {
             return false;
          }
-         ++idx;
+         ++c;
       }
-      return true;
    }
 }

@@ -8,6 +8,9 @@
 
 namespace String
 {
+
+   __device__ const int MAX_SIGNED_INTEGER = 2147483648;
+
    class String
    {
    public:
@@ -19,6 +22,7 @@ namespace String
       __host__ __device__ bool operator==(String);
 
       __host__ __device__ char* Get();
+      __host__ __device__ int Length();
 
    private:
       static const int MAX_LEN = sizeof(char) * 31;
@@ -30,9 +34,45 @@ namespace String
 
    __host__ __device__ void IToA(char*, int, int maxArrayLen = 11 /* integer limit */);
    __host__ __device__ int AToI(char*);
+   //__host__ __device__ float AToF(char*);
+   //__host__ __device__ double AToD(char*);
+   template<typename T>
+   __host__ __device__ T AToF(char* d)
+   {
+      int mult = 1;
+      int idx = 0;
+      if (d[0] == '-') {
+         mult *= -1;
+         idx = 1;
+      }
+
+      T res = 0;
+      T decDivs = 10;
+      bool foundDec = false;
+      do {
+         char di = d[idx];
+         if (di == '.') {
+            foundDec = true;
+         }
+         else if (di >= '0' || di <= '9') {
+            int n = di - '0';
+            if (foundDec) {
+               res = res + n / decDivs;
+               decDivs *= 10;
+            }
+            else {
+               res = res * 10 + n;
+            }
+         }
+         ++idx;
+      } while (d[idx] != NULL);
+
+      return res*mult;
+   }
 
    typedef bool(*pStrCmp)(String, String);
    __host__ __device__ bool AreEqual(String, String);
+   __host__ __device__ bool StartsWith(char* src, char* target);
 
    //__host__ __device__ static void Concatenate(String, String);
 }

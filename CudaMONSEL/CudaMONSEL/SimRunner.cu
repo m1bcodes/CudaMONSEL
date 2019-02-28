@@ -6,9 +6,8 @@
 //#include "gov/nist/microanalysis/NISTMonte/Electron.cu"
 //#include "gov/nist/microanalysis/Utility/CSVReader.h"
 #include "gov\nist\microanalysis\EPQLibrary\Element.cuh"
+#include "gov\nist\microanalysis\EPQLibrary\Composition.cuh"
 #include "gov\nist\microanalysis\Utility\UncertainValue2.cuh"
-#include "gov\nist\microanalysis\EPQTests\UncertainValue2Test.cuh"
-#include "gov\nist\microanalysis\EPQTests\ElementTest.cuh"
 
 #include "Amphibian\String.cuh"
 #include "Amphibian\LinkedList.cuh"
@@ -16,6 +15,11 @@
 #include "CudaUtil.h"
 #include "ImageUtil.h"
 #include "TimeUtil.h"
+
+#include "gov\nist\microanalysis\EPQTests\UncertainValue2Test.cuh"
+#include "gov\nist\microanalysis\EPQTests\ElementTest.cuh"
+#include "Amphibian\Tests\LinkedListTest.cuh"
+#include "Amphibian\Tests\StringTest.cuh"
 
 __global__ void spawnElectron(int *d_arr, int idx_x, int idx_y, int size_x, int size_y)
 {
@@ -75,7 +79,7 @@ void PrintArray2D(int *h_arr, int img_x, int img_y)
 //   return 0;
 //}
 
-__global__ void kernel()
+__global__ void TestKernel()
 {
    //UncertainValue2::UncertainValue2 v0(0, "abc", 5);
    //UncertainValue2::UncertainValue2 v1(1);
@@ -83,29 +87,38 @@ __global__ void kernel()
    //UncertainValue2::UncertainValue2 v3(2, 10);
    //printf("%d\n", v1.equals(&v2));
 
-   UncertainValue2Test::UncertainValue2Test uvTest;
-   uvTest.testA();
-   uvTest.testB();
-   uvTest.testC();
-   uvTest.testAB();
-   uvTest.testAdd1();
-   uvTest.testAdd2();
-   uvTest.testAdd3();
-   uvTest.testMultiply();
-   uvTest.testDivide();
-   uvTest.testFunctions();
+   //UncertainValue2Test::UncertainValue2Test uvTest;
+   //uvTest.testA();
+   //uvTest.testB();
+   //uvTest.testC();
+   //uvTest.testAB();
+   //uvTest.testAdd1();
+   //uvTest.testAdd2();
+   //uvTest.testAdd3();
+   //uvTest.testMultiply();
+   //uvTest.testDivide();
+   //uvTest.testFunctions();
 
-   ElementTest::ElementTest elementTest;
-   elementTest.testOne();
+   //ElementTest::ElementTest elementTest;
+   //elementTest.testOne();
+
+   //LinkedListTest::LinkedListTest lltest;
+   //lltest.TestAddAllAsSet();
+
+   //StringTest::AtoITest();
+   //StringTest::ItoATest();
+   //StringTest::AtoFTest();
 }
 
 int main()
 {
-
    Element::readAtomicWeights();
    Element::readIonizationEnergy();
    Element::InitializeElements();
-   kernel << <1, 1 >> >();
+
+   Composition::createProjectors(2762689630628022905L);
+
+   TestKernel << <1, 1 >> >();
    checkCudaErrors(cudaDeviceSynchronize());
    checkCudaErrors(cudaGetLastError());
 
