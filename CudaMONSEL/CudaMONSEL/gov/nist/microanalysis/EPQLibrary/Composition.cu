@@ -1019,8 +1019,8 @@ namespace Composition
          LinkedList::InsertHead(&eval, tmp);
       }
       LinkedList::RemoveAll(&eval);
-
       checkCudaErrors(cudaMemcpyToSymbol(PROJECTORS, &hPROJECTORS, sizeof(long) * 100));
+      delete[] hPROJECTORS;
    }
 
    __device__ long Composition::indexHashCodeS()

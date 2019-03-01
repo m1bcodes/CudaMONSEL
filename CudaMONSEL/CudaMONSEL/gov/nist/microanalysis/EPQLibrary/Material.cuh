@@ -13,7 +13,7 @@ namespace Material
    public:
       __device__ Material(double density);
       __device__ Material(Composition comp, double density);
-      __device__ Material(Element::Element elm, double density);
+      __device__ Material(Element::Element elm[], double density[]);
 
       __device__ void setDensity(double den);
       __device__ double getDensity();

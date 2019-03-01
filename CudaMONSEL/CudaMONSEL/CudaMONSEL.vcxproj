@@ -30,6 +30,7 @@
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\PhysicalConstants.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\ToSI.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQTests\ElementTest.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\EPQTests\MaterialTest.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQTests\UncertainValue2Test.cu" />
     <CudaCompile Include="gov\nist\microanalysis\NISTMonte\Electron.cu" />
     <CudaCompile Include="gov\nist\microanalysis\NISTMonte\MonteCarloSS.cu" />
@@ -50,6 +51,7 @@
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\PhysicalConstants.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\ToSI.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQTests\ElementTest.cuh" />
+    <ClInclude Include="gov\nist\microanalysis\EPQTests\MaterialTest.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQTests\UncertainValue2Test.cuh" />
     <ClInclude Include="gov\nist\microanalysis\NISTMonte\IMaterialScatterModel.h" />
     <ClInclude Include="gov\nist\microanalysis\Utility\CSVReader.h" />

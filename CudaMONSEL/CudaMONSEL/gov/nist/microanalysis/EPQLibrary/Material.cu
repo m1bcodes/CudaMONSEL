@@ -26,9 +26,9 @@ namespace Material
       Composition::replicate(comp);
    }
 
-   __device__ Material::Material(Element::Element elm, double density) : Composition(new Element::Element { elm }, 1, new double { 1.0 }, 1, (char *)elm.toString())
+   __device__ Material::Material(Element::Element elm[], double density[]) : Composition(elm, 1, density, 1, (char *)elm[0].toString())
    {
-      mDensity = density;
+      mDensity = density[0];
       renormalize();
    }
 
