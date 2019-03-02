@@ -20,6 +20,7 @@ namespace Composition
    {
    public:
       __device__ Composition();
+      __device__ ~Composition();
       __device__ Composition(const Composition& comp);
       __device__ Composition(Element::Element elms[], int elmsLen, double massFracs[], int massFracsLen);
       __device__ Composition(Element::Element elm);
@@ -118,7 +119,7 @@ namespace Composition
       __device__ double difference(Composition comp);
       __device__ Representation getOptimalRepresentation();
       //__device__ int hashCode();
-      __device__ bool equals(Composition other);
+      __device__ bool equals(Composition& other);
       __device__ bool almostEquals(Composition other, double tol);
       __device__ LinkedListKV::Node<Element::Element, double>* absoluteError(Composition std, bool normalize);
       __device__ LinkedListKV::Node<Element::Element, double>* relativeError(Composition std, bool normalize);
@@ -138,11 +139,11 @@ namespace Composition
       LinkedListKV::Node<Element::Element, UncertainValue2::UncertainValue2>* mConstituents = NULL;
       LinkedListKV::Node<Element::Element, UncertainValue2::UncertainValue2>* mConstituentsAtomic = NULL;
 
-      UncertainValue2::UncertainValue2 mNormalization = UncertainValue2::ONE;
-      UncertainValue2::UncertainValue2 mAtomicNormalization = UncertainValue2::ONE;
+      UncertainValue2::UncertainValue2 mNormalization = UncertainValue2::ONE();
+      UncertainValue2::UncertainValue2 mAtomicNormalization = UncertainValue2::ONE();
       String::String mName;
       Representation mOptimalRepresentation = Representation::UNDETERMINED;
-      UncertainValue2::UncertainValue2 mMoleNorm = UncertainValue2::NaN;
+      UncertainValue2::UncertainValue2 mMoleNorm = UncertainValue2::NaN();
 
    protected:
       __device__ void renormalize();

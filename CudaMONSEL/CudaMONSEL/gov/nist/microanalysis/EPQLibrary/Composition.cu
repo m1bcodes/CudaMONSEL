@@ -17,7 +17,7 @@ namespace Composition
    __device__ void Composition::renormalize()
    {
       if (mConstituents != NULL) {
-         mNormalization = UncertainValue2::ZERO;
+         mNormalization = UncertainValue2::ZERO();
          auto constituentHead = mConstituents;
          while (constituentHead != NULL) {
             auto uv = constituentHead->GetValue();
@@ -27,7 +27,7 @@ namespace Composition
             constituentHead = constituentHead->GetNext();
          }
 
-         mAtomicNormalization = UncertainValue2::ZERO;
+         mAtomicNormalization = UncertainValue2::ZERO();
          auto constituentsAtomicHead = mConstituentsAtomic;
          while (constituentHead != NULL) {
             auto uv = constituentsAtomicHead->GetValue();
@@ -38,16 +38,22 @@ namespace Composition
          }
       }
       else {
-         mNormalization = UncertainValue2::ONE;
-         mAtomicNormalization = UncertainValue2::ONE;
+         mNormalization = UncertainValue2::ONE();
+         mAtomicNormalization = UncertainValue2::ONE();
       }
-      mMoleNorm = UncertainValue2::NaN;
+      mMoleNorm = UncertainValue2::NaN();
    }
 
    __device__ Composition::Composition()
    {
       mHashCode = CUDART_INF_F;
       renormalize();
+   }
+
+   __device__ Composition::~Composition()
+   {
+      LinkedListKV::RemoveAll(&mConstituents);
+      LinkedListKV::RemoveAll(&mConstituentsAtomic);
    }
 
    __device__ Composition::Composition(const Composition& comp)
@@ -69,7 +75,7 @@ namespace Composition
 
    __device__ Composition::Composition(Element::Element elm)
    {
-      LinkedListKV::InsertHead(&mConstituents, elm, UncertainValue2::ONE);
+      LinkedListKV::InsertHead(&mConstituents, elm, UncertainValue2::ONE());
       recomputeStoiciometry();
       renormalize();
    }
@@ -182,9 +188,10 @@ namespace Composition
 
    __device__ void Composition::recomputeStoiciometry()
    {
-      mMoleNorm = UncertainValue2::ZERO;
+      mMoleNorm = UncertainValue2::ZERO();
       auto constituentsHead = mConstituents;
       while (constituentsHead != NULL) {
+         printf("??\n");
          mMoleNorm = UncertainValue2::add(mMoleNorm, UncertainValue2::multiply(1.0 / constituentsHead->GetKey().getAtomicWeight(), constituentsHead->GetValue()));
          constituentsHead = constituentsHead->GetNext();
       }
@@ -195,7 +202,7 @@ namespace Composition
       auto constituentsAtomicKeysHeadItr = constituentsAtomicKeysHead;
       while (constituentsAtomicKeysHeadItr != NULL) {
          auto elm = constituentsAtomicKeysHeadItr->GetValue();
-         UncertainValue2::UncertainValue2 moleFrac = (mMoleNorm.doubleValue() > 0.0 ? UncertainValue2::divide(LinkedListKV::GetValue<Element::Element, UncertainValue2::UncertainValue2>(mConstituents, elm, Element::AreEqual), UncertainValue2::multiply(elm.getAtomicWeight() / OUT_OF_THIS_MANY_ATOMS, mMoleNorm)) : UncertainValue2::ZERO);
+         UncertainValue2::UncertainValue2 moleFrac = (mMoleNorm.doubleValue() > 0.0 ? UncertainValue2::divide(LinkedListKV::GetValue<Element::Element, UncertainValue2::UncertainValue2>(mConstituents, elm, Element::AreEqual), UncertainValue2::multiply(elm.getAtomicWeight() / OUT_OF_THIS_MANY_ATOMS, mMoleNorm)) : UncertainValue2::ZERO());
          LinkedListKV::InsertHead<Element::Element, UncertainValue2::UncertainValue2>(&mConstituentsAtomic, elm, moleFrac);
          constituentsAtomicKeysHeadItr = constituentsAtomicKeysHeadItr->GetNext();
       }
@@ -218,7 +225,7 @@ namespace Composition
    __device__ UncertainValue2::UncertainValue2 Composition::weightFractionU(Element::Element elm, bool normalized, bool positiveOnly)
    {
       UncertainValue2::UncertainValue2 d = LinkedListKV::GetValue<Element::Element, UncertainValue2::UncertainValue2>(mConstituents, elm, Element::AreEqual);
-      return *((int*)&d) != NULL ? (normalized ? normalize(d, mNormalization, positiveOnly) : d) : UncertainValue2::ZERO;
+      return *((int*)&d) != NULL ? (normalized ? normalize(d, mNormalization, positiveOnly) : d) : UncertainValue2::ZERO();
    }
 
    __device__ Composition positiveDefinite(Composition comp)
@@ -251,9 +258,9 @@ namespace Composition
    {
       LinkedListKV::RemoveAll(&mConstituents);
       LinkedListKV::RemoveAll(&mConstituentsAtomic);
-      mNormalization = UncertainValue2::ONE;
-      mAtomicNormalization = UncertainValue2::ONE;
-      mMoleNorm = UncertainValue2::NaN;
+      mNormalization = UncertainValue2::ONE();
+      mAtomicNormalization = UncertainValue2::ONE();
+      mMoleNorm = UncertainValue2::NaN();
    }
 
    __device__ void Composition::defineByWeightFraction(Element::Element elms[], int elmsLen, double wgtFracs[], int wgtFracsLen)
@@ -309,12 +316,12 @@ namespace Composition
    __device__ UncertainValue2::UncertainValue2 Composition::atomicPercentU(Element::Element elm, bool positiveOnly)
    {
       UncertainValue2::UncertainValue2 o = LinkedListKV::GetValue<Element::Element, UncertainValue2::UncertainValue2>(mConstituentsAtomic, elm, Element::AreEqual);
-      return *((int*)&o) != NULL ? normalize(o, mAtomicNormalization, positiveOnly) : UncertainValue2::ZERO;
+      return *((int*)&o) != NULL ? normalize(o, mAtomicNormalization, positiveOnly) : UncertainValue2::ZERO();
    }
 
    __device__ void Composition::recomputeWeightFractions()
    {
-      UncertainValue2::UncertainValue2 totalWgt = UncertainValue2::ZERO;
+      UncertainValue2::UncertainValue2 totalWgt = UncertainValue2::ZERO();
       LinkedList::Node<Element::Element>* constituentsAtomicKeysHead, * constituentsAtomicKeysHead1, * constituentsAtomicKeysHead2;
       AdvancedLinkedList::AddAllKeys(&constituentsAtomicKeysHead, mConstituentsAtomic, Element::AreEqual);
       constituentsAtomicKeysHead1 = constituentsAtomicKeysHead;
@@ -323,7 +330,7 @@ namespace Composition
          totalWgt = UncertainValue2::add(totalWgt, UncertainValue2::multiply(elm.getAtomicWeight(), atomicPercentU(elm)));
          constituentsAtomicKeysHead1 = constituentsAtomicKeysHead1->GetNext();
       }
-         
+
       LinkedListKV::RemoveAll<Element::Element, UncertainValue2::UncertainValue2>(&mConstituents);
       constituentsAtomicKeysHead2 = constituentsAtomicKeysHead;
       while (constituentsAtomicKeysHead2 != NULL) {
@@ -387,7 +394,7 @@ namespace Composition
       auto elmsItr = elms;
       while (elmsItr != NULL) {
          auto el = elmsItr->GetValue();
-         UncertainValue2::UncertainValue2 sum = UncertainValue2::ZERO;
+         UncertainValue2::UncertainValue2 sum = UncertainValue2::ZERO();
          for (int i = 0; i < compLen; ++i) {
             sum = UncertainValue2::add(sum, UncertainValue2::multiply(matFracs[i], compositions[i].weightFractionU(el, true)));
          }
@@ -438,7 +445,7 @@ namespace Composition
    __device__ UncertainValue2::UncertainValue2 Composition::stoichiometryU(Element::Element elm)
    {
       UncertainValue2::UncertainValue2 o = LinkedListKV::GetValue(mConstituentsAtomic, elm, Element::AreEqual);
-      return *((int*)&o) != NULL ? o : UncertainValue2::ZERO;
+      return *((int*)&o) != NULL ? o : UncertainValue2::ZERO();
    }
 
    __device__ double Composition::stoichiometry(Element::Element elm)
@@ -458,7 +465,7 @@ namespace Composition
 
    __device__ UncertainValue2::UncertainValue2 Composition::weightAvgAtomicNumberU()
    {
-      UncertainValue2::UncertainValue2 res = UncertainValue2::ZERO;
+      UncertainValue2::UncertainValue2 res = UncertainValue2::ZERO();
       auto constituentsItr = mConstituents;
       while (constituentsItr != NULL) {
          Element::Element elm = constituentsItr->GetKey();
@@ -489,7 +496,7 @@ namespace Composition
 
    __device__ UncertainValue2::UncertainValue2 Composition::sumWeightFractionU()
    {
-      UncertainValue2::UncertainValue2 res = UncertainValue2::ZERO;
+      UncertainValue2::UncertainValue2 res = UncertainValue2::ZERO();
       auto constituentsItr = mConstituents;
       while (constituentsItr != NULL) {
          auto val = constituentsItr->GetValue();
@@ -620,10 +627,10 @@ namespace Composition
       mName = name;
    }
 
-   //String::String Composition::getName()
-   //{
-   //   return toString();
-   //}
+   __device__ String::String Composition::getName()
+   {
+      return mName;
+   }
 
    __device__ int Composition::compareTo(Composition comp)
    {
@@ -678,7 +685,7 @@ namespace Composition
    __device__ UncertainValue2::UncertainValue2 Composition::differenceU(Composition comp)
    {
       // assert (comp.getElementCount() == this.getElementCount());
-      UncertainValue2::UncertainValue2 delta = UncertainValue2::ZERO;
+      UncertainValue2::UncertainValue2 delta = UncertainValue2::ZERO();
       LinkedList::Node<Element::Element>* allElms = NULL;
       LinkedList::AddAllAsSet(&allElms, getElementSet(), Element::AreEqual);
       LinkedList::AddAllAsSet(&allElms, comp.getElementSet(), Element::AreEqual);
@@ -720,7 +727,7 @@ namespace Composition
    //   return mHashCode;
    //}
 
-   __device__ bool Composition::equals(Composition obj)
+   __device__ bool Composition::equals(Composition& obj)
    {
       if (this == &obj) {
          return true;
@@ -741,7 +748,7 @@ namespace Composition
       if (!mNormalization.equals(obj.mNormalization)) {
          return false;
       }
-      if (!mOptimalRepresentation == obj.mOptimalRepresentation) {
+      if (!(mOptimalRepresentation == obj.mOptimalRepresentation)) {
          return false;
       }
       return true;
@@ -855,7 +862,7 @@ namespace Composition
 
    __device__ UncertainValue2::UncertainValue2 Composition::meanAtomicNumberU()
    {
-      UncertainValue2::UncertainValue2 res = UncertainValue2::ZERO;
+      UncertainValue2::UncertainValue2 res = UncertainValue2::ZERO();
       auto i = getElementSet();
       while (i != NULL) {
          auto elm = i->GetValue();
@@ -883,7 +890,7 @@ namespace Composition
       LinkedListKV::Node<Element::Element, UncertainValue2::UncertainValue2>* newConst = NULL;
       auto i = mConstituents;
       while (i != NULL) {
-         LinkedListKV::InsertHead(&newConst, i->GetKey(), norm.doubleValue() > 0.0 ? UncertainValue2::divide(i->GetValue(), norm) : UncertainValue2::ZERO);
+         LinkedListKV::InsertHead(&newConst, i->GetKey(), norm.doubleValue() > 0.0 ? UncertainValue2::divide(i->GetValue(), norm) : UncertainValue2::ZERO());
          i = i->GetNext();
       }
       LinkedListKV::RemoveAll(&mConstituents);

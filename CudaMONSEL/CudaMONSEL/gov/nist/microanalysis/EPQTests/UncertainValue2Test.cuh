@@ -9,6 +9,7 @@ namespace UncertainValue2Test
    {
    public:
       __device__ UncertainValue2Test();
+      __device__ void testSpecialValues();
       __device__ void testA();
       __device__ void testB();
       __device__ void testC();

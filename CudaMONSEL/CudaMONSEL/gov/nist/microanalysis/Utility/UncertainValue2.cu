@@ -18,14 +18,38 @@ namespace UncertainValue2
    __device__ const long long serialVersionUID = 119495064970078787L;
    __device__ const int MAX_LEN = 11;
 
-   __device__ UncertainValue2 ONE;
-   __device__ UncertainValue2 NaN;
-   __device__ UncertainValue2 POSITIVE_INFINITY;
-   __device__ UncertainValue2 NEGATIVE_INFINITY;
-   __device__ UncertainValue2 ZERO;
-
    __device__ UncertainValue2::UncertainValue2()
    {
+   }
+
+   __device__ UncertainValue2::~UncertainValue2()
+   {
+      LinkedListKV::RemoveAll(&mSigmas);
+   }
+
+   __device__ UncertainValue2 ONE()
+   {
+      return UncertainValue2(1.0);
+   }
+
+   __device__ UncertainValue2 NaN()
+   {
+      return UncertainValue2(CUDART_NAN);
+   }
+
+   __device__ UncertainValue2 POSITIVE_INFINITY()
+   {
+      return UncertainValue2(CUDART_INF);
+   }
+
+   __device__ UncertainValue2 NEGATIVE_INFINITY()
+   {
+      return UncertainValue2(-CUDART_INF);
+   }
+
+   __device__ UncertainValue2 ZERO()
+   {
+      return UncertainValue2(0.0);
    }
 
    __device__ UncertainValue2::UncertainValue2(double v, double dv) : mValue(v), mSigmas(NULL)
@@ -272,6 +296,7 @@ namespace UncertainValue2
       AdvancedLinkedList::AddAllKeys(&srcsHead, v1.getComponents(), String::AreEqual);
       AdvancedLinkedList::AddAllKeys(&srcsHead, v2.getComponents(), String::AreEqual);
       srcs = srcsHead;
+
       while (srcs != NULL) {
          auto src = srcs->GetValue();
          //printf("%s: ", src.Get());
@@ -629,14 +654,14 @@ namespace UncertainValue2
       }
    }
 
-   __device__ void InitializeSpecialUncertainValues()
-   {
-      ONE.assignInitialValue(1.0);
-      NaN.assignInitialValue(CUDART_NAN);
-      POSITIVE_INFINITY.assignInitialValue(CUDART_INF);
-      NEGATIVE_INFINITY.assignInitialValue(-CUDART_INF);
-      ZERO.assignInitialValue(0.0);
-   }
+   //__device__ void InitializeSpecialUncertainValues()
+   //{
+   //   ONE.assignInitialValue(1.0);
+   //   NaN.assignInitialValue(CUDART_NAN);
+   //   POSITIVE_INFINITY.assignInitialValue(CUDART_INF);
+   //   NEGATIVE_INFINITY.assignInitialValue(-CUDART_INF);
+   //   ZERO.assignInitialValue(0.0);
+   //}
 
    __device__ bool AreEqual(UncertainValue2 a, UncertainValue2 b)
    {

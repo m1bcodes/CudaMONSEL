@@ -34,8 +34,9 @@ namespace Material
 
    __device__ void Material::setDensity(double den)
    {
-      if (mDensity != den)
+      if (mDensity != den) {
          mDensity = den;
+      }
    }
 
    __device__ double Material::getDensity()

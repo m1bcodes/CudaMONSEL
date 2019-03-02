@@ -15,6 +15,7 @@ namespace LinkedListTest
    {
    public:
       __device__ LinkedListTest();
+      __device__ void InsertionTest();
       __device__ void TestAddAllAsSet();
    };
 }

@@ -5,6 +5,7 @@
 #include "gov/nist/microanalysis/NISTMonte/MonteCarloSS.cu"
 //#include "gov/nist/microanalysis/NISTMonte/Electron.cu"
 //#include "gov/nist/microanalysis/Utility/CSVReader.h"
+#include "gov\nist\microanalysis\EPQLibrary\Material.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\Element.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\Composition.cuh"
 #include "gov\nist\microanalysis\Utility\UncertainValue2.cuh"
@@ -16,10 +17,11 @@
 #include "ImageUtil.h"
 #include "TimeUtil.h"
 
+#include "Amphibian\Tests\StringTest.cuh"
+#include "Amphibian\Tests\LinkedListTest.cuh"
 #include "gov\nist\microanalysis\EPQTests\UncertainValue2Test.cuh"
 #include "gov\nist\microanalysis\EPQTests\ElementTest.cuh"
-#include "Amphibian\Tests\LinkedListTest.cuh"
-#include "Amphibian\Tests\StringTest.cuh"
+#include "gov\nist\microanalysis\EPQTests\MaterialTest.cuh"
 
 __global__ void spawnElectron(int *d_arr, int idx_x, int idx_y, int size_x, int size_y)
 {
@@ -87,11 +89,12 @@ __global__ void TestKernel()
    //UncertainValue2::UncertainValue2 v3(2, 10);
    //printf("%d\n", v1.equals(&v2));
 
-   //UncertainValue2Test::UncertainValue2Test uvTest;
-   //uvTest.testA();
-   //uvTest.testB();
-   //uvTest.testC();
-   //uvTest.testAB();
+   UncertainValue2Test::UncertainValue2Test uvTest;
+   uvTest.testSpecialValues();
+   uvTest.testA();
+   uvTest.testB();
+   uvTest.testC();
+   uvTest.testAB();
    //uvTest.testAdd1();
    //uvTest.testAdd2();
    //uvTest.testAdd3();
@@ -108,6 +111,9 @@ __global__ void TestKernel()
    //StringTest::AtoITest();
    //StringTest::ItoATest();
    //StringTest::AtoFTest();
+
+   //MaterialTest::MaterialTest mat;
+   //mat.testOne();
 }
 
 int main()
@@ -118,9 +124,9 @@ int main()
 
    Composition::createProjectors(2762689630628022905L);
 
-   TestKernel << <1, 1 >> >();
-   checkCudaErrors(cudaDeviceSynchronize());
+   TestKernel<<<1, 1>>>();
    checkCudaErrors(cudaGetLastError());
+   checkCudaErrors(cudaDeviceSynchronize());
 
    return 0;
 }

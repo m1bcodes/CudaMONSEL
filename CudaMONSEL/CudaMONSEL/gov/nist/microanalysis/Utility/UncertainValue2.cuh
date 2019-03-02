@@ -37,6 +37,7 @@ namespace UncertainValue2
    {
    public:
       __device__ UncertainValue2();
+      __device__ ~UncertainValue2();
       __device__ UncertainValue2(double v, char source[], double dv);
       __device__ UncertainValue2(double v);
       __device__ UncertainValue2(double v, double dv);
@@ -81,17 +82,17 @@ namespace UncertainValue2
    extern __device__ const char DEFAULT[8];
    extern __device__ int sDefIndex; // transient
 
-   extern __device__ UncertainValue2 ONE;
-   extern __device__ UncertainValue2 NaN;
-   extern __device__ UncertainValue2 POSITIVE_INFINITY;
-   extern __device__ UncertainValue2 NEGATIVE_INFINITY;
-   extern __device__ UncertainValue2 ZERO;
+   __device__ UncertainValue2 ONE();
+   __device__ UncertainValue2 NaN();
+   __device__ UncertainValue2 POSITIVE_INFINITY();
+   __device__ UncertainValue2 NEGATIVE_INFINITY();
+   __device__ UncertainValue2 ZERO();
 
    extern __device__ const long long serialVersionUID;
    extern __device__ const int MAX_LEN;
 
    __device__ UncertainValue2 add(LinkedList::Node<UncertainValue2>* uvs);
-   //__device__ UncertainValue2 add(UncertainValue2*, int);
+   __device__ UncertainValue2 add(UncertainValue2*, int);
    __device__ UncertainValue2 add(double a, UncertainValue2 uva, double b, UncertainValue2 uvb);
    __device__ UncertainValue2 subtract(UncertainValue2 uva, UncertainValue2 uvb);
    __device__ UncertainValue2 mean(LinkedList::Node<UncertainValue2>* uvs);
@@ -118,7 +119,7 @@ namespace UncertainValue2
    __device__ UncertainValue2 atan2(UncertainValue2 y, UncertainValue2 x);
    __device__ UncertainValue2 positiveDefinite(UncertainValue2 uv);
 
-   __device__ void InitializeSpecialUncertainValues();
+   //__device__ void InitializeSpecialUncertainValues();
    __device__ bool AreEqual(UncertainValue2, UncertainValue2);
 }
 
