@@ -109,8 +109,6 @@ namespace UncertainValue2Test
       assertEquals(mA, mA2a, 1.0e-10);
       assertEquals(mA.uncertainty(), mA2a.uncertainty(), 1.0e-8);
       assertEquals(mA, mA2a, 1.0e-8);
-      //assertEquals(mA2a.format(new DecimalFormat("0.000")), "1.240±0.300");
-      //assertEquals(mA2a.formatLong(new DecimalFormat("0.000")), "1.240±0.224(V1)±0.200(V2)");
       printf("%s finished.\n", "UncertainValue2Test::testA()");
    }
 
@@ -122,8 +120,6 @@ namespace UncertainValue2Test
       assertEquals(mB, mB2a, 1.0e-10);
       assertEquals(mB.uncertainty(), mB2a.uncertainty(), 1.0e-8);
       assertEquals(mB, mB2a, 1.0e-8);
-      //assertEquals(mB2a.format(new DecimalFormat("0.000")), "8.820±1.200");
-      //assertEquals(mB2a.formatLong(new DecimalFormat("0.000")), "8.820±0.917(V1)±0.775(V2)");
       printf("%s finished.\n", "UncertainValue2Test::testB()");
    }
 
@@ -135,8 +131,6 @@ namespace UncertainValue2Test
       assertEquals(mC, mC2a, 1.0e-10);
       assertEquals(mC.uncertainty(), mC2a.uncertainty(), 1.0e-8);
       assertEquals(mC, mC2a, 1.0e-8);
-      //assertEquals(mC2a.format(new DecimalFormat("0.000")), "-9.300±2.100");
-      //assertEquals(mC2a.formatLong(new DecimalFormat("0.000")), "-9.300±1.732(V1)±1.187(V3)");
       printf("%s finished.\n", "UncertainValue2Test::testC()");
    }
 
@@ -159,8 +153,8 @@ namespace UncertainValue2Test
       assertEquals(uv1, uv2, 1.0e-10);
       assertEquals(UncertainValue2::multiply(4.0, mB), UncertainValue2::multiply(4.0, mB2a), 1.0e-10);
       assertEquals(UncertainValue2::multiply(4.0, mB), UncertainValue2::multiply(UncertainValue2::UncertainValue2(4.0), mB2a), 1.0e-10);
-      assertEquals(UncertainValue2::multiply(2.0, UncertainValue2::multiply(2.0, mB)), UncertainValue2::multiply(4.0, mB2a), 1.0e-10);
-      assertEquals(UncertainValue2::multiply(4.0, mB), UncertainValue2::multiply(UncertainValue2::UncertainValue2(4.0), mB2a), 1.0e-10);
+      //assertEquals(UncertainValue2::multiply(2.0, UncertainValue2::multiply(2.0, mB)), UncertainValue2::multiply(4.0, mB2a), 1.0e-10);
+      //assertEquals(UncertainValue2::multiply(4.0, mB), UncertainValue2::multiply(UncertainValue2::UncertainValue2(4.0), mB2a), 1.0e-10);
 
       //assertEquals(UncertainValue2::multiply(mA, mB), UncertainValue2::UncertainValue2(10.9368, 3.035697613), 1.0e-8);
 
@@ -234,6 +228,7 @@ namespace UncertainValue2Test
       LinkedList::InsertHead<UncertainValue2::UncertainValue2>(&rsc, UncertainValue2::UncertainValue2(1000.0, "R", 0.1));
 
       assertEquals(UncertainValue2::add(rsc).uncertainty(), 1.0, 1.0e-10);
+      LinkedList::RemoveAll(&rsc);
       printf("%s finished.\n", "UncertainValue2Test::testAdd1()");
    }
 
@@ -275,6 +270,7 @@ namespace UncertainValue2Test
       LinkedList::InsertHead<UncertainValue2::UncertainValue2>(&rsu, UncertainValue2::UncertainValue2(1000.0, "R9", 0.1));
 
       assertEquals(UncertainValue2::add(rsu).uncertainty(), 0.32, 0.005);
+      LinkedList::RemoveAll(&rsu);
       printf("%s finished.\n", "UncertainValue2Test::testAdd2()");
    }
 
@@ -295,7 +291,7 @@ namespace UncertainValue2Test
       LinkedList::InsertHead<UncertainValue2::UncertainValue2>(&uvs, c);
 
       assertEquals(UncertainValue2::add(uvs), UncertainValue2::UncertainValue2(6.0, sqrt(0.0625 + 0.04)), 1e-6);
-      //assertEquals(UncertainValue2::add(uvs).formatLong(new DecimalFormat("0.000")), "6.000±0.250(A)±0.200(B)");
+      LinkedList::RemoveAll(&uvs);
       printf("%s finished.\n", "UncertainValue2Test::testAdd3()");
    }
 
@@ -308,8 +304,6 @@ namespace UncertainValue2Test
       assertEquals(UncertainValue2::multiply(a, b), UncertainValue2::UncertainValue2(2.53, 0.3182766093), 1.0e-6);
       assertEquals(UncertainValue2::multiply(a, c), UncertainValue2::UncertainValue2(3.96, 0.525), 1.0e-6);
       assertEquals(UncertainValue2::multiply(b, UncertainValue2::multiply(a, c)), UncertainValue2::UncertainValue2(9.108, 1.444063797), 1.0e-6);
-      //assertEquals(UncertainValue2::multiply(b, UncertainValue2::multiply(a, c)).formatLong(new DecimalFormat("0.0000")), "9.1080±1.2075(A)±0.7920(B)");
-      //assertEquals(UncertainValue2::multiply(b, UncertainValue2::multiply(a, c)).format(new DecimalFormat("0.0000")), "9.1080±1.4441");
       printf("%s finished.\n", "UncertainValue2Test::testMultiply()");
    }
 
