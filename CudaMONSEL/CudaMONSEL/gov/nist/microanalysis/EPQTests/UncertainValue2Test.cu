@@ -143,10 +143,10 @@ namespace UncertainValue2Test
 
       assertEquals(UncertainValue2::multiply(2.0, mA), UncertainValue2::multiply(2.0, mA2a), 1.0e-10);
       assertEquals(UncertainValue2::multiply(4.0, mB), UncertainValue2::multiply(4.0, mB2a), 1.0e-10);
-      //auto uv0 = UncertainValue2::UncertainValue2(4.0);
-      //auto uv1 = UncertainValue2::multiply(uv0, mB);
-      //auto uv2 = UncertainValue2::multiply(4.0, mB2a);
-      //assertEquals(uv1, uv2, 1.0e-10);
+      auto uv0 = UncertainValue2::UncertainValue2(4.0);
+      auto uv1 = UncertainValue2::multiply(uv0, mB);
+      auto uv2 = UncertainValue2::multiply(4.0, mB2a);
+      assertEquals(uv1, uv2, 1.0e-10);
       assertEquals(UncertainValue2::multiply(4.0, mB), UncertainValue2::multiply(4.0, mB2a), 1.0e-10);
       assertEquals(UncertainValue2::multiply(4.0, mB), UncertainValue2::multiply(UncertainValue2::UncertainValue2(4.0), mB2a), 1.0e-10);
       assertEquals(UncertainValue2::multiply(2.0, UncertainValue2::multiply(2.0, mB)), UncertainValue2::multiply(4.0, mB2a), 1.0e-10);

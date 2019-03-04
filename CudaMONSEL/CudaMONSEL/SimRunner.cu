@@ -91,9 +91,9 @@ __global__ void TestKernel()
 
    UncertainValue2Test::UncertainValue2Test uvTest;
    //uvTest.testSpecialValues();
-   //uvTest.testA();
-   //uvTest.testB();
-   //uvTest.testC();
+   uvTest.testA();
+   uvTest.testB();
+   uvTest.testC();
    uvTest.testAB();
    //uvTest.testAdd1();
    //uvTest.testAdd2();

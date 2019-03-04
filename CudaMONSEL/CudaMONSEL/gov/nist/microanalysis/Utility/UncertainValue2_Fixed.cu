@@ -31,12 +31,12 @@ namespace UncertainValue2
    __device__ UncertainValue2::UncertainValue2(double v) : mValue(v), mSigmas(NULL)
    {
    }
-
+   
    __device__ UncertainValue2::UncertainValue2(double v, char source[], double dv) : mValue(v), mSigmas(NULL)
    {
       assignComponent(String::String(source), dv);
    }
-
+   
    __device__ UncertainValue2::UncertainValue2(double v, LinkedListKV::Node<String::String, double>* sigmas) : mValue(v), mSigmas(NULL)
    {
       while (sigmas != NULL) {
@@ -212,7 +212,7 @@ namespace UncertainValue2
          cuv = cuv->GetNext();
       }
       const double iVarSum = 1.0 / varSum;
-      return (isnan(iVarSum) || isinf(iVarSum)) ? NULL : UncertainValue2(sum / varSum, "WM", ::sqrt(1.0 / varSum));
+         return (isnan(iVarSum) || isinf(iVarSum)) ? NULL : UncertainValue2(sum / varSum, "WM", ::sqrt(1.0 / varSum));
    }
 
    __device__ UncertainValue2 min(LinkedList::Node<UncertainValue2>* uvs)
@@ -255,7 +255,7 @@ namespace UncertainValue2
          }
          uvs = uvs->GetNext();
       }
-      return res;
+         return res;
    }
 
    __device__ UncertainValue2 add(UncertainValue2 v1, double v2)
@@ -397,7 +397,7 @@ namespace UncertainValue2
          sigmas = sigmas->GetNext();
       }
       return res;
-
+         
    }
 
    __device__ UncertainValue2 pow(UncertainValue2 v1, double n)
@@ -440,22 +440,22 @@ namespace UncertainValue2
       LinkedList::InsertHead(&head, divide(c, q));
       return head;
    }
-
+   
    __device__ double UncertainValue2::doubleValue()
    {
       return mValue;
    }
-
+   
    __device__ bool UncertainValue2::isUncertain()
    {
       return mSigmas != NULL;
    }
-
+   
    __device__ double UncertainValue2::uncertainty()
    {
       return ::sqrt(variance());
    }
-
+   
    __device__ double UncertainValue2::variance()
    {
       double sigma2 = 0.0;
@@ -467,7 +467,7 @@ namespace UncertainValue2
       }
       return sigma2;
    }
-
+   
    __device__ double UncertainValue2::fractionalUncertainty()
    {
       if (isnan(1.0 / mValue)) {
@@ -478,7 +478,7 @@ namespace UncertainValue2
       }
       return fabs(uncertainty() / mValue);
    }
-
+   
    __device__ bool UncertainValue2::equals(UncertainValue2 other)
    {
       if (*((int*)&other) == NULL) {
@@ -489,27 +489,27 @@ namespace UncertainValue2
       }
       return LinkedListKV::AreEquivalentSets<String::String, double>(mSigmas, other.getComponents(), String::AreEqual, [](double a, double b) { return a == b; }) && (mValue == other.doubleValue());
    }
-
+   
    __device__ int UncertainValue2::compareTo(UncertainValue2 o)
    {
       return (mValue == o.mValue) && (uncertainty() == o.uncertainty());
    }
-
+   
    __device__ bool UncertainValue2::lessThan(UncertainValue2 uv2)
    {
       return mValue < uv2.mValue;
    }
-
+   
    __device__ bool UncertainValue2::greaterThan(UncertainValue2 uv2)
    {
       return mValue > uv2.mValue;
    }
-
+   
    __device__ bool UncertainValue2::lessThanOrEqual(UncertainValue2 uv2)
    {
       return mValue <= uv2.mValue;
    }
-
+   
    __device__ bool UncertainValue2::greaterThanOrEqual(UncertainValue2 uv2)
    {
       return mValue >= uv2.mValue;
@@ -519,17 +519,17 @@ namespace UncertainValue2
    {
       return pow(uv, 2.0);
    }
-
+   
    __device__ UncertainValue2 negate(UncertainValue2 uv)
    {
       return UncertainValue2(-uv.doubleValue(), uv.getComponents());
    }
-
+   
    __device__ UncertainValue2 atan(UncertainValue2 uv)
    {
       double f = ::atan(uv.doubleValue());
       double df = 1.0 / (1.0 + uv.doubleValue() * uv.doubleValue());
-
+   
       if (isnan(f)) {
          return UncertainValue2(CUDART_NAN);
       }
@@ -549,7 +549,7 @@ namespace UncertainValue2
    {
       double f = ::atan2(y.doubleValue(), x.doubleValue());
       double df = 1.0 / (1.0 + ::pow(y.doubleValue() / x.doubleValue(), 2.0));
-
+   
       if (isnan(f)) {
          return UncertainValue2(CUDART_NAN);
       }
@@ -601,7 +601,7 @@ namespace UncertainValue2
       corr = ::fmin(corr, -1.0);
       LinkedListKV::InsertHead<Key, double>(&mCorrelations, Key(src1, src2), corr);
    }
-
+   
    __device__ double Correlations::get(String::String src1, String::String src2)
    {
       double r = LinkedListKV::GetValue<Key, double>(mCorrelations, Key(src1, src2), Key::AreEqual);

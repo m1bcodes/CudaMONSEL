@@ -37,7 +37,7 @@ namespace UncertainValue2
    {
    public:
       __device__ UncertainValue2();
-      __device__ ~UncertainValue2();
+      //__device__ ~UncertainValue2();
       __device__ UncertainValue2(double v, char source[], double dv);
       __device__ UncertainValue2(double v);
       __device__ UncertainValue2(double v, double dv);
