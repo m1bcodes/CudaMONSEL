@@ -39,7 +39,7 @@ __global__ void spawnElectrons(int *d_arr, int size_x, int size_y)
 
    printf("%d, %d", idx_x, idx_y);
 
-   spawnElectron << <1, 1 >> >(d_arr, idx_x, idx_y, size_x, size_y);
+   spawnElectron<<<1, 1>>>(d_arr, idx_x, idx_y, size_x, size_y);
 }
 
 void PrintArray2D(int *h_arr, int img_x, int img_y)
@@ -90,10 +90,10 @@ __global__ void TestKernel()
    //printf("%d\n", v1.equals(&v2));
 
    UncertainValue2Test::UncertainValue2Test uvTest;
-   uvTest.testSpecialValues();
-   uvTest.testA();
-   uvTest.testB();
-   uvTest.testC();
+   //uvTest.testSpecialValues();
+   //uvTest.testA();
+   //uvTest.testB();
+   //uvTest.testC();
    uvTest.testAB();
    //uvTest.testAdd1();
    //uvTest.testAdd2();

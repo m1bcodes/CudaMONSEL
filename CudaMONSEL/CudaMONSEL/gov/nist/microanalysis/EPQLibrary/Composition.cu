@@ -191,7 +191,6 @@ namespace Composition
       mMoleNorm = UncertainValue2::ZERO();
       auto constituentsHead = mConstituents;
       while (constituentsHead != NULL) {
-         printf("??\n");
          mMoleNorm = UncertainValue2::add(mMoleNorm, UncertainValue2::multiply(1.0 / constituentsHead->GetKey().getAtomicWeight(), constituentsHead->GetValue()));
          constituentsHead = constituentsHead->GetNext();
       }

@@ -27,6 +27,40 @@ namespace UncertainValue2
       LinkedListKV::RemoveAll(&mSigmas);
    }
 
+   __device__ UncertainValue2::UncertainValue2(double v, double dv) : mValue(v), mSigmas(NULL)
+   {
+      char tmpName[MAX_LEN];
+      String::IToA(tmpName, atomicAdd(&sDefIndex, 1));
+      assignComponent(tmpName, dv);
+   }
+
+   __device__ UncertainValue2::UncertainValue2(double v) : mValue(v), mSigmas(NULL)
+   {
+   }
+   
+   __device__ UncertainValue2::UncertainValue2(double v, char source[], double dv) : mValue(v), mSigmas(NULL)
+   {
+      assignComponent(String::String(source), dv);
+   }
+   
+   __device__ UncertainValue2::UncertainValue2(double v, LinkedListKV::Node<String::String, double>* sigmas) : mValue(v), mSigmas(NULL)
+   {
+      while (sigmas != NULL) {
+         assignComponent(sigmas->GetKey(), sigmas->GetValue());
+         sigmas = sigmas->GetNext();
+      }
+   }
+
+   __device__ UncertainValue2::UncertainValue2(UncertainValue2& other) : mValue(other.doubleValue()), mSigmas(NULL)
+   {
+      auto sigmas = other.getComponents();
+      while (sigmas != NULL) {
+         assignComponent(sigmas->GetKey(), sigmas->GetValue());
+         sigmas = sigmas->GetNext();
+      }
+      //LinkedListKV::DeepCopy<String::String, double>(&mSigmas, other.getComponents());
+   }
+
    __device__ UncertainValue2 ONE()
    {
       return UncertainValue2(1.0);
@@ -50,35 +84,6 @@ namespace UncertainValue2
    __device__ UncertainValue2 ZERO()
    {
       return UncertainValue2(0.0);
-   }
-
-   __device__ UncertainValue2::UncertainValue2(double v, double dv) : mValue(v), mSigmas(NULL)
-   {
-      char tmpName[MAX_LEN];
-      String::IToA(tmpName, atomicAdd(&sDefIndex, 1));
-      assignComponent(tmpName, dv);
-   }
-
-   __device__ UncertainValue2::UncertainValue2(double v) : mValue(v), mSigmas(NULL)
-   {
-   }
-   
-   __device__ UncertainValue2::UncertainValue2(double v, char source[], double dv) : mValue(v), mSigmas(NULL)
-   {
-      assignComponent(source, dv);
-   }
-   
-   __device__ UncertainValue2::UncertainValue2(double v, LinkedListKV::Node<String::String, double>* sigmas) : mValue(v), mSigmas(NULL)
-   {
-      while (sigmas != NULL) {
-         assignComponent(sigmas->GetKey(), sigmas->GetValue());
-         sigmas = sigmas->GetNext();
-      }
-   }
-
-   __device__ UncertainValue2::UncertainValue2(UncertainValue2& other) : mValue(other.doubleValue()), mSigmas(NULL)
-   {
-      LinkedListKV::DeepCopy<String::String, double>(&mSigmas, other.getComponents());
    }
 
    __device__ UncertainValue2& UncertainValue2::operator=(UncertainValue2& other)
@@ -293,14 +298,21 @@ namespace UncertainValue2
    {
       UncertainValue2 res(v1.doubleValue() * v2.doubleValue());
       LinkedList::Node<String::String>* srcs = NULL, * srcsHead = NULL;
-      AdvancedLinkedList::AddAllKeys(&srcsHead, v1.getComponents(), String::AreEqual);
-      AdvancedLinkedList::AddAllKeys(&srcsHead, v2.getComponents(), String::AreEqual);
-      srcs = srcsHead;
+      auto s1 = v1.getComponents();
+      AdvancedLinkedList::AddAllKeys<String::String, double>(&srcsHead, s1, String::AreEqual);
+      auto s2 = v2.getComponents();
+      AdvancedLinkedList::AddAllKeys<String::String, double>(&srcsHead, s2, String::AreEqual);
+      //while (s2 != NULL) {
+      //   auto newOne = (srcsHead == NULL) ? new LinkedList::Node<String::String>(s2->GetKey(), NULL) : new LinkedList::Node<String::String>(s2->GetKey(), srcsHead);
+      //   srcsHead = newOne;
+      //   printf("%s\n", srcsHead->GetValue().Get());
+      //   s2 = s2->GetNext();
+      //}
 
+      srcs = srcsHead;
       while (srcs != NULL) {
          auto src = srcs->GetValue();
-         //printf("%s: ", src.Get());
-         //printf("%lf\n", v1.doubleValue() * v2.getComponent(src) + v2.doubleValue() * v1.getComponent(src));
+         //printf("%s: %lf\n", src.Get(), v1.doubleValue() * v2.getComponent(src) + v2.doubleValue() * v1.getComponent(src));
          res.assignComponent(src, v1.doubleValue() * v2.getComponent(src) + v2.doubleValue() * v1.getComponent(src));
          srcs = srcs->GetNext();
       }

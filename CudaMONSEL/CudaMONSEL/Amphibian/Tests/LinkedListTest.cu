@@ -1,10 +1,26 @@
 #include "LinkedListTest.cuh"
-#include "..\string.cuh"
+#include "..\String.cuh"
 
 #include <stdio.h>
 
 namespace LinkedListTest
 {
+   class TestClassA
+   {
+   public:
+      __device__ TestClassA() : val(0), list(NULL)
+      {
+      }
+
+      __device__ TestClassA(double v, char name[], double s) : val(v)
+      {
+         LinkedListKV::InsertHead<String::String, double>(&list, name, s);
+      }
+
+      double val;
+      LinkedListKV::Node<String::String, double>* list;
+   };
+
    __device__ void PrintList(LinkedList::Node<LinkedListTestType>* head)
    {
       while (true) {

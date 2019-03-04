@@ -36,7 +36,6 @@ namespace MaterialTest
          double wO = 2.0 * Element::getAtomicWeight(Element::elmO) / (Element::getAtomicWeight(Element::elmTi) + 2.0 * Element::getAtomicWeight(Element::elmO));
          assertEquals(wTi + wO, 1.0, eps);
          double fac = 1.1;
-         printf("?\n");
          mat.addElement(Element::elmTi, fac * wTi);
          mat.addElement(Element::elmO, fac * wO);
 

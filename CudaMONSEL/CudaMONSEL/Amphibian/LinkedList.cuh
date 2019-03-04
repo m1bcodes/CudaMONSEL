@@ -69,6 +69,13 @@ namespace LinkedList
    template<typename T>
    __host__ __device__ void InsertHead(Node<T>** headAddr, T v)
    {
+      //Node<T>* newOne = NULL;
+      //if (*headAddr == NULL) {
+      //   newOne = new Node<T>(v, NULL);
+      //}
+      //else {
+      //   newOne = new Node<T>(v, *headAddr);
+      //}
       Node<T>* newOne = (*headAddr == NULL) ? new Node<T>(v, NULL) : new Node<T>(v, *headAddr);
       *headAddr = newOne;
    }
@@ -268,6 +275,7 @@ namespace LinkedListKV
    __host__ __device__ void DeepCopy(Node<KeyT, ValueT>** newHeadAddr, Node<KeyT, ValueT>* head)
    {
       while (head != NULL) {
+         //InsertHead<KeyT, ValueT>(newHeadAddr, head->GetKey(), head->GetValue());
          InsertNext<KeyT, ValueT>(newHeadAddr, head->GetKey(), head->GetValue());
          newHeadAddr = (*newHeadAddr)->GetNextAddr();
          head = head->GetNext();
@@ -430,8 +438,9 @@ namespace AdvancedLinkedList
          return;
       }
       while (dataHead != NULL) {
-         if (!LinkedList::Exists<K>(*headAddr, dataHead->GetKey(), KeyCmp)) {
-            LinkedList::InsertHead<K>(headAddr, dataHead->GetKey());
+         auto k = dataHead->GetKey();
+         if (!LinkedList::Exists<K>(*headAddr, k, KeyCmp)) {
+            LinkedList::InsertHead<K>(headAddr, k);
          }
          dataHead = dataHead->GetNext();
       }
