@@ -83,34 +83,34 @@ void PrintArray2D(int *h_arr, int img_x, int img_y)
 
 __global__ void TestKernel()
 {
-   //UncertainValue2::UncertainValue2 v0(0, "abc", 5);
-   //UncertainValue2::UncertainValue2 v1(1);
-   //UncertainValue2::UncertainValue2 v2(2, 10);
-   //UncertainValue2::UncertainValue2 v3(2, 10);
-   //printf("%d\n", v1.equals(&v2));
+   UncertainValue2::UncertainValue2 v0(0, "abc", 5);
+   UncertainValue2::UncertainValue2 v1(1);
+   UncertainValue2::UncertainValue2 v2(2, 10);
+   UncertainValue2::UncertainValue2 v3(2, 10);
+   printf("%d\n", v1.equals(v2));
 
    UncertainValue2Test::UncertainValue2Test uvTest;
-   //uvTest.testSpecialValues();
+   uvTest.testSpecialValues();
    uvTest.testA();
    uvTest.testB();
    uvTest.testC();
    uvTest.testAB();
-   //uvTest.testAdd1();
-   //uvTest.testAdd2();
-   //uvTest.testAdd3();
-   //uvTest.testMultiply();
-   //uvTest.testDivide();
-   //uvTest.testFunctions();
+   uvTest.testAdd1();
+   uvTest.testAdd2();
+   uvTest.testAdd3();
+   uvTest.testMultiply();
+   uvTest.testDivide();
+   uvTest.testFunctions();
 
-   //ElementTest::ElementTest elementTest;
-   //elementTest.testOne();
+   ElementTest::ElementTest elementTest;
+   elementTest.testOne();
 
-   //LinkedListTest::LinkedListTest lltest;
-   //lltest.TestAddAllAsSet();
+   LinkedListTest::LinkedListTest lltest;
+   lltest.TestAddAllAsSet();
 
-   //StringTest::AtoITest();
-   //StringTest::ItoATest();
-   //StringTest::AtoFTest();
+   StringTest::AtoITest();
+   StringTest::ItoATest();
+   StringTest::AtoFTest();
 
    //MaterialTest::MaterialTest mat;
    //mat.testOne();
@@ -125,8 +125,8 @@ int main()
    Composition::createProjectors(2762689630628022905L);
 
    TestKernel<<<1, 1>>>();
-   checkCudaErrors(cudaGetLastError());
    checkCudaErrors(cudaDeviceSynchronize());
+   checkCudaErrors(cudaGetLastError());
 
    return 0;
 }

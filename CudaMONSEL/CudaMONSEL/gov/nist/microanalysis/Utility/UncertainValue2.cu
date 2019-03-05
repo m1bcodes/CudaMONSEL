@@ -479,7 +479,7 @@ namespace UncertainValue2
       return fabs(uncertainty() / mValue);
    }
 
-   __device__ bool UncertainValue2::equals(UncertainValue2 other)
+   __device__ bool UncertainValue2::equals(UncertainValue2& other)
    {
       if (*((int*)&other) == NULL) {
          return false;

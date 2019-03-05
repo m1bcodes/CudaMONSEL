@@ -6,8 +6,6 @@ extern __device__ double sqrt(double);
 extern __device__ double fabs(double);
 extern __device__ double exp(double);
 
-extern __device__ double __longlong_as_double(long long int);
-
 namespace UncertainValue2Test
 {
    __device__ UncertainValue2::UncertainValue2 makeA2a()
@@ -44,29 +42,6 @@ namespace UncertainValue2Test
    //__device__ UncertainValue2::UncertainValue2 mC(-9.3, "C", 2.1);
    //__device__ UncertainValue2::UncertainValue2 mC2a = makeC2a();
 
-   __device__ void assertEquals(double v1, double v2, double delta)
-   {
-      bool b = false;
-      b = fabs(v1 - v2) < delta;
-      if (!b) {
-         b = v1 == v2;
-      }
-      if (!b) {
-         b = true;
-         for (int k = 0; k < sizeof(double); ++k) {
-            char * c1 = ((char *)&v1) + k;
-            char * c2 = ((char *)&v2) + k;
-            b = !(*c1 ^ *c2);
-            if (!b) {
-               break;
-            }
-         }
-      }
-      if (!b) {
-         printf("values are different: %lf, %lf\n", v1, v2);
-      }
-   }
-
    __device__ void assertEquals(UncertainValue2::UncertainValue2 uv, UncertainValue2::UncertainValue2 uv2, double delta)
    {
       bool b = false;
@@ -84,34 +59,6 @@ namespace UncertainValue2Test
    {
    }
 
-   __device__ void UncertainValue2Test::testSpecialValues()
-   {
-      auto one = UncertainValue2::ONE();
-      auto oneU = one.uncertainty();
-      assertEquals(one.doubleValue(), 1.0, 1e-10);
-      assertEquals(oneU, 0.0, 1e-10);
-
-      auto nan = UncertainValue2::NaN();
-      auto nanU = nan.uncertainty();
-      assertEquals(nan.doubleValue(), CUDART_NAN, 1e-10);
-      assertEquals(nanU, 0.0, 1e-10);
-
-      auto ni = UncertainValue2::NEGATIVE_INFINITY();
-      auto niU = ni.uncertainty();
-      assertEquals(ni.doubleValue(), -CUDART_INF, 1e-10);
-      assertEquals(niU, 0.0, 1e-10);
-
-      auto pi = UncertainValue2::POSITIVE_INFINITY();
-      auto piU = pi.uncertainty();
-      assertEquals(pi.doubleValue(), CUDART_INF, 1e-10);
-      assertEquals(piU, 0.0, 1e-10);
-
-      auto zero = UncertainValue2::ZERO();
-      auto zeroU = zero.uncertainty();
-      assertEquals(zero.doubleValue(), 0.0, 1e-10);
-      assertEquals(zeroU, 0.0, 1e-10);
-   }
-
    __device__ void UncertainValue2Test::testA()
    {
       UncertainValue2::UncertainValue2 mA(1.24, "A", 0.3);
@@ -120,6 +67,8 @@ namespace UncertainValue2Test
       assertEquals(mA, mA2a, 1.0e-10);
       assertEquals(mA.uncertainty(), mA2a.uncertainty(), 1.0e-8);
       assertEquals(mA, mA2a, 1.0e-8);
+      //assertEquals(mA2a.format(new DecimalFormat("0.000")), "1.240±0.300");
+      //assertEquals(mA2a.formatLong(new DecimalFormat("0.000")), "1.240±0.224(V1)±0.200(V2)");
       printf("%s finished.\n", "UncertainValue2Test::testA()");
    }
 
@@ -131,6 +80,8 @@ namespace UncertainValue2Test
       assertEquals(mB, mB2a, 1.0e-10);
       assertEquals(mB.uncertainty(), mB2a.uncertainty(), 1.0e-8);
       assertEquals(mB, mB2a, 1.0e-8);
+      //assertEquals(mB2a.format(new DecimalFormat("0.000")), "8.820±1.200");
+      //assertEquals(mB2a.formatLong(new DecimalFormat("0.000")), "8.820±0.917(V1)±0.775(V2)");
       printf("%s finished.\n", "UncertainValue2Test::testB()");
    }
 
@@ -142,6 +93,8 @@ namespace UncertainValue2Test
       assertEquals(mC, mC2a, 1.0e-10);
       assertEquals(mC.uncertainty(), mC2a.uncertainty(), 1.0e-8);
       assertEquals(mC, mC2a, 1.0e-8);
+      //assertEquals(mC2a.format(new DecimalFormat("0.000")), "-9.300±2.100");
+      //assertEquals(mC2a.formatLong(new DecimalFormat("0.000")), "-9.300±1.732(V1)±1.187(V3)");
       printf("%s finished.\n", "UncertainValue2Test::testC()");
    }
 
@@ -149,6 +102,7 @@ namespace UncertainValue2Test
    {
       UncertainValue2::UncertainValue2 mA(1.24, "A", 0.3);
       UncertainValue2::UncertainValue2 mA2a = makeA2a();
+
       UncertainValue2::UncertainValue2 mB(8.82, "B", 1.2);
       UncertainValue2::UncertainValue2 mB2a = makeB2a();
 
@@ -232,7 +186,6 @@ namespace UncertainValue2Test
       LinkedList::InsertHead<UncertainValue2::UncertainValue2>(&rsc, UncertainValue2::UncertainValue2(1000.0, "R", 0.1));
 
       assertEquals(UncertainValue2::add(rsc).uncertainty(), 1.0, 1.0e-10);
-      LinkedList::RemoveAll(&rsc);
       printf("%s finished.\n", "UncertainValue2Test::testAdd1()");
    }
 
@@ -274,7 +227,6 @@ namespace UncertainValue2Test
       LinkedList::InsertHead<UncertainValue2::UncertainValue2>(&rsu, UncertainValue2::UncertainValue2(1000.0, "R9", 0.1));
 
       assertEquals(UncertainValue2::add(rsu).uncertainty(), 0.32, 0.005);
-      LinkedList::RemoveAll(&rsu);
       printf("%s finished.\n", "UncertainValue2Test::testAdd2()");
    }
 
@@ -295,7 +247,7 @@ namespace UncertainValue2Test
       LinkedList::InsertHead<UncertainValue2::UncertainValue2>(&uvs, c);
 
       assertEquals(UncertainValue2::add(uvs), UncertainValue2::UncertainValue2(6.0, sqrt(0.0625 + 0.04)), 1e-6);
-      LinkedList::RemoveAll(&uvs);
+      //assertEquals(UncertainValue2::add(uvs).formatLong(new DecimalFormat("0.000")), "6.000±0.250(A)±0.200(B)");
       printf("%s finished.\n", "UncertainValue2Test::testAdd3()");
    }
 
@@ -308,6 +260,8 @@ namespace UncertainValue2Test
       assertEquals(UncertainValue2::multiply(a, b), UncertainValue2::UncertainValue2(2.53, 0.3182766093), 1.0e-6);
       assertEquals(UncertainValue2::multiply(a, c), UncertainValue2::UncertainValue2(3.96, 0.525), 1.0e-6);
       assertEquals(UncertainValue2::multiply(b, UncertainValue2::multiply(a, c)), UncertainValue2::UncertainValue2(9.108, 1.444063797), 1.0e-6);
+      //assertEquals(UncertainValue2::multiply(b, UncertainValue2::multiply(a, c)).formatLong(new DecimalFormat("0.0000")), "9.1080±1.2075(A)±0.7920(B)");
+      //assertEquals(UncertainValue2::multiply(b, UncertainValue2::multiply(a, c)).format(new DecimalFormat("0.0000")), "9.1080±1.4441");
       printf("%s finished.\n", "UncertainValue2Test::testMultiply()");
    }
 

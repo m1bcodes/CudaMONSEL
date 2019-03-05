@@ -104,12 +104,12 @@ namespace Composition
       __device__ double weightAvgAtomicNumber();
       __device__ double sumWeightFraction();
       __device__ UncertainValue2::UncertainValue2 sumWeightFractionU();
-      //__device__ String::String toString();
-      //__device__ String::String stoichiometryString();
-      //__device__ String::String weightPercentString(bool normalize);
-      //__device__ String::String descriptiveString(bool normalize);
-      __device__ Element::Element getNthElementByWeight(int n);
-      __device__ Element::Element getNthElementByAtomicFraction(int n);
+      ////__device__ String::String toString();
+      ////__device__ String::String stoichiometryString();
+      ////__device__ String::String weightPercentString(bool normalize);
+      ////__device__ String::String descriptiveString(bool normalize);
+      //__device__ Element::Element getNthElementByWeight(int n);
+      //__device__ Element::Element getNthElementByAtomicFraction(int n);
       __device__ void setName(String::String name);
       __device__ String::String getName();
       __device__ int compareTo(Composition comp);
@@ -118,7 +118,7 @@ namespace Composition
       __device__ UncertainValue2::UncertainValue2 differenceU(Composition comp);
       __device__ double difference(Composition comp);
       __device__ Representation getOptimalRepresentation();
-      //__device__ int hashCode();
+      ////__device__ int hashCode();
       __device__ bool equals(Composition& other);
       __device__ bool almostEquals(Composition other, double tol);
       __device__ LinkedListKV::Node<Element::Element, double>* absoluteError(Composition std, bool normalize);
@@ -131,6 +131,9 @@ namespace Composition
       __device__ long indexHashCodeS();
       __device__ long indexHashCodeL();
 
+      //__device__ bool AreEqualConstituents(LinkedListKV::Node<Element::Element, UncertainValue2::UncertainValue2>* a, LinkedListKV::Node<Element::Element, UncertainValue2::UncertainValue2>* b);
+      __device__ LinkedListKV::Node<Element::Element, UncertainValue2::UncertainValue2>* GetConstituents();
+
    private:
       __device__ Composition readResolve();
       __device__ void recomputeStoiciometry();
@@ -139,8 +142,8 @@ namespace Composition
       LinkedListKV::Node<Element::Element, UncertainValue2::UncertainValue2>* mConstituents = NULL;
       LinkedListKV::Node<Element::Element, UncertainValue2::UncertainValue2>* mConstituentsAtomic = NULL;
 
-      UncertainValue2::UncertainValue2 mNormalization = UncertainValue2::ONE();
-      UncertainValue2::UncertainValue2 mAtomicNormalization = UncertainValue2::ONE();
+      UncertainValue2::UncertainValue2 mNormalization = UncertainValue2::UncertainValue2(1); // UncertainValue2::ONE();
+      UncertainValue2::UncertainValue2 mAtomicNormalization = UncertainValue2::UncertainValue2(1); // UncertainValue2::ONE();
       String::String mName;
       Representation mOptimalRepresentation = Representation::UNDETERMINED;
       UncertainValue2::UncertainValue2 mMoleNorm = UncertainValue2::NaN();

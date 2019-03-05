@@ -195,7 +195,7 @@ namespace Composition
          constituentsHead = constituentsHead->GetNext();
       }
 
-      LinkedListKV::RemoveAll<Element::Element, UncertainValue2::UncertainValue2>(&mConstituentsAtomic);
+      LinkedListKV::RemoveAll(&mConstituentsAtomic);
       LinkedList::Node<Element::Element>* constituentsAtomicKeysHead = NULL;
       AdvancedLinkedList::AddAllKeys(&constituentsAtomicKeysHead, mConstituentsAtomic, Element::AreEqual);
       auto constituentsAtomicKeysHeadItr = constituentsAtomicKeysHead;
@@ -330,7 +330,7 @@ namespace Composition
          constituentsAtomicKeysHead1 = constituentsAtomicKeysHead1->GetNext();
       }
 
-      LinkedListKV::RemoveAll<Element::Element, UncertainValue2::UncertainValue2>(&mConstituents);
+      LinkedListKV::RemoveAll(&mConstituents);
       constituentsAtomicKeysHead2 = constituentsAtomicKeysHead;
       while (constituentsAtomicKeysHead2 != NULL) {
          auto elm = constituentsAtomicKeysHead2->GetValue();
@@ -507,119 +507,119 @@ namespace Composition
       return res;
    }
 
-   //__device__ String::String Composition::toString()
+   ////__device__ String::String Composition::toString()
+   ////{
+   ////   if ((*((int*)&mName) == NULL) || (mName.Length() == 0)) {
+   ////      return descriptiveString(false);
+   ////   }
+   ////   return mName;
+   ////}
+
+   ////__device__ String::String Composition::stoichiometryString()
+   ////{
+   ////   final StringBuffer sb = new StringBuffer();
+   ////   final NumberFormat nf = new HalfUpFormat("0.####");
+   ////   for (final Element elm : getElementSet()) {
+   ////      final UncertainValue2 d0 = atomicPercentU(elm);
+   ////      if (sb.length() > 1)
+   ////         sb.append(",");
+   ////      sb.append(elm.toAbbrev());
+   ////      sb.append("(");
+   ////      sb.append(d0.format(nf));
+   ////      sb.append(" atoms)");
+   ////   }
+   ////   return sb.toString();
+   ////}
+
+   ////__device__ String::String weightPercentString(bool normalize)
+   ////{
+   ////   final StringBuffer sb = new StringBuffer();
+   ////   final NumberFormat nf = new HalfUpFormat("0.0000");
+   ////   for (final Element elm : getElementSet()) {
+   ////      final UncertainValue2 d0 = weightFractionU(elm, normalize);
+   ////      if (sb.length() > 1)
+   ////         sb.append(",");
+   ////      sb.append(elm.toAbbrev());
+   ////      sb.append("(");
+   ////      sb.append(d0.format(nf));
+   ////      sb.append(" mass frac)");
+   ////   }
+   ////   if (!normalize) {
+   ////      sb.append(",\u03A3=");
+   ////      sb.append(sumWeightPercentU().format(nf));
+   ////   }
+   ////   return sb.toString();
+   ////}
+
+   ////__device__ String::String descriptiveString(bool normalize)
+   ////{
+   ////   StringBuffer sb = new StringBuffer();
+   ////   if ((mName != null) && (mName.length() > 0))
+   ////      sb.append(mName + " = ");
+   ////   sb.append("[");
+   ////   if (mOptimalRepresentation == Representation.STOICIOMETRY)
+   ////      sb.append(stoichiometryString());
+   ////   else
+   ////      sb.append(weightPercentString(normalize));
+   ////   sb.append("]");
+   ////   return sb.toString();
+   ////}
+
+   //__device__ Element::Element Composition::getNthElementByWeight(int n)
    //{
-   //   if ((*((int*)&mName) == NULL) || (mName.Length() == 0)) {
-   //      return descriptiveString(false);
+   //   LinkedListKV::Node<UncertainValue2::UncertainValue2, Element::Element>* tm = NULL;
+   //   auto constituentsItr = mConstituents;
+   //   while (constituentsItr != NULL) {
+   //      auto el = constituentsItr->GetKey();
+   //      UncertainValue2::UncertainValue2 wf = weightFractionU(el, true);
+   //      // Add hoc mechanism to handle the case in which multiple elements are
+   //      // present in the same weightPct.
+   //      curandState state;
+   //      curand_init(1, 0, 0, &state);
+   //      while (LinkedListKV::ContainsKey(tm, wf, UncertainValue2::AreEqual)) {
+   //         wf = UncertainValue2::add(1.0e-10 * curand_uniform(&state), wf);
+   //      }
+   //      LinkedListKV::InsertHead(&tm, wf, el);
+   //      constituentsItr = constituentsItr->GetNext();
    //   }
-   //   return mName;
+   //   int j = 0;
+   //   auto tmItr = tm;
+   //   while (tmItr != NULL) {
+   //      ++j;
+   //      if (j == LinkedListKV::Size(mConstituents) - n) {
+   //         return tmItr->GetValue();
+   //      }
+   //      tmItr = tmItr->GetNext();
+   //   }
+   //   return Element::None;
    //}
 
-   //__device__ String::String Composition::stoichiometryString()
+   //__device__ Element::Element Composition::getNthElementByAtomicFraction(int n)
    //{
-   //   final StringBuffer sb = new StringBuffer();
-   //   final NumberFormat nf = new HalfUpFormat("0.####");
-   //   for (final Element elm : getElementSet()) {
-   //      final UncertainValue2 d0 = atomicPercentU(elm);
-   //      if (sb.length() > 1)
-   //         sb.append(",");
-   //      sb.append(elm.toAbbrev());
-   //      sb.append("(");
-   //      sb.append(d0.format(nf));
-   //      sb.append(" atoms)");
+   //   LinkedListKV::Node<UncertainValue2::UncertainValue2, Element::Element>* tm = NULL;
+   //   auto constituentsItr = mConstituents;
+   //   while (constituentsItr != NULL) {
+   //      auto el = constituentsItr->GetKey();
+   //      auto mf = atomicPercentU(el);
+   //      curandState state;
+   //      curand_init(1, 0, 0, &state);
+   //      while (LinkedListKV::ContainsKey(tm, mf, UncertainValue2::AreEqual)) {
+   //         mf = UncertainValue2::add(1.0e-10 * curand_uniform(&state), mf);
+   //      }
+   //      LinkedListKV::InsertHead(&tm, mf, el);
+   //      constituentsItr = constituentsItr->GetNext();
    //   }
-   //   return sb.toString();
-   //}
-
-   //__device__ String::String weightPercentString(bool normalize)
-   //{
-   //   final StringBuffer sb = new StringBuffer();
-   //   final NumberFormat nf = new HalfUpFormat("0.0000");
-   //   for (final Element elm : getElementSet()) {
-   //      final UncertainValue2 d0 = weightFractionU(elm, normalize);
-   //      if (sb.length() > 1)
-   //         sb.append(",");
-   //      sb.append(elm.toAbbrev());
-   //      sb.append("(");
-   //      sb.append(d0.format(nf));
-   //      sb.append(" mass frac)");
+   //   int j = 0;
+   //   auto tmItr = tm;
+   //   while (tmItr != NULL) {
+   //      ++j;
+   //      if (j == n) {
+   //         return tmItr->GetValue();
+   //      }
+   //      tmItr = tmItr->GetNext();
    //   }
-   //   if (!normalize) {
-   //      sb.append(",\u03A3=");
-   //      sb.append(sumWeightPercentU().format(nf));
-   //   }
-   //   return sb.toString();
+   //   return Element::None;
    //}
-
-   //__device__ String::String descriptiveString(bool normalize)
-   //{
-   //   StringBuffer sb = new StringBuffer();
-   //   if ((mName != null) && (mName.length() > 0))
-   //      sb.append(mName + " = ");
-   //   sb.append("[");
-   //   if (mOptimalRepresentation == Representation.STOICIOMETRY)
-   //      sb.append(stoichiometryString());
-   //   else
-   //      sb.append(weightPercentString(normalize));
-   //   sb.append("]");
-   //   return sb.toString();
-   //}
-
-   __device__ Element::Element Composition::getNthElementByWeight(int n)
-   {
-      LinkedListKV::Node<UncertainValue2::UncertainValue2, Element::Element>* tm = NULL;
-      auto constituentsItr = mConstituents;
-      while (constituentsItr != NULL) {
-         auto el = constituentsItr->GetKey();
-         UncertainValue2::UncertainValue2 wf = weightFractionU(el, true);
-         // Add hoc mechanism to handle the case in which multiple elements are
-         // present in the same weightPct.
-         curandState state;
-         curand_init(1, 0, 0, &state);
-         while (LinkedListKV::ContainsKey(tm, wf, UncertainValue2::AreEqual)) {
-            wf = UncertainValue2::add(1.0e-10 * curand_uniform(&state), wf);
-         }
-         LinkedListKV::InsertHead(&tm, wf, el);
-         constituentsItr = constituentsItr->GetNext();
-      }
-      int j = 0;
-      auto tmItr = tm;
-      while (tmItr != NULL) {
-         ++j;
-         if (j == LinkedListKV::Size(mConstituents) - n) {
-            return tmItr->GetValue();
-         }
-         tmItr = tmItr->GetNext();
-      }
-      return Element::None;
-   }
-
-   __device__ Element::Element Composition::getNthElementByAtomicFraction(int n)
-   {
-      LinkedListKV::Node<UncertainValue2::UncertainValue2, Element::Element>* tm = NULL;
-      auto constituentsItr = mConstituents;
-      while (constituentsItr != NULL) {
-         auto el = constituentsItr->GetKey();
-         auto mf = atomicPercentU(el);
-         curandState state;
-         curand_init(1, 0, 0, &state);
-         while (LinkedListKV::ContainsKey(tm, mf, UncertainValue2::AreEqual)) {
-            mf = UncertainValue2::add(1.0e-10 * curand_uniform(&state), mf);
-         }
-         LinkedListKV::InsertHead(&tm, mf, el);
-         constituentsItr = constituentsItr->GetNext();
-      }
-      int j = 0;
-      auto tmItr = tm;
-      while (tmItr != NULL) {
-         ++j;
-         if (j == n) {
-            return tmItr->GetValue();
-         }
-         tmItr = tmItr->GetNext();
-      }
-      return Element::None;
-   }
 
    __device__ void Composition::setName(String::String name)
    {
@@ -707,24 +707,53 @@ namespace Composition
       return mOptimalRepresentation;
    }
 
-   //__device__ int Composition::hashCode()
+   ////__device__ int Composition::hashCode()
+   ////{
+   ////   if (mHashCode == String::MAX_SIGNED_INTEGER) {
+   ////      int result = 1;
+   ////      int PRIME = 31;
+   ////      result = PRIME * result + mConstituents.hashCode();
+   ////      result = PRIME * result + mConstituentsAtomic.hashCode();
+   ////      result = PRIME * result + ((mName == null) ? 0 : mName.hashCode());
+   ////      long temp;
+   ////      temp = mNormalization.hashCode();
+   ////      result = PRIME * result + (int)(temp ^ (temp >> > 32));
+   ////      result = PRIME * result + ((mOptimalRepresentation == null) ? 0 : mOptimalRepresentation.hashCode());
+   ////      if (result == Integer.MAX_VALUE)
+   ////         result = Integer.MIN_VALUE;
+   ////      mHashCode = result;
+   ////   }
+   ////   return mHashCode;
+   ////}
+
+   __device__ LinkedListKV::Node<Element::Element, UncertainValue2::UncertainValue2>* Composition::GetConstituents()
+   {
+      return mConstituents;
+   }
+
+   //__device__ bool Composition::AreEqualConstituents(LinkedListKV::Node<Element::Element, UncertainValue2::UncertainValue2>* a, LinkedListKV::Node<Element::Element, UncertainValue2::UncertainValue2>* b)
    //{
-   //   if (mHashCode == String::MAX_SIGNED_INTEGER) {
-   //      int result = 1;
-   //      int PRIME = 31;
-   //      result = PRIME * result + mConstituents.hashCode();
-   //      result = PRIME * result + mConstituentsAtomic.hashCode();
-   //      result = PRIME * result + ((mName == null) ? 0 : mName.hashCode());
-   //      long temp;
-   //      temp = mNormalization.hashCode();
-   //      result = PRIME * result + (int)(temp ^ (temp >> > 32));
-   //      result = PRIME * result + ((mOptimalRepresentation == null) ? 0 : mOptimalRepresentation.hashCode());
-   //      if (result == Integer.MAX_VALUE)
-   //         result = Integer.MIN_VALUE;
-   //      mHashCode = result;
-   //   }
-   //   return mHashCode;
+   //   //if (!LinkedListKV::AreEquivalentSets(a, b, Element::AreEqual, UncertainValue2::AreEqual)) {
+   //   //   return false;
+   //   //}
+   //   return true;
    //}
+
+   __device__ bool IsSet(LinkedListKV::Node<Element::Element, UncertainValue2::UncertainValue2>* head, bool equalKeys(Element::Element, Element::Element), bool equalValues(UncertainValue2::UncertainValue2, UncertainValue2::UncertainValue2))
+   {
+      LinkedListKV::Node<Element::Element, UncertainValue2::UncertainValue2>* head1 = head;
+      while (head1 != NULL) {
+         LinkedListKV::Node<Element::Element, UncertainValue2::UncertainValue2>* head2 = head1->GetNext();
+         while (head2 != NULL) {
+            if (AreEquivalentNodes(head1, head2, equalKeys, equalValues)) {
+               return false;
+            }
+            head2 = head2->GetNext();
+         }
+         head1 = head1->GetNext();
+      }
+      return true;
+   }
 
    __device__ bool Composition::equals(Composition& obj)
    {
@@ -734,13 +763,15 @@ namespace Composition
       if (*((int*)&obj) == NULL) {
          return false;
       }
+
+      auto a = IsSet(mConstituents, Element::AreEqual, [](UnceratinValue2::UnceratinValue2, UnceratinValue2::UnceratinValue2) { return true; });
       
-      if (!LinkedListKV::AreEquivalentSets(mConstituents, obj.mConstituents, Element::AreEqual, UncertainValue2::AreEqual)) {
-         return false;
-      }
-      if (!LinkedListKV::AreEquivalentSets(mConstituentsAtomic, obj.mConstituentsAtomic, Element::AreEqual, UncertainValue2::AreEqual)) {
-         return false;
-      }
+      //if (!LinkedListKV::AreEquivalentSets(GetConstituents(), obj.GetConstituents(), Element::AreEqual, UncertainValue2::AreEqual)) {
+      //   return false;
+      //}
+      //if (!LinkedListKV::AreEquivalentSets(mConstituentsAtomic, obj.mConstituentsAtomic, Element::AreEqual, UncertainValue2::AreEqual)) {
+      //   return false;
+      //}
       if ((*((int*)&mName) != NULL) && (*((int*)&(obj.mName)) != NULL) && (!(mName == obj.mName))) {
          return false;
       }

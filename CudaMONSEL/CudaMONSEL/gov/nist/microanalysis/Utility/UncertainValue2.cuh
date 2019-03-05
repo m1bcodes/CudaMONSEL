@@ -57,7 +57,7 @@ namespace UncertainValue2
       __device__ double uncertainty();
       __device__ double variance();
       __device__ double fractionalUncertainty();
-      __device__ bool equals(UncertainValue2 uv);
+      __device__ bool equals(UncertainValue2& uv);
       //__device__ bool operator==(UncertainValue2&);
 
       __device__ int compareTo(UncertainValue2 o);

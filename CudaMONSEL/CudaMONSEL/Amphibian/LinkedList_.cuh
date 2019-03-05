@@ -69,13 +69,6 @@ namespace LinkedList
    template<typename T>
    __host__ __device__ void InsertHead(Node<T>** headAddr, T v)
    {
-      //Node<T>* newOne = NULL;
-      //if (*headAddr == NULL) {
-      //   newOne = new Node<T>(v, NULL);
-      //}
-      //else {
-      //   newOne = new Node<T>(v, *headAddr);
-      //}
       Node<T>* newOne = (*headAddr == NULL) ? new Node<T>(v, NULL) : new Node<T>(v, *headAddr);
       *headAddr = newOne;
    }
@@ -129,10 +122,10 @@ namespace LinkedList
    }
 
    template<typename T>
-   __host__ __device__ bool Exists(Node<T>* head, T target, bool (*cmp)(T, T))
+   __host__ __device__ bool Exists(Node<T>* head, T target, bool (*KeyCmp)(T, T))
    {
       while (head != NULL) {
-         if (cmp(head->GetValue(), target)) {
+         if (KeyCmp(head->GetValue(), target)) {
             return true;
          }
          head = head->GetNext();
@@ -149,33 +142,6 @@ namespace LinkedList
          c++;
       }
       return c;
-   }
-
-   template<typename T>
-   __host__ __device__ void AddAllAsSet(Node<T>** res, Node<T>* other, bool(*cmp)(T, T))
-   {
-      while (other != NULL) {
-         Node<T>* resHead = *res;
-         bool found = false;
-         while (resHead != NULL) {
-            if (cmp(resHead->GetValue(), other->GetValue())) {
-               found = true;
-               break;
-            }
-            resHead = resHead->GetNext();
-         }
-         if (!found) {
-            InsertHead(res, other->GetValue());
-         }
-         other = other->GetNext();
-      }
-   }
-
-   template<typename T>
-   __host__ __device__ void BuildList(Node<T>** res, T list[], int len) {
-      for (int k = 0; k < len; ++k) {
-         InsertHead(res, list[k]);
-      }
    }
 }
 
@@ -219,7 +185,7 @@ namespace LinkedListKV
       val = rhs.val;
       next = rhs.next;
    }
-   
+
    template<typename KeyT, typename ValueT>
    __host__ __device__ KeyT Node<KeyT, ValueT>::GetKey()
    {
@@ -275,7 +241,6 @@ namespace LinkedListKV
    __host__ __device__ void DeepCopy(Node<KeyT, ValueT>** newHeadAddr, Node<KeyT, ValueT>* head)
    {
       while (head != NULL) {
-         //InsertHead<KeyT, ValueT>(newHeadAddr, head->GetKey(), head->GetValue());
          InsertNext<KeyT, ValueT>(newHeadAddr, head->GetKey(), head->GetValue());
          newHeadAddr = (*newHeadAddr)->GetNextAddr();
          head = head->GetNext();
@@ -327,8 +292,7 @@ namespace LinkedListKV
    template<typename KeyT, typename ValueT>
    __host__ __device__ bool ContainsKey(Node<KeyT, ValueT>* head, KeyT k, bool(*equalKeys)(KeyT, KeyT))
    {
-      auto r = GetValue(head, k, equalKeys);
-      return !(*((int*)&r) == NULL);
+      return !(GetValue(head, k, equalKeys) == NULL);
    }
 
    template<typename KeyT, typename ValueT>
@@ -367,25 +331,6 @@ namespace LinkedListKV
    }
 
    template<typename KeyT, typename ValueT>
-   __host__ __device__ void RemoveAll(Node<KeyT, ValueT>** head)
-   {
-      while (*head != NULL) {
-         RemoveHead(head);
-      }
-   }
-
-   template<typename KeyT, typename ValueT>
-   __host__ __device__ int Size(Node<KeyT, ValueT>* head)
-   {
-      int sz = 0;
-      while (head != NULL) {
-         head = head->GetNext();
-         sz++;
-      }
-      return sz;
-   }
-
-   template<typename KeyT, typename ValueT>
    __host__ __device__ bool IsSet(Node<KeyT, ValueT>* head, bool equalKeys(KeyT, KeyT), bool equalValues(ValueT, ValueT))
    {
       Node<KeyT, ValueT>* head1 = head;
@@ -409,21 +354,30 @@ namespace LinkedListKV
          return false;
       }
 
-      //Node<KeyT, ValueT>* head1 = h1;
-      //while (head1 != NULL) {
-      //   Node<KeyT, ValueT>* head2 = h2;
-      //   while (true) {
-      //      if (head2 == NULL) {
-      //         return false;
-      //      }
-      //      if (AreEquivalentNodes(head1, head2, equalKeys, equalValues)) {
-      //         break;
-      //      }
-      //      head2 = head2->GetNext();
-      //   }
-      //   head1 = head1->GetNext();
-      //}
+      Node<KeyT, ValueT>* head1 = h1;
+      while (head1 != NULL) {
+         Node<KeyT, ValueT>* head2 = h2;
+         while (true) {
+
+            if (head2 == NULL) {
+               return false;
+            }
+            if (AreEquivalentNodes(head1, head2, equalKeys, equalValues)) {
+               break;
+            }
+            head2 = head2->GetNext();
+         }
+         head1 = head1->GetNext();
+      }
       return true;
+   }
+
+   template<typename KeyT, typename ValueT>
+   __host__ __device__ void RemoveAll(Node<KeyT, ValueT>** head)
+   {
+      while (*head != NULL) {
+         RemoveHead(head);
+      }
    }
 }
 
@@ -446,5 +400,104 @@ namespace AdvancedLinkedList
    }
 }
 
+//__host__ __device__ void BuildList1(Node<String, float>** head)
+//{
+//   String a("a");
+//   String b("b");
+//   String c("c");
+//   Node<String, float>::InsertHead(head, a, 0.0f);
+//   Node<String, float>::InsertHead(head, b, 1.0f);
+//   Node<String, float>::InsertHead(head, c, 2.0f);
+//}
+//
+//__host__ __device__ void BuildList2(Node<String, float>** head)
+//{
+//   String a("a");
+//   String b("b");
+//   String a1("a");
+//   Node<String, float>::InsertHead(head, a, 0.0f);
+//   Node<String, float>::InsertHead(head, b, 1.0f);
+//   Node<String, float>::InsertHead(head, a1, 0.1f);
+//}
+//
+//__host__ __device__ void PrintListInOrder(Node<String, float>* head)
+//{
+//   if (head != NULL) {
+//      printf("%s: %f\n", head->GetKey().Get(), head->GetValue());
+//      PrintListInOrder(head->GetNext());
+//   }
+//}
+//
+//__global__ void kernel(String::pAreEqual h_strCmpPointFunction)
+//{
+//#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+//   __syncthreads();
+//#endif
+//   Node<String, float>* head1 = NULL;
+//   Node<String, float>* head2 = NULL;
+//   printf("A\n");
+//   BuildList1(&head1);
+//   BuildList2(&head2);
+//   printf("B\n");
+//   PrintListInOrder(head1);
+//   PrintListInOrder(head2);
+//   printf("C\n");
+//   printf("%d\n", Node<String, float>::IsSet(head1, h_strCmpPointFunction, [](float a, float b) { return a == b; }));
+//   printf("%d\n", Node<String, float>::IsSet(head2, h_strCmpPointFunction, [](float a, float b) { return a == b; }));
+//   printf("D\n");
+//   printf("%d\n", Node<String, float>::AreEquivalentSets(head1, head2, h_strCmpPointFunction, [](float a, float b) { return a == b; }));
+//   Node<String, float>::RemoveRepeatedNodes(&head2, h_strCmpPointFunction, [](float a, float b) { return a == b; });
+//   PrintListInOrder(head2);
+//   printf("E\n");
+//   Node<String, float>::Remove(&head2, String("a"), h_strCmpPointFunction);
+//   PrintListInOrder(head2);
+//   printf("%d\n", Node<String, float>::AreEquivalentSets(head1, head2, h_strCmpPointFunction, [](float a, float b) { return a == b; }));
+//   Node<String, float>::RemoveAll(&head1);
+//   Node<String, float>::RemoveAll(&head2);
+//
+//#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+//   __syncthreads();
+//#endif
+//}
+//__device__ String::pAreEqual pEqual = String::AreEqual;
+//
+//int main()
+//{
+//   String::pAreEqual h_1;
+//   cudaMemcpyFromSymbol(&h_1, pEqual, sizeof(String::pAreEqual));
+//
+//   kernel << <1, 1 >> >(h_1);
+//   checkCudaErrors(cudaDeviceSynchronize());
+//   checkCudaErrors(cudaGetLastError());
+//
+//   return 0;
+//}
+
+//__device__ void PrintList(LinkedList::Node<int>* head)
+//{
+//   while (head != NULL) {
+//      printf("- %d\n", head->GetValue());
+//      head = head->GetNext();
+//   }
+//   printf("-------------------\n");
+//}
+//
+//__device__ void doThings()
+//{
+//   LinkedList::Node<int> * head = NULL;
+//   LinkedList::Node<int>** newHeadAddr = &head;
+//   LinkedList::InsertNext(newHeadAddr, 0);
+//   LinkedList::InsertNext(newHeadAddr, 1);
+//   newHeadAddr = (*newHeadAddr)->GetNextAddr();
+//   LinkedList::InsertNext(newHeadAddr, 2);
+//
+//   PrintList(head);
+//   LinkedList::Node<int> * head2 = LinkedList::DeepCopy(head);
+//   LinkedList::RemoveAll(&head);
+//   PrintList(head);
+//   PrintList(head2);
+//   LinkedList::RemoveAll(&head2);
+//   PrintList(head2);
+//}
 
 #endif
