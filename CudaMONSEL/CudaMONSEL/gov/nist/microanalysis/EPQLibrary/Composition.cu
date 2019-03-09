@@ -764,7 +764,7 @@ namespace Composition
          return false;
       }
 
-      auto a = IsSet(mConstituents, Element::AreEqual, [](UnceratinValue2::UnceratinValue2, UnceratinValue2::UnceratinValue2) { return true; });
+      //auto a = IsSet(mConstituents, Element::AreEqual, [](UnceratinValue2::UnceratinValue2, UnceratinValue2::UnceratinValue2) { return true; });
       
       //if (!LinkedListKV::AreEquivalentSets(GetConstituents(), obj.GetConstituents(), Element::AreEqual, UncertainValue2::AreEqual)) {
       //   return false;

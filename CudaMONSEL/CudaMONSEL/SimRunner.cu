@@ -17,8 +17,10 @@
 #include "ImageUtil.h"
 #include "TimeUtil.h"
 
+#include "Amphibian\Tests\HasherTest.cuh"
 #include "Amphibian\Tests\StringTest.cuh"
 #include "Amphibian\Tests\LinkedListTest.cuh"
+#include "Amphibian\Tests\SetTest.cuh"
 #include "gov\nist\microanalysis\EPQTests\UncertainValue2Test.cuh"
 #include "gov\nist\microanalysis\EPQTests\ElementTest.cuh"
 #include "gov\nist\microanalysis\EPQTests\MaterialTest.cuh"
@@ -89,6 +91,8 @@ __global__ void TestKernel()
    UncertainValue2::UncertainValue2 v3(2, 10);
    printf("%d\n", v1.equals(v2));
 
+   HasherTest::TestOne();
+
    UncertainValue2Test::UncertainValue2Test uvTest;
    uvTest.testSpecialValues();
    uvTest.testA();
@@ -111,6 +115,8 @@ __global__ void TestKernel()
    StringTest::AtoITest();
    StringTest::ItoATest();
    StringTest::AtoFTest();
+
+   SetTest::TestA();
 
    //MaterialTest::MaterialTest mat;
    //mat.testOne();

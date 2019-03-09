@@ -9,6 +9,7 @@ namespace LinkedList
    class Node
    {
    public:
+      typedef bool(*pCmp)(T, T);
       __host__ __device__ Node();
       __host__ __device__ Node(T, Node*);
 
@@ -65,6 +66,19 @@ namespace LinkedList
    {
       return &next;
    }
+
+   //template<typename T>
+   //__host__ __device__ T Node<T>::RemoveNode(Node<T>** headAddr, T v, Node<T>::pCmp cmp)
+   //{
+   //   while () {
+   //      if (cmp(v, (*headAddr)->GetValue())) {
+   //         RemoveHead(headAddr);
+   //         break;
+   //      }
+   //   }
+
+   //   return v;
+   //}
 
    template<typename T>
    __host__ __device__ void InsertHead(Node<T>** headAddr, T v)
