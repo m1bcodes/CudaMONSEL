@@ -707,24 +707,24 @@ namespace Composition
       return mOptimalRepresentation;
    }
 
-   ////__device__ int Composition::hashCode()
-   ////{
-   ////   if (mHashCode == String::MAX_SIGNED_INTEGER) {
-   ////      int result = 1;
-   ////      int PRIME = 31;
-   ////      result = PRIME * result + mConstituents.hashCode();
-   ////      result = PRIME * result + mConstituentsAtomic.hashCode();
-   ////      result = PRIME * result + ((mName == null) ? 0 : mName.hashCode());
-   ////      long temp;
-   ////      temp = mNormalization.hashCode();
-   ////      result = PRIME * result + (int)(temp ^ (temp >> > 32));
-   ////      result = PRIME * result + ((mOptimalRepresentation == null) ? 0 : mOptimalRepresentation.hashCode());
-   ////      if (result == Integer.MAX_VALUE)
-   ////         result = Integer.MIN_VALUE;
-   ////      mHashCode = result;
-   ////   }
-   ////   return mHashCode;
-   ////}
+   //__device__ int Composition::hashCode()
+   //{
+   //   if (mHashCode == INT_MAX) {
+   //      int result = 1;
+   //      int PRIME = 31;
+   //      result = PRIME * result + mConstituents.hashCode();
+   //      result = PRIME * result + mConstituentsAtomic.hashCode();
+   //      result = PRIME * result + ((mName == null) ? 0 : mName.hashCode());
+   //      long temp;
+   //      temp = mNormalization.hashCode();
+   //      result = PRIME * result + (int)(temp ^ (temp >> > 32));
+   //      result = PRIME * result + ((mOptimalRepresentation == null) ? 0 : mOptimalRepresentation.hashCode());
+   //      if (result == Integer.MAX_VALUE)
+   //         result = Integer.MIN_VALUE;
+   //      mHashCode = result;
+   //   }
+   //   return mHashCode;
+   //}
 
    __device__ LinkedListKV::Node<Element::Element, UncertainValue2::UncertainValue2>* Composition::GetConstituents()
    {
@@ -738,22 +738,6 @@ namespace Composition
    //   //}
    //   return true;
    //}
-
-   __device__ bool IsSet(LinkedListKV::Node<Element::Element, UncertainValue2::UncertainValue2>* head, bool equalKeys(Element::Element, Element::Element), bool equalValues(UncertainValue2::UncertainValue2, UncertainValue2::UncertainValue2))
-   {
-      LinkedListKV::Node<Element::Element, UncertainValue2::UncertainValue2>* head1 = head;
-      while (head1 != NULL) {
-         LinkedListKV::Node<Element::Element, UncertainValue2::UncertainValue2>* head2 = head1->GetNext();
-         while (head2 != NULL) {
-            if (AreEquivalentNodes(head1, head2, equalKeys, equalValues)) {
-               return false;
-            }
-            head2 = head2->GetNext();
-         }
-         head1 = head1->GetNext();
-      }
-      return true;
-   }
 
    __device__ bool Composition::equals(Composition& obj)
    {
@@ -1033,8 +1017,8 @@ namespace Composition
    int DIM = 9;
    __device__ long PROJECTORS[100]; // = createProjectors(2762689630628022905L);
 
-   __device__ long mIndexHashS = String::MAX_SIGNED_INTEGER;
-   __device__ long mIndexHashL = String::MAX_SIGNED_INTEGER;
+   __device__ long mIndexHashS = INT_MAX;
+   __device__ long mIndexHashL = INT_MAX;
 
    void createProjectors(long seed)
    {
@@ -1062,7 +1046,7 @@ namespace Composition
 
    __device__ long Composition::indexHashCodeS()
    {
-      if (mIndexHashS == String::MAX_SIGNED_INTEGER) {
+      if (mIndexHashS == INT_MAX) {
          long res = 0;
          auto i = getElementSet();
          while (i != NULL) {
@@ -1080,7 +1064,7 @@ namespace Composition
 
    __device__ long Composition::indexHashCodeL()
    {
-      if (mIndexHashL == String::MAX_SIGNED_INTEGER) {
+      if (mIndexHashL == INT_MAX) {
          long res = 0;
          auto i = getElementSet();
          while (i != NULL) {

@@ -17,42 +17,38 @@ namespace UncertainValue2
    __device__ const long long serialVersionUID = 119495064970078787L;
    __device__ const int MAX_LEN = 11;
 
-   __device__ UncertainValue2::UncertainValue2()
+   __device__ const Hasher::pHasher DefaultHasher = Hasher::APHash;
+
+   __device__ UncertainValue2::UncertainValue2() : mSigmas(DefaultHasher, String::AreEqual)
    {
    }
 
-   __device__ UncertainValue2::UncertainValue2(double v, double dv) : mValue(v), mSigmas(NULL)
+   __device__ UncertainValue2::UncertainValue2(double v, double dv) : mValue(v), mSigmas(DefaultHasher, String::AreEqual)
    {
       char tmpName[MAX_LEN];
       String::IToA(tmpName, atomicAdd(&sDefIndex, 1));
       assignComponent(tmpName, dv);
    }
 
-   __device__ UncertainValue2::UncertainValue2(double v) : mValue(v), mSigmas(NULL)
+   __device__ UncertainValue2::UncertainValue2(double v) : mValue(v), mSigmas(DefaultHasher, String::AreEqual)
    {
    }
 
-   __device__ UncertainValue2::UncertainValue2(double v, char source[], double dv) : mValue(v), mSigmas(NULL)
+   __device__ UncertainValue2::UncertainValue2(double v, char source[], double dv) : mValue(v), mSigmas(DefaultHasher, String::AreEqual)
    {
       assignComponent(String::String(source), dv);
    }
 
-   __device__ UncertainValue2::UncertainValue2(double v, LinkedListKV::Node<String::String, double>* sigmas) : mValue(v), mSigmas(NULL)
+   __device__ UncertainValue2::UncertainValue2(double v, Map::Map<String::String, double> sigmas) : mValue(v), mSigmas(DefaultHasher, String::AreEqual)
    {
-      while (sigmas != NULL) {
-         assignComponent(sigmas->GetKey(), sigmas->GetValue());
-         sigmas = sigmas->GetNext();
+      if (*((int*)&sigmas) != NULL) {
+         mSigmas.DeepCopy(sigmas);
       }
    }
 
-   __device__ UncertainValue2::UncertainValue2(UncertainValue2& other) : mValue(other.doubleValue()), mSigmas(NULL)
+   __device__ UncertainValue2::UncertainValue2(UncertainValue2& other) : mValue(other.doubleValue()), mSigmas(DefaultHasher, String::AreEqual)
    {
-      auto sigmas = other.getComponents();
-      while (sigmas != NULL) {
-         assignComponent(sigmas->GetKey(), sigmas->GetValue());
-         sigmas = sigmas->GetNext();
-      }
-      //LinkedListKV::DeepCopy<String::String, double>(&mSigmas, other.getComponents());
+      mSigmas.DeepCopy(other.getComponents());
    }
 
    __device__ UncertainValue2 ONE()
@@ -83,8 +79,7 @@ namespace UncertainValue2
    __device__ UncertainValue2& UncertainValue2::operator=(UncertainValue2& other)
    {
       mValue = other.doubleValue();
-      mSigmas = NULL;
-      LinkedListKV::DeepCopy<String::String, double>(&mSigmas, other.getComponents());
+      mSigmas.DeepCopy(other.getComponents());
 
       return *this;
    }
@@ -92,26 +87,25 @@ namespace UncertainValue2
    __device__ void UncertainValue2::assignInitialValue(double v)
    {
       mValue = v;
-      mSigmas = NULL;
    }
 
    __device__ void UncertainValue2::assignComponent(String::String name, double sigma)
    {
       if (sigma != 0.0) {
-         LinkedListKV::InsertHead<String::String, double>(&mSigmas, name, sigma);
+         mSigmas.Put(name, sigma);
       }
       else {
-         LinkedListKV::Remove<String::String, double>(&mSigmas, name, String::AreEqual);
+         mSigmas.Remove(name);
       }
    }
 
    __device__ double UncertainValue2::getComponent(String::String src)
    {
-      auto v = LinkedListKV::GetValue<String::String, double>(mSigmas, src, String::AreEqual);
+      auto v = mSigmas.GetValue(src);
       return v != NULL ? v : 0.0;
    }
 
-   __device__ LinkedListKV::Node<String::String, double> * UncertainValue2::getComponents()
+   __device__ Map::Map<String::String, double> UncertainValue2::getComponents()
    {
       return mSigmas;
    }
@@ -123,42 +117,41 @@ namespace UncertainValue2
 
    __device__ void UncertainValue2::renameComponent(String::String oldName, String::String newName)
    {
-      if (LinkedListKV::ContainsKey<String::String, double>(mSigmas, newName, String::AreEqual)) {
+      // if (LinkedListKV::ContainsKey<String::String, double>(mSigmas, newName, String::AreEqual)) {
+      if (mSigmas.ContainsKey(newName)) {
          printf("A component named %s already exists.", newName.Get());
          return;
       }
-      double val = LinkedListKV::Remove<String::String, double>(&mSigmas, oldName, String::AreEqual);
+      double val = mSigmas.Remove(oldName);
       if (val != NULL) {
-         LinkedListKV::InsertHead<String::String, double>(&mSigmas, newName, val);
+         mSigmas.Put(newName, val);
       }
    }
 
-   __device__ UncertainValue2 add(LinkedList::Node<UncertainValue2>* uvs)
+   __device__ UncertainValue2 add(UncertainValue2 uvs[], int uvsLen)
    {
-      LinkedList::Node<String::String>* srcs = NULL, *srcsItr = NULL;
+      Set::Set<String::String> keys(DefaultHasher, String::AreEqual);
       double sum = 0.0;
-      auto uvItrHead = uvs;
-      while (uvItrHead != NULL) {
-         AdvancedLinkedList::AddAllKeys<String::String, double>(&srcs, uvItrHead->GetValue().getComponents(), String::AreEqual);
-         sum += uvItrHead->GetValue().doubleValue();
-         uvItrHead = uvItrHead->GetNext();
+      for (int k = 0; k < uvsLen; ++k) {
+         sum += uvs[k].doubleValue();
+         keys.Add(uvs[k].getComponents().GetKeys());
       }
       UncertainValue2 res(sum);
-      srcsItr = srcs;
+      auto srcsHead = keys.AsList();
+      auto srcsItr = srcsHead;
+
       while (srcsItr != NULL) {
          auto src = srcsItr->GetValue();
          srcsItr = srcsItr->GetNext();
          double unc = 0.0;
          // This seems right but is it????
-         auto uvItrHead1 = uvs;
-         while (uvItrHead1 != NULL) {
-            auto uv = uvItrHead1->GetValue();
-            unc += copysign(uv.getComponent(src), (uv.doubleValue()));
-            uvItrHead1 = uvItrHead1->GetNext();
+         for (int k = 0; k < uvsLen; ++k) {
+            auto uv = uvs[k];
+            unc += uv.getComponent(src) * copysign(1.0, uv.doubleValue());
          }
          res.assignComponent(src, unc);
       }
-      LinkedList::RemoveAll(&srcs);
+      LinkedList::RemoveAll(&srcsHead);
       return res;
    }
 
@@ -173,15 +166,16 @@ namespace UncertainValue2
 
    __device__ UncertainValue2 add(double a, UncertainValue2 uva, double b, UncertainValue2 uvb)
    {
+      Set::Set<String::String> keys(DefaultHasher, String::AreEqual);
       UncertainValue2 res(a * uva.doubleValue() + b * uvb.doubleValue());
-      LinkedList::Node<String::String>* srcs = NULL, *srcsHead = NULL;
-      AdvancedLinkedList::AddAllKeys(&srcsHead, uva.getComponents(), String::AreEqual);
-      AdvancedLinkedList::AddAllKeys(&srcsHead, uvb.getComponents(), String::AreEqual);
-      srcs = srcsHead;
-      while (srcs != NULL) {
-         String::String src = srcs->GetValue();
+      keys.Add(uva.getComponents().GetKeys());
+      keys.Add(uvb.getComponents().GetKeys());
+
+      LinkedList::Node<String::String>* srcsHead = keys.AsList(), *srcsItr = srcsHead;
+      while (srcsItr != NULL) {
+         String::String src = srcsItr->GetValue();
          res.assignComponent(src, a * copysign(1.0, uva.doubleValue()) * uva.getComponent(src) + b * copysign(1.0, uvb.doubleValue()) * uvb.getComponent(src));
-         srcs = srcs->GetNext();
+         srcsItr = srcsItr->GetNext();
       }
       LinkedList::RemoveAll(&srcsHead);
       return res;
@@ -192,16 +186,17 @@ namespace UncertainValue2
       return add(1.0, uva, -1.0, uvb);
    }
 
-   __device__ UncertainValue2 mean(LinkedList::Node<UncertainValue2>* uvs)
+   __device__ UncertainValue2 mean(UncertainValue2 uvs[], int uvsLen)
    {
-      return divide(add(uvs), (double)LinkedList::Size<UncertainValue2>(uvs));
+      return divide(add(uvs, uvsLen), (double)uvsLen);
    }
 
-   __device__ UncertainValue2 weightedMean(LinkedList::Node<UncertainValue2>* cuv)
+   __device__ UncertainValue2 weightedMean(UncertainValue2 cuv[], int uvsLen)
    {
       double varSum = 0.0, sum = 0.0;
-      while (cuv != NULL) {
-         auto uv = cuv->GetValue();
+
+      for (int k = 0; k < uvsLen; ++k) {
+         auto uv = cuv[k];
          const double ivar = 1.0 / uv.variance();
          if (isnan(ivar) || isinf(ivar)) {
             printf("%s\n", "Unable to compute the weighted mean when one or more datapoints have zero uncertainty.");
@@ -209,21 +204,20 @@ namespace UncertainValue2
          }
          varSum += ivar;
          sum += ivar * uv.doubleValue();
-         cuv = cuv->GetNext();
       }
       const double iVarSum = 1.0 / varSum;
       return (isnan(iVarSum) || isinf(iVarSum)) ? NULL : UncertainValue2(sum / varSum, "WM", ::sqrt(1.0 / varSum));
    }
 
-   __device__ UncertainValue2 min(LinkedList::Node<UncertainValue2>* uvs)
+   __device__ UncertainValue2 min(UncertainValue2 uvs[], int uvsLen)
    {
-      if (uvs == NULL) {
+      if (uvsLen == 0) {
          return NULL;
       }
-      UncertainValue2 res = uvs->GetValue();
+      UncertainValue2 res = uvs[0];
 
-      while (uvs != NULL) {
-         auto uv = uvs->GetValue();
+      for (int k = 0; k < uvsLen; ++k) {
+         auto uv = uvs[k];
          if (uv.doubleValue() < res.doubleValue()) {
             res = uv;
          }
@@ -232,19 +226,19 @@ namespace UncertainValue2
                res = uv;
             }
          }
-         uvs = uvs->GetNext();
       }
       return res;
    }
 
-   __device__ UncertainValue2 max(LinkedList::Node<UncertainValue2>* uvs)
+   __device__ UncertainValue2 max(UncertainValue2 uvs[], int uvsLen)
    {
-      if (uvs == NULL) {
+      if (uvs == 0) {
          return NULL;
       }
-      UncertainValue2 res = uvs->GetValue();
-      while (uvs != NULL) {
-         auto uv = uvs->GetValue();
+      UncertainValue2 res = uvs[0];
+
+      for (int k = 0; k < uvsLen; ++k) {
+         auto uv = uvs[k];
          if (uv.doubleValue() > res.doubleValue()) {
             res = uv;
          }
@@ -253,7 +247,6 @@ namespace UncertainValue2
                res = uv;
             }
          }
-         uvs = uvs->GetNext();
       }
       return res;
    }
@@ -280,29 +273,30 @@ namespace UncertainValue2
          return NULL;
       }
       UncertainValue2 res(v1 * v2.doubleValue());
-      auto srcs = v2.getComponents();
+      auto srcs = v2.getComponents().AsList();
+
       while (srcs != NULL) {
          res.assignComponent(srcs->GetKey(), v1 * srcs->GetValue());
          srcs = srcs->GetNext();
       }
+      LinkedListKV::RemoveAll(&srcs);
       return res;
    }
 
    __device__ UncertainValue2 multiply(UncertainValue2 v1, UncertainValue2 v2)
    {
-      UncertainValue2 res(v1.doubleValue() * v2.doubleValue());
-      LinkedList::Node<String::String>* srcs = NULL, *srcsHead = NULL;
-      AdvancedLinkedList::AddAllKeys<String::String, double>(&srcsHead, v1.getComponents(), String::AreEqual);
-      AdvancedLinkedList::AddAllKeys<String::String, double>(&srcsHead, v2.getComponents(), String::AreEqual);
+      Set::Set<String::String> keys(DefaultHasher, String::AreEqual);
+      keys.Add(v1.getComponents().GetKeys());
+      keys.Add(v2.getComponents().GetKeys());
 
-      srcs = srcsHead;
-      while (srcs != NULL) {
-         auto src = srcs->GetValue();
-         //printf("%s: %lf\n", src.Get(), v1.doubleValue() * v2.getComponent(src) + v2.doubleValue() * v1.getComponent(src));
+      UncertainValue2 res(v1.doubleValue() * v2.doubleValue());
+      Set::SetIterator<String::String> itr(keys);
+      while (itr.HasNext()) {
+         auto src = itr.GetValue();
          res.assignComponent(src, v1.doubleValue() * v2.getComponent(src) + v2.doubleValue() * v1.getComponent(src));
-         srcs = srcs->GetNext();
+         itr.Next();
       }
-      LinkedList::RemoveAll(&srcsHead);
+
       return res;
    }
 
@@ -311,19 +305,21 @@ namespace UncertainValue2
       return divide(1.0, v);
    }
 
-   __device__ UncertainValue2 divide(UncertainValue2 a, UncertainValue2 b)
+   __device__ UncertainValue2 divide(UncertainValue2 v1, UncertainValue2 v2)
    {
-      UncertainValue2 res(a.doubleValue() / b.doubleValue());
+      UncertainValue2 res(v1.doubleValue() / v2.doubleValue());
       if (!(isnan(res.doubleValue()) || isinf(res.doubleValue()))) {
+         Set::Set<String::String> keys(DefaultHasher, String::AreEqual);
+         keys.Add(v1.getComponents().GetKeys());
+         keys.Add(v2.getComponents().GetKeys());
+
          LinkedList::Node<String::String>* srcs = NULL, *srcsHead = NULL;
-         AdvancedLinkedList::AddAllKeys(&srcsHead, a.getComponents(), String::AreEqual);
-         AdvancedLinkedList::AddAllKeys(&srcsHead, b.getComponents(), String::AreEqual);
-         const double ua = fabs(1.0 / b.doubleValue());
-         const double ub = fabs(a.doubleValue() / (b.doubleValue() * b.doubleValue()));
+         const double ua = fabs(1.0 / v2.doubleValue());
+         const double ub = fabs(v1.doubleValue() / (v2.doubleValue() * v2.doubleValue()));
          srcs = srcsHead;
          while (srcs != NULL) {
             auto src = srcs->GetValue();
-            res.assignComponent(src, ua * a.getComponent(src) + ub * b.getComponent(src));
+            res.assignComponent(src, ua * v1.getComponent(src) + ub * v2.getComponent(src));
             srcs = srcs->GetNext();
          }
          LinkedList::RemoveAll(&srcsHead);
@@ -336,11 +332,12 @@ namespace UncertainValue2
       UncertainValue2 res(a / b.doubleValue());
       if (!(isnan(res.doubleValue()) || isinf(res.doubleValue()))) {
          const double ub = fabs(a / (b.doubleValue() * b.doubleValue()));
-         auto bSigmas = b.getComponents();
+         auto bSigmasHead = b.getComponents().AsList(), bSigmas = bSigmasHead;
          while (bSigmas != NULL) {
             res.assignComponent(bSigmas->GetKey(), ub * bSigmas->GetValue());
             bSigmas = bSigmas->GetNext();
          }
+         LinkedListKV::RemoveAll(&bSigmasHead);
       }
       return res;
    }
@@ -355,11 +352,12 @@ namespace UncertainValue2
       }
       UncertainValue2 res(a.doubleValue() / b);
       const double ua = fabs(1.0 / b);
-      auto sigmaItrHead = a.getComponents();
-      while (sigmaItrHead != NULL) {
-         res.assignComponent(sigmaItrHead->GetKey(), ua * sigmaItrHead->GetValue());
-         sigmaItrHead = sigmaItrHead->GetNext();
+      auto sigmaHead = a.getComponents().AsList(), sigmaItr = sigmaHead;
+      while (sigmaItr != NULL) {
+         res.assignComponent(sigmaItr->GetKey(), ua * sigmaItr->GetValue());
+         sigmaItr = sigmaItr->GetNext();
       }
+      LinkedListKV::RemoveAll(&sigmaHead);
       return res;
    }
 
@@ -372,11 +370,12 @@ namespace UncertainValue2
 
       double ex = ::exp(x.doubleValue());
       UncertainValue2 res(ex);
-      auto sigmas = x.getComponents();
+      auto sigmasHead = x.getComponents().AsList(), sigmas = sigmasHead;
       while (sigmas != NULL) {
          res.assignComponent(sigmas->GetKey(), ex * sigmas->GetValue());
          sigmas = sigmas->GetNext();
       }
+      LinkedListKV::RemoveAll(&sigmasHead);
       return res;
    }
 
@@ -391,13 +390,13 @@ namespace UncertainValue2
          return UncertainValue2(CUDART_INF);
       }
       UncertainValue2 res(lv);
-      auto sigmas = v2.getComponents();
+      auto sigmasHead = v2.getComponents().AsList(), sigmas = sigmasHead;
       while (sigmas != NULL) {
          res.assignComponent(sigmas->GetKey(), tmp * sigmas->GetValue());
          sigmas = sigmas->GetNext();
       }
+      LinkedListKV::RemoveAll(&sigmasHead);
       return res;
-
    }
 
    __device__ UncertainValue2 pow(UncertainValue2 v1, double n)
@@ -408,11 +407,12 @@ namespace UncertainValue2
       const double f = ::pow(v1.doubleValue(), n);
       const double df = n * ::pow(v1.doubleValue(), n - 1.0);
       UncertainValue2 res(f);
-      auto v1sigmas = v1.getComponents();
+      auto v1sigmasHead = v1.getComponents().AsList(), v1sigmas = v1sigmasHead;
       while (v1sigmas != NULL) {
          res.assignComponent(v1sigmas->GetKey(), v1sigmas->GetValue() * df);
          v1sigmas = v1sigmas->GetNext();
       }
+      LinkedListKV::RemoveAll(&v1sigmasHead);
       return res;
    }
 
@@ -448,7 +448,7 @@ namespace UncertainValue2
 
    __device__ bool UncertainValue2::isUncertain()
    {
-      return mSigmas != NULL;
+      return !mSigmas.IsEmpty();
    }
 
    __device__ double UncertainValue2::uncertainty()
@@ -458,14 +458,17 @@ namespace UncertainValue2
 
    __device__ double UncertainValue2::variance()
    {
-      double sigma2 = 0.0;
-      LinkedListKV::Node<String::String, double>* head = mSigmas;
-      while (head != NULL) {
-         double v = head->GetValue();
-         sigma2 += v * v;
-         head = head->GetNext();
-      }
-      return sigma2;
+      //double sigma2 = 0.0;
+      //LinkedListKV::Node<String::String, double>* sigmaHead = mSigmas.AsList(), *head = sigmaHead;
+      //while (head != NULL) {
+      //   double v = head->GetValue();
+      //   sigma2 += v * v;
+      //   head = head->GetNext();
+      //}
+      //LinkedListKV::RemoveAll(&sigmaHead);
+      //return sigma2;
+
+      return mSigmas.Aggregate([](double a) { return a*a; });
    }
 
    __device__ double UncertainValue2::fractionalUncertainty()
@@ -487,7 +490,8 @@ namespace UncertainValue2
       if (this == &other) {
          return true;
       }
-      return LinkedListKV::AreEquivalentSets<String::String, double>(mSigmas, other.getComponents(), String::AreEqual, [](double a, double b) { return a == b; }) && (mValue == other.doubleValue());
+      return true;
+      //return LinkedListKV::AreEquivalentSets<String::String, double>(mSigmas, other.getComponents(), String::AreEqual, [](double a, double b) { return a == b; }) && (mValue == other.doubleValue());
    }
 
    __device__ int UncertainValue2::compareTo(UncertainValue2 o)
@@ -537,11 +541,12 @@ namespace UncertainValue2
          return UncertainValue2(CUDART_INF);
       }
       UncertainValue2 res(f);
-      LinkedListKV::Node<String::String, double>* sigmas = uv.getComponents();
+      LinkedListKV::Node<String::String, double>* sigmasHead = uv.getComponents().AsList(), *sigmas = sigmasHead;
       while (sigmas != NULL) {
          res.assignComponent(sigmas->GetKey(), df * sigmas->GetValue());
          sigmas = sigmas->GetNext();
       }
+      LinkedListKV::RemoveAll(&sigmasHead);
       return res;
    }
 
@@ -557,11 +562,12 @@ namespace UncertainValue2
          return UncertainValue2(CUDART_INF);
       }
       UncertainValue2 res(f);
-      LinkedListKV::Node<String::String, double>* sigmas = divide(y, x).getComponents();
+      LinkedListKV::Node<String::String, double>* sigmasHead = divide(y, x).getComponents().AsList(), *sigmas = sigmasHead;
       while (sigmas != NULL) {
          res.assignComponent(sigmas->GetKey(), df * sigmas->GetValue());
          sigmas = sigmas->GetNext();
       }
+      LinkedListKV::RemoveAll(&sigmasHead);
       return res;
    }
 
@@ -587,7 +593,7 @@ namespace UncertainValue2
       return k1 == k2;
    }
 
-   __device__ Correlations::Correlations() : mCorrelations(NULL)
+   __device__ Correlations::Correlations() : mCorrelations(DefaultHasher, Key::AreEqual)
    {
    }
 
@@ -599,25 +605,28 @@ namespace UncertainValue2
       }
       corr = ::fmax(corr, 1.0);
       corr = ::fmin(corr, -1.0);
-      LinkedListKV::InsertHead<Key, double>(&mCorrelations, Key(src1, src2), corr);
+      mCorrelations.Put(Key(src1, src2), corr);
    }
 
    __device__ double Correlations::get(String::String src1, String::String src2)
    {
-      double r = LinkedListKV::GetValue<Key, double>(mCorrelations, Key(src1, src2), Key::AreEqual);
+      double r = mCorrelations.GetValue(Key(src1, src2));
       return r == NULL ? 0.0 : r;
    }
 
    __device__ double UncertainValue2::variance(Correlations corr)
    {
-      LinkedList::Node<String::String>* keys = NULL;
-      LinkedListKV::Node<String::String, double>* sigmas = getComponents();
-      AdvancedLinkedList::AddAllKeys(&keys, sigmas, String::AreEqual);
+      Map::Map<String::String, double> sigmas = getComponents();
+
+      Set::Set<String::String> keyset(DefaultHasher, String::AreEqual);
+      keyset.Add(sigmas.GetKeys());
+      auto keys = keyset.AsList();
+
       double res = 0.0;
       auto tmpKeys = keys;
       while (tmpKeys != NULL) {
          String::String key = tmpKeys->GetValue();
-         auto val = LinkedListKV::GetValue(sigmas, key, String::AreEqual);
+         auto val = sigmas.GetValue(key);
          res += val * val;
          tmpKeys = tmpKeys->GetNext();
       }
@@ -626,8 +635,8 @@ namespace UncertainValue2
          while (tmpKeys2 != NULL) {
             auto key1 = tmpKeys1->GetValue();
             auto key2 = tmpKeys2->GetValue();
-            auto sigma1 = LinkedListKV::GetValue(sigmas, key1, String::AreEqual);
-            auto sigma2 = LinkedListKV::GetValue(sigmas, key2, String::AreEqual);
+            auto sigma1 = sigmas.GetValue(key1);
+            auto sigma2 = sigmas.GetValue(key2);
             res += 2.0 * sigma1 * sigma2 * corr.get(key1, key2);
             tmpKeys2 = tmpKeys2->GetNext();
          }
@@ -645,11 +654,12 @@ namespace UncertainValue2
 
    __device__ void UncertainValue2::PrintSigmas()
    {
-      auto sigmas = mSigmas;
+      auto sigmasHead = mSigmas.AsList(), sigmas = sigmasHead;
       while (sigmas != NULL) {
          printf("%s: %lf\n", sigmas->GetKey().Get(), sigmas->GetValue());
          sigmas = sigmas->GetNext();
       }
+      LinkedListKV::RemoveAll(&sigmasHead);
    }
 
    __device__ bool AreEqual(UncertainValue2 a, UncertainValue2 b)

@@ -5,7 +5,7 @@
 #include <math_constants.h>
 
 #include "..\..\..\..\Amphibian\String.cuh"
-#include "..\..\..\..\Amphibian\LinkedList.cuh"
+#include "..\..\..\..\Amphibian\Map.cuh"
 
 namespace UncertainValue2
 {
@@ -24,7 +24,7 @@ namespace UncertainValue2
    class Correlations
    {
    private:
-      LinkedListKV::Node<Key, double>* mCorrelations;
+      Map::Map<Key, double> mCorrelations;
 
    public:
       __device__ Correlations();
@@ -41,14 +41,14 @@ namespace UncertainValue2
       __device__ UncertainValue2(double v, char source[], double dv);
       __device__ UncertainValue2(double v);
       __device__ UncertainValue2(double v, double dv);
-      __device__ UncertainValue2(double v, LinkedListKV::Node<String::String, double>* sigmas);
+      __device__ UncertainValue2(double v, Map::Map<String::String, double> sigmas);
       __device__ UncertainValue2(UncertainValue2&);
       __device__ UncertainValue2& operator=(UncertainValue2&);
 
       __device__ void assignInitialValue(double);
       __device__ void assignComponent(String::String name, double sigma);
       __device__ double getComponent(String::String src);
-      __device__ LinkedListKV::Node<String::String, double> * getComponents();
+      __device__ Map::Map<String::String, double> getComponents();
       __device__ bool hasComponent(String::String src);
       __device__ void renameComponent(String::String oldName, String::String newName);
 
@@ -76,11 +76,11 @@ namespace UncertainValue2
 
    private:
       double mValue;
-      LinkedListKV::Node<String::String, double>* mSigmas;
+      Map::Map<String::String, double> mSigmas;
    };
 
-   extern __device__ const char DEFAULT[8];
-   extern __device__ int sDefIndex; // transient
+   //extern __device__ const char DEFAULT[8];
+   //extern __device__ int sDefIndex; // transient
 
    __device__ UncertainValue2 ONE();
    __device__ UncertainValue2 NaN();
@@ -88,17 +88,17 @@ namespace UncertainValue2
    __device__ UncertainValue2 NEGATIVE_INFINITY();
    __device__ UncertainValue2 ZERO();
 
-   extern __device__ const long long serialVersionUID;
+   //extern __device__ const long long serialVersionUID;
    extern __device__ const int MAX_LEN;
 
-   __device__ UncertainValue2 add(LinkedList::Node<UncertainValue2>* uvs);
+   __device__ UncertainValue2 add(UncertainValue2 uvs[], int uvsLen);
    __device__ UncertainValue2 add(UncertainValue2*, int);
    __device__ UncertainValue2 add(double a, UncertainValue2 uva, double b, UncertainValue2 uvb);
    __device__ UncertainValue2 subtract(UncertainValue2 uva, UncertainValue2 uvb);
-   __device__ UncertainValue2 mean(LinkedList::Node<UncertainValue2>* uvs);
-   __device__ UncertainValue2 weightedMean(LinkedList::Node<UncertainValue2>* cuv);
-   __device__ UncertainValue2 min(LinkedList::Node<UncertainValue2>* uvs);
-   __device__ UncertainValue2 max(LinkedList::Node<UncertainValue2>* uvs);
+   __device__ UncertainValue2 mean(UncertainValue2 uvs[], int uvsLen);
+   __device__ UncertainValue2 weightedMean(UncertainValue2 uvs[], int uvsLen);
+   __device__ UncertainValue2 min(UncertainValue2 uvs[], int uvsLen);
+   __device__ UncertainValue2 max(UncertainValue2 uvs[], int uvsLen);
    __device__ UncertainValue2 add(UncertainValue2 v1, double v2);
    __device__ UncertainValue2 add(double v1, UncertainValue2 v2);
    __device__ UncertainValue2 add(UncertainValue2 v1, UncertainValue2 v2);

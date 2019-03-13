@@ -1,6 +1,7 @@
 #include "String.cuh"
 
 #include <stdio.h>
+#include <string.h>
 
 namespace String
 {
@@ -58,15 +59,16 @@ namespace String
 
    __host__ __device__ void String::Copy(char const * s)
    {
+      memset(str, '\0', MAX_LEN);
       int k;
-      for (k = 0; *s != NULL; ++s, ++k) {
+      for (k = 0; *s != '\0'; ++s, ++k) {
          if (k == MAX_LEN - 1) {
             printf("Length of string exceeded %d.", MAX_LEN);
             break;
          }
          str[k] = *s;
       }
-      str[k] = NULL;
+      str[k] = '\0';
    }
 
    __host__ __device__ void IToA(char* d, int n, int maxArrayLen)
@@ -74,7 +76,7 @@ namespace String
       if (maxArrayLen < 1) {
          return;
       }
-      d[0] = NULL;
+      d[0] = '\0';
       if (maxArrayLen == 1) {
          return;
       }
@@ -114,7 +116,7 @@ namespace String
             d[k] = a;
          }
       }
-      d[idx] = NULL;
+      d[idx] = '\0';
    }
 
    //__host__ __device__ int AToI(char* d)
@@ -205,10 +207,10 @@ namespace String
    {
       int c = 0;
       while (true) {
-         if (target[c] == NULL) {
+         if (target[c] == '\0') {
             return true;
          }
-         if (src[c] == NULL) {
+         if (src[c] == '\0') {
             return false;
          }
          if (src[c] != target[c]) {

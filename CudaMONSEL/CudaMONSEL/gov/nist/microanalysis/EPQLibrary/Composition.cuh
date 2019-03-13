@@ -118,7 +118,7 @@ namespace Composition
       __device__ UncertainValue2::UncertainValue2 differenceU(Composition comp);
       __device__ double difference(Composition comp);
       __device__ Representation getOptimalRepresentation();
-      ////__device__ int hashCode();
+      //__device__ int hashCode();
       __device__ bool equals(Composition& other);
       __device__ bool almostEquals(Composition other, double tol);
       __device__ LinkedListKV::Node<Element::Element, double>* absoluteError(Composition std, bool normalize);

@@ -102,24 +102,26 @@ __global__ void TestKernel()
    uvTest.testB();
    uvTest.testC();
    uvTest.testAB();
-   uvTest.testAdd1();
-   uvTest.testAdd2();
-   uvTest.testAdd3();
-   uvTest.testMultiply();
-   uvTest.testDivide();
-   uvTest.testFunctions();
+   //uvTest.testAdd1();
+   //uvTest.testAdd2();
+   //uvTest.testAdd3();
+   //uvTest.testMultiply();
+   //uvTest.testDivide();
+   //uvTest.testFunctions();
 
-   ElementTest::ElementTest elementTest;
-   elementTest.testOne();
+   //ElementTest::ElementTest elementTest;
+   //elementTest.testOne();
 
-   LinkedListTest::LinkedListTest lltest;
-   lltest.TestAddAllAsSet();
+   //LinkedListTest::LinkedListTest lltest;
+   //lltest.TestAddAllAsSet();
 
-   StringTest::AtoITest();
-   StringTest::ItoATest();
-   StringTest::AtoFTest();
+   //StringTest::EmptyTest();
+   //StringTest::AtoITest();
+   //StringTest::ItoATest();
+   //StringTest::AtoFTest();
 
-   SetTest::TestA();
+   //SetTest::TestInt();
+   //SetTest::TestString();
 
    //MaterialTest::MaterialTest mat;
    //mat.testOne();

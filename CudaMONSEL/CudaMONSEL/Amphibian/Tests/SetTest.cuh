@@ -5,7 +5,8 @@
 
 namespace SetTest
 {
-   __device__ void TestA();
+   __device__ void TestInt();
+   __device__ void TestString();
 }
 
 #endif
