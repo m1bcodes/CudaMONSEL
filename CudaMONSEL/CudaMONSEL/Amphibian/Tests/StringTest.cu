@@ -13,6 +13,20 @@ namespace StringTest
       }
    }
 
+   __host__ __device__ void EmptyTest()
+   {
+      String::String s;
+      char* a = s.Get();
+      for (int k = 0; k < 32; ++k) {
+         //int l = 0;
+         //l |= a[k];
+         //printf("%d ", a[k]);
+         assertTrue(a[k] == '\0');
+      }
+      
+      printf("StringTest::EmptyTest() completed\n");
+   }
+
    __host__ __device__ void AtoITest()
    {
       assertTrue(String::AToI("0") == 0);

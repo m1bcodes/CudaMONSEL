@@ -5,11 +5,15 @@
 #define _STRING_CUH_
 
 #include <cuda_runtime.h>
+#include "LinkedList.cuh"
 
 namespace String
 {
-
-   __device__ const int MAX_SIGNED_INTEGER = 2147483648;
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+   __constant__ const int MAX_LEN = sizeof(char) * 32;
+#else
+   const int MAX_LEN = sizeof(char) * 32;
+#endif
 
    class String
    {
@@ -25,8 +29,6 @@ namespace String
       __host__ __device__ int Length();
 
    private:
-      static const int MAX_LEN = sizeof(char) * 31;
-
       __host__ __device__ void Copy(char const *);
 
       char str[MAX_LEN];

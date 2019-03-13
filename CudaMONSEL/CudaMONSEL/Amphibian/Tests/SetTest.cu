@@ -2,6 +2,7 @@
 
 #include "..\Set.cuh"
 #include "..\Hasher.cuh"
+#include "..\String.cuh"
 
 #include <stdio.h>
 
@@ -19,7 +20,7 @@ namespace SetTest
       }
    }
 
-   __device__ void TestA()
+   __device__ void TestInt()
    {
       Hasher::pHasher hasher = Hasher::APHash;
 
@@ -28,18 +29,81 @@ namespace SetTest
          return a == b;
       });
 
-      for (int k = 0; k < 100; ++k) {
+      //for (int k = 0; k < 23; ++k) {
+      //   auto b = set.GetBucket(k);
+      //   printf("%d b");
+      //}
+
+      int maxNum = 100;
+
+      for (int k = 0; k < maxNum; ++k) {
          set.Put(k);
       }
-      for (int k = 0; k < 100; ++k) {
+      for (int k = 0; k < maxNum; ++k) {
          if (!set.Exists(k)) {
             printf("number not found: k\n", k);
          }
       }
 
-      //Print(set);
-      printf("SetTest::TestA() completed.\n");
+      int num1 = 50, num2 = 100;
+
+      set.Remove(num1);
+      set.Remove(num2);
+
+      if (set.Exists(num1)) {
+         printf("not removing elements properly: %d\n", num1);
+      }
+      if (set.Exists(num2)) {
+         printf("not removing elements properly: %d\n", num2);
+      }
+
+      for (int k = 0; k < maxNum - 20; ++k) {
+         set.Remove(k);
+         if (set.Exists(k)) {
+            printf("not removing number: %d\n", k);
+         }
+      }
 
       set.RemoveAll();
+
+      for (int k = 0; k < maxNum; ++k) {
+         if (set.Exists(k)) {
+            printf("not removing number: %d\n", k);
+         }
+      }
+
+      printf("SetTest::TestA() completed.\n");
+   }
+
+   __device__ void TestString()
+   {
+      Hasher::pHasher hasher = Hasher::APHash;
+      Set::Set<String::String> set(hasher, String::AreEqual);
+
+      String::String a("a");
+      String::String b("b");
+      String::String a2("a");
+      String::String a3("a");
+      String::String abc("abc");
+
+      set.Put(a);
+      set.Put(b);
+      set.Put(abc);
+
+      if (!set.Exists(a2)) {
+         printf("does not exist: %s\n", a2.Get());
+      }
+
+      if (!set.Exists(a3)) {
+         printf("does not exist: %s\n", a2.Get());
+      }
+
+      String::String d("d");
+
+      if (set.Exists(d)) {
+         printf("exists: %s\n", d.Get());
+      }
+
+      printf("SetTest::TestString() completed.\n");
    }
 }
