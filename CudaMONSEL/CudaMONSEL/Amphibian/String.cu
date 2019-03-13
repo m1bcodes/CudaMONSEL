@@ -117,32 +117,83 @@ namespace String
       d[idx] = NULL;
    }
 
-   __host__ __device__ int AToI(char* d)
+   //__host__ __device__ int AToI(char* d)
+   //{
+   //   int mult = 1;
+   //   int idx = 0;
+   //   if (d[0] == '-') {
+   //      mult *= -1;
+   //      idx = 1;
+   //   }
+
+   //   int res = 0;
+   //   do {
+   //      char di = d[idx];
+   //      if (di < '0' || di > '9') {
+   //         printf("invalid digit");
+   //         return 0;
+   //      }
+   //      int n = di - '0';
+   //      if (res > (MAX_SIGNED_INTEGER - 1 - n) / 10) {
+   //         printf("array contains a number that is out of the integer range\n");
+   //         break;
+   //      }
+   //      res = res * 10 + n;
+   //      ++idx;
+   //   } while (d[idx] != NULL);
+
+   //   return res*mult;
+   //}
+//#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+//   __constant__ const int INT_MAX = 2147483647;
+//   __constant__ const int INT_MIN = -INT_MAX - 1;
+//#endif
+
+   __host__ __device__ int AToI(char* str)
    {
+      int res = 0;
       int mult = 1;
+
       int idx = 0;
-      if (d[0] == '-') {
-         mult *= -1;
-         idx = 1;
+      while (str[idx] == ' ') {
+         ++idx;
       }
 
-      int res = 0;
-      do {
-         char di = d[idx];
-         if (di < '0' || di > '9') {
-            printf("invalid digit");
-            return 0;
+      if (str[idx] == '-') {
+         mult = -1;
+         ++idx;
+      }
+      else if (str[idx] == '+') {
+         ++idx;
+      }
+      else if (!(str[idx] >= '0' && str[idx] <= '9')) {
+         printf("invalid digit");
+         return 0;
+      }
+
+      while (str[idx] != NULL) {
+         if (!(str[idx] >= '0' && str[idx] <= '9')) {
+            return res;
          }
-         int n = di - '0';
-         if (res > (MAX_SIGNED_INTEGER - 1 - n) / 10) {
-            printf("array contains a number that is out of the integer range\n");
-            break;
+         int n = (str[idx] - '0') * mult;
+
+         if (mult == 1) {
+            if ((INT_MAX - n) / 10 < res) {
+               printf("array contains a number that is out of the integer range\n");
+               return INT_MAX;
+            }
+         }
+         else {
+            if ((INT_MIN - n) / 10 > res) {
+               printf("array contains a number that is out of the integer range\n");
+               return INT_MIN;
+            }
          }
          res = res * 10 + n;
-         ++idx;
-      } while (d[idx] != NULL);
 
-      return res*mult;
+         ++idx;
+      }
+      return res;
    }
 
    __host__ __device__ bool AreEqual(String a, String b)

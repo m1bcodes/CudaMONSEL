@@ -85,6 +85,9 @@ void PrintArray2D(int *h_arr, int img_x, int img_y)
 
 __global__ void TestKernel()
 {
+   printf("INT_MIN %d\n", INT_MIN);
+   printf("INT_MAX %d\n", INT_MAX);
+
    UncertainValue2::UncertainValue2 v0(0, "abc", 5);
    UncertainValue2::UncertainValue2 v1(1);
    UncertainValue2::UncertainValue2 v2(2, 10);
