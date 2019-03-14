@@ -75,8 +75,8 @@ namespace UncertainValue2
       __device__ void PrintSigmas();
 
    private:
-      double mValue;
       Map::Map<String::String, double> mSigmas;
+      double mValue;
    };
 
    //extern __device__ const char DEFAULT[8];

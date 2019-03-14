@@ -22,7 +22,9 @@ namespace String
       __host__ __device__ String(String&);
       __host__ __device__ String(char const *);
 
-      __host__ __device__ void operator=(String);
+      __host__ __device__ void operator=(String&);
+      __host__ __device__ void operator=(char const *);
+
       __host__ __device__ bool operator==(String);
 
       __host__ __device__ char* Get();

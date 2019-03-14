@@ -19,7 +19,7 @@ private:
 
 public:
    __host__ __device__ Electron(int id) { this->id = id; }
-   __host__ __device__ ~Electron() { };
+   //__host__ __device__ ~Electron() { };
 
    __host__ __device__ int GetId() { return id; }
 };

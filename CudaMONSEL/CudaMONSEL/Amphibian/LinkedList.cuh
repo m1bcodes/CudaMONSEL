@@ -5,6 +5,8 @@
 
 #include <cuda_runtime.h>
 
+#include <stdio.h>
+
 namespace LinkedList
 {
    template<typename T>
@@ -333,10 +335,9 @@ namespace LinkedListKV
    template<typename KeyT, typename ValueT>
    __host__ __device__ ValueT RemoveHead(Node<KeyT, ValueT>** head)
    {
-      if (head == NULL) {
+      if (*head == NULL) {
          return NULL;
       }
-
       ValueT v = (*head)->GetValue();
 
       Node<KeyT, ValueT>* tmp = (*head)->GetNext();

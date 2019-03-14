@@ -7,6 +7,8 @@
 
 #include <cuda_runtime.h>
 
+#include <stdio.h>
+
 namespace Map
 {
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
@@ -16,17 +18,21 @@ namespace Map
 #endif
 
    template<typename K, typename V>
-   class MapIterator;
+   class Iterator;
 
    template<typename K, typename V>
    class Map
    {
-   friend class MapIterator<K, V>;
+   friend class Iterator<K, V>;
    public:
       typedef bool(*pCmp)(K, K);
       __host__ __device__ Map(Hasher::pHasher, pCmp);
-      //__host__ __device__ Map(const Map&);
-      //__host__ __device__ ~Map();
+      __host__ __device__ Map(const Map<K, V>&);
+      __host__ __device__ Map<K, V>& operator=(const Map<K, V>&);
+      __host__ __device__ ~Map();
+
+      __host__ __device__ void Initialize();
+      __host__ __device__ void ClearAndCopy(const Map<K, V>&);
       __host__ __device__ void Put(K, V);
       __host__ __device__ bool ContainsKey(K);
       __host__ __device__ V GetValue(K);
@@ -36,19 +42,18 @@ namespace Map
       __host__ __device__ void DeepCopy(const Map& other);
       __host__ __device__ V Remove(K k);
       __host__ __device__ void RemoveAll();
-      __host__ __device__ LinkedListKV::Node<K, V>* AsList();
       __host__ __device__ bool IsEmpty();
       __host__ __device__ int Size();
-      __host__ __device__ V Aggregate(V (*fcn)(V));
+      __host__ __device__ V Aggregate(V(*fcn)(V));
+      //__host__ __device__ LinkedListKV::Node<K, V>* AsList();
       __host__ __device__ LinkedListKV::Node<K, V>* GetBucket(int); // DEBUGGING PURPOSES
-      //__host__ __device__ LinkedListKV::Node<K, V>* GetBucket(int n);
 
    private:
       __host__ __device__ int unsigned GetBucketIdx(K k);
 
       LinkedListKV::Node<K, V>* buckets[NUM_BUCKETS];
-      Hasher::pHasher hasher;
-      pCmp cmp;
+      Hasher::pHasher hasher = NULL;
+      pCmp cmp = NULL;
    };
 
    template<typename K, typename V>
@@ -59,20 +64,39 @@ namespace Map
       }
    }
 
-   //template<typename K, typename V>
-   //__host__ __device__ Map<K, V>::Map(const Map<K, V>& m)
-   //{
-   //   DeepCopy(m);
-   //}
-
-   //template<typename K, typename V>
-   //__host__ __device__ Map<K, V>::~Map()
-   //{
-   //   RemoveAll();
-   //}
+   template<typename K, typename V>
+   __host__ __device__ Map<K, V>::Map(const Map<K, V>& m)
+   {
+      //printf("called cc\n");
+      ClearAndCopy(m);
+   }
 
    template<typename K, typename V>
-   __host__ __device__ void Map<K, V>::DeepCopy(const Map& other)
+   __host__ __device__ Map<K, V>& Map<K, V>::operator=(const Map<K, V>& m)
+   {
+      //printf("called =\n");
+      ClearAndCopy(m);
+      return *this;
+   }
+
+   template<typename K, typename V>
+   __host__ __device__ Map<K, V>::~Map()
+   {
+      RemoveAll();
+   }
+
+   template<typename K, typename V>
+   __host__ __device__ void Map<K, V>::Initialize()
+   {
+      for (int k = 0; k < NUM_BUCKETS; ++k) {
+         buckets[k] = NULL;
+      }
+      hasher = NULL;
+      cmp = NULL;
+   }
+
+   template<typename K, typename V>
+   __host__ __device__ void Map<K, V>::DeepCopy(const Map<K,V>& other)
    {
       RemoveAll();
       for (int k = 0; k < NUM_BUCKETS; ++k) {
@@ -83,6 +107,16 @@ namespace Map
             itr = itr->GetNext();
          }
       }
+   }
+
+   template<typename K, typename V>
+   __host__ __device__ void Map<K, V>::ClearAndCopy(const Map<K, V>& other)
+   {
+      Initialize();
+      hasher = other.hasher;
+      cmp = other.cmp;
+
+      DeepCopy(other);
    }
 
    template<typename K, typename V>
@@ -173,19 +207,19 @@ namespace Map
       return res;
    }
 
-   template<typename K, typename V>
-   __host__ __device__ LinkedListKV::Node<K, V>* Map<K, V>::AsList()
-   {
-      LinkedListKV::Node<K, V>* res = NULL;
-      for (int k = 0; k < NUM_BUCKETS; ++k) {
-         auto itr = buckets[k];
-         while (itr != NULL) {
-            LinkedListKV::InsertHead<K, V>(&res, itr->GetKey(), itr->GetValue());
-            itr = itr->GetNext();
-         }
-      }
-      return res;
-   }
+   //template<typename K, typename V>
+   //__host__ __device__ LinkedListKV::Node<K, V>* Map<K, V>::AsList()
+   //{
+   //   LinkedListKV::Node<K, V>* res = NULL;
+   //   for (int k = 0; k < NUM_BUCKETS; ++k) {
+   //      auto itr = buckets[k];
+   //      while (itr != NULL) {
+   //         LinkedListKV::InsertHead<K, V>(&res, itr->GetKey(), itr->GetValue());
+   //         itr = itr->GetNext();
+   //      }
+   //   }
+   //   return res;
+   //}
 
    template<typename K, typename V>
    __host__ __device__ bool Map<K, V>::IsEmpty()
@@ -234,56 +268,84 @@ namespace Map
    }
 
    template<typename K, typename V>
-   class MapIterator
+   class Iterator
    {
    public:
-      __host__ __device__ MapIterator(const Map<K, V>&);
+      __host__ __device__ Iterator(Map<K, V>&);
       __host__ __device__ void Reset();
       __host__ __device__ void Next();
+
+      __host__ __device__ bool HasNext();
 
       __host__ __device__ K GetKey();
       __host__ __device__ V GetValue();
 
    private:
       LinkedListKV::Node<K, V>* ptr;
-      Map<K, V> refMap;
+      Map<K, V>& refMap;
       int bucket;
    };
 
    template<typename K, typename V>
-   __host__ __device__ MapIterator<K, V>::MapIterator(const Map<K, V>& m) : refMap(m), ptr(NULL), bucket(0)
+   __host__ __device__ Iterator<K, V>::Iterator(Map<K, V>& m) : refMap(m), ptr(NULL), bucket(-1)
    {
+      Reset();
    }
 
    template<typename K, typename V>
-   __host__ __device__ void MapIterator<K, V>::Reset()
+   __host__ __device__ void Iterator<K, V>::Reset()
    {
-      bucket = 0;
-      ptr = refMap.buckets[bucket];
+      if (refMap.IsEmpty()) {
+         ptr = NULL;
+         bucket = -1;
+         return;
+      }
+      for (int k = 0; k < NUM_BUCKETS; ++k) {
+         if (refMap.buckets[k] != NULL) {
+            bucket = k;
+            ptr = refMap.buckets[bucket];
+            break;
+         }
+      }
    }
 
    template<typename K, typename V>
-   __host__ __device__ void MapIterator<K, V>::Next()
+   __host__ __device__ void Iterator<K, V>::Next()
    {
+      if (bucket == -1) {
+         return;
+      }
       if (ptr != NULL) {
          ptr = ptr->GetNext();
       }
       if (ptr == NULL) {
-         bucket = (bucket + 1) % NUM_BUCKETS;
-         ptr = refMap.buckets[bucket];
+         for (int k = bucket + 1; k < NUM_BUCKETS; ++k) {
+            if (refMap.buckets[k] != NULL) {
+               bucket = k;
+               ptr = refMap.buckets[bucket];
+               return;
+            }
+         }
+         bucket = -1;
       }
    }
 
    template<typename K, typename V>
-   __host__ __device__ K MapIterator<K, V>::GetKey()
+   __host__ __device__ bool Iterator<K, V>::HasNext()
    {
-      return ptr->GetKey();
+      return bucket != -1;
    }
 
    template<typename K, typename V>
-   __host__ __device__ V MapIterator<K, V>::GetValue()
+   __host__ __device__ K Iterator<K, V>::GetKey()
    {
-      return ptr->GetValue();
+      return (bucket == -1) ? NULL : ptr->GetKey();
+   }
+
+   template<typename K, typename V>
+   __host__ __device__ V Iterator<K, V>::GetValue()
+   {
+      return (bucket == -1) ? NULL : ptr->GetValue();
    }
 }
 

@@ -21,6 +21,7 @@
 #include "Amphibian\Tests\StringTest.cuh"
 #include "Amphibian\Tests\LinkedListTest.cuh"
 #include "Amphibian\Tests\SetTest.cuh"
+#include "Amphibian\Tests\MapTest.cuh"
 #include "gov\nist\microanalysis\EPQTests\UncertainValue2Test.cuh"
 #include "gov\nist\microanalysis\EPQTests\ElementTest.cuh"
 #include "gov\nist\microanalysis\EPQTests\MaterialTest.cuh"
@@ -93,8 +94,26 @@ __global__ void TestKernel()
    UncertainValue2::UncertainValue2 v2(2, 10);
    UncertainValue2::UncertainValue2 v3(2, 10);
    printf("%d\n", v1.equals(v2));
+   printf("%d\n", v1.equals(v3));
+   printf("%d\n", v2.equals(v3));
 
    HasherTest::TestOne();
+
+   LinkedListTest::LinkedListTest lltest;
+   lltest.TestAddAllAsSet();
+   
+   StringTest::EmptyTest();
+   StringTest::AtoITest();
+   StringTest::ItoATest();
+   StringTest::AtoFTest();
+
+   MapTest::MapTest mapTest;
+   mapTest.TestInteger();
+   mapTest.TestString();
+
+   SetTest::SetTest setTest;
+   setTest.TestInt();
+   setTest.TestString();
 
    UncertainValue2Test::UncertainValue2Test uvTest;
    uvTest.testSpecialValues();
@@ -102,26 +121,15 @@ __global__ void TestKernel()
    uvTest.testB();
    uvTest.testC();
    uvTest.testAB();
-   //uvTest.testAdd1();
-   //uvTest.testAdd2();
-   //uvTest.testAdd3();
-   //uvTest.testMultiply();
-   //uvTest.testDivide();
-   //uvTest.testFunctions();
+   uvTest.testAdd1();
+   uvTest.testAdd2();
+   uvTest.testAdd3();
+   uvTest.testMultiply();
+   uvTest.testDivide();
+   uvTest.testFunctions();
 
    //ElementTest::ElementTest elementTest;
    //elementTest.testOne();
-
-   //LinkedListTest::LinkedListTest lltest;
-   //lltest.TestAddAllAsSet();
-
-   //StringTest::EmptyTest();
-   //StringTest::AtoITest();
-   //StringTest::ItoATest();
-   //StringTest::AtoFTest();
-
-   //SetTest::TestInt();
-   //SetTest::TestString();
 
    //MaterialTest::MaterialTest mat;
    //mat.testOne();

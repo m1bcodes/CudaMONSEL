@@ -20,9 +20,14 @@ namespace String
       Copy(s);
    }
 
-   __host__ __device__ void String::operator=(String s)
+   __host__ __device__ void String::operator=(String& s)
    {
       Copy(s.Get());
+   }
+
+   __host__ __device__ void String::operator=(char const * s)
+   {
+      Copy(s);
    }
 
    __host__ __device__ bool String::operator==(String a)
@@ -118,38 +123,6 @@ namespace String
       }
       d[idx] = '\0';
    }
-
-   //__host__ __device__ int AToI(char* d)
-   //{
-   //   int mult = 1;
-   //   int idx = 0;
-   //   if (d[0] == '-') {
-   //      mult *= -1;
-   //      idx = 1;
-   //   }
-
-   //   int res = 0;
-   //   do {
-   //      char di = d[idx];
-   //      if (di < '0' || di > '9') {
-   //         printf("invalid digit");
-   //         return 0;
-   //      }
-   //      int n = di - '0';
-   //      if (res > (MAX_SIGNED_INTEGER - 1 - n) / 10) {
-   //         printf("array contains a number that is out of the integer range\n");
-   //         break;
-   //      }
-   //      res = res * 10 + n;
-   //      ++idx;
-   //   } while (d[idx] != NULL);
-
-   //   return res*mult;
-   //}
-//#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-//   __constant__ const int INT_MAX = 2147483647;
-//   __constant__ const int INT_MIN = -INT_MAX - 1;
-//#endif
 
    __host__ __device__ int AToI(char* str)
    {

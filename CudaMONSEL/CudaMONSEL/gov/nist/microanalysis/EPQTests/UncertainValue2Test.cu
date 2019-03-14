@@ -1,5 +1,8 @@
 #include "UncertainValue2Test.cuh"
 
+#include "..\..\..\..\Amphibian\Hasher.cuh"
+#include "..\..\..\..\Amphibian\Map.cuh"
+
 #include <stdio.h>
 #include <math.h>
 
@@ -148,9 +151,20 @@ namespace UncertainValue2Test
    __device__ void UncertainValue2Test::testAB()
    {
       UncertainValue2::UncertainValue2 mA(1.24, "A", 0.3);
-      UncertainValue2::UncertainValue2 mA2a = makeA2a();
+      UncertainValue2::UncertainValue2 mA2a(makeA2a());
       UncertainValue2::UncertainValue2 mB(8.82, "B", 1.2);
-      UncertainValue2::UncertainValue2 mB2a = makeB2a();
+      UncertainValue2::UncertainValue2 mB2a(makeB2a());
+      
+      //auto pp = mA.getComponents();
+      //printf("abc\n");
+      //printf("mA comp: %d\n", pp.Size());
+      //printf("??\n");
+      //printf("mB comp: %d\n", mB.getComponents().Size());
+      //printf("mA2a comp: %d\n", mA2a.getComponents().Size());
+      //printf("mB2a comp: %d\n", mB2a.getComponents().Size());
+
+      assertEquals(mA, mA2a, 1.0e-10);
+      assertEquals(mB, mB2a, 1.0e-10);
 
       assertEquals(UncertainValue2::multiply(2.0, mA), UncertainValue2::multiply(2.0, mA2a), 1.0e-10);
       assertEquals(UncertainValue2::multiply(4.0, mB), UncertainValue2::multiply(4.0, mB2a), 1.0e-10);
@@ -160,34 +174,35 @@ namespace UncertainValue2Test
       assertEquals(UncertainValue2::multiply(2.0, UncertainValue2::multiply(2.0, mB)), UncertainValue2::multiply(4.0, mB2a), 1.0e-10);
       assertEquals(UncertainValue2::multiply(4.0, mB), UncertainValue2::multiply(UncertainValue2::UncertainValue2(4.0), mB2a), 1.0e-10);
 
-      //assertEquals(UncertainValue2::multiply(mA, mB), UncertainValue2::UncertainValue2(10.9368, 3.035697613), 1.0e-8);
+      assertEquals(UncertainValue2::multiply(mA, mB), UncertainValue2::UncertainValue2(10.9368, 3.035697613), 1.0e-8);
 
-      //assertEquals(UncertainValue2::divide(mA, mB), UncertainValue2::UncertainValue2(0.1405895692, 0.03902306155), 1.0e-8);
+      assertEquals(UncertainValue2::divide(mA, mB), UncertainValue2::UncertainValue2(0.1405895692, 0.03902306155), 1.0e-8);
 
-      //assertEquals(UncertainValue2::add(mA, mB), UncertainValue2::UncertainValue2(10.06, 1.236931688), 1.0e-8);
+      assertEquals(UncertainValue2::add(mA, mB), UncertainValue2::UncertainValue2(10.06, 1.236931688), 1.0e-8);
 
-      //assertEquals(UncertainValue2::subtract(mA, mB), UncertainValue2::UncertainValue2(-7.58, 1.236931688), 1.0e-8);
+      assertEquals(UncertainValue2::subtract(mA, mB), UncertainValue2::UncertainValue2(-7.58, 1.236931688), 1.0e-8);
 
-      //assertEquals(UncertainValue2::divide(1.0, mB), UncertainValue2::invert(mB2a), 1.0e-6);
-      //assertEquals(UncertainValue2::divide(1.0, mB), UncertainValue2::divide(UncertainValue2::UncertainValue2(1.0), mB2a), 1.0e-6);
+      assertEquals(UncertainValue2::divide(1.0, mB), UncertainValue2::invert(mB2a), 1.0e-6);
+      assertEquals(UncertainValue2::divide(1.0, mB), UncertainValue2::divide(UncertainValue2::UncertainValue2(1.0), mB2a), 1.0e-6);
 
-      //assertEquals(UncertainValue2::exp(mA), UncertainValue2::UncertainValue2(3.455613465, 1.036684039), 1.0e-6);
-      //assertEquals(UncertainValue2::exp(mA), UncertainValue2::exp(mA2a), 1.0e-6);
+      assertEquals(UncertainValue2::exp(mA), UncertainValue2::UncertainValue2(3.455613465, 1.036684039), 1.0e-6);
+      assertEquals(UncertainValue2::exp(mA), UncertainValue2::exp(mA2a), 1.0e-6);
 
-      //assertEquals(UncertainValue2::log(mA), UncertainValue2::UncertainValue2(0.2151113796, 0.2419354839), 1.0e-6);
-      //assertEquals(UncertainValue2::log(mA), UncertainValue2::log(mA2a), 1.0e-6);
+      assertEquals(UncertainValue2::log(mA), UncertainValue2::UncertainValue2(0.2151113796, 0.2419354839), 1.0e-6);
+      assertEquals(UncertainValue2::log(mA), UncertainValue2::log(mA2a), 1.0e-6);
 
-      //assertEquals(UncertainValue2::pow(mA, 2.5), UncertainValue2::UncertainValue2(1.712198897, 1.035604171), 1.0e-6);
-      //assertEquals(UncertainValue2::pow(mA, 2.5), UncertainValue2::pow(mA2a, 2.5), 1.0e-6);
+      assertEquals(UncertainValue2::pow(mA, 2.5), UncertainValue2::UncertainValue2(1.712198897, 1.035604171), 1.0e-6);
+      assertEquals(UncertainValue2::pow(mA, 2.5), UncertainValue2::pow(mA2a, 2.5), 1.0e-6);
 
-      //assertEquals(mA.sqrt(), UncertainValue2::UncertainValue2(1.113552873, 0.1347039765), 1.0e-6);
-      //assertEquals(mA.sqrt(), mA2a.sqrt(), 1.0e-6);
+      assertEquals(mA.sqrt(), UncertainValue2::UncertainValue2(1.113552873, 0.1347039765), 1.0e-6);
+      assertEquals(mA.sqrt(), mA2a.sqrt(), 1.0e-6);
 
-      //assertEquals(UncertainValue2::atan(mA), UncertainValue2::UncertainValue2(0.892133836, 0.118221942), 1.0e-6);
-      //assertEquals(UncertainValue2::atan(mA), UncertainValue2::atan(mA2a), 1.0e-6);
+      assertEquals(UncertainValue2::atan(mA), UncertainValue2::UncertainValue2(0.892133836, 0.118221942), 1.0e-6);
+      assertEquals(UncertainValue2::atan(mA), UncertainValue2::atan(mA2a), 1.0e-6);
 
-      //assertEquals(UncertainValue2::sqr(mA), UncertainValue2::UncertainValue2(1.5376, 0.744), 1.0e-6);
-      //assertEquals(UncertainValue2::sqr(mA), UncertainValue2::sqr(mA2a), 1.0e-6);
+      assertEquals(UncertainValue2::sqr(mA), UncertainValue2::UncertainValue2(1.5376, 0.744), 1.0e-6);
+      assertEquals(UncertainValue2::sqr(mA), UncertainValue2::sqr(mA2a), 1.0e-6);
+
       printf("%s completed.\n", "UncertainValue2Test::testAB()");
    }
 

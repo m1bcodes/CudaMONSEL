@@ -1,7 +1,6 @@
 #include "SetTest.cuh"
 
 #include "..\Set.cuh"
-#include "..\Hasher.cuh"
 #include "..\String.cuh"
 
 #include <stdio.h>
@@ -20,11 +19,13 @@ namespace SetTest
       }
    }
 
-   __device__ void TestInt()
+   __device__ SetTest::SetTest() : DefaultHasher(Hasher::APHash)
    {
-      Hasher::pHasher hasher = Hasher::APHash;
+   }
 
-      Set::Set<int> set(hasher, [](int a, int b)
+   __device__ void SetTest::TestInt()
+   {
+      Set::Set<int> set(DefaultHasher, [](int a, int b)
       {
          return a == b;
       });
@@ -72,13 +73,12 @@ namespace SetTest
          }
       }
 
-      printf("SetTest::TestA() completed.\n");
+      printf("SetTest::TestInt() completed.\n");
    }
 
-   __device__ void TestString()
+   __device__ void SetTest::TestString()
    {
-      Hasher::pHasher hasher = Hasher::APHash;
-      Set::Set<String::String> set(hasher, String::AreEqual);
+      Set::Set<String::String> set(DefaultHasher, String::AreEqual);
 
       String::String a("a");
       String::String b("b");
@@ -102,6 +102,28 @@ namespace SetTest
 
       if (set.Exists(d)) {
          printf("exists: %s\n", d.Get());
+      }
+
+      Set::Iterator<String::String> itr(set);
+      while (itr.HasNext()) {
+         //printf("%s ", itr.GetValue().Get());
+         itr.Next();
+      }
+      //printf("\n");
+
+      auto set2 = set;
+      set2.Put("XYZ");
+
+      int c2 = 0;
+      Set::Iterator<String::String> itr2(set2);
+      while (itr2.HasNext()) {
+         //printf("%s ", itr2.GetValue().Get());
+         ++c2;
+         itr2.Next();
+      }
+      //printf("\n");
+      if (c2 != set2.Size()) {
+         printf("different sizes: (%d, %d)", c2, set2.Size());
       }
 
       printf("SetTest::TestString() completed.\n");

@@ -50,11 +50,11 @@ namespace Composition
       renormalize();
    }
 
-   __device__ Composition::~Composition()
-   {
-      LinkedListKV::RemoveAll(&mConstituents);
-      LinkedListKV::RemoveAll(&mConstituentsAtomic);
-   }
+   //__device__ Composition::~Composition()
+   //{
+   //   LinkedListKV::RemoveAll(&mConstituents);
+   //   LinkedListKV::RemoveAll(&mConstituentsAtomic);
+   //}
 
    __device__ Composition::Composition(const Composition& comp)
    {

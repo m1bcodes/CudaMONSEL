@@ -9,7 +9,7 @@ protected:
    int id;
 public:
    __host__ __device__ RegionBase(int k) { this->id = id; }
-   __host__ __device__ ~RegionBase() { };
+   //__host__ __device__ ~RegionBase() { };
 
    __host__ __device__ int GetId() { return id; }
 };

@@ -34,7 +34,7 @@ public:
    class TransformableRegion;
 
    __host__ __device__ MonteCarloSS() { }
-   __host__ __device__ ~MonteCarloSS() { };
+   //__host__ __device__ ~MonteCarloSS() { };
 
    __host__ __device__ virtual int GetId() = 0;
 };

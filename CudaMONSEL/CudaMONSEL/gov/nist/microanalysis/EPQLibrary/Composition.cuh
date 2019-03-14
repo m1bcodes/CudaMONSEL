@@ -20,7 +20,7 @@ namespace Composition
    {
    public:
       __device__ Composition();
-      __device__ ~Composition();
+      //__device__ ~Composition();
       __device__ Composition(const Composition& comp);
       __device__ Composition(Element::Element elms[], int elmsLen, double massFracs[], int massFracsLen);
       __device__ Composition(Element::Element elm);

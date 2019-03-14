@@ -15,16 +15,22 @@ namespace Set
 #endif
 
    template<typename T>
-   class SetIterator;
+   class Iterator;
    
    template<typename T>
    class Set
    {
-      friend class SetIterator<T>;
+      friend class Iterator<T>;
    public:
       typedef bool (*pCmp)(T, T);
       __host__ __device__ Set(Hasher::pHasher, pCmp);
-      //__host__ __device__ ~Set();
+      __host__ __device__ Set(const Set&);
+      __host__ __device__ Set<T>& Set<T>::operator=(const Set<T>&);
+      __host__ __device__ ~Set();
+
+      __host__ __device__ void Initialize();
+      __host__ __device__ void DeepCopy(const Set&);
+      __host__ __device__ void ClearAndCopy(const Set&);
       __host__ __device__ void Put(T);
       __host__ __device__ void Add(Set);
       __host__ __device__ bool Exists(T);
@@ -33,7 +39,7 @@ namespace Set
       __host__ __device__ unsigned int Hash(T);
       __host__ __device__ void Remove(T);
       __host__ __device__ void RemoveAll();
-      __host__ __device__ LinkedList::Node<T>* AsList();
+      //__host__ __device__ LinkedList::Node<T>* AsList();
       __host__ __device__ LinkedList::Node<T>* GetBucket(int); // DEBUGGING PURPOSES
 
    private:
@@ -51,11 +57,58 @@ namespace Set
       }
    }
 
-   //template<typename T>
-   //__host__ __device__ Set<T>::~Set()
-   //{
-   //   RemoveAll();
-   //}
+   template<typename T>
+   __host__ __device__ Set<T>::Set(const Set& other)
+   {
+      ClearAndCopy(other);
+   }
+
+   template<typename T>
+   __host__ __device__ Set<T>& Set<T>::operator=(const Set<T>& other)
+   {
+      ClearAndCopy(other);
+      return *this;
+   }
+
+   template<typename T>
+   __host__ __device__ Set<T>::~Set()
+   {
+      RemoveAll();
+   }
+
+   template<typename T>
+   __host__ __device__ void Set<T>::Initialize()
+   {
+      for (int k = 0; k < NUM_BUCKETS; ++k) {
+         buckets[k] = NULL;
+      }
+      hasher = NULL;
+      cmp = NULL;
+   }
+
+   template<typename T>
+   __host__ __device__ void Set<T>::DeepCopy(const Set<T>& other)
+   {
+      RemoveAll();
+      for (int k = 0; k < NUM_BUCKETS; ++k) {
+         // LinkedListKV::DeepCopy(&buckets, other.buckets[k]); hash function may be different
+         auto itr = other.buckets[k];
+         while (itr != NULL) {
+            Put(itr->GetValue());
+            itr = itr->GetNext();
+         }
+      }
+   }
+
+   template<typename T>
+   __host__ __device__ void Set<T>::ClearAndCopy(const Set<T>& other)
+   {
+      Initialize();
+      hasher = other.hasher;
+      cmp = other.cmp;
+
+      DeepCopy(other);
+   }
 
    template<typename T>
    __host__ __device__ void Set<T>::Put(T v)
@@ -140,27 +193,29 @@ namespace Set
       }
    }
 
-   template<typename T>
-   __host__ __device__ LinkedList::Node<T>* Set<T>::AsList()
-   {
-      LinkedList::Node<T>* res = NULL;
-      for (int k = 0; k < NUM_BUCKETS; ++k) {
-         auto itr = buckets[k];
-         while (itr != NULL) {
-            LinkedList::InsertHead<T>(&res, itr->GetValue());
-            itr = itr->GetNext();
-         }
-      }
-      return res;
-   }
+   //template<typename T>
+   //__host__ __device__ LinkedList::Node<T>* Set<T>::AsList()
+   //{
+   //   LinkedList::Node<T>* res = NULL;
+   //   for (int k = 0; k < NUM_BUCKETS; ++k) {
+   //      auto itr = buckets[k];
+   //      while (itr != NULL) {
+   //         LinkedList::InsertHead<T>(&res, itr->GetValue());
+   //         itr = itr->GetNext();
+   //      }
+   //   }
+   //   return res;
+   //}
 
    template<typename T>
-   class SetIterator
+   class Iterator
    {
    public:
-      __host__ __device__ SetIterator(const Set<T>&);
+      __host__ __device__ Iterator(Set<T>&);
       __host__ __device__ void Reset();
       __host__ __device__ void Next();
+
+      __host__ __device__ void operator=(const Iterator&);
 
       __host__ __device__ bool HasNext();
 
@@ -168,18 +223,18 @@ namespace Set
 
    private:
       LinkedList::Node<T>* ptr;
-      Set<T> refSet;
+      Set<T>& refSet;
       int bucket;
    };
 
    template<typename T>
-   __host__ __device__ SetIterator<T>::SetIterator(const Set<T>& m) : refSet(m), ptr(NULL), bucket(-1)
+   __host__ __device__ Iterator<T>::Iterator(Set<T>& m) : refSet(m), ptr(NULL), bucket(-1)
    {
       Reset();
    }
 
    template<typename T>
-   __host__ __device__ void SetIterator<T>::Reset()
+   __host__ __device__ void Iterator<T>::Reset()
    {
       if (refSet.IsEmpty()) {
          ptr = NULL;
@@ -196,7 +251,7 @@ namespace Set
    }
 
    template<typename T>
-   __host__ __device__ void SetIterator<T>::Next()
+   __host__ __device__ void Iterator<T>::Next()
    {
       if (bucket == -1) {
          return;
@@ -217,19 +272,23 @@ namespace Set
    }
 
    template<typename T>
-   __host__ __device__ bool SetIterator<T>::HasNext()
+   __host__ __device__ void Iterator<T>::operator=(const Iterator<T>& other)
+   {
+      ptr = other.ptr;
+      bucket = other.bucket;
+   }
+
+   template<typename T>
+   __host__ __device__ bool Iterator<T>::HasNext()
    {
       return bucket != -1;
    }
 
 
    template<typename T>
-   __host__ __device__ T SetIterator<T>::GetValue()
+   __host__ __device__ T Iterator<T>::GetValue()
    {
-      if (bucket == -1) {
-         return NULL;
-      }
-      return ptr->GetValue();
+      return (bucket == -1) ? NULL : ptr->GetValue();
    }
 }
 
