@@ -2,6 +2,7 @@
 #define _COMPOSITION_CUH_
 
 #include "..\..\..\..\Amphibian\LinkedList.cuh"
+#include "..\..\..\..\Amphibian\LinkedList.cuh"
 #include "..\..\..\..\Amphibian\String.cuh"
 
 #include "Element.cuh"

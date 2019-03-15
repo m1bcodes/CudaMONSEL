@@ -25,11 +25,15 @@ namespace Map
    {
    friend class Iterator<K, V>;
    public:
-      typedef bool(*pCmp)(K, K);
-      __host__ __device__ Map(Hasher::pHasher, pCmp);
+      typedef bool(*pKeyCmp)(K, K);
+      typedef bool(*pValCmp)(V, V);
+      __host__ __device__ Map(Hasher::pHasher, pKeyCmp, pValCmp);
       __host__ __device__ Map(const Map<K, V>&);
       __host__ __device__ Map<K, V>& operator=(const Map<K, V>&);
       __host__ __device__ ~Map();
+
+      __host__ __device__ bool operator==(Map<K, V>&);
+      __host__ __device__ bool equals(Map<K, V>&);
 
       __host__ __device__ void Initialize();
       __host__ __device__ void ClearAndCopy(const Map<K, V>&);
@@ -52,12 +56,13 @@ namespace Map
       __host__ __device__ int unsigned GetBucketIdx(K k);
 
       LinkedListKV::Node<K, V>* buckets[NUM_BUCKETS];
-      Hasher::pHasher hasher = NULL;
-      pCmp cmp = NULL;
+      Hasher::pHasher hasher;
+      pKeyCmp kcmp;
+      pValCmp vcmp;
    };
 
    template<typename K, typename V>
-   __host__ __device__ Map<K, V>::Map(Hasher::pHasher hasher, Map<K, V>::pCmp cmp) : hasher(hasher), cmp(cmp)
+   __host__ __device__ Map<K, V>::Map(Hasher::pHasher hasher, Map<K, V>::pKeyCmp kcmp, Map<K, V>::pValCmp vcmp) : hasher(hasher), kcmp(kcmp), vcmp(vcmp)
    {
       for (int k = 0; k < NUM_BUCKETS; ++k) {
          buckets[k] = NULL;
@@ -82,7 +87,33 @@ namespace Map
    template<typename K, typename V>
    __host__ __device__ Map<K, V>::~Map()
    {
+      //printf("called\n");
       RemoveAll();
+   }
+
+   template<typename K, typename V>
+   __host__ __device__ bool Map<K, V>::operator==(Map<K, V>& other)
+   {
+      if (Size() != other.Size()) {
+         return false;
+      }
+      for (int k = 0; k < NUM_BUCKETS; ++k) {
+         auto itr = other.buckets[k];
+         while (itr != NULL) {
+            auto r = other.GetValue(itr->GetKey());
+            if (*((int*)&r) == NULL || !vcmp(r, GetValue(itr->GetKey()))) {
+               return false;
+            }
+            itr = itr->GetNext();
+         }
+      }
+      return true;
+   }
+
+   template<typename K, typename V>
+   __host__ __device__ bool Map<K, V>::equals(Map<K, V>& other)
+   {
+      return *this == other;
    }
 
    template<typename K, typename V>
@@ -92,7 +123,8 @@ namespace Map
          buckets[k] = NULL;
       }
       hasher = NULL;
-      cmp = NULL;
+      kcmp = NULL;
+      vcmp = NULL;
    }
 
    template<typename K, typename V>
@@ -114,7 +146,8 @@ namespace Map
    {
       Initialize();
       hasher = other.hasher;
-      cmp = other.cmp;
+      kcmp = other.kcmp;
+      vcmp = other.vcmp;
 
       DeepCopy(other);
    }
@@ -122,13 +155,13 @@ namespace Map
    template<typename K, typename V>
    __host__ __device__ V Map<K, V>::GetValue(K k)
    {
-      return LinkedListKV::GetValue<K, V>(buckets[GetBucketIdx(k)], k, cmp);
+      return LinkedListKV::GetValue<K, V>(buckets[GetBucketIdx(k)], k, kcmp);
    }
 
    template<typename K, typename V>
    __host__ __device__ Set::Set<K> Map<K, V>::GetKeys()
    {
-      Set::Set<K> res(hasher, cmp);
+      Set::Set<K> res(hasher, kcmp);
       for (int k = 0; k < NUM_BUCKETS; ++k) {
          auto itr = buckets[k];
          while (itr != NULL) {
@@ -142,7 +175,7 @@ namespace Map
    template<typename K, typename V>
    __host__ __device__ V Map<K, V>::Remove(K k)
    {
-      return LinkedListKV::Remove<K, V>(&buckets[GetBucketIdx(k)], k, cmp);
+      return LinkedListKV::Remove<K, V>(&buckets[GetBucketIdx(k)], k, kcmp);
    }
 
    template<typename K, typename V>
@@ -162,7 +195,7 @@ namespace Map
       else {
          LinkedListKV::Node<K, V>* bucketItr = buckets[GetBucketIdx(k)];
          while (bucketItr != NULL) {
-            if (cmp(bucketItr->GetKey(), k)) {
+            if (kcmp(bucketItr->GetKey(), k)) {
                bucketItr->MapVal(v, [](V a, V b) { return a; });
                break;
             }
@@ -174,7 +207,7 @@ namespace Map
    template<typename K, typename V>
    __host__ __device__ bool Map<K, V>::ContainsKey(K k)
    {
-      return LinkedListKV::ContainsKey<K, V>(buckets[GetBucketIdx(k)], k, cmp);
+      return LinkedListKV::ContainsKey<K, V>(buckets[GetBucketIdx(k)], k, kcmp);
    }
 
    template<typename K, typename V>

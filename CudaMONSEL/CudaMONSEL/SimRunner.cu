@@ -107,13 +107,14 @@ __global__ void TestKernel()
    StringTest::ItoATest();
    StringTest::AtoFTest();
 
+   SetTest::SetTest setTest;
+   setTest.TestInt();
+   setTest.TestString();
+
    MapTest::MapTest mapTest;
    mapTest.TestInteger();
    mapTest.TestString();
 
-   SetTest::SetTest setTest;
-   setTest.TestInt();
-   setTest.TestString();
 
    UncertainValue2Test::UncertainValue2Test uvTest;
    uvTest.testSpecialValues();

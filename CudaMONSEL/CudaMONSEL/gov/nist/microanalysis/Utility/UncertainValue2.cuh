@@ -48,7 +48,7 @@ namespace UncertainValue2
       __device__ void assignInitialValue(double);
       __device__ void assignComponent(String::String name, double sigma);
       __device__ double getComponent(String::String src);
-      __device__ Map::Map<String::String, double> getComponents();
+      __device__ Map::Map<String::String, double>& getComponents();
       __device__ bool hasComponent(String::String src);
       __device__ void renameComponent(String::String oldName, String::String newName);
 
@@ -92,7 +92,6 @@ namespace UncertainValue2
    extern __device__ const int MAX_LEN;
 
    __device__ UncertainValue2 add(UncertainValue2 uvs[], int uvsLen);
-   __device__ UncertainValue2 add(UncertainValue2*, int);
    __device__ UncertainValue2 add(double a, UncertainValue2 uva, double b, UncertainValue2 uvb);
    __device__ UncertainValue2 subtract(UncertainValue2 uva, UncertainValue2 uvb);
    __device__ UncertainValue2 mean(UncertainValue2 uvs[], int uvsLen);

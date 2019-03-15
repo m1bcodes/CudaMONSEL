@@ -35,6 +35,12 @@ namespace Hasher
    __host__ __device__ unsigned int BPHash(const char* str, unsigned int len);
    __host__ __device__ unsigned int FNVHash(const char* str, unsigned int len);
    __host__ __device__ unsigned int APHash(const char* str, unsigned int len);
+
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+   extern __device__ pHasher DefaultHasher;
+#else
+   extern pHasher DefaultHasher;
+#endif
 }
 
 #endif

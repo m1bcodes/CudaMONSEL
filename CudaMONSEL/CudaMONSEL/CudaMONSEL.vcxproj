@@ -42,6 +42,7 @@
     <CudaCompile Include="SimRunner.cu" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Amphibian\Comparator.cuh" />
     <ClInclude Include="Amphibian\Hasher.cuh" />
     <ClInclude Include="Amphibian\LinkedList.cuh" />
     <ClInclude Include="Amphibian\Math.cuh" />

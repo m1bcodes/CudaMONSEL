@@ -19,6 +19,12 @@
 
 namespace Hasher
 {
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+   extern __device__ pHasher DefaultHasher = RSHash;
+#else
+   extern pHasher DefaultHasher = RSHash;
+#endif
+
    __host__ __device__ unsigned int RSHash(const char* str, unsigned int len)
    {
       unsigned int b = 378551;

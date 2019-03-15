@@ -437,7 +437,6 @@ namespace LinkedListKV
    template<typename KeyT, typename ValueT>
    __host__ __device__ void MapVal(ValueT v, Node<KeyT, ValueT>* head, void(*mapper)(ValueT, ValueT))
    {
-      int sz = 0;
       while (head != NULL) {
          head->MapVal(v, mapper);
          head = head->GetNext();

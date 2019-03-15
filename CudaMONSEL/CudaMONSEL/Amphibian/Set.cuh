@@ -37,6 +37,7 @@ namespace Set
       __host__ __device__ bool IsEmpty();
       __host__ __device__ int Size();
       __host__ __device__ unsigned int Hash(T);
+      __host__ __device__ unsigned int HashCode();
       __host__ __device__ void Remove(T);
       __host__ __device__ void RemoveAll();
       //__host__ __device__ LinkedList::Node<T>* AsList();
@@ -191,6 +192,18 @@ namespace Set
       for (int k = 0; k < NUM_BUCKETS; ++k) {
          LinkedList::RemoveAll(&buckets[k]);
       }
+   }
+
+   template<typename T>
+   __host__ __device__ unsigned int Set<T>::HashCode()
+   {
+      unsigned int res = 0;
+
+      for (int k = 0; k < NUM_BUCKETS; ++k) {
+         res += LinkedList::HashCode(buckets[k], hasher);
+      }
+
+      return res;
    }
 
    //template<typename T>

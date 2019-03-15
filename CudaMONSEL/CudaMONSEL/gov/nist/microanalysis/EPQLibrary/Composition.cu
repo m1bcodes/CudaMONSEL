@@ -1,5 +1,6 @@
 #include "Composition.cuh"
 #include "..\..\..\..\CudaUtil.h"
+#include "..\..\..\..\Amphibian\Comparator.cuh"
 
 #include <curand.h>
 #include <curand_kernel.h>
@@ -1035,7 +1036,7 @@ namespace Composition
                double r = (double)rand() / (double)RAND_MAX;
                tmp += r * 2 * mult;
             }
-         } while (LinkedList::Exists<long>(eval, tmp, [](long a, long b) { return a == b; }));
+         } while (LinkedList::Exists<long>(eval, tmp, Comparator::BuildCmp<long>));
          hPROJECTORS[j] = tmp;
          LinkedList::InsertHead(&eval, tmp);
       }

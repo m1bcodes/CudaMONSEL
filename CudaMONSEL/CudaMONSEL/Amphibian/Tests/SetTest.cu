@@ -2,6 +2,7 @@
 
 #include "..\Set.cuh"
 #include "..\String.cuh"
+#include "..\Comparator.cuh"
 
 #include <stdio.h>
 
@@ -19,16 +20,13 @@ namespace SetTest
       }
    }
 
-   __device__ SetTest::SetTest() : DefaultHasher(Hasher::APHash)
+   __device__ SetTest::SetTest() : DefaultHasher(Hasher::DefaultHasher)
    {
    }
 
    __device__ void SetTest::TestInt()
    {
-      Set::Set<int> set(DefaultHasher, [](int a, int b)
-      {
-         return a == b;
-      });
+      Set::Set<int> set(DefaultHasher, Comparator::BuildCmp<int>);
 
       //for (int k = 0; k < 23; ++k) {
       //   auto b = set.GetBucket(k);
