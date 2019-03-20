@@ -25,7 +25,7 @@ namespace SetTest
 
    __device__ void SetTest::TestInt()
    {
-      Set::Set<int> set(DefaultHasher, [](int a, int b)
+      Set::Set<int> set(DefaultHasher, [](int& a, int& b)
       {
          return a == b;
       });
@@ -74,6 +74,41 @@ namespace SetTest
       }
 
       printf("SetTest::TestInt() completed.\n");
+   }
+
+   __device__ void SetTest::TestInt2()
+   {
+      Set::Set<int> set1(DefaultHasher, [](int& a, int& b)
+      {
+         return a == b;
+      });
+
+      int maxNum = 100;
+
+      for (int k = 0; k < maxNum; ++k) {
+         set1.Put(k);
+      }
+      for (int k = 0; k < maxNum; ++k) {
+         if (!set1.Exists(k)) {
+            printf("number not found: k\n", k);
+         }
+      }
+
+      Set::Set<int> set2(DefaultHasher, [](int& a, int& b)
+      {
+         return a == b;
+      });
+      for (int k = 0; k < maxNum; ++k) {
+         set2.Put(k);
+      }
+      
+      auto h1 = set1.HashCode();
+      auto h2 = set2.HashCode();
+      if (h1 != h2) {
+         printf("HashCodes are different: %u, %u", h1, h2);
+      }
+
+      printf("SetTest::TestInt2() completed.\n");
    }
 
    __device__ void SetTest::TestString()

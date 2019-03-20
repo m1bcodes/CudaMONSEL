@@ -25,7 +25,7 @@ namespace String
       __host__ __device__ void operator=(String&);
       __host__ __device__ void operator=(char const *);
 
-      __host__ __device__ bool operator==(String);
+      __host__ __device__ bool operator==(String&);
 
       __host__ __device__ char* Get();
       __host__ __device__ int Length();
@@ -74,8 +74,9 @@ namespace String
       return res*mult;
    }
 
-   typedef bool(*pStrCmp)(String, String);
-   __host__ __device__ bool AreEqual(String, String);
+   typedef bool(*pStrCmp)(String&, String&);
+   __host__ __device__ bool AreEqual(String&, String&);
+   __host__ __device__ bool AreEqual(char const * const a, char const * const b);
    __host__ __device__ bool StartsWith(char* src, char* target);
 
    //__host__ __device__ static void Concatenate(String, String);

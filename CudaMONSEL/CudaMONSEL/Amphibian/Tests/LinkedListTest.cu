@@ -70,11 +70,11 @@ namespace LinkedListTest
       LinkedList::BuildList(&blist, b, 4);
       LinkedList::BuildList(&clist, c, 1);
 
-      LinkedList::AddAllAsSet<LinkedListTestType>(&head, alist, [](LinkedListTestType a, LinkedListTestType b) { return a == b; });
+      LinkedList::AddAllAsSet<LinkedListTestType>(&head, alist, [](LinkedListTestType& a, LinkedListTestType& b) { return a == b; });
       //PrintList(head);
-      LinkedList::AddAllAsSet<LinkedListTestType>(&head, blist, [](LinkedListTestType a, LinkedListTestType b) { return a == b; });
+      LinkedList::AddAllAsSet<LinkedListTestType>(&head, blist, [](LinkedListTestType& a, LinkedListTestType& b) { return a == b; });
       //PrintList(head);
-      LinkedList::AddAllAsSet<LinkedListTestType>(&head, clist, [](LinkedListTestType a, LinkedListTestType b) { return a == b; });
+      LinkedList::AddAllAsSet<LinkedListTestType>(&head, clist, [](LinkedListTestType& a, LinkedListTestType& b) { return a == b; });
       //PrintList(head);
       printf("LinkedListTest::testAddAllAsSet completed\n");
    }

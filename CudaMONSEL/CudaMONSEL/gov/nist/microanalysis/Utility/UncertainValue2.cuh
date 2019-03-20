@@ -18,7 +18,7 @@ namespace UncertainValue2
       __device__ Key(String::String src1, String::String src2);
       __device__ bool operator==(Key& k2);
 
-      __device__ static bool AreEqual(Key k1, Key k2);
+      __device__ static bool AreEqual(Key& k1, Key& k2);
    };
 
    class Correlations
@@ -29,8 +29,8 @@ namespace UncertainValue2
    public:
       __device__ Correlations();
 
-      __device__ void add(String::String src1, String::String src2, double corr);
-      __device__ double get(String::String src1, String::String src2);
+      __device__ void add(String::String& src1, String::String& src2, double corr);
+      __device__ double get(String::String& src1, String::String& src2);
    };
 
    class UncertainValue2
@@ -69,8 +69,8 @@ namespace UncertainValue2
       __device__ UncertainValue2 sqrt();
       __device__ UncertainValue2 sqrt(UncertainValue2 uv);
 
-      __device__ double variance(Correlations corr);
-      __device__ double uncertainty(Correlations corr);
+      __device__ double variance(Correlations& corr);
+      __device__ double uncertainty(Correlations& corr);
 
       __device__ void PrintSigmas();
 
@@ -120,7 +120,7 @@ namespace UncertainValue2
    __device__ UncertainValue2 positiveDefinite(UncertainValue2 uv);
 
    //__device__ void InitializeSpecialUncertainValues();
-   __device__ bool AreEqual(UncertainValue2, UncertainValue2);
+   __device__ bool AreEqual(UncertainValue2&, UncertainValue2&);
 }
 
 #endif

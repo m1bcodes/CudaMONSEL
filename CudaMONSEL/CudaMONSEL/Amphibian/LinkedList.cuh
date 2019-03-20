@@ -127,10 +127,11 @@ namespace LinkedList
    }
 
    template<typename T>
-   __host__ __device__ T Remove(Node<T>** head, T k, bool equals(T, T))
+   __host__ __device__ T Remove(Node<T>** head, T k, bool equals(T&, T&))
    {
       while (*head != NULL) {
-         if (equals((*head)->GetValue(), k)) {
+         auto tmpK = (*head)->GetValue();
+         if (equals(tmpK, k)) {
             return RemoveHead(head);
          }
          else {
@@ -141,10 +142,11 @@ namespace LinkedList
    }
 
    template<typename T>
-   __host__ __device__ bool Exists(Node<T>* head, T target, bool (*cmp)(T, T))
+   __host__ __device__ bool Exists(Node<T>* head, T target, bool (*cmp)(T&, T&))
    {
       while (head != NULL) {
-         if (cmp(head->GetValue(), target)) {
+         auto tmpV = head->GetValue();
+         if (cmp(tmpV, target)) {
             return true;
          }
          head = head->GetNext();
@@ -164,13 +166,15 @@ namespace LinkedList
    }
 
    template<typename T>
-   __host__ __device__ void AddAllAsSet(Node<T>** res, Node<T>* other, bool(*cmp)(T, T))
+   __host__ __device__ void AddAllAsSet(Node<T>** res, Node<T>* other, bool(*cmp)(T&, T&))
    {
       while (other != NULL) {
          Node<T>* resHead = *res;
          bool found = false;
          while (resHead != NULL) {
-            if (cmp(resHead->GetValue(), other->GetValue())) {
+            auto tmpV1 = resHead->GetValue();
+            auto tmpV2 = other->GetValue();
+            if (cmp(tmpV1, tmpV2)) {
                found = true;
                break;
             }
@@ -196,7 +200,9 @@ namespace LinkedList
    {
       unsigned int res = 0;
       while (list != NULL) {
-         res += hasher(list->GetValue(), sizeof(list->GetValue()));
+         int v = list->GetValue();
+         res += hasher((char*)&v, sizeof(v));
+         list = list->GetNext();
       }
       return res;
    }
@@ -279,8 +285,8 @@ namespace LinkedListKV
    __host__ __device__ unsigned int Node<KeyT, ValueT>::HashCode(Hasher::pHasher hasher)
    {
       unsigned int res = 0;
-      res += hasher(key, sizeof(key));
-      res += hasher(val, sizeof(val));
+      res += hasher((char*)&key, sizeof(key));
+      res += hasher((char*)&val, sizeof(val));
       return res;
    }
 
@@ -296,6 +302,7 @@ namespace LinkedListKV
       unsigned int res = 0;
       while (list != NULL) {
          res += list->HashCode(hasher);
+         list = list->GetNext();
       }
       return res;
    }
@@ -348,10 +355,11 @@ namespace LinkedListKV
    }
 
    template<typename KeyT, typename ValueT>
-   __host__ __device__ ValueT Remove(Node<KeyT, ValueT>** head, KeyT k, bool equals(KeyT, KeyT))
+   __host__ __device__ ValueT Remove(Node<KeyT, ValueT>** head, KeyT k, bool equals(KeyT&, KeyT&))
    {
       while (*head != NULL) {
-         if (equals((*head)->GetKey(), k)) {
+         auto tmpK = (*head)->GetKey();
+         if (equals(tmpK, k)) {
             return RemoveHead(head);
          }
          else {
@@ -362,10 +370,11 @@ namespace LinkedListKV
    }
 
    template<typename KeyT, typename ValueT>
-   __host__ __device__ ValueT GetValue(Node<KeyT, ValueT>* head, KeyT target, bool equalKeys(KeyT, KeyT))
+   __host__ __device__ ValueT GetValue(Node<KeyT, ValueT>* head, KeyT target, bool equalKeys(KeyT&, KeyT&))
    {
       while (head != NULL) {
-         if (equalKeys(head->GetKey(), target)) {
+         auto v = head->GetKey();
+         if (equalKeys(v, target)) {
             return head->GetValue();
          }
          head = head->GetNext();
@@ -374,7 +383,7 @@ namespace LinkedListKV
    }
 
    template<typename KeyT, typename ValueT>
-   __host__ __device__ bool ContainsKey(Node<KeyT, ValueT>* head, KeyT k, bool(*equalKeys)(KeyT, KeyT))
+   __host__ __device__ bool ContainsKey(Node<KeyT, ValueT>* head, KeyT k, bool(*equalKeys)(KeyT&, KeyT&))
    {
       auto r = GetValue(head, k, equalKeys);
       return !(*((int*)&r) == NULL);
@@ -470,7 +479,7 @@ namespace LinkedListKV
 namespace AdvancedLinkedList
 {
    template<typename K, typename V>
-   __host__ __device__ void AddAllKeys(LinkedList::Node<K>** headAddr, LinkedListKV::Node<K, V>* dataHead, bool (*KeyCmp)(K, K))
+   __host__ __device__ void AddAllKeys(LinkedList::Node<K>** headAddr, LinkedListKV::Node<K, V>* dataHead, bool (*KeyCmp)(K&, K&))
    {
       if (dataHead == NULL) {
          return;

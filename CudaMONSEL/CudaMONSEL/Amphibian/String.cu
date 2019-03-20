@@ -5,6 +5,24 @@
 
 namespace String
 {
+   __host__ __device__ bool AreEqual(char const * const a, char const * const b)
+   {
+      int k = 0;
+      while (true) {
+         if (a[k] == NULL && b[k] == NULL) {
+            return true;
+         }
+         if (b[k] == NULL || a[k] == NULL ) {
+            return false;
+         }
+         if (a[k] != b[k]) {
+            return false;
+         }
+         ++k;
+      }
+      return true;
+   }
+
    __host__ __device__ String::String()
    {
       Copy("");
@@ -22,6 +40,7 @@ namespace String
 
    __host__ __device__ void String::operator=(String& s)
    {
+      if (&s == this) return;
       Copy(s.Get());
    }
 
@@ -30,22 +49,9 @@ namespace String
       Copy(s);
    }
 
-   __host__ __device__ bool String::operator==(String a)
+   __host__ __device__ bool String::operator==(String& a)
    {
-      int idx = 0;
-      while (true) {
-         if (str[idx] == NULL && a.str[idx] == NULL) {
-            return true;
-         }
-         if (str[idx] == NULL || a.str[idx] == NULL) {
-            return false;
-         }
-         if (str[idx] != a.str[idx]) {
-            return false;
-         }
-         ++idx;
-      }
-      return true;
+      return AreEqual(str, a.str);
    }
 
    __host__ __device__ char* String::Get()
@@ -64,16 +70,16 @@ namespace String
 
    __host__ __device__ void String::Copy(char const * s)
    {
-      memset(str, '\0', MAX_LEN);
+      memset(str, NULL, MAX_LEN);
       int k;
-      for (k = 0; *s != '\0'; ++s, ++k) {
+      for (k = 0; s[k] != NULL; ++k) {
          if (k == MAX_LEN - 1) {
             printf("Length of string exceeded %d.", MAX_LEN);
             break;
          }
-         str[k] = *s;
+         str[k] = s[k];
       }
-      str[k] = '\0';
+      str[k] = NULL;
    }
 
    __host__ __device__ void IToA(char* d, int n, int maxArrayLen)
@@ -171,8 +177,9 @@ namespace String
       return res;
    }
 
-   __host__ __device__ bool AreEqual(String a, String b)
+   __host__ __device__ bool AreEqual(String& a, String& b)
    {
+      if (&a == &b) return true;
       return a == b;
    }
 

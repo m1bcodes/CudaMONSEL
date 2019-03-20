@@ -836,8 +836,9 @@ namespace Element
    //   return res;
    //}
 
-   __device__ bool AreEqual(Element e1, Element e2)
+   __device__ bool AreEqual(Element& e1, Element& e2)
    {
+      if (&e1 == &e2) return true;
       return e1.getAtomicNumber() == e2.getAtomicNumber();
    }
    

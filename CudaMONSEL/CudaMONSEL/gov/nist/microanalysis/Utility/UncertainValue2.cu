@@ -19,34 +19,41 @@ namespace UncertainValue2
 
    __device__ const Hasher::pHasher DefaultHasher = Hasher::APHash;
 
-   __device__ UncertainValue2::UncertainValue2() : mSigmas(DefaultHasher, String::AreEqual)
+   __device__ static bool doubleCmp(double& a, double& b)
+   {
+      return a == b;
+   }
+
+   //__device__ Map::Map<String::String, double>::pValCmp doubleCmp = [](double a, double b) { return a == b; };
+
+   __device__ UncertainValue2::UncertainValue2() : mSigmas(DefaultHasher, String::AreEqual, doubleCmp)
    {
    }
 
-   __device__ UncertainValue2::UncertainValue2(double v, double dv) : mValue(v), mSigmas(DefaultHasher, String::AreEqual)
+   __device__ UncertainValue2::UncertainValue2(double v, double dv) : mValue(v), mSigmas(DefaultHasher, String::AreEqual, doubleCmp)
    {
       char tmpName[MAX_LEN];
       String::IToA(tmpName, atomicAdd(&sDefIndex, 1));
       assignComponent(tmpName, dv);
    }
 
-   __device__ UncertainValue2::UncertainValue2(double v) : mValue(v), mSigmas(DefaultHasher, String::AreEqual)
+   __device__ UncertainValue2::UncertainValue2(double v) : mValue(v), mSigmas(DefaultHasher, String::AreEqual, doubleCmp)
    {
    }
 
-   __device__ UncertainValue2::UncertainValue2(double v, char source[], double dv) : mValue(v), mSigmas(DefaultHasher, String::AreEqual)
+   __device__ UncertainValue2::UncertainValue2(double v, char source[], double dv) : mValue(v), mSigmas(DefaultHasher, String::AreEqual, doubleCmp)
    {
       assignComponent(source, dv);
    }
 
-   __device__ UncertainValue2::UncertainValue2(double v, Map::Map<String::String, double> sigmas) : mValue(v), mSigmas(DefaultHasher, String::AreEqual)
+   __device__ UncertainValue2::UncertainValue2(double v, Map::Map<String::String, double> sigmas) : mValue(v), mSigmas(DefaultHasher, String::AreEqual, doubleCmp)
    {
       if (*((int*)&sigmas) != NULL) {
          mSigmas.DeepCopy(sigmas);
       }
    }
 
-   __device__ UncertainValue2::UncertainValue2(UncertainValue2& other) : mValue(other.doubleValue()), mSigmas(DefaultHasher, String::AreEqual)
+   __device__ UncertainValue2::UncertainValue2(UncertainValue2& other) : mValue(other.doubleValue()), mSigmas(DefaultHasher, String::AreEqual, doubleCmp)
    {
       mSigmas.DeepCopy(other.getComponents());
    }
@@ -134,7 +141,8 @@ namespace UncertainValue2
       double sum = 0.0;
       for (int k = 0; k < uvsLen; ++k) {
          sum += uvs[k].doubleValue();
-         keys.Add(uvs[k].getComponents().GetKeys());
+         auto sigmasKeys = uvs[k].getComponents().GetKeys();
+         keys.Add(sigmasKeys);
       }
       UncertainValue2 res(sum);
 
@@ -548,8 +556,8 @@ namespace UncertainValue2
       }
       UncertainValue2 res(f);
 
-      auto m = divide(y, x).getComponents();
-      Map::Iterator<String::String, double> itr(m);
+      auto comp = divide(y, x).getComponents(); // why cant pass the function in itr constructor
+      Map::Iterator<String::String, double> itr(comp);
       while (itr.HasNext()) {
          res.assignComponent(itr.GetKey(), df * itr.GetValue());
          itr.Next();
@@ -574,16 +582,17 @@ namespace UncertainValue2
       return (mSource1 == k2.mSource1 && mSource2 == k2.mSource2) || (mSource1 == k2.mSource2 && mSource2 == k2.mSource1);
    }
 
-   __device__ bool Key::AreEqual(Key k1, Key k2)
+   __device__ bool Key::AreEqual(Key& k1, Key& k2)
    {
+      if (&k1 == &k2) return true;
       return k1 == k2;
    }
 
-   __device__ Correlations::Correlations() : mCorrelations(DefaultHasher, Key::AreEqual)
+   __device__ Correlations::Correlations() : mCorrelations(DefaultHasher, Key::AreEqual, doubleCmp)
    {
    }
 
-   __device__ void Correlations::add(String::String src1, String::String src2, double corr)
+   __device__ void Correlations::add(String::String& src1, String::String& src2, double corr)
    {
       if (!(corr >= -1.0) && (corr <= 1.0)) {
          printf("%s\n", "Correlations::add: invalid bound");
@@ -594,13 +603,13 @@ namespace UncertainValue2
       mCorrelations.Put(Key(src1, src2), corr);
    }
 
-   __device__ double Correlations::get(String::String src1, String::String src2)
+   __device__ double Correlations::get(String::String& src1, String::String& src2)
    {
       double r = mCorrelations.GetValue(Key(src1, src2));
       return r == NULL ? 0.0 : r;
    }
 
-   __device__ double UncertainValue2::variance(Correlations corr)
+   __device__ double UncertainValue2::variance(Correlations& corr)
    {
       Map::Map<String::String, double> sigmas = getComponents();
 
@@ -634,7 +643,7 @@ namespace UncertainValue2
       return res;
    }
 
-   __device__ double UncertainValue2::uncertainty(Correlations corr)
+   __device__ double UncertainValue2::uncertainty(Correlations& corr)
    {
       return ::sqrt(variance(corr));
    }
@@ -648,7 +657,7 @@ namespace UncertainValue2
       }
    }
 
-   __device__ bool AreEqual(UncertainValue2 a, UncertainValue2 b)
+   __device__ bool AreEqual(UncertainValue2& a, UncertainValue2& b)
    {
       return a.equals(b);
    }

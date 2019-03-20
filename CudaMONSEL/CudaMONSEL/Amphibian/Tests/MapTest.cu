@@ -19,7 +19,7 @@ namespace MapTest
 
    __device__ void MapTest::TestInteger()
    {
-      Map::Map<int, int> m1 = CreateMapA<int, int>([](int a, int b) { return a == b; }, 0, 1);
+      Map::Map<int, int> m1 = CreateMapA<int, int>([](int& a, int& b) { return a == b; }, [](int& a, int& b) { return a == b; }, 0, 1);
       m1.Put(1, 1);
 
       AssertEqual(m1.Size(), 2);
@@ -52,13 +52,18 @@ namespace MapTest
       AssertEqual(m3.Size(), 3);
       m3.Put(9, 1);
       AssertEqual(m3.Size(), 4);
+      auto h2 = m2.HashCode();
+      auto h3 = m3.HashCode();
+      if (h2 == h3) {
+         printf("HashCodes are different: %d, %d\n", h2, h3);
+      }
 
       printf("MapTest::TestInteger() completed\n");
    }
 
    __device__ void MapTest::TestString()
    {
-      Map::Map<String::String, double> m1(DefaultHasher, String::AreEqual);
+      Map::Map<String::String, double> m1(DefaultHasher, String::AreEqual, [](double& a, double& b) { return a == b; });
       m1.Put("A", 1);
       m1.Put("B", 2);
 
@@ -105,7 +110,7 @@ namespace MapTest
       AssertEqual(m3.Size(), 4);
       //printf("\n");
 
-      Map::Map<String::String, double> map4(DefaultHasher, String::AreEqual);
+      Map::Map<String::String, double> map4(DefaultHasher, String::AreEqual, [](double& a, double& b) { return a == b; });
       map4.Put("V1", ::sqrt(0.05));
       map4.Put("V2", ::sqrt(0.04));
 
@@ -118,6 +123,23 @@ namespace MapTest
       }
       AssertEqual(map4.Size(), 2);
       AssertEqual(c4, 2);
+
+      auto m5 = map4;
+      if (!(m5 == map4)) {
+         printf("maps sizes are different: %d, %d\n", map4.Size(), m5.Size());
+      }
+      if (!(m5 == map4)) {
+         printf("maps are different\n");
+      }
+      if (m5.HashCode() != map4.HashCode()) {
+         printf("maps hashcodes are different\n");
+      }
+      
+      Map::Iterator<String::String, double> itr5(m5);
+      while (itr5.HasNext()) {
+         //printf("(%s, %lf) ", itr5.GetKey().Get(), itr5.GetValue());
+         itr5.Next();
+      }
 
       printf("MapTest::TestString() completed\n");
    }

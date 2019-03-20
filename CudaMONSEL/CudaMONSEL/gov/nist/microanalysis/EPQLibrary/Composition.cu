@@ -1035,7 +1035,7 @@ namespace Composition
                double r = (double)rand() / (double)RAND_MAX;
                tmp += r * 2 * mult;
             }
-         } while (LinkedList::Exists<long>(eval, tmp, [](long a, long b) { return a == b; }));
+         } while (LinkedList::Exists<long>(eval, tmp, [](long& a, long& b) { return a == b; }));
          hPROJECTORS[j] = tmp;
          LinkedList::InsertHead(&eval, tmp);
       }

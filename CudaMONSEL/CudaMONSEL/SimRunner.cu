@@ -113,6 +113,7 @@ __global__ void TestKernel()
 
    SetTest::SetTest setTest;
    setTest.TestInt();
+   setTest.TestInt2();
    setTest.TestString();
 
    UncertainValue2Test::UncertainValue2Test uvTest;

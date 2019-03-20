@@ -12,6 +12,7 @@ namespace SetTest
    public:
       __device__ SetTest();
       __device__ void TestInt();
+      __device__ void TestInt2();
       __device__ void TestString();
 
    private:

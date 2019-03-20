@@ -22,7 +22,7 @@ namespace Set
    {
       friend class Iterator<T>;
    public:
-      typedef bool (*pCmp)(T, T);
+      typedef bool (*pCmp)(T&, T&);
       __host__ __device__ Set(Hasher::pHasher, pCmp);
       __host__ __device__ Set(const Set&);
       __host__ __device__ Set<T>& Set<T>::operator=(const Set<T>&);
@@ -32,10 +32,11 @@ namespace Set
       __host__ __device__ void DeepCopy(const Set&);
       __host__ __device__ void ClearAndCopy(const Set&);
       __host__ __device__ void Put(T);
-      __host__ __device__ void Add(Set);
+      __host__ __device__ void Add(Set&);
       __host__ __device__ bool Exists(T);
       __host__ __device__ bool IsEmpty();
       __host__ __device__ int Size();
+      __host__ __device__ unsigned int HashCode();
       __host__ __device__ unsigned int Hash(T);
       __host__ __device__ void Remove(T);
       __host__ __device__ void RemoveAll();
@@ -66,6 +67,7 @@ namespace Set
    template<typename T>
    __host__ __device__ Set<T>& Set<T>::operator=(const Set<T>& other)
    {
+      if (this == &other) return;
       ClearAndCopy(other);
       return *this;
    }
@@ -119,7 +121,7 @@ namespace Set
    }
 
    template<typename T>
-   __host__ __device__ void Set<T>::Add(Set<T> other)
+   __host__ __device__ void Set<T>::Add(Set<T>& other)
    {
       for (int k = 0; k < NUM_BUCKETS; ++k) {
          auto itr = other.buckets[k];
@@ -165,6 +167,18 @@ namespace Set
    __host__ __device__ unsigned int Set<T>::Hash(T v)
    {
       return hasher((char*)&v, sizeof(v));
+   }
+
+   template<typename T>
+   __host__ __device__ unsigned int Set<T>::HashCode()
+   {
+      unsigned int res = 0;
+
+      for (int k = 0; k < NUM_BUCKETS; ++k) {
+         res += LinkedList::HashCode(buckets[k], hasher);
+      }
+
+      return res;
    }
 
    template<typename T>
