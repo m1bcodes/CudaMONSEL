@@ -46,7 +46,7 @@ namespace UncertainValue2
       assignComponent(source, dv);
    }
 
-   __device__ UncertainValue2::UncertainValue2(double v, Map::Map<String::String, double> sigmas) : mValue(v), mSigmas(DefaultHasher, String::AreEqual, doubleCmp)
+   __device__ UncertainValue2::UncertainValue2(double v, Map::Map<String::String, double>& sigmas) : mValue(v), mSigmas(DefaultHasher, String::AreEqual, doubleCmp)
    {
       if (*((int*)&sigmas) != NULL) {
          mSigmas.DeepCopy(sigmas);
@@ -55,6 +55,7 @@ namespace UncertainValue2
 
    __device__ UncertainValue2::UncertainValue2(UncertainValue2& other) : mValue(other.doubleValue()), mSigmas(DefaultHasher, String::AreEqual, doubleCmp)
    {
+      if (&other == this) return;
       mSigmas.DeepCopy(other.getComponents());
    }
 
@@ -162,7 +163,7 @@ namespace UncertainValue2
       return res;
    }
 
-   __device__ UncertainValue2 add(double a, UncertainValue2 uva, double b, UncertainValue2 uvb)
+   __device__ UncertainValue2 add(double a, UncertainValue2& uva, double b, UncertainValue2& uvb)
    {
       Set::Set<String::String> keys(DefaultHasher, String::AreEqual);
       UncertainValue2 res(a * uva.doubleValue() + b * uvb.doubleValue());
@@ -178,7 +179,7 @@ namespace UncertainValue2
       return res;
    }
 
-   __device__ UncertainValue2 subtract(UncertainValue2 uva, UncertainValue2 uvb)
+   __device__ UncertainValue2 subtract(UncertainValue2& uva, UncertainValue2& uvb)
    {
       return add(1.0, uva, -1.0, uvb);
    }
@@ -248,22 +249,22 @@ namespace UncertainValue2
       return res;
    }
 
-   __device__ UncertainValue2 add(UncertainValue2 v1, double v2)
+   __device__ UncertainValue2 add(UncertainValue2& v1, double v2)
    {
       return UncertainValue2(v1.doubleValue() + v2, v1.getComponents());
    }
 
-   __device__ UncertainValue2 add(double v1, UncertainValue2 v2)
+   __device__ UncertainValue2 add(double v1, UncertainValue2& v2)
    {
       return UncertainValue2(v2.doubleValue() + v1, v2.getComponents());
    }
 
-   __device__ UncertainValue2 add(UncertainValue2 v1, UncertainValue2 v2)
+   __device__ UncertainValue2 add(UncertainValue2& v1, UncertainValue2& v2)
    {
       return add(1.0, v1, 1.0, v2);
    }
 
-   __device__ UncertainValue2 multiply(double v1, UncertainValue2 v2)
+   __device__ UncertainValue2 multiply(double v1, UncertainValue2& v2)
    {
       if (v2.uncertainty() < 0.0) {
          printf("Error: v2.uncertainty() < 0.0");
@@ -280,7 +281,7 @@ namespace UncertainValue2
       return res;
    }
 
-   __device__ UncertainValue2 multiply(UncertainValue2 v1, UncertainValue2 v2)
+   __device__ UncertainValue2 multiply(UncertainValue2& v1, UncertainValue2& v2)
    {
       Set::Set<String::String> keys(DefaultHasher, String::AreEqual);
       keys.Add(v1.getComponents().GetKeys());
@@ -297,12 +298,12 @@ namespace UncertainValue2
       return res;
    }
 
-   __device__ UncertainValue2 invert(UncertainValue2 v)
+   __device__ UncertainValue2 invert(UncertainValue2& v)
    {
       return divide(1.0, v);
    }
 
-   __device__ UncertainValue2 divide(UncertainValue2 v1, UncertainValue2 v2)
+   __device__ UncertainValue2 divide(UncertainValue2& v1, UncertainValue2& v2)
    {
       UncertainValue2 res(v1.doubleValue() / v2.doubleValue());
       if (!(isnan(res.doubleValue()) || isinf(res.doubleValue()))) {
@@ -323,7 +324,7 @@ namespace UncertainValue2
       return res;
    }
 
-   __device__ UncertainValue2 divide(double a, UncertainValue2 b)
+   __device__ UncertainValue2 divide(double a, UncertainValue2& b)
    {
       UncertainValue2 res(a / b.doubleValue());
       if (!(isnan(res.doubleValue()) || isinf(res.doubleValue()))) {
@@ -339,7 +340,7 @@ namespace UncertainValue2
       return res;
    }
 
-   __device__ UncertainValue2 divide(UncertainValue2 a, double b)
+   __device__ UncertainValue2 divide(UncertainValue2& a, double b)
    {
       if (isnan(1.0 / b)) {
          return UncertainValue2(CUDART_NAN);
@@ -359,7 +360,7 @@ namespace UncertainValue2
       return res;
    }
 
-   __device__ UncertainValue2 exp(UncertainValue2 x)
+   __device__ UncertainValue2 exp(UncertainValue2& x)
    {
       if (isnan(x.doubleValue()) || isinf(x.doubleValue())) {
          printf("exp: invalid value\n");
@@ -378,7 +379,7 @@ namespace UncertainValue2
       return res;
    }
 
-   __device__ UncertainValue2 log(UncertainValue2 v2)
+   __device__ UncertainValue2 log(UncertainValue2& v2)
    {
       double tmp = 1.0 / v2.doubleValue();
       const double lv = ::log(v2.doubleValue());
@@ -399,7 +400,7 @@ namespace UncertainValue2
       return res;
    }
 
-   __device__ UncertainValue2 pow(UncertainValue2 v1, double n)
+   __device__ UncertainValue2 pow(UncertainValue2& v1, double n)
    {
       if (v1.doubleValue() == 0.0) {
          return UncertainValue2(0.0);
@@ -423,12 +424,12 @@ namespace UncertainValue2
       return pow(*this, 0.5);
    }
 
-   __device__ UncertainValue2 sqrt(UncertainValue2 uv)
+   __device__ UncertainValue2 sqrt(UncertainValue2& uv)
    {
       return pow(uv, 0.5);
    }
 
-   __device__ LinkedList::Node<UncertainValue2>* quadratic(UncertainValue2 a, UncertainValue2 b, UncertainValue2 c)
+   __device__ LinkedList::Node<UncertainValue2>* quadratic(UncertainValue2& a, UncertainValue2& b, UncertainValue2& c)
    {
       // q=-0.5*(b+signum(b)*sqrt(pow(b,2.0)-4*a*c))
       // return [ q/a, c/q ]
@@ -486,42 +487,43 @@ namespace UncertainValue2
       //return LinkedListKV::AreEquivalentSets<String::String, double>(mSigmas, other.getComponents(), String::AreEqual, [](double a, double b) { return a == b; }) && (mValue == other.doubleValue());
    }
 
-   __device__ int UncertainValue2::compareTo(UncertainValue2 o)
+   __device__ int UncertainValue2::compareTo(UncertainValue2& o)
    {
+      if (&o == this) return 0;
       return (mValue == o.mValue) && (uncertainty() == o.uncertainty());
    }
 
-   __device__ bool UncertainValue2::lessThan(UncertainValue2 uv2)
+   __device__ bool UncertainValue2::lessThan(UncertainValue2& uv2)
    {
       return mValue < uv2.mValue;
    }
 
-   __device__ bool UncertainValue2::greaterThan(UncertainValue2 uv2)
+   __device__ bool UncertainValue2::greaterThan(UncertainValue2& uv2)
    {
       return mValue > uv2.mValue;
    }
 
-   __device__ bool UncertainValue2::lessThanOrEqual(UncertainValue2 uv2)
+   __device__ bool UncertainValue2::lessThanOrEqual(UncertainValue2& uv2)
    {
       return mValue <= uv2.mValue;
    }
 
-   __device__ bool UncertainValue2::greaterThanOrEqual(UncertainValue2 uv2)
+   __device__ bool UncertainValue2::greaterThanOrEqual(UncertainValue2& uv2)
    {
       return mValue >= uv2.mValue;
    }
 
-   __device__ UncertainValue2 sqr(UncertainValue2 uv)
+   __device__ UncertainValue2 sqr(UncertainValue2& uv)
    {
       return pow(uv, 2.0);
    }
 
-   __device__ UncertainValue2 negate(UncertainValue2 uv)
+   __device__ UncertainValue2 negate(UncertainValue2& uv)
    {
       return UncertainValue2(-uv.doubleValue(), uv.getComponents());
    }
 
-   __device__ UncertainValue2 atan(UncertainValue2 uv)
+   __device__ UncertainValue2 atan(UncertainValue2& uv)
    {
       double f = ::atan(uv.doubleValue());
       double df = 1.0 / (1.0 + uv.doubleValue() * uv.doubleValue());
@@ -543,7 +545,7 @@ namespace UncertainValue2
       return res;
    }
 
-   __device__ UncertainValue2 atan2(UncertainValue2 y, UncertainValue2 x)
+   __device__ UncertainValue2 atan2(UncertainValue2& y, UncertainValue2& x)
    {
       double f = ::atan2(y.doubleValue(), x.doubleValue());
       double df = 1.0 / (1.0 + ::pow(y.doubleValue() / x.doubleValue(), 2.0));
@@ -556,7 +558,7 @@ namespace UncertainValue2
       }
       UncertainValue2 res(f);
 
-      auto comp = divide(y, x).getComponents(); // why cant pass the function in itr constructor
+      auto comp = divide(y, x).getComponents();
       Map::Iterator<String::String, double> itr(comp);
       while (itr.HasNext()) {
          res.assignComponent(itr.GetKey(), df * itr.GetValue());
@@ -565,7 +567,7 @@ namespace UncertainValue2
       return res;
    }
 
-   __device__ UncertainValue2 positiveDefinite(UncertainValue2 uv)
+   __device__ UncertainValue2 positiveDefinite(UncertainValue2& uv)
    {
       UncertainValue2 ret(0.0, uv.getComponents());
       return uv.doubleValue() >= 0.0 ? uv : ret;

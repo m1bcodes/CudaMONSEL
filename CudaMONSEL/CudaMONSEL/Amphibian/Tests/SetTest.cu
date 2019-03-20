@@ -149,6 +149,10 @@ namespace SetTest
       auto set2 = set;
       set2.Put("XYZ");
 
+      if (!(set == set2)) {
+         printf("sets are different: %d, %d\n", set.HashCode(), set2.HashCode());
+      }
+
       int c2 = 0;
       Set::Iterator<String::String> itr2(set2);
       while (itr2.HasNext()) {

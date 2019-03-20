@@ -200,7 +200,7 @@ namespace LinkedList
    {
       unsigned int res = 0;
       while (list != NULL) {
-         int v = list->GetValue();
+         auto v = list->GetValue();
          res += hasher((char*)&v, sizeof(v));
          list = list->GetNext();
       }

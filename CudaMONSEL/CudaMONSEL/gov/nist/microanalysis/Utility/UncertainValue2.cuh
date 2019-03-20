@@ -41,7 +41,7 @@ namespace UncertainValue2
       __device__ UncertainValue2(double v, char source[], double dv);
       __device__ UncertainValue2(double v);
       __device__ UncertainValue2(double v, double dv);
-      __device__ UncertainValue2(double v, Map::Map<String::String, double> sigmas);
+      __device__ UncertainValue2(double v, Map::Map<String::String, double>& sigmas);
       __device__ UncertainValue2(UncertainValue2&);
       __device__ UncertainValue2& operator=(UncertainValue2&);
 
@@ -60,14 +60,13 @@ namespace UncertainValue2
       __device__ bool equals(UncertainValue2& uv);
       //__device__ bool operator==(UncertainValue2&);
 
-      __device__ int compareTo(UncertainValue2 o);
-      __device__ bool lessThan(UncertainValue2 uv2);
-      __device__ bool greaterThan(UncertainValue2 uv2);
-      __device__ bool lessThanOrEqual(UncertainValue2 uv2);
-      __device__ bool greaterThanOrEqual(UncertainValue2 uv2);
+      __device__ int compareTo(UncertainValue2& o);
+      __device__ bool lessThan(UncertainValue2& uv2);
+      __device__ bool greaterThan(UncertainValue2& uv2);
+      __device__ bool lessThanOrEqual(UncertainValue2& uv2);
+      __device__ bool greaterThanOrEqual(UncertainValue2& uv2);
 
       __device__ UncertainValue2 sqrt();
-      __device__ UncertainValue2 sqrt(UncertainValue2 uv);
 
       __device__ double variance(Correlations& corr);
       __device__ double uncertainty(Correlations& corr);
@@ -92,32 +91,31 @@ namespace UncertainValue2
    extern __device__ const int MAX_LEN;
 
    __device__ UncertainValue2 add(UncertainValue2 uvs[], int uvsLen);
-   __device__ UncertainValue2 add(UncertainValue2*, int);
-   __device__ UncertainValue2 add(double a, UncertainValue2 uva, double b, UncertainValue2 uvb);
-   __device__ UncertainValue2 subtract(UncertainValue2 uva, UncertainValue2 uvb);
+   __device__ UncertainValue2 add(double a, UncertainValue2& uva, double b, UncertainValue2& uvb);
+   __device__ UncertainValue2 subtract(UncertainValue2& uva, UncertainValue2& uvb);
    __device__ UncertainValue2 mean(UncertainValue2 uvs[], int uvsLen);
    __device__ UncertainValue2 weightedMean(UncertainValue2 uvs[], int uvsLen);
    __device__ UncertainValue2 min(UncertainValue2 uvs[], int uvsLen);
    __device__ UncertainValue2 max(UncertainValue2 uvs[], int uvsLen);
-   __device__ UncertainValue2 add(UncertainValue2 v1, double v2);
-   __device__ UncertainValue2 add(double v1, UncertainValue2 v2);
-   __device__ UncertainValue2 add(UncertainValue2 v1, UncertainValue2 v2);
-   __device__ UncertainValue2 multiply(double v1, UncertainValue2 v2);
-   __device__ UncertainValue2 multiply(UncertainValue2 v1, UncertainValue2 v2);
-   __device__ UncertainValue2 invert(UncertainValue2 v);
-   __device__ UncertainValue2 divide(UncertainValue2 a, UncertainValue2 b);
-   __device__ UncertainValue2 divide(double a, UncertainValue2 b);
-   __device__ UncertainValue2 divide(UncertainValue2 a, double b);
-   __device__ UncertainValue2 exp(UncertainValue2 x);
-   __device__ UncertainValue2 log(UncertainValue2 v2);
-   __device__ UncertainValue2 pow(UncertainValue2 v1, double n);
-   __device__ UncertainValue2 sqrt(UncertainValue2 uv);
-   __device__ LinkedList::Node<UncertainValue2>* quadratic(UncertainValue2 a, UncertainValue2 b, UncertainValue2 c);
-   __device__ UncertainValue2 sqr(UncertainValue2 uv);
-   __device__ UncertainValue2 negate(UncertainValue2 uv);
-   __device__ UncertainValue2 atan(UncertainValue2 uv);
-   __device__ UncertainValue2 atan2(UncertainValue2 y, UncertainValue2 x);
-   __device__ UncertainValue2 positiveDefinite(UncertainValue2 uv);
+   __device__ UncertainValue2 add(UncertainValue2& v1, double v2);
+   __device__ UncertainValue2 add(double v1, UncertainValue2& v2);
+   __device__ UncertainValue2 add(UncertainValue2& v1, UncertainValue2& v2);
+   __device__ UncertainValue2 multiply(double v1, UncertainValue2& v2);
+   __device__ UncertainValue2 multiply(UncertainValue2& v1, UncertainValue2& v2);
+   __device__ UncertainValue2 invert(UncertainValue2& v);
+   __device__ UncertainValue2 divide(UncertainValue2& a, UncertainValue2& b);
+   __device__ UncertainValue2 divide(double a, UncertainValue2& b);
+   __device__ UncertainValue2 divide(UncertainValue2& a, double b);
+   __device__ UncertainValue2 exp(UncertainValue2& x);
+   __device__ UncertainValue2 log(UncertainValue2& v2);
+   __device__ UncertainValue2 pow(UncertainValue2& v1, double n);
+   __device__ UncertainValue2 sqrt(UncertainValue2& uv);
+   __device__ LinkedList::Node<UncertainValue2>* quadratic(UncertainValue2& a, UncertainValue2& b, UncertainValue2& c);
+   __device__ UncertainValue2 sqr(UncertainValue2& uv);
+   __device__ UncertainValue2 negate(UncertainValue2& uv);
+   __device__ UncertainValue2 atan(UncertainValue2& uv);
+   __device__ UncertainValue2 atan2(UncertainValue2& y, UncertainValue2& x);
+   __device__ UncertainValue2 positiveDefinite(UncertainValue2& uv);
 
    //__device__ void InitializeSpecialUncertainValues();
    __device__ bool AreEqual(UncertainValue2&, UncertainValue2&);

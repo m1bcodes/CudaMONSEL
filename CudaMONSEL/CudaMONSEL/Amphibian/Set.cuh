@@ -28,6 +28,8 @@ namespace Set
       __host__ __device__ Set<T>& Set<T>::operator=(const Set<T>&);
       __host__ __device__ ~Set();
 
+      __host__ __device__ bool operator==(Set<T>&);
+
       __host__ __device__ void Initialize();
       __host__ __device__ void DeepCopy(const Set&);
       __host__ __device__ void ClearAndCopy(const Set&);
@@ -76,6 +78,22 @@ namespace Set
    __host__ __device__ Set<T>::~Set()
    {
       RemoveAll();
+   }
+
+   template<typename T>
+   __host__ __device__ bool Set<T>::operator==(Set<T>& other)
+   {
+      for (int k = 0; k < NUM_BUCKETS; ++k) {
+         auto itr = buckets[k];
+         while (itr != NULL) {
+            auto v0 = itr->GetValue();
+            if (!other.Exists(v0)) {
+               return false;
+            }
+            itr = itr->GetNext();
+         }
+      }
+      return true;
    }
 
    template<typename T>

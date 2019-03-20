@@ -61,6 +61,17 @@ namespace MapTest
       printf("MapTest::TestInteger() completed\n");
    }
 
+   __device__ Map::Map<String::String, double> makeMap()
+   {
+      Map::Map<String::String, double> map(Hasher::APHash, String::AreEqual, [](double& a, double& b) {return a == b; });
+      map.Put("A", 1);
+      map.Put("B", 2);
+      map.Put("C", 3);
+      map.Put("D", 4);
+      map.Put("E", 5);
+      return map;
+   }
+
    __device__ void MapTest::TestString()
    {
       Map::Map<String::String, double> m1(DefaultHasher, String::AreEqual, [](double& a, double& b) { return a == b; });
@@ -140,6 +151,14 @@ namespace MapTest
          //printf("(%s, %lf) ", itr5.GetKey().Get(), itr5.GetValue());
          itr5.Next();
       }
+
+      auto m6 = makeMap();
+      Map::Iterator<String::String, double> itr6(m6);
+      while (itr6.HasNext()) {
+         //printf("(%s, %lf) ", itr6.GetKey().Get(), itr6.GetValue());
+         itr6.Next();
+      }
+      //printf("\n");
 
       printf("MapTest::TestString() completed\n");
    }
