@@ -110,6 +110,7 @@ __global__ void TestKernel()
    MapTest::MapTest mapTest;
    mapTest.TestInteger();
    mapTest.TestString();
+   mapTest.TestMapOfMap();
 
    SetTest::SetTest setTest;
    setTest.TestInt();
@@ -142,7 +143,7 @@ int main()
    Element::readIonizationEnergy();
    Element::InitializeElements();
 
-   Composition::createProjectors(2762689630628022905L);
+   //Composition::createProjectors(2762689630628022905L);
 
    TestKernel<<<1, 1>>>();
    checkCudaErrors(cudaDeviceSynchronize());

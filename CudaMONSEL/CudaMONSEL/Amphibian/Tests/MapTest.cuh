@@ -14,6 +14,7 @@ namespace MapTest
       __device__ MapTest();
       __device__ void TestInteger();
       __device__ void TestString();
+      __device__ void TestMapOfMap();
 
       template<typename K, typename V>
       __device__ Map::Map<K, V> CreateMapA(Map::Map<K, V>::pKeyCmp kcmp, Map::Map<K, V>::pValCmp vcmp, K k, V v)

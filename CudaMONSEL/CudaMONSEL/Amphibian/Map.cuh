@@ -29,6 +29,7 @@ namespace Map
       typedef bool(*pValCmp)(V&, V&);
       __host__ __device__ Map(Hasher::pHasher, pKeyCmp, Map<K, V>::pValCmp);
       __host__ __device__ Map(const Map<K, V>&);
+      __host__ __device__ Map(int);
       __host__ __device__ Map<K, V>& operator=(const Map<K, V>&);
       __host__ __device__ ~Map();
 
@@ -37,7 +38,7 @@ namespace Map
       __host__ __device__ void Initialize();
       __host__ __device__ void ClearAndCopy(const Map<K, V>&);
       __host__ __device__ void Put(K, V);
-      __host__ __device__ bool ContainsKey(K);
+      __host__ __device__ bool ContainsKey(K&);
       __host__ __device__ V GetValue(K);
       __host__ __device__ Set::Set<K> GetKeys();
       __host__ __device__ unsigned int Hash(K);
@@ -73,6 +74,12 @@ namespace Map
    {
       //printf("called cc\n");
       ClearAndCopy(m);
+   }
+
+   template<typename K, typename V>
+   __host__ __device__ Map<K, V>::Map(int a)
+   {
+      Initialize();
    }
 
    template<typename K, typename V>
@@ -202,7 +209,7 @@ namespace Map
          while (bucketItr != NULL) {
             auto tmpK = bucketItr->GetKey();
             if (kcmp(tmpK, k)) {
-               bucketItr->MapVal(v, [](V a, V b) { return a; });
+               bucketItr->MapVal(v, [](V& a, V& b) { return a; });
                break;
             }
             bucketItr = bucketItr->GetNext();
@@ -211,7 +218,7 @@ namespace Map
    }
 
    template<typename K, typename V>
-   __host__ __device__ bool Map<K, V>::ContainsKey(K k)
+   __host__ __device__ bool Map<K, V>::ContainsKey(K& k)
    {
       return LinkedListKV::ContainsKey<K, V>(buckets[GetBucketIdx(k)], k, kcmp);
    }

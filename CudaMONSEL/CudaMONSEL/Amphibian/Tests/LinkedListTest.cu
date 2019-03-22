@@ -14,7 +14,8 @@ namespace LinkedListTest
 
       __device__ TestClassA(double v, char name[], double s) : val(v)
       {
-         LinkedListKV::InsertHead<String::String, double>(&list, name, s);
+         String::String nameStr(name);
+         LinkedListKV::InsertHead<String::String, double>(&list, nameStr, s);
       }
 
       double val;
@@ -43,10 +44,11 @@ namespace LinkedListTest
    {
       LinkedList::Node<int> * head = NULL;
       LinkedList::Node<int>** newHeadAddr = &head;
-      LinkedList::InsertNext(newHeadAddr, 0);
-      LinkedList::InsertNext(newHeadAddr, 1);
+      int v1 = 0, v2 = 1, v3 = 2;
+      LinkedList::InsertNext(newHeadAddr, v1);
+      LinkedList::InsertNext(newHeadAddr, v2);
       newHeadAddr = (*newHeadAddr)->GetNextAddr();
-      LinkedList::InsertNext(newHeadAddr, 2);
+      LinkedList::InsertNext(newHeadAddr, v3);
    
       PrintList(head);
       LinkedList::Node<int> * head2 = NULL;
@@ -84,9 +86,12 @@ namespace LinkedListTest
       String::String a("a");
       String::String b("b");
       String::String c("c");
-      LinkedListKV::InsertHead(head, a, 0.0f);
-      LinkedListKV::InsertHead(head, b, 1.0f);
-      LinkedListKV::InsertHead(head, c, 2.0f);
+      float v1 = 0.0f;
+      float v2 = 1.0f;
+      float v3 = 2.0f;
+      LinkedListKV::InsertHead(head, a, v1);
+      LinkedListKV::InsertHead(head, b, v2);
+      LinkedListKV::InsertHead(head, c, v3);
    }
    
    __device__ void BuildList2(LinkedListKV::Node<String::String, float>** head)
@@ -94,9 +99,12 @@ namespace LinkedListTest
       String::String a("a");
       String::String b("b");
       String::String a1("a");
-      LinkedListKV::InsertHead(head, a, 0.0f);
-      LinkedListKV::InsertHead(head, b, 1.0f);
-      LinkedListKV::InsertHead(head, a1, 0.1f);
+      float v1 = 0.0f;
+      float v2 = 1.0f;
+      float v3 = .1f;
+      LinkedListKV::InsertHead(head, a, v1);
+      LinkedListKV::InsertHead(head, b, v2);
+      LinkedListKV::InsertHead(head, a1, v3);
    }
    
    __device__ void PrintListInOrder(LinkedListKV::Node<String::String, float>* head)

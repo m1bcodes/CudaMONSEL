@@ -45,6 +45,9 @@ namespace UncertainValue2
       __device__ UncertainValue2(UncertainValue2&);
       __device__ UncertainValue2& operator=(UncertainValue2&);
 
+      __device__ bool operator==(UncertainValue2&);
+      __device__ bool equals(UncertainValue2& uv);
+
       __device__ void assignInitialValue(double);
       __device__ void assignComponent(String::String name, double sigma);
       __device__ double getComponent(String::String src);
@@ -57,7 +60,6 @@ namespace UncertainValue2
       __device__ double uncertainty();
       __device__ double variance();
       __device__ double fractionalUncertainty();
-      __device__ bool equals(UncertainValue2& uv);
       //__device__ bool operator==(UncertainValue2&);
 
       __device__ int compareTo(UncertainValue2& o);
@@ -95,8 +97,8 @@ namespace UncertainValue2
    __device__ UncertainValue2 subtract(UncertainValue2& uva, UncertainValue2& uvb);
    __device__ UncertainValue2 mean(UncertainValue2 uvs[], int uvsLen);
    __device__ UncertainValue2 weightedMean(UncertainValue2 uvs[], int uvsLen);
-   __device__ UncertainValue2 min(UncertainValue2 uvs[], int uvsLen);
-   __device__ UncertainValue2 max(UncertainValue2 uvs[], int uvsLen);
+   __device__ UncertainValue2 uvmin(UncertainValue2 uvs[], int uvsLen);
+   __device__ UncertainValue2 uvmax(UncertainValue2 uvs[], int uvsLen);
    __device__ UncertainValue2 add(UncertainValue2& v1, double v2);
    __device__ UncertainValue2 add(double v1, UncertainValue2& v2);
    __device__ UncertainValue2 add(UncertainValue2& v1, UncertainValue2& v2);

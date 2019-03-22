@@ -64,25 +64,25 @@ namespace MapTest
    __device__ Map::Map<String::String, double> makeMap()
    {
       Map::Map<String::String, double> map(Hasher::APHash, String::AreEqual, [](double& a, double& b) {return a == b; });
-      map.Put("A", 1);
-      map.Put("B", 2);
-      map.Put("C", 3);
-      map.Put("D", 4);
-      map.Put("E", 5);
+      map.Put(String::String("A"), 1);
+      map.Put(String::String("B"), 2);
+      map.Put(String::String("C"), 3);
+      map.Put(String::String("D"), 4);
+      map.Put(String::String("E"), 5);
       return map;
    }
 
    __device__ void MapTest::TestString()
    {
       Map::Map<String::String, double> m1(DefaultHasher, String::AreEqual, [](double& a, double& b) { return a == b; });
-      m1.Put("A", 1);
-      m1.Put("B", 2);
+      m1.Put(String::String("A"), 1);
+      m1.Put(String::String("B"), 2);
 
       AssertEqual(m1.Size(), 2);
 
       Map::Map<String::String, double> m2(m1);
       AssertEqual(m2.Size(), 2);
-      m2.Put("C", 3);
+      m2.Put(String::String("C"), 3);
       AssertEqual(m2.Size(), 3);
       AssertEqual(m1.Size(), 2);
 
@@ -108,7 +108,7 @@ namespace MapTest
 
       Map::Map<String::String, double> m3 = m2;
       AssertEqual(m3.Size(), 3);
-      m3.Put("D", 4);
+      m3.Put(String::String("D"), 4);
       AssertEqual(m3.Size(), 4);
 
       int c3 = 0;
@@ -122,8 +122,8 @@ namespace MapTest
       //printf("\n");
 
       Map::Map<String::String, double> map4(DefaultHasher, String::AreEqual, [](double& a, double& b) { return a == b; });
-      map4.Put("V1", ::sqrt(0.05));
-      map4.Put("V2", ::sqrt(0.04));
+      map4.Put(String::String("V1"), ::sqrt(0.05));
+      map4.Put(String::String("V2"), ::sqrt(0.04));
 
       int c4 = 0;
       Map::Iterator<String::String, double> itr4(map4);
@@ -161,5 +161,50 @@ namespace MapTest
       //printf("\n");
 
       printf("MapTest::TestString() completed\n");
+   }
+
+   __device__ bool doubleCmp(double& a, double& b) { return a == b; }
+   
+   class TestClass
+   {
+   public:
+      __device__ TestClass() : m(Hasher::APHash, String::AreEqual, doubleCmp) {}
+      __device__ TestClass(int) : m(Hasher::APHash, String::AreEqual, doubleCmp) {}
+
+      __device__ static bool AreEqualTestClass(TestClass& a, TestClass& b)
+      {
+         if (&a == &b) return true;
+         Map::Iterator<String::String, double> itr(a.m);
+         printf("%d\n", a.m.Size());
+         printf("??\n");
+         while (itr.HasNext()) {
+            printf("%d\n", b.m.Size());
+            auto k = itr.GetKey();
+            auto v = itr.GetValue();
+            printf("%s\n", k.Get());
+            //auto bm = b.m;
+            //Map::Map<String::String, double> bm(b.m);
+            //if (!b.m.ContainsKey(k)) return false;
+            //if (v != b.m.GetValue(k)) return false;
+            itr.Next();
+         }
+         return true;
+      }
+
+      Map::Map<String::String, double> m;
+   //private:
+   };
+
+   __device__ void MapTest::TestMapOfMap()
+   {
+      Map::Map<String::String, TestClass> m1(DefaultHasher, String::AreEqual, TestClass::AreEqualTestClass);
+      TestClass a;
+      TestClass b;
+      printf("1\n");
+      m1.Put(String::String("A"), a);
+      printf("2\n");
+      m1.Put(String::String("B"), b);
+      TestClass::AreEqualTestClass(a, b);
+      printf("MapTest::TestMapOfMap() completed\n");
    }
 }

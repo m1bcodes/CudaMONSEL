@@ -11,13 +11,13 @@ extern __device__ int atomicAdd(int* address, int val);
 
 namespace UncertainValue2
 {
-   __device__ const char DEFAULT[] = "Default";
-   __device__ int sDefIndex = 0;
+   __device__ static const char DEFAULT[] = "Default";
+   __device__ static int sDefIndex = 0;
 
-   __device__ const long long serialVersionUID = 119495064970078787L;
-   __device__ const int MAX_LEN = 11;
+   __device__ static const long long serialVersionUID = 119495064970078787L;
+   __device__ static const int MAX_LEN = 11;
 
-   __device__ const Hasher::pHasher DefaultHasher = Hasher::APHash;
+   __device__ static const Hasher::pHasher DefaultHasher = Hasher::APHash; // TODO: statis
 
    __device__ static bool doubleCmp(double& a, double& b)
    {
@@ -207,7 +207,7 @@ namespace UncertainValue2
       return (isnan(iVarSum) || isinf(iVarSum)) ? NULL : UncertainValue2(sum / varSum, "WM", ::sqrt(1.0 / varSum));
    }
 
-   __device__ UncertainValue2 min(UncertainValue2 uvs[], int uvsLen)
+   __device__ UncertainValue2 uvmin(UncertainValue2 uvs[], int uvsLen)
    {
       if (uvsLen == 0) {
          return NULL;
@@ -228,7 +228,7 @@ namespace UncertainValue2
       return res;
    }
 
-   __device__ UncertainValue2 max(UncertainValue2 uvs[], int uvsLen)
+   __device__ UncertainValue2 uvmax(UncertainValue2 uvs[], int uvsLen)
    {
       if (uvs == 0) {
          return NULL;
@@ -475,7 +475,7 @@ namespace UncertainValue2
       return fabs(uncertainty() / mValue);
    }
 
-   __device__ bool UncertainValue2::equals(UncertainValue2& other)
+   __device__ bool UncertainValue2::operator==(UncertainValue2& other)
    {
       if (*((int*)&other) == NULL) {
          return false;
@@ -483,8 +483,13 @@ namespace UncertainValue2
       if (this == &other) {
          return true;
       }
-      return true;
+      return mSigmas == other.mSigmas && mValue == other.doubleValue();
       //return LinkedListKV::AreEquivalentSets<String::String, double>(mSigmas, other.getComponents(), String::AreEqual, [](double a, double b) { return a == b; }) && (mValue == other.doubleValue());
+   }
+
+   __device__ bool UncertainValue2::equals(UncertainValue2& other)
+   {
+      return *this == other;
    }
 
    __device__ int UncertainValue2::compareTo(UncertainValue2& o)
@@ -661,6 +666,6 @@ namespace UncertainValue2
 
    __device__ bool AreEqual(UncertainValue2& a, UncertainValue2& b)
    {
-      return a.equals(b);
+      return a == b;
    }
 }
