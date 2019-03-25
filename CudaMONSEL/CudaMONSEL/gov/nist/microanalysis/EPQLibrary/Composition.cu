@@ -7,7 +7,7 @@
 //#include <time.h>
 //#include <stdlib.h>
 
-//extern __device__ float __int_as_float(int x);
+extern __device__ float __int_as_float(int x);
 
 namespace Composition
 {

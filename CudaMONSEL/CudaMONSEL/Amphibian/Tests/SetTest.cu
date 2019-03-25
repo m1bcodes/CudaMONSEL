@@ -147,7 +147,7 @@ namespace SetTest
       //printf("\n");
 
       auto set2 = set;
-      set2.Put("XYZ");
+      set2.Put(String::String("XYZ"));
 
       if (!(set == set2)) {
          printf("sets are different: %d, %d\n", set.HashCode(), set2.HashCode());

@@ -13,8 +13,10 @@ namespace Map
 {
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
    __constant__ const int NUM_BUCKETS = 23;
+   __constant__ const Hasher::pHasher DefaultHasher = Hasher::APHash;
 #else
    const int NUM_BUCKETS = 23;
+   const Hasher::pHasher DefaultHasher = Hasher::APHash;
 #endif
 
    template<typename K, typename V>
@@ -27,7 +29,7 @@ namespace Map
    public:
       typedef bool(*pKeyCmp)(K&, K&);
       typedef bool(*pValCmp)(V&, V&);
-      __host__ __device__ Map(Hasher::pHasher, pKeyCmp, Map<K, V>::pValCmp);
+      __host__ __device__ Map(Hasher::pHasher, pKeyCmp, pValCmp);
       __host__ __device__ Map(const Map<K, V>&);
       __host__ __device__ Map(int);
       __host__ __device__ Map<K, V>& operator=(const Map<K, V>&);
@@ -37,20 +39,26 @@ namespace Map
 
       __host__ __device__ void Initialize();
       __host__ __device__ void ClearAndCopy(const Map<K, V>&);
-      __host__ __device__ void Put(K, V);
+      __host__ __device__ void Put(K&, V&);
       __host__ __device__ bool ContainsKey(K&);
-      __host__ __device__ V GetValue(K);
+      __host__ __device__ bool GetValue(K&, V&);
       __host__ __device__ Set::Set<K> GetKeys();
-      __host__ __device__ unsigned int Hash(K);
+      __host__ __device__ unsigned int Hash(K&);
+      __host__ __device__ unsigned int Hash(char* data, int len);
       __host__ __device__ unsigned int HashCode();
       __host__ __device__ void DeepCopy(const Map& other);
-      __host__ __device__ V Remove(K k);
+      __host__ __device__ bool Remove(K&, V&);
+      __host__ __device__ bool Remove(K&);
       __host__ __device__ void RemoveAll();
       __host__ __device__ bool IsEmpty();
       __host__ __device__ int Size();
       __host__ __device__ V Aggregate(V(*fcn)(V));
       //__host__ __device__ LinkedListKV::Node<K, V>* AsList();
       __host__ __device__ LinkedListKV::Node<K, V>* GetBucket(int); // DEBUGGING PURPOSES
+
+      //__host__ __device__ Hasher::pHasher GetHasher(); // DEBUGGING PURPOSES
+      //__host__ __device__ pKeyCmp GetKeyCmp(); // DEBUGGING PURPOSES
+      //__host__ __device__ pValCmp GetValCmp(); // DEBUGGING PURPOSES
 
    private:
       __host__ __device__ int unsigned GetBucketIdx(K k);
@@ -60,6 +68,24 @@ namespace Map
       pKeyCmp kcmp = NULL;
       pValCmp vcmp = NULL;
    };
+
+   //template<typename K, typename V>
+   //__host__ __device__ Hasher::pHasher Map<K, V>::GetHasher()
+   //{
+   //   return hasher;
+   //}
+
+   //template<typename K, typename V>
+   //__host__ __device__ Map<K, V>::pKeyCmp Map<K, V>::GetKeyCmp()
+   //{
+   //   return kcmp;
+   //}
+
+   //template<typename K, typename V>
+   //__host__ __device__ Map<K, V>::pValCmp Map<K, V>::GetValCmp()
+   //{
+   //   return vcmp;
+   //}
 
    template<typename K, typename V>
    __host__ __device__ Map<K, V>::Map(Hasher::pHasher hasher, Map<K, V>::pKeyCmp kcmp, Map<K, V>::pValCmp vcmp) : hasher(hasher), kcmp(kcmp), vcmp(vcmp)
@@ -72,7 +98,7 @@ namespace Map
    template<typename K, typename V>
    __host__ __device__ Map<K, V>::Map(const Map<K, V>& m)
    {
-      //printf("called cc\n");
+      printf("called cc\n");
       ClearAndCopy(m);
    }
 
@@ -96,6 +122,7 @@ namespace Map
    template<typename K, typename V>
    __host__ __device__ Map<K, V>::~Map()
    {
+      printf("called des\n");
       RemoveAll();
    }
 
@@ -111,13 +138,13 @@ namespace Map
          auto itr = other.buckets[k];
          while (itr != NULL) {
             auto k1 = itr->GetKey();
-            auto v0 = GetValue(k1);
-            auto v1 = other.GetValue(k1);
-            if (*((int*)&v0) == NULL && *((int*)&v1) != NULL ||  
-               *((int*)&v0) != NULL && *((int*)&v1) == NULL) { // only one of the keys is NULL
+            V v0, v1;
+            auto got0 = GetValue(k1, v0);
+            auto got1 = other.GetValue(k1, v1);
+            if (got0 && !got1 || !got0 && got1) { // only one of the keys is NULL
                return false;
             }
-            if (*((int*)&v0) != NULL && *((int*)&v1) != NULL) { // both values are not NULL
+            if (got0 && got1) { // both values are not NULL
                if (!vcmp(v0, v1)) { // values are different
                   return false;
                }
@@ -147,7 +174,9 @@ namespace Map
          // LinkedListKV::DeepCopy(&buckets, other.buckets[k]); hash function may be different
          auto itr = other.buckets[k];
          while (itr != NULL) {
-            Put(itr->GetKey(), itr->GetValue());
+            auto k = itr->GetKey();
+            auto v = itr->GetValue();
+            Put(k, v);
             itr = itr->GetNext();
          }
       }
@@ -165,9 +194,10 @@ namespace Map
    }
 
    template<typename K, typename V>
-   __host__ __device__ V Map<K, V>::GetValue(K k)
+   __host__ __device__ bool Map<K, V>::GetValue(K& k, V& v)
    {
-      return LinkedListKV::GetValue<K, V>(buckets[GetBucketIdx(k)], k, kcmp);
+      //LinkedListKV::GetValue<K, V>(buckets[0], k, kcmp);
+      return LinkedListKV::GetValue<K, V>(buckets[GetBucketIdx(k)], k, v, kcmp);
    }
 
    template<typename K, typename V>
@@ -185,9 +215,16 @@ namespace Map
    }
 
    template<typename K, typename V>
-   __host__ __device__ V Map<K, V>::Remove(K k)
+   __host__ __device__ bool Map<K, V>::Remove(K& k, V& ret)
    {
-      return LinkedListKV::Remove<K, V>(&buckets[GetBucketIdx(k)], k, kcmp);
+      return LinkedListKV::Remove<K, V>(&buckets[GetBucketIdx(k)], k, ret, kcmp);
+   }
+
+   template<typename K, typename V>
+   __host__ __device__ bool Map<K, V>::Remove(K& k)
+   {
+      V v;
+      return LinkedListKV::Remove<K, V>(&buckets[GetBucketIdx(k)], k, v, kcmp);
    }
 
    template<typename K, typename V>
@@ -199,7 +236,7 @@ namespace Map
    }
 
    template<typename K, typename V>
-   __host__ __device__ void Map<K, V>::Put(K k, V v)
+   __host__ __device__ void Map<K, V>::Put(K& k, V& v)
    {
       if (!ContainsKey(k)) {
          LinkedListKV::InsertHead<K, V>(&buckets[GetBucketIdx(k)], k, v);
@@ -224,16 +261,16 @@ namespace Map
    }
 
    template<typename K, typename V>
-   __host__ __device__ unsigned int Map<K, V>::Hash(K v)
+   __host__ __device__ unsigned int Map<K, V>::Hash(K& v)
    {
       return hasher((char*)&v, sizeof(v));
    }
 
-   //template<typename T>
-   //__host__ __device__ LinkedList::Node<T>* Set<T>::GetBucket(int n)
-   //{
-   //   return buckets[n % NUM_BUCKETS];
-   //}
+   template<typename K, typename V>
+   __host__ __device__ unsigned int Map<K, V>::Hash(char* v, int len)
+   {
+      return hasher(v, len);
+   }
 
    template<typename K, typename V>
    __host__ __device__ unsigned int Map<K, V>::GetBucketIdx(K v)
@@ -252,20 +289,6 @@ namespace Map
 
       return res;
    }
-
-   //template<typename K, typename V>
-   //__host__ __device__ LinkedListKV::Node<K, V>* Map<K, V>::AsList()
-   //{
-   //   LinkedListKV::Node<K, V>* res = NULL;
-   //   for (int k = 0; k < NUM_BUCKETS; ++k) {
-   //      auto itr = buckets[k];
-   //      while (itr != NULL) {
-   //         LinkedListKV::InsertHead<K, V>(&res, itr->GetKey(), itr->GetValue());
-   //         itr = itr->GetNext();
-   //      }
-   //   }
-   //   return res;
-   //}
 
    template<typename K, typename V>
    __host__ __device__ bool Map<K, V>::IsEmpty()

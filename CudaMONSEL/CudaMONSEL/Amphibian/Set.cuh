@@ -33,20 +33,20 @@ namespace Set
       __host__ __device__ void Initialize();
       __host__ __device__ void DeepCopy(const Set&);
       __host__ __device__ void ClearAndCopy(const Set&);
-      __host__ __device__ void Put(T);
+      __host__ __device__ void Put(T&);
       __host__ __device__ void Add(Set&);
-      __host__ __device__ bool Exists(T);
+      __host__ __device__ bool Exists(T&);
       __host__ __device__ bool IsEmpty();
       __host__ __device__ int Size();
       __host__ __device__ unsigned int HashCode();
-      __host__ __device__ unsigned int Hash(T);
-      __host__ __device__ void Remove(T);
+      __host__ __device__ unsigned int Hash(T&);
+      __host__ __device__ void Remove(T&);
       __host__ __device__ void RemoveAll();
       //__host__ __device__ LinkedList::Node<T>* AsList();
       __host__ __device__ LinkedList::Node<T>* GetBucket(int); // DEBUGGING PURPOSES
 
    private:
-      unsigned int GetBucketIdx(T v);
+      unsigned int GetBucketIdx(T& v);
       LinkedList::Node<T>* buckets[NUM_BUCKETS];
       Hasher::pHasher hasher;
       pCmp cmp;
@@ -114,7 +114,8 @@ namespace Set
          // LinkedListKV::DeepCopy(&buckets, other.buckets[k]); hash function may be different
          auto itr = other.buckets[k];
          while (itr != NULL) {
-            Put(itr->GetValue());
+            auto v = itr->GetValue();
+            Put(v);
             itr = itr->GetNext();
          }
       }
@@ -131,7 +132,7 @@ namespace Set
    }
 
    template<typename T>
-   __host__ __device__ void Set<T>::Put(T v)
+   __host__ __device__ void Set<T>::Put(T& v)
    {
       if (!Exists(v)) {
          LinkedList::InsertHead<T>(&buckets[GetBucketIdx(v)], v);
@@ -144,14 +145,15 @@ namespace Set
       for (int k = 0; k < NUM_BUCKETS; ++k) {
          auto itr = other.buckets[k];
          while (itr != NULL) {
-            Put(itr->GetValue());
+            auto v = itr->GetValue();
+            Put(v);
             itr = itr->GetNext();
          }
       }
    }
 
    template<typename T>
-   __host__ __device__ bool Set<T>::Exists(T v)
+   __host__ __device__ bool Set<T>::Exists(T& v)
    {
       return LinkedList::Exists<T>(buckets[GetBucketIdx(v)], v, cmp);
    }
@@ -182,7 +184,7 @@ namespace Set
    }
 
    template<typename T>
-   __host__ __device__ unsigned int Set<T>::Hash(T v)
+   __host__ __device__ unsigned int Set<T>::Hash(T& v)
    {
       return hasher((char*)&v, sizeof(v));
    }
@@ -200,7 +202,7 @@ namespace Set
    }
 
    template<typename T>
-   __host__ __device__ unsigned int Set<T>::GetBucketIdx(T v)
+   __host__ __device__ unsigned int Set<T>::GetBucketIdx(T& v)
    {
       return Hash(v) % NUM_BUCKETS;
    }
@@ -212,7 +214,7 @@ namespace Set
    }
 
    template<typename T>
-   __host__ __device__ void Set<T>::Remove(T v)
+   __host__ __device__ void Set<T>::Remove(T& v)
    {
       LinkedList::Remove(&buckets[GetBucketIdx(v)], v, cmp);
    }

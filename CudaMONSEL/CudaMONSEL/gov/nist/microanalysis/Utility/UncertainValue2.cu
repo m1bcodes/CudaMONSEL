@@ -48,9 +48,7 @@ namespace UncertainValue2
 
    __device__ UncertainValue2::UncertainValue2(double v, Map::Map<String::String, double>& sigmas) : mValue(v), mSigmas(DefaultHasher, String::AreEqual, doubleCmp)
    {
-      if (*((int*)&sigmas) != NULL) {
-         mSigmas.DeepCopy(sigmas);
-      }
+      mSigmas.DeepCopy(sigmas);
    }
 
    __device__ UncertainValue2::UncertainValue2(UncertainValue2& other) : mValue(other.doubleValue()), mSigmas(DefaultHasher, String::AreEqual, doubleCmp)
@@ -109,8 +107,8 @@ namespace UncertainValue2
 
    __device__ double UncertainValue2::getComponent(String::String src)
    {
-      auto v = mSigmas.GetValue(src);
-      return v != NULL ? v : 0.0;
+      double v;
+      return mSigmas.GetValue(src, v) ? v : 0.0;
    }
 
    __device__ Map::Map<String::String, double> UncertainValue2::getComponents()
@@ -477,9 +475,6 @@ namespace UncertainValue2
 
    __device__ bool UncertainValue2::operator==(UncertainValue2& other)
    {
-      if (*((int*)&other) == NULL) {
-         return false;
-      }
       if (this == &other) {
          return true;
       }
@@ -612,8 +607,8 @@ namespace UncertainValue2
 
    __device__ double Correlations::get(String::String& src1, String::String& src2)
    {
-      double r = mCorrelations.GetValue(Key(src1, src2));
-      return r == NULL ? 0.0 : r;
+      double r;
+      return mCorrelations.GetValue(Key(src1, src2), r) ? r : 0.0;
    }
 
    __device__ double UncertainValue2::variance(Correlations& corr)
@@ -627,7 +622,10 @@ namespace UncertainValue2
       double res = 0.0;
       while (itr1.HasNext()) {
          String::String key = itr1.GetValue();
-         auto val = sigmas.GetValue(key);
+         double val;
+         if (!sigmas.GetValue(key, val)) {
+            printf("UncertainValue2::variance: key %s not found.", key.Get());
+         }
          res += val * val;
          itr1.Next();
       }
@@ -640,8 +638,13 @@ namespace UncertainValue2
          while (itr2.HasNext()) {
             auto key1 = itr1.GetValue();
             auto key2 = itr2.GetValue();
-            auto sigma1 = sigmas.GetValue(key1);
-            auto sigma2 = sigmas.GetValue(key2);
+            double sigma1, sigma2;
+            if (!sigmas.GetValue(key1, sigma1)) {
+               printf("UncertainValue2::variance: key1 %s not found.", key1.Get());
+            }
+            if (!sigmas.GetValue(key2, sigma2)) {
+               printf("UncertainValue2::variance: key2 %s not found.", key2.Get());
+            }
             res += 2.0 * sigma1 * sigma2 * corr.get(key1, key2);
             itr2.Next();
          }
