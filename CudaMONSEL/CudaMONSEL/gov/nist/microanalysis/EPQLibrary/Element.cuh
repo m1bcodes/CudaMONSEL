@@ -135,6 +135,8 @@ namespace Element
       __host__ __device__ Element(int atomicNo);
       __host__ __device__ Element();
 
+      __host__ __device__ bool operator==(const Element&);
+
       __device__ int getAtomicNumber();
       __device__ double getAtomicWeight();
       __device__ double getMass();
@@ -143,14 +145,14 @@ namespace Element
       __device__ bool isValid();
       __device__ int compareTo(Element e);
       __device__ int hashCode();
-      __device__ bool equals(Element el);
+      __device__ bool equals(const Element& el);
       __device__ char const * toString();
       __device__  double getIonizationEnergy();
 
    private:
-      int mAtomicNumber;
-
       __device__ Element readResolve();
+
+      int mAtomicNumber;
    };
 
    extern __device__ const Element None;
@@ -283,7 +285,7 @@ namespace Element
 
    //__device__ char* const getListOfAbbreviations(Element minEl, Element maxEl);
 
-   __device__ bool AreEqual(Element& e1, Element& e2);
+   //__device__ bool AreEqual(Element& e1, Element& e2);
    __host__ void InitializeElements();
 }
 #endif

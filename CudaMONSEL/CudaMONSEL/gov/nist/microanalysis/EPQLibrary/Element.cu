@@ -1,6 +1,6 @@
 #include "Element.cuh"
 #include "..\..\..\..\CudaUtil.h"
-#include "..\..\..\..\Amphibian\String.cuh"
+#include "Amphibian\String.cuh"
 
 namespace Element
 {
@@ -606,6 +606,11 @@ namespace Element
       // mAtomicNumber = elmNone;
    }
 
+   __host__ __device__ bool Element::operator==(const Element& other)
+   {
+      return mAtomicNumber == other.mAtomicNumber;
+   }
+
    __host__ void readAtomicWeights()
    {
       float hAtomicWeight[112];
@@ -766,9 +771,9 @@ namespace Element
       return mAtomicNumber << 24;
    }
 
-   __device__ bool Element::equals(Element el)
+   __device__ bool Element::equals(const Element& el)
    {
-      return ::Element::AreEqual(el, *this);
+      return *this == el;
    }
 
    __device__ char const * Element::toString()
@@ -836,11 +841,11 @@ namespace Element
    //   return res;
    //}
 
-   __device__ bool AreEqual(Element& e1, Element& e2)
-   {
-      if (&e1 == &e2) return true;
-      return e1.getAtomicNumber() == e2.getAtomicNumber();
-   }
+   //__device__ bool AreEqual(Element& e1, Element& e2)
+   //{
+   //   if (&e1 == &e2) return true;
+   //   return e1.getAtomicNumber() == e2.getAtomicNumber();
+   //}
    
    __host__ void InitializeElements()
    {

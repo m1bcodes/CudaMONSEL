@@ -14,8 +14,6 @@ namespace Composition
    __device__ static const long long serialVersionUID = 0x42;
    __device__ static const double OUT_OF_THIS_MANY_ATOMS = 1.0;
 
-   __device__ static const Hasher::pHasher DefaultHasher = Hasher::APHash; // TODO: static
-
    __device__ static bool doubleCmp (double& a, double& b) { return a == b; };
 
    //__device__ void Composition::renormalize()
@@ -49,8 +47,7 @@ namespace Composition
    //   mMoleNorm = UncertainValue2::NaN();
    //}
 
-   __device__ Composition::Composition() :
-      mConstituents(DefaultHasher, Element::AreEqual, doubleCmp)
+   __device__ Composition::Composition()
       //mConstituents(DefaultHasher, Element::AreEqual, UncertainValue2::AreEqual),
       //mConstituentsAtomic(NULL),
       //mNormalization(UncertainValue2::UncertainValue2(1)),

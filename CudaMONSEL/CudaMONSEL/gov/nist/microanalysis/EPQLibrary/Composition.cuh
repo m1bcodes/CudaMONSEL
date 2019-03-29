@@ -1,8 +1,8 @@
 #ifndef _COMPOSITION_CUH_
 #define _COMPOSITION_CUH_
 
-#include "..\..\..\..\Amphibian\LinkedList.cuh"
-#include "..\..\..\..\Amphibian\String.cuh"
+#include "Amphibian\LinkedList.cuh"
+#include "Amphibian\String.cuh"
 
 #include "Element.cuh"
 #include "..\Utility\UncertainValue2.cuh"
@@ -19,6 +19,9 @@ namespace Composition
    class Composition
    {
    public:
+      typedef Map::Map<Element::Element, double, String::CompareFcn, Comparator::DoubleCompareFcn, String::HashFcn, Hasher::DoubleHashFcn> CompositionMap;
+      typedef Map::Iterator<Element::Element, double, String::CompareFcn, Comparator::DoubleCompareFcn, String::HashFcn, Hasher::DoubleHashFcn> CompositionMapItr;
+
       __device__ Composition();
       //__device__ ~Composition();
       //__device__ Composition(Composition& comp);
@@ -140,7 +143,7 @@ namespace Composition
       //__device__ void recomputeWeightFractions();
 
       //Map::Map<Element::Element, UncertainValue2::UncertainValue2> mConstituents;
-      Map::Map<Element::Element, double> mConstituents;
+      CompositionMap mConstituents;
       //LinkedListKV::Node<Element::Element, UncertainValue2::UncertainValue2>* mConstituentsAtomic;
 
       //UncertainValue2::UncertainValue2 mNormalization;// = UncertainValue2::UncertainValue2(1); // UncertainValue2::ONE();

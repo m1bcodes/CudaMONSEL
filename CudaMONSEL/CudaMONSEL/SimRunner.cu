@@ -86,49 +86,26 @@ void PrintArray2D(int *h_arr, int img_x, int img_y)
 
 __global__ void TestKernel()
 {
-   //printf("INT_MIN %d\n", INT_MIN);
-   //printf("INT_MAX %d\n", INT_MAX);
+   UncertainValue2::UncertainValue2 v0(0, "abc", 5);
+   UncertainValue2::UncertainValue2 v1(1);
+   UncertainValue2::UncertainValue2 v2(2, 10);
+   UncertainValue2::UncertainValue2 v3(2, 10);
+   printf("%d\n", v1.equals(v2));
+   printf("%d\n", v1.equals(v3));
+   printf("%d\n", v2.equals(v3));
 
-   //UncertainValue2::UncertainValue2 v0(0, "abc", 5);
-   //UncertainValue2::UncertainValue2 v1(1);
-   //UncertainValue2::UncertainValue2 v2(2, 10);
-   //UncertainValue2::UncertainValue2 v3(2, 10);
-   //printf("%d\n", v1.equals(v2));
-   //printf("%d\n", v1.equals(v3));
-   //printf("%d\n", v2.equals(v3));
-
-   //HasherTest::TestOne();
-
-   //LinkedListTest::LinkedListTest lltest;
-   //lltest.TestAddAllAsSet();
-   //
-   //StringTest::EmptyTest();
-   //StringTest::AtoITest();
-   //StringTest::ItoATest();
-   //StringTest::AtoFTest();
-
-   MapTest::MapTest mapTest;
-   //mapTest.TestInteger();
-   //mapTest.TestString();
-   mapTest.TestMapOfMap();
-
-   //SetTest::SetTest setTest;
-   //setTest.TestInt();
-   //setTest.TestInt2();
-   //setTest.TestString();
-
-   //UncertainValue2Test::UncertainValue2Test uvTest;
-   //uvTest.testSpecialValues();
-   //uvTest.testA();
-   //uvTest.testB();
-   //uvTest.testC();
-   //uvTest.testAB();
-   //uvTest.testAdd1();
-   //uvTest.testAdd2();
-   //uvTest.testAdd3();
-   //uvTest.testMultiply();
-   //uvTest.testDivide();
-   //uvTest.testFunctions();
+   UncertainValue2Test::UncertainValue2Test uvTest;
+   uvTest.testSpecialValues();
+   uvTest.testA();
+   uvTest.testB();
+   uvTest.testC();
+   uvTest.testAB();
+   uvTest.testAdd1();
+   uvTest.testAdd2();
+   uvTest.testAdd3();
+   uvTest.testMultiply();
+   uvTest.testDivide();
+   uvTest.testFunctions();
 
    //ElementTest::ElementTest elementTest;
    //elementTest.testOne();

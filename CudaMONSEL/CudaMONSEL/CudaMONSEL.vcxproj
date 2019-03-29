@@ -19,14 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="Amphibian\Hasher.cu" />
-    <CudaCompile Include="Amphibian\Math.cu" />
-    <CudaCompile Include="Amphibian\String.cu" />
-    <CudaCompile Include="Amphibian\Tests\HasherTest.cu" />
-    <CudaCompile Include="Amphibian\Tests\LinkedListTest.cu" />
-    <CudaCompile Include="Amphibian\Tests\MapTest.cu" />
-    <CudaCompile Include="Amphibian\Tests\SetTest.cu" />
-    <CudaCompile Include="Amphibian\Tests\StringTest.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\Composition.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\Element.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\FromSI.cu" />
@@ -42,17 +34,6 @@
     <CudaCompile Include="SimRunner.cu" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Amphibian\Hasher.cuh" />
-    <ClInclude Include="Amphibian\LinkedList.cuh" />
-    <ClInclude Include="Amphibian\Math.cuh" />
-    <ClInclude Include="Amphibian\Set.cuh" />
-    <ClInclude Include="Amphibian\String.cuh" />
-    <ClInclude Include="Amphibian\Tests\HasherTest.cuh" />
-    <ClInclude Include="Amphibian\Tests\LinkedListTest.cuh" />
-    <ClInclude Include="Amphibian\Map.cuh" />
-    <ClInclude Include="Amphibian\Tests\MapTest.cuh" />
-    <ClInclude Include="Amphibian\Tests\SetTest.cuh" />
-    <ClInclude Include="Amphibian\Tests\StringTest.cuh" />
     <ClInclude Include="CudaUtil.h" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\Composition.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\Element.cuh" />
@@ -132,11 +113,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <AdditionalDependencies>cudadevrt.lib;cudart_static.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>echo copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"
@@ -147,7 +130,13 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
       <CodeGeneration>compute_61,sm_61</CodeGeneration>
       <Runtime>InheritFromHost</Runtime>
       <PtxAsOptionV>true</PtxAsOptionV>
+      <AdditionalDeps>
+      </AdditionalDeps>
     </CudaCompile>
+    <CudaLink>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+    </CudaLink>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -177,6 +166,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -184,6 +174,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
       <OptimizeReferences>true</OptimizeReferences>
       <SubSystem>Console</SubSystem>
       <AdditionalDependencies>cudadevrt.lib;cudart_static.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>echo copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"
@@ -192,7 +183,13 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     <CudaCompile>
       <GenerateRelocatableDeviceCode>true</GenerateRelocatableDeviceCode>
       <CodeGeneration>compute_61,sm_61</CodeGeneration>
+      <AdditionalDeps>
+      </AdditionalDeps>
     </CudaCompile>
+    <CudaLink>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+    </CudaLink>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>

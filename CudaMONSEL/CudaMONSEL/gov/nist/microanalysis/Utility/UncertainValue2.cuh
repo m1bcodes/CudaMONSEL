@@ -4,27 +4,45 @@
 #include <cuda_runtime.h>
 #include <math_constants.h>
 
-#include "..\..\..\..\Amphibian\String.cuh"
-#include "..\..\..\..\Amphibian\Map.cuh"
+#include "Amphibian\String.cuh"
+#include "Amphibian\Map.cuh"
 
 namespace UncertainValue2
 {
    class Key
    {
-   private:
-      String::String mSource1, mSource2;
-
    public:
       __device__ Key(String::String src1, String::String src2);
-      __device__ bool operator==(Key& k2);
+      __device__ bool operator==(const Key& k2) const;
+      __device__ unsigned int Hashcode();
 
-      __device__ static bool AreEqual(Key& k1, Key& k2);
+      //__device__ static bool AreEqual(Key& k1, Key& k2);
+
+   private:
+      String::String mSource1, mSource2;
+   };
+
+   struct KeyCompareFcn
+   {
+      __device__ inline bool operator() (const Key& lhs, const Key& rhs) {
+         return lhs == rhs;
+      }
+   };
+
+   struct KeyHashFcn
+   {
+      __device__ inline unsigned int operator() (Key& k) {
+         return k.Hashcode();
+      }
    };
 
    class Correlations
    {
+      typedef Map::Map<Key, double, KeyCompareFcn, Comparator::DoubleCompareFcn, KeyHashFcn, Hasher::DoubleHashFcn> CorrelationMap;
+      typedef Map::Iterator<Key, double, KeyCompareFcn, Comparator::DoubleCompareFcn, KeyHashFcn, Hasher::DoubleHashFcn> CorrelationMapItr;
+
    private:
-      Map::Map<Key, double> mCorrelations;
+      CorrelationMap mCorrelations;
 
    public:
       __device__ Correlations();
@@ -36,12 +54,17 @@ namespace UncertainValue2
    class UncertainValue2
    {
    public:
+      typedef Map::Map<String::String, double, String::CompareFcn, Comparator::DoubleCompareFcn, String::HashFcn, Hasher::DoubleHashFcn> ComponentMap;
+      typedef Map::Iterator<String::String, double, String::CompareFcn, Comparator::DoubleCompareFcn, String::HashFcn, Hasher::DoubleHashFcn> ComponentMapItr;
+      typedef Set::Set<String::String, String::CompareFcn, String::HashFcn> KeySet;
+      typedef Set::Iterator<String::String, String::CompareFcn, String::HashFcn> KeySetItr;
+
       __device__ UncertainValue2();
       //__device__ ~UncertainValue2();
       __device__ UncertainValue2(double v, char source[], double dv);
       __device__ UncertainValue2(double v);
       __device__ UncertainValue2(double v, double dv);
-      __device__ UncertainValue2(double v, Map::Map<String::String, double>& sigmas);
+      __device__ UncertainValue2(double v, ComponentMap& sigmas);
       __device__ UncertainValue2(UncertainValue2&);
       __device__ UncertainValue2& operator=(UncertainValue2&);
 
@@ -51,7 +74,7 @@ namespace UncertainValue2
       __device__ void assignInitialValue(double);
       __device__ void assignComponent(String::String name, double sigma);
       __device__ double getComponent(String::String src);
-      __device__ Map::Map<String::String, double> getComponents();
+      __device__ ComponentMap& getComponents();
       __device__ bool hasComponent(String::String src);
       __device__ void renameComponent(String::String oldName, String::String newName);
 
@@ -76,7 +99,7 @@ namespace UncertainValue2
       __device__ void PrintSigmas();
 
    private:
-      Map::Map<String::String, double> mSigmas;
+      ComponentMap mSigmas;
       double mValue;
    };
 
