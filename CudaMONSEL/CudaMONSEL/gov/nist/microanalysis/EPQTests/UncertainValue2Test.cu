@@ -1,7 +1,7 @@
 #include "UncertainValue2Test.cuh"
 
-#include "Amphibian\Hasher.cuh"
-#include "Amphibian\Map.cuh"
+#include "Hasher.cuh"
+#include "Map.cuh"
 
 #include <stdio.h>
 #include <math.h>

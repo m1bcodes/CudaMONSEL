@@ -4,8 +4,8 @@
 #include <cuda_runtime.h>
 #include <math_constants.h>
 
-#include "Amphibian\String.cuh"
-#include "Amphibian\Map.cuh"
+#include "String.cuh"
+#include "Map.cuh"
 
 namespace UncertainValue2
 {
@@ -65,7 +65,8 @@ namespace UncertainValue2
       __device__ UncertainValue2(double v);
       __device__ UncertainValue2(double v, double dv);
       __device__ UncertainValue2(double v, ComponentMap& sigmas);
-      __device__ UncertainValue2(UncertainValue2&);
+      __device__ UncertainValue2(const UncertainValue2&);
+      //__device__ UncertainValue2(UncertainValue2&);
       __device__ UncertainValue2& operator=(UncertainValue2&);
 
       __device__ bool operator==(UncertainValue2&);
@@ -78,7 +79,7 @@ namespace UncertainValue2
       __device__ bool hasComponent(String::String src);
       __device__ void renameComponent(String::String oldName, String::String newName);
 
-      __device__ double doubleValue();
+      __device__ double doubleValue() const;
       __device__ bool isUncertain();
       __device__ double uncertainty();
       __device__ double variance();

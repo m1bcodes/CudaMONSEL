@@ -47,10 +47,10 @@ namespace UncertainValue2
       mSigmas.DeepCopy(sigmas);
    }
 
-   __device__ UncertainValue2::UncertainValue2(UncertainValue2& other) : mValue(other.doubleValue())
+   __device__ UncertainValue2::UncertainValue2(const UncertainValue2& other) : mValue(other.doubleValue())
    {
       if (&other == this) return;
-      mSigmas.DeepCopy(other.getComponents());
+      mSigmas.DeepCopy(other.mSigmas);
    }
 
    __device__ UncertainValue2 ONE()
@@ -161,8 +161,10 @@ namespace UncertainValue2
    {
       UncertainValue2::KeySet keys;
       UncertainValue2 res(a * uva.doubleValue() + b * uvb.doubleValue());
-      keys.Add(uva.getComponents().GetKeys());
-      keys.Add(uvb.getComponents().GetKeys());
+      auto akeys = uva.getComponents().GetKeys();
+      auto bkeys = uvb.getComponents().GetKeys();
+      keys.Add(akeys);
+      keys.Add(bkeys);
 
       UncertainValue2::KeySetItr itr(keys);
       while (itr.HasNext()) {
@@ -180,7 +182,8 @@ namespace UncertainValue2
 
    __device__ UncertainValue2 mean(UncertainValue2 uvs[], int uvsLen)
    {
-      return divide(add(uvs, uvsLen), (double)uvsLen);
+      auto uv = add(uvs, uvsLen);
+      return divide(uv, (double)uvsLen);
    }
 
    __device__ UncertainValue2 weightedMean(UncertainValue2 cuv[], int uvsLen)
@@ -192,13 +195,18 @@ namespace UncertainValue2
          const double ivar = 1.0 / uv.variance();
          if (isnan(ivar) || isinf(ivar)) {
             printf("%s\n", "Unable to compute the weighted mean when one or more datapoints have zero uncertainty.");
-            return NULL;
+            return NaN();
          }
          varSum += ivar;
          sum += ivar * uv.doubleValue();
       }
       const double iVarSum = 1.0 / varSum;
-      return (isnan(iVarSum) || isinf(iVarSum)) ? NULL : UncertainValue2(sum / varSum, "WM", ::sqrt(1.0 / varSum));
+      if (isnan(iVarSum) || isinf(iVarSum)) {
+         printf("UncertainValue2::weightedMean: badddddd\n");
+         return NaN();
+      }
+      char str[4] = "WM";
+      return UncertainValue2(sum / varSum, str, ::sqrt(1.0 / varSum));
    }
 
    __device__ UncertainValue2 uvmin(UncertainValue2 uvs[], int uvsLen)
@@ -269,7 +277,8 @@ namespace UncertainValue2
       auto m = v2.getComponents();
       UncertainValue2::ComponentMapItr itr(m);
       while (itr.HasNext()) {
-         res.assignComponent(itr.GetKey(), v1 * itr.GetValue());
+         auto k = itr.GetKey();
+         res.assignComponent(k, v1 * itr.GetValue());
          itr.Next();
       }
       return res;
@@ -278,8 +287,10 @@ namespace UncertainValue2
    __device__ UncertainValue2 multiply(UncertainValue2& v1, UncertainValue2& v2)
    {
       UncertainValue2::KeySet keys;
-      keys.Add(v1.getComponents().GetKeys());
-      keys.Add(v2.getComponents().GetKeys());
+      auto v1keys = v1.getComponents().GetKeys();
+      auto v2keys = v2.getComponents().GetKeys();
+      keys.Add(v1keys);
+      keys.Add(v2keys);
 
       UncertainValue2 res(v1.doubleValue() * v2.doubleValue());
       UncertainValue2::KeySetItr itr(keys);
@@ -302,8 +313,10 @@ namespace UncertainValue2
       UncertainValue2 res(v1.doubleValue() / v2.doubleValue());
       if (!(isnan(res.doubleValue()) || isinf(res.doubleValue()))) {
          UncertainValue2::KeySet keys;
-         keys.Add(v1.getComponents().GetKeys());
-         keys.Add(v2.getComponents().GetKeys());
+         auto v1keys = v1.getComponents().GetKeys();
+         auto v2keys = v2.getComponents().GetKeys();
+         keys.Add(v1keys);
+         keys.Add(v2keys);
 
          const double ua = fabs(1.0 / v2.doubleValue());
          const double ub = fabs(v1.doubleValue() / (v2.doubleValue() * v2.doubleValue()));
@@ -427,18 +440,25 @@ namespace UncertainValue2
    {
       // q=-0.5*(b+signum(b)*sqrt(pow(b,2.0)-4*a*c))
       // return [ q/a, c/q ]
-      UncertainValue2 r = add(1.0, pow(b, 2.0), -4.0, multiply(a, c));
+      auto uv0 = pow(b, 2.0);
+      auto uv1 = multiply(a, c);
+      UncertainValue2 r = add(1.0, uv0, -4.0, uv1);
       if (r.doubleValue() <= 0.0) {
          return NULL;
       }
-      UncertainValue2 q = multiply(-0.5, add(b, multiply(copysign(1.0, b.doubleValue()), r.sqrt())));
+      auto uv2 = r.sqrt();
+      auto uv3 = multiply(copysign(1.0, b.doubleValue()), uv2);
+      auto uv4 = add(b, uv3);
+      UncertainValue2 q = multiply(-0.5, uv4);
       LinkedList::Node<UncertainValue2>* head = NULL;
-      LinkedList::InsertHead(&head, divide(q, a));
-      LinkedList::InsertHead(&head, divide(c, q));
+      auto uv5 = divide(q, a);
+      auto uv6 = divide(c, q);
+      LinkedList::InsertHead(&head, uv5);
+      LinkedList::InsertHead(&head, uv6);
       return head;
    }
 
-   __device__ double UncertainValue2::doubleValue()
+   __device__ double UncertainValue2::doubleValue() const
    {
       return mValue;
    }
@@ -603,13 +623,15 @@ namespace UncertainValue2
       }
       corr = ::fmax(corr, 1.0);
       corr = ::fmin(corr, -1.0);
-      mCorrelations.Put(Key(src1, src2), corr);
+      Key k = Key(src1, src2);
+      mCorrelations.Put(k, corr);
    }
 
    __device__ double Correlations::get(String::String& src1, String::String& src2)
    {
       double r;
-      return mCorrelations.GetValue(Key(src1, src2), r) ? r : 0.0;
+      auto k = Key(src1, src2);
+      return mCorrelations.GetValue(k, r) ? r : 0.0;
    }
 
    __device__ double UncertainValue2::variance(Correlations& corr)
@@ -617,7 +639,8 @@ namespace UncertainValue2
       UncertainValue2::ComponentMap sigmas = getComponents();
 
       UncertainValue2::KeySet keys;
-      keys.Add(sigmas.GetKeys());
+      auto sigkeys = sigmas.GetKeys();
+      keys.Add(sigkeys);
 
       UncertainValue2::KeySetItr itr1(keys);
       double res = 0.0;
