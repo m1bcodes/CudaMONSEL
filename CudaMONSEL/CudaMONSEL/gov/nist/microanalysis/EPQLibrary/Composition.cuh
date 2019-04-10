@@ -1,13 +1,11 @@
 #ifndef _COMPOSITION_CUH_
 #define _COMPOSITION_CUH_
 
-#include "Amphibian\LinkedList.cuh"
-#include "Amphibian\String.cuh"
-
 #include "Element.cuh"
 #include "..\Utility\UncertainValue2.cuh"
 
-#include <cuda_runtime.h>
+#include <map>
+#include <set>
 
 namespace Composition
 {
@@ -19,63 +17,74 @@ namespace Composition
    class Composition
    {
    public:
-      typedef Map::Map<Element::Element, double, String::CompareFcn, Comparator::DoubleCompareFcn, String::HashFcn, Hasher::DoubleHashFcn> CompositionMap;
-      typedef Map::Iterator<Element::Element, double, String::CompareFcn, Comparator::DoubleCompareFcn, String::HashFcn, Hasher::DoubleHashFcn> CompositionMapItr;
+      //typedef std::unordered_map<Element::Element, double, Element::HashFcn> CompositionMap;
+      //typedef std::unordered_map<Element::Element, double, Element::HashFcn>::iterator CompositionMapItr;
+      typedef std::set<Element::Element> OrderedElementSetT;
+      typedef std::set<Element::Element>::iterator OrderedElementSetTItr;
+      typedef std::unordered_set<Element::Element, Element::HashFcn> ElementSetT;
+      typedef std::unordered_set<Element::Element, Element::HashFcn>::iterator ElementSetTItr;
+      typedef std::unordered_map<Element::Element, UncertainValue2::UncertainValue2, Element::HashFcn> ConstituentsMapT;
+      typedef std::unordered_map<Element::Element, UncertainValue2::UncertainValue2, Element::HashFcn>::iterator ConstituentsMapTItr;
+      typedef std::unordered_map<Element::Element, double, Element::HashFcn> ErrorMapT;
+      typedef std::string CompositionNameT;
 
-      __device__ Composition();
-      //__device__ ~Composition();
-      //__device__ Composition(Composition& comp);
-      //__device__ Composition(Element::Element elms[], int elmsLen, double massFracs[], int massFracsLen);
-      //__device__ Composition(Element::Element elm);
-      //__device__ Composition(Element::Element elms[], int elmsLen, double massFracs[], int massFracsLen, char* name);
+      Composition();
+      ~Composition();
+      Composition(const Composition& comp);
+      Composition(Element::Element elms[], int elmsLen, double massFracs[], int massFracsLen);
+      Composition(Element::Element elm);
+      Composition(Element::Element elms[], int elmsLen, double massFracs[], int massFracsLen, char const * name);
 
-      //__device__ Set::Set<Element::Element> getElementSet();
-      //__device__ Set::Set<Element::Element> getSortedElements();
-      //__device__ int getElementCount();
-      //__device__ void addElement(int atomicNo, double massFrac);
-      //__device__ void addElement(int atomicNo, UncertainValue2::UncertainValue2 massFrac);
-      //__device__ void addElement(Element::Element elm, double massFrac);
-      //__device__ double weightFraction(Element::Element elm, bool normalized);
-      //__device__ void addElement(Element::Element elm, UncertainValue2::UncertainValue2 massFrac);
-      //__device__ UncertainValue2::UncertainValue2 weightFractionU(Element::Element elm, bool normalized);
-      //__device__ UncertainValue2::UncertainValue2 weightFractionU(Element::Element elm, bool normalized, bool positiveOnly);
-      //__device__ void addElementByStoiciometry(Element::Element elm, UncertainValue2::UncertainValue2 moleFrac);
-      //__device__ void addElementByStoiciometry(Element::Element elm, double moleFrac);
-      //__device__ UncertainValue2::UncertainValue2 atomicPercentU(Element::Element elm);
-      //__device__ UncertainValue2::UncertainValue2 atomicPercentU(Element::Element elm, bool positiveOnly);
-      //__device__ void defineByWeightFraction(Element::Element elms[], int elmsLen, double wgtFracs[], int wgtFracsLen);
-      //__device__ void defineByWeightFraction(Element::Element elms[], int elmsLen, UncertainValue2::UncertainValue2 wgtFracs[], int wgtFracsLen);
-      //__device__ void defineByWeightFraction(LinkedListKV::Node<Element::Element, double> map);
-      //__device__ UncertainValue2::UncertainValue2 stoichiometryU(Element::Element elm);
-      //__device__ double atomsPerKg(Element::Element elm, bool normalized);
-      //__device__ UncertainValue2::UncertainValue2 atomsPerKgU(Element::Element elm, bool normalized);
+      bool operator==(const Composition&) const;
+      void operator=(const Composition&);
+
+      ElementSetT getElementSet() const;
+      OrderedElementSetT getSortedElements();
+      int getElementCount();
+      void addElement(int atomicNo, double massFrac);
+      void addElement(int atomicNo, UncertainValue2::UncertainValue2 massFrac);
+      void addElement(const Element::Element& elm, double massFrac);
+      double weightFraction(const Element::Element& elm, bool normalized);
+      void addElement(const Element::Element& elm, const UncertainValue2::UncertainValue2& massFrac);
+      UncertainValue2::UncertainValue2 weightFractionU(const Element::Element&, bool normalized);
+      UncertainValue2::UncertainValue2 weightFractionU(const Element::Element&, bool normalized, bool positiveOnly);
+      void addElementByStoiciometry(const Element::Element&, const UncertainValue2::UncertainValue2&);
+      void addElementByStoiciometry(Element::Element elm, double moleFrac);
+      UncertainValue2::UncertainValue2 atomicPercentU(const Element::Element&);
+      UncertainValue2::UncertainValue2 atomicPercentU(const Element::Element&, bool positiveOnly);
+      void defineByWeightFraction(Element::Element elms[], int elmsLen, double wgtFracs[], int wgtFracsLen);
+      void defineByWeightFraction(Element::Element elms[], int elmsLen, UncertainValue2::UncertainValue2 wgtFracs[], int wgtFracsLen);
+      void defineByWeightFraction(ConstituentsMapT map);
+      UncertainValue2::UncertainValue2 stoichiometryU(const Element::Element&);
+      double atomsPerKg(Element::Element& elm, bool normalized);
+      UncertainValue2::UncertainValue2 atomsPerKgU(Element::Element elm, bool normalized);
+
+      template<typename T>
+      Element::Element GetElementBy(T k)
+      {
+         return NULL;
+      }
+
+      template<>
+      Element::Element GetElementBy<int>(int k)
+      {
+         return Element::byAtomicNumber(k);
+      }
+
+      template<>
+      Element::Element GetElementBy<CompositionNameT>(CompositionNameT s)
+      {
+         return Element::byName(s.c_str());
+      }
+
+      template<>
+      Element::Element GetElementBy<Element::Element>(Element::Element e)
+      {
+         return e;
+      }
 
       //template<typename T>
-      //__device__ Element::Element GetElementBy(T k)
-      //{
-      //   return NULL;
-      //}
-
-      //template<>
-      //__device__ Element::Element GetElementBy<int>(int k)
-      //{
-      //   return Element::byAtomicNumber(k);
-      //}
-
-      //template<>
-      //__device__ Element::Element GetElementBy<String::String>(String::String s)
-      //{
-      //   return Element::byName(s.Get());
-      //}
-
-      //template<>
-      //__device__ Element::Element GetElementBy<Element::Element>(Element::Element e)
-      //{
-      //   return e;
-      //}
-
-      //template<typename T>
-      //__device__ void defineByWeightFraction(LinkedListKV::Node<T, double>* map)
+      //void defineByWeightFraction(LinkedListKV::Node<T, double>* map)
       //{
       //   while (map != NULL) {
       //      double wp = map->GetValue();
@@ -95,74 +104,72 @@ namespace Composition
       //   renormalize();
       //}
 
-      //__device__ void defineByMoleFraction(Element::Element elms[], int elmsLen, double moleFracs[], int moleFracsLen);
-      //__device__ void setOptimalRepresentation(Representation opt);
-      //__device__ void defineByMaterialFraction(Composition compositions[], int compLen, double matFracs[], int matFracsLen);
-      //__device__ void removeElement(Element::Element el);
-      //__device__ bool containsElement(Element::Element el);
-      //__device__ bool containsAll(LinkedList::Node<Element::Element>* elms);
-      //__device__ double atomicPercent(Element::Element elm);
-      //__device__ double stoichiometry(Element::Element elm);
-      //__device__ UncertainValue2::UncertainValue2 weightAvgAtomicNumberU();
-      //__device__ double weightAvgAtomicNumber();
-      //__device__ double sumWeightFraction();
-      //__device__ UncertainValue2::UncertainValue2 sumWeightFractionU();
-      //////__device__ String::String toString();
-      //////__device__ String::String stoichiometryString();
-      //////__device__ String::String weightPercentString(bool normalize);
-      //////__device__ String::String descriptiveString(bool normalize);
-      ////__device__ Element::Element getNthElementByWeight(int n);
-      ////__device__ Element::Element getNthElementByAtomicFraction(int n);
-      //__device__ void setName(String::String name);
-      //__device__ String::String getName();
-      //__device__ int compareTo(Composition& comp);
-      //__device__ Composition asComposition();
-      //__device__ Composition clone();
-      //__device__ UncertainValue2::UncertainValue2 differenceU(Composition& comp);
-      //__device__ double difference(Composition& comp);
-      //__device__ Representation getOptimalRepresentation();
-      ////__device__ int hashCode();
-      //__device__ bool equals(Composition& other);
-      //__device__ bool almostEquals(Composition& other, double tol);
-      //__device__ Map::Map<Element::Element, double> absoluteError(Composition& std, bool normalize);
-      //__device__ Map::Map<Element::Element, double> relativeError(Composition& std, bool normalize);
-      //__device__ bool isUncertain();
-      //__device__ UncertainValue2::UncertainValue2 meanAtomicNumberU();
-      //__device__ double meanAtomicNumber();
-      //__device__ void forceNormalization();
-      //__device__ Composition randomize(double offset, double proportional);
-      //__device__ long indexHashCodeS();
-      //__device__ long indexHashCodeL();
+      void defineByMoleFraction(Element::Element elms[], int elmsLen, double moleFracs[], int moleFracsLen);
+      void setOptimalRepresentation(Representation opt);
+      void defineByMaterialFraction(Composition compositions[], int compLen, double matFracs[], int matFracsLen);
+      void removeElement(const Element::Element&);
+      bool containsElement(const Element::Element&);
+      bool containsAll(const ElementSetT& elms);
+      double atomicPercent(Element::Element elm);
+      double stoichiometry(Element::Element elm);
+      UncertainValue2::UncertainValue2 weightAvgAtomicNumberU();
+      double weightAvgAtomicNumber();
+      double sumWeightFraction();
+      UncertainValue2::UncertainValue2 sumWeightFractionU();
+      ////String::String toString();
+      ////String::String stoichiometryString();
+      ////String::String weightPercentString(bool normalize);
+      ////String::String descriptiveString(bool normalize);
+      //Element::Element getNthElementByWeight(int n);
+      //Element::Element getNthElementByAtomicFraction(int n);
+      void setName(CompositionNameT name);
+      CompositionNameT getName();
+      int compareTo(Composition& comp);
+      Composition asComposition();
+      Composition clone();
+      UncertainValue2::UncertainValue2 differenceU(Composition& comp);
+      double difference(Composition& comp);
+      Representation getOptimalRepresentation();
+      unsigned int hashCode();
+      bool sameConstituents(const ConstituentsMapT&) const;
+      bool sameConstituentsAtomic(const ConstituentsMapT&) const;
+      bool equals(const Composition& other) const;
+      bool almostEquals(Composition& other, double tol);
+      ErrorMapT absoluteError(Composition& std, bool normalize);
+      ErrorMapT relativeError(Composition& std, bool normalize);
+      bool isUncertain();
+      UncertainValue2::UncertainValue2 meanAtomicNumberU();
+      double meanAtomicNumber();
+      void forceNormalization();
+      Composition randomize(double offset, double proportional);
+      long indexHashCodeS();
+      long indexHashCodeL();
 
-      //__device__ bool AreEqualConstituents(LinkedListKV::Node<Element::Element, UncertainValue2::UncertainValue2>* a, LinkedListKV::Node<Element::Element, UncertainValue2::UncertainValue2>* b);
-      //__device__ Map::Map<Element::Element, UncertainValue2::UncertainValue2> GetConstituents();
+      ConstituentsMapT& GetConstituents();
 
    private:
-      //__device__ Composition readResolve();
-      //__device__ void recomputeStoiciometry();
-      //__device__ void recomputeWeightFractions();
+      Composition readResolve();
+      void recomputeStoiciometry();
+      void recomputeWeightFractions();
 
-      //Map::Map<Element::Element, UncertainValue2::UncertainValue2> mConstituents;
-      CompositionMap mConstituents;
-      //LinkedListKV::Node<Element::Element, UncertainValue2::UncertainValue2>* mConstituentsAtomic;
+      ConstituentsMapT mConstituents;
+      ConstituentsMapT mConstituentsAtomic;
 
-      //UncertainValue2::UncertainValue2 mNormalization;// = UncertainValue2::UncertainValue2(1); // UncertainValue2::ONE();
-      //UncertainValue2::UncertainValue2 mAtomicNormalization;// = UncertainValue2::UncertainValue2(1); // UncertainValue2::ONE();
-      //String::String mName;
-      //Representation mOptimalRepresentation;// = Representation::UNDETERMINED;
-      //UncertainValue2::UncertainValue2 mMoleNorm;// = UncertainValue2::NaN();
+      UncertainValue2::UncertainValue2 mNormalization;// = UncertainValue2::ONE();
+      UncertainValue2::UncertainValue2 mAtomicNormalization;// = UncertainValue2::ONE();
+      CompositionNameT mName;
+      Representation mOptimalRepresentation;// = Representation::UNDETERMINED;
+      UncertainValue2::UncertainValue2 mMoleNorm;// = UncertainValue2::NaN();
 
    protected:
-      //__device__ void renormalize();
-      //__device__ void replicate(Composition& comp);
-      //__device__ void clear();
-
-      int mHashCode; // = CUDART_INF_F;
+      void renormalize();
+      void replicate(const Composition& comp);
+      void clear();
    };
 
-   //__device__ Composition positiveDefinite(Composition& comp);
-   //__device__ UncertainValue2::UncertainValue2 normalize(UncertainValue2::UncertainValue2& val, UncertainValue2::UncertainValue2& norm, bool positive);
-   //__device__ Composition parseGlass(char str[], int numlines);
-   //void createProjectors(long seed);
+   Composition positiveDefinite(Composition& comp);
+   UncertainValue2::UncertainValue2 normalize(UncertainValue2::UncertainValue2& val, UncertainValue2::UncertainValue2& norm, bool positive);
+   Composition parseGlass(char str[], int numlines);
+   void createProjectors(long seed);
 }
 #endif

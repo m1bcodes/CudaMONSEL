@@ -1,6 +1,7 @@
 #include <windows.h>
 #include <vector>
 #include <fstream>
+#include <iostream>
 
 #include <gdiplus.h>
 

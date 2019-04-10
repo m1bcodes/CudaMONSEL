@@ -1,5 +1,5 @@
-#ifndef ELECTRON_CU
-#define ELECTRON_CU
+#ifndef _ELECTRON_CUH_
+#define _ELECTRON_CUH_
 
 #include "cuda_runtime.h"
 //#include "MonteCarloSS.cu"
@@ -18,10 +18,10 @@ private:
    int id;
 
 public:
-   __host__ __device__ Electron(int id) { this->id = id; }
-   //__host__ __device__ ~Electron() { };
+   Electron(int id) { this->id = id; }
+   //~Electron() { };
 
-   __host__ __device__ int GetId() { return id; }
+   int GetId() { return id; }
 };
 
 #endif

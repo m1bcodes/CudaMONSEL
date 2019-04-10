@@ -19,39 +19,75 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <CudaCompile Include="Amphibian\Hasher.cu" />
+    <CudaCompile Include="Amphibian\String.cu" />
+    <CudaCompile Include="Amphibian\Tests\HasherTest.cu" />
+    <CudaCompile Include="Amphibian\Tests\LinkedListTest.cu" />
+    <CudaCompile Include="Amphibian\Tests\MapTest.cu" />
+    <CudaCompile Include="Amphibian\Tests\SetTest.cu" />
+    <CudaCompile Include="Amphibian\Tests\StringTest.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\Composition.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\Composition_GPU.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\Element.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\Element_GPU.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\FromSI.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\FromSI_GPU.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\Material.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\Material_GPU.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\PhysicalConstants.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\PhysicalConstants_GPU.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\ToSI.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\ToSI_GPU.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQTests\ElementTest.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\EPQTests\ElementTest_GPU.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQTests\MaterialTest.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\EPQTests\MaterialTest_GPU.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQTests\UncertainValue2Test.cu" />
-    <CudaCompile Include="gov\nist\microanalysis\NISTMonte\Electron.cu" />
-    <CudaCompile Include="gov\nist\microanalysis\NISTMonte\MonteCarloSS.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\EPQTests\UncertainValue2Test_GPU.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\NISTMonte\MonteCarloSS_GPU.cu" />
     <CudaCompile Include="gov\nist\microanalysis\Utility\UncertainValue2.cu" />
+    <CudaCompile Include="Main.cu" />
     <CudaCompile Include="SimRunner.cu" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Amphibian\Hasher.cuh" />
+    <ClInclude Include="Amphibian\LinkedList.cuh" />
+    <ClInclude Include="Amphibian\Map.cuh" />
+    <ClInclude Include="Amphibian\Set.cuh" />
+    <ClInclude Include="Amphibian\String.cuh" />
+    <ClInclude Include="Amphibian\Tests\HasherTest.cuh" />
+    <ClInclude Include="Amphibian\Tests\LinkedListTest.cuh" />
+    <ClInclude Include="Amphibian\Tests\MapTest.cuh" />
+    <ClInclude Include="Amphibian\Tests\SetTest.cuh" />
+    <ClInclude Include="Amphibian\Tests\StringTest.cuh" />
     <ClInclude Include="CudaUtil.h" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\Composition.cuh" />
+    <ClInclude Include="gov\nist\microanalysis\EPQLibrary\Composition_GPU.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\Element.cuh" />
+    <ClInclude Include="gov\nist\microanalysis\EPQLibrary\Element_GPU.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\FromSI.cuh" />
+    <ClInclude Include="gov\nist\microanalysis\EPQLibrary\FromSI_GPU.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\Material.cuh" />
+    <ClInclude Include="gov\nist\microanalysis\EPQLibrary\Material_GPU.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\PhysicalConstants.cuh" />
+    <ClInclude Include="gov\nist\microanalysis\EPQLibrary\PhysicalConstants_GPU.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\ToSI.cuh" />
+    <ClInclude Include="gov\nist\microanalysis\EPQLibrary\ToSI_GPU.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQTests\ElementTest.cuh" />
+    <ClInclude Include="gov\nist\microanalysis\EPQTests\ElementTest_GPU.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQTests\MaterialTest.cuh" />
+    <ClInclude Include="gov\nist\microanalysis\EPQTests\MaterialTest_GPU.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQTests\UncertainValue2Test.cuh" />
-    <ClInclude Include="gov\nist\microanalysis\NISTMonte\IMaterialScatterModel.h" />
+    <ClInclude Include="gov\nist\microanalysis\EPQTests\UncertainValue2Test_GPU.cuh" />
+    <ClInclude Include="gov\nist\microanalysis\NISTMonte\Electron.cuh" />
+    <ClInclude Include="gov\nist\microanalysis\NISTMonte\IMaterialScatterModel_GPU.h" />
     <ClInclude Include="gov\nist\microanalysis\Utility\CSVReader.h" />
     <ClInclude Include="gov\nist\microanalysis\Utility\UncertainValue2.cuh" />
     <ClInclude Include="ImageUtil.h" />
     <ClInclude Include="TimeUtil.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="gov\nist\microanalysis\NISTMonte\MonteCarloSS.cpp" />
+    <ClCompile Include="gov\nist\microanalysis\NISTMonte\MonteCarloSS_GPU.cpp" />
     <ClCompile Include="gov\nist\microanalysis\Utility\CSVReader.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -113,13 +149,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <AdditionalDependencies>cudadevrt.lib;cudart_static.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>echo copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"
@@ -132,10 +168,12 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
       <PtxAsOptionV>true</PtxAsOptionV>
       <AdditionalDeps>
       </AdditionalDeps>
+      <Include>
+      </Include>
+      <NvccCompilation>compile</NvccCompilation>
     </CudaCompile>
     <CudaLink>
-      <AdditionalLibraryDirectories>
-      </AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </CudaLink>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

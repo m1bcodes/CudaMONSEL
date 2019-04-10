@@ -1,20 +1,18 @@
 #ifndef _ELEMENT_TEST_CUH_
 #define _ELEMENT_TEST_CUH_
 
-#include <cuda_runtime.h>
-
 namespace ElementTest
 {
    class ElementTest
    {
    public:
-      __device__ ElementTest();
-      __device__ void testOne();
+      ElementTest();
+      void testOne();
    };
 
-   __device__ void assertEquals(double, double, double);
-   __device__ void assertEquals(int src, int target);
-   __device__ void assertTrue(bool);
+   void assertEquals(double, double, double);
+   void assertEquals(int src, int target);
+   void assertTrue(bool);
 }
 
 #endif
