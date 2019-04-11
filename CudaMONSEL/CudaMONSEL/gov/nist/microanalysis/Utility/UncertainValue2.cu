@@ -1,148 +1,160 @@
 #include "UncertainValue2.cuh"
-#include "..\..\..\..\Amphibian\LinkedList.cuh"
-#include "..\..\..\..\Amphibian\Math.cuh"
-#include "..\..\..\..\Amphibian\Comparator.cuh"
 
 #include <stdio.h>
 #include <math.h>
 
-extern __device__ double __longlong_as_double(long long int);
-
-extern __device__ int atomicAdd(int* address, int val);
+#include "..\..\..\..\Amphibian\Hasher.cuh"
 
 namespace UncertainValue2
 {
-   __device__ const char DEFAULT[] = "Default";
-   __device__ int sDefIndex = 0;
+   const char DEFAULT[] = "Default";
+   int sDefIndex = 0;
 
-   __device__ const long long serialVersionUID = 119495064970078787L;
-   __device__ const int MAX_LEN = 11;
+   const long long serialVersionUID = 119495064970078787L;
+   const int MAX_LEN = 11;
+   bool doubleCmp(double& a, double& b)
+   {
+      return a == b;
+   }
 
-   __device__ const Hasher::pHasher DefaultHasher = Hasher::RSHash;
-
-   __device__ UncertainValue2::UncertainValue2() : mSigmas(DefaultHasher, String::AreEqual, Comparator::BuildCmp<double>)
+   UncertainValue2::UncertainValue2()
    {
    }
 
-   __device__ UncertainValue2::UncertainValue2(double v, double dv) : mValue(v), mSigmas(DefaultHasher, String::AreEqual, Comparator::BuildCmp<double>)
+   UncertainValue2::UncertainValue2(double v, double dv) : mValue(v)
    {
       char tmpName[MAX_LEN];
-      String::IToA(tmpName, atomicAdd(&sDefIndex, 1));
+      itoa(sDefIndex + 1, tmpName, MAX_LEN);
       assignComponent(tmpName, dv);
    }
 
-   __device__ UncertainValue2::UncertainValue2(double v) : mValue(v), mSigmas(DefaultHasher, String::AreEqual, Comparator::BuildCmp<double>)
+   UncertainValue2::UncertainValue2(double v) : mValue(v)
    {
    }
 
-   __device__ UncertainValue2::UncertainValue2(double v, char source[], double dv) : mValue(v), mSigmas(DefaultHasher, String::AreEqual, Comparator::BuildCmp<double>)
+   UncertainValue2::UncertainValue2(double v, char source[], double dv) : mValue(v)
    {
       assignComponent(source, dv);
    }
 
-   __device__ UncertainValue2::UncertainValue2(double v, Map::Map<String::String, double> sigmas) : mValue(v), mSigmas(DefaultHasher, String::AreEqual, Comparator::BuildCmp<double>)
+   UncertainValue2::UncertainValue2(double v, const ComponentMapT& sigmas) : mValue(v)
    {
-      if (*((int*)&sigmas) != NULL) {
-         mSigmas.DeepCopy(sigmas);
-      }
+      mSigmas = sigmas;
    }
 
-   __device__ UncertainValue2::UncertainValue2(UncertainValue2& other) : mValue(other.doubleValue()), mSigmas(DefaultHasher, String::AreEqual, Comparator::BuildCmp<double>)
+   UncertainValue2::UncertainValue2(const UncertainValue2& other) : mValue(other.doubleValue())
    {
-      mSigmas.DeepCopy(other.getComponents());
+      if (&other == this) return;
+      mSigmas = other.mSigmas;
    }
 
-   __device__ UncertainValue2 ONE()
+   UncertainValue2 ONE()
    {
       return UncertainValue2(1.0);
    }
 
-   __device__ UncertainValue2 NaN()
+   UncertainValue2 NaN()
    {
-      return UncertainValue2(CUDART_NAN);
+      return UncertainValue2(NAN);
    }
 
-   __device__ UncertainValue2 POSITIVE_INFINITY()
+   UncertainValue2 POSITIVE_INFINITY()
    {
-      return UncertainValue2(CUDART_INF);
+      return UncertainValue2(INFINITY);
    }
 
-   __device__ UncertainValue2 NEGATIVE_INFINITY()
+   UncertainValue2 NEGATIVE_INFINITY()
    {
-      return UncertainValue2(-CUDART_INF);
+      return UncertainValue2(-INFINITY);
    }
 
-   __device__ UncertainValue2 ZERO()
+   UncertainValue2 ZERO()
    {
       return UncertainValue2(0.0);
    }
 
-   __device__ UncertainValue2& UncertainValue2::operator=(UncertainValue2& other)
+   UncertainValue2& UncertainValue2::operator=(const UncertainValue2& other)
    {
       mValue = other.doubleValue();
-      mSigmas.DeepCopy(other.getComponents());
+      mSigmas = other.mSigmas;
 
       return *this;
    }
 
-   __device__ void UncertainValue2::assignInitialValue(double v)
+   unsigned int UncertainValue2::hashCode()
+   {
+      unsigned int res = 1;
+      const unsigned int PRIME = 31;
+      auto khashfcn = mSigmas.hash_function();
+      Hasher::DoubleHashFcn vhashfcn;
+      for (auto s : mSigmas) {
+         res = res * PRIME + khashfcn(s.first);
+         res = res * PRIME + vhashfcn(s.second);
+      }
+      return res;
+   }
+
+   void UncertainValue2::assignInitialValue(double v)
    {
       mValue = v;
    }
 
-   __device__ void UncertainValue2::assignComponent(String::String name, double sigma)
+   void UncertainValue2::assignComponent(UncertainValue2StringT name, double sigma)
    {
       if (sigma != 0.0) {
-         mSigmas.Put(name, sigma);
+         mSigmas.insert(std::make_pair(name, sigma));
       }
       else {
-         mSigmas.Remove(name);
+         mSigmas.erase(name);
       }
    }
 
-   __device__ double UncertainValue2::getComponent(String::String src)
+   double UncertainValue2::getComponent(const UncertainValue2StringT& src) const
    {
-      auto v = mSigmas.GetValue(src);
-      return v != NULL ? v : 0.0;
+      auto itr = mSigmas.find(src);
+      if (itr == mSigmas.end()) {
+         return 0;
+      }
+      return itr->second;
    }
 
-   __device__ Map::Map<String::String, double>& UncertainValue2::getComponents()
+   UncertainValue2::ComponentMapT& UncertainValue2::getComponents()
    {
       return mSigmas;
    }
 
-   __device__ bool UncertainValue2::hasComponent(String::String src)
+   bool UncertainValue2::hasComponent(const UncertainValue2StringT& src) const
    {
       return getComponent(src) != 0.0;
    }
 
-   __device__ void UncertainValue2::renameComponent(String::String oldName, String::String newName)
+   void UncertainValue2::renameComponent(const UncertainValue2StringT& oldName, const UncertainValue2StringT& newName)
    {
-      if (mSigmas.ContainsKey(newName)) {
-         printf("A component named %s already exists.", newName.Get());
+      if (mSigmas.find(newName) != mSigmas.end()) {
+         printf("A component named %s already exists.", newName.c_str());
          return;
       }
-      double val = mSigmas.Remove(oldName);
+      double val = mSigmas.erase(oldName);
       if (val != NULL) {
-         mSigmas.Put(newName, val);
+         mSigmas.insert(std::make_pair(newName, val));
       }
    }
 
-   __device__ UncertainValue2 add(UncertainValue2 uvs[], int uvsLen)
+   UncertainValue2 add(UncertainValue2 uvs[], int uvsLen)
    {
-      Set::Set<String::String> keys(DefaultHasher, String::AreEqual);
+      UncertainValue2::KeySetT keys;
       double sum = 0.0;
       for (int k = 0; k < uvsLen; ++k) {
          sum += uvs[k].doubleValue();
-         keys.Add(uvs[k].getComponents().GetKeys());
+         auto m = uvs[k].getComponents();
+         for (auto itr = m.begin(); itr != m.end(); ++itr) {
+            keys.insert(itr->first);
+         }
       }
       UncertainValue2 res(sum);
 
-      Set::Iterator<String::String> itr(keys);
-
-      while (itr.HasNext()) {
-         auto src = itr.GetValue();
-         itr.Next();
+      for (auto itr = keys.begin(); itr != keys.end(); ++itr) {
+         auto src = *itr;
          double unc = 0.0;
          // This seems right but is it????
          for (int k = 0; k < uvsLen; ++k) {
@@ -154,33 +166,38 @@ namespace UncertainValue2
       return res;
    }
 
-   __device__ UncertainValue2 add(double a, UncertainValue2 uva, double b, UncertainValue2 uvb)
+   UncertainValue2 add(double a, UncertainValue2& uva, double b, UncertainValue2& uvb)
    {
-      Set::Set<String::String> keys(DefaultHasher, String::AreEqual);
+      UncertainValue2::KeySetT keys;
       UncertainValue2 res(a * uva.doubleValue() + b * uvb.doubleValue());
-      keys.Add(uva.getComponents().GetKeys());
-      keys.Add(uvb.getComponents().GetKeys());
+      auto akeys = uva.getComponents();
+      for (auto itr = akeys.begin(); itr != akeys.end(); ++itr) {
+         keys.insert(itr->first);
+      }
+      auto bkeys = uvb.getComponents();
+      for (auto itr = bkeys.begin(); itr != bkeys.end(); ++itr) {
+         keys.insert(itr->first);
+      }
 
-      Set::Iterator<String::String> itr(keys);
-      while (itr.HasNext()) {
-         String::String src = itr.GetValue();
+      for (auto itr = keys.begin(); itr != keys.end(); ++itr) {
+         UncertainValue2StringT src = *itr;
          res.assignComponent(src, a * copysign(1.0, uva.doubleValue()) * uva.getComponent(src) + b * copysign(1.0, uvb.doubleValue()) * uvb.getComponent(src));
-         itr.Next();
       }
       return res;
    }
 
-   __device__ UncertainValue2 subtract(UncertainValue2 uva, UncertainValue2 uvb)
+   UncertainValue2 subtract(UncertainValue2& uva, UncertainValue2& uvb)
    {
       return add(1.0, uva, -1.0, uvb);
    }
 
-   __device__ UncertainValue2 mean(UncertainValue2 uvs[], int uvsLen)
+   UncertainValue2 mean(UncertainValue2 uvs[], int uvsLen)
    {
-      return divide(add(uvs, uvsLen), (double)uvsLen);
+      auto uv = add(uvs, uvsLen);
+      return divide(uv, (double)uvsLen);
    }
 
-   __device__ UncertainValue2 weightedMean(UncertainValue2 cuv[], int uvsLen)
+   UncertainValue2 weightedMean(UncertainValue2 cuv[], int uvsLen)
    {
       double varSum = 0.0, sum = 0.0;
 
@@ -189,16 +206,21 @@ namespace UncertainValue2
          const double ivar = 1.0 / uv.variance();
          if (isnan(ivar) || isinf(ivar)) {
             printf("%s\n", "Unable to compute the weighted mean when one or more datapoints have zero uncertainty.");
-            return NULL;
+            return NaN();
          }
          varSum += ivar;
          sum += ivar * uv.doubleValue();
       }
       const double iVarSum = 1.0 / varSum;
-      return (isnan(iVarSum) || isinf(iVarSum)) ? NULL : UncertainValue2(sum / varSum, "WM", ::sqrt(1.0 / varSum));
+      if (isnan(iVarSum) || isinf(iVarSum)) {
+         printf("UncertainValue2::weightedMean: badddddd\n");
+         return NaN();
+      }
+      char str[4] = "WM";
+      return UncertainValue2(sum / varSum, str, ::sqrt(1.0 / varSum));
    }
 
-   __device__ UncertainValue2 min(UncertainValue2 uvs[], int uvsLen)
+   UncertainValue2 uvmin(UncertainValue2 uvs[], int uvsLen)
    {
       if (uvsLen == 0) {
          return NULL;
@@ -219,7 +241,7 @@ namespace UncertainValue2
       return res;
    }
 
-   __device__ UncertainValue2 max(UncertainValue2 uvs[], int uvsLen)
+   UncertainValue2 uvmax(UncertainValue2 uvs[], int uvsLen)
    {
       if (uvs == 0) {
          return NULL;
@@ -240,22 +262,22 @@ namespace UncertainValue2
       return res;
    }
 
-   __device__ UncertainValue2 add(UncertainValue2 v1, double v2)
+   UncertainValue2 add(UncertainValue2& v1, double v2)
    {
       return UncertainValue2(v1.doubleValue() + v2, v1.getComponents());
    }
 
-   __device__ UncertainValue2 add(double v1, UncertainValue2 v2)
+   UncertainValue2 add(double v1, UncertainValue2& v2)
    {
       return UncertainValue2(v2.doubleValue() + v1, v2.getComponents());
    }
 
-   __device__ UncertainValue2 add(UncertainValue2 v1, UncertainValue2 v2)
+   UncertainValue2 add(UncertainValue2& v1, UncertainValue2& v2)
    {
       return add(1.0, v1, 1.0, v2);
    }
 
-   __device__ UncertainValue2 multiply(double v1, UncertainValue2 v2)
+   UncertainValue2 multiply(double v1, UncertainValue2& v2)
    {
       if (v2.uncertainty() < 0.0) {
          printf("Error: v2.uncertainty() < 0.0");
@@ -263,92 +285,96 @@ namespace UncertainValue2
       }
       UncertainValue2 res(v1 * v2.doubleValue());
 
-      Map::Iterator<String::String, double> itr(v2.getComponents());
-      while (itr.HasNext()) {
-         res.assignComponent(itr.GetKey(), v1 * itr.GetValue());
-         itr.Next();
+      auto m = v2.getComponents();
+      for (auto itr = m.begin(); itr != m.end(); ++itr) {
+         res.assignComponent(itr->first, v1 * itr->second);
       }
       return res;
    }
 
-   __device__ UncertainValue2 multiply(UncertainValue2 v1, UncertainValue2 v2)
+   UncertainValue2 multiply(UncertainValue2& v1, UncertainValue2& v2)
    {
-      Set::Set<String::String> keys(DefaultHasher, String::AreEqual);
-      keys.Add(v1.getComponents().GetKeys());
-      keys.Add(v2.getComponents().GetKeys());
+      UncertainValue2::KeySetT keys;
+      auto v1keys = v1.getComponents();
+      for (auto itr = v1keys.begin(); itr != v1keys.end(); ++itr) {
+         keys.insert(itr->first);
+      }
+      auto v2keys = v2.getComponents();
+      for (auto itr = v2keys.begin(); itr != v2keys.end(); ++itr) {
+         keys.insert(itr->first);
+      }
 
       UncertainValue2 res(v1.doubleValue() * v2.doubleValue());
-      Set::Iterator<String::String> itr(keys);
-      while (itr.HasNext()) {
-         auto src = itr.GetValue();
+      for (auto src : keys) {
          res.assignComponent(src, v1.doubleValue() * v2.getComponent(src) + v2.doubleValue() * v1.getComponent(src));
-         itr.Next();
       }
 
       return res;
    }
 
-   __device__ UncertainValue2 invert(UncertainValue2 v)
+   UncertainValue2 invert(UncertainValue2& v)
    {
       return divide(1.0, v);
    }
 
-   __device__ UncertainValue2 divide(UncertainValue2 v1, UncertainValue2 v2)
+   UncertainValue2 divide(UncertainValue2& v1, UncertainValue2& v2)
    {
       UncertainValue2 res(v1.doubleValue() / v2.doubleValue());
       if (!(isnan(res.doubleValue()) || isinf(res.doubleValue()))) {
-         Set::Set<String::String> keys(DefaultHasher, String::AreEqual);
-         keys.Add(v1.getComponents().GetKeys());
-         keys.Add(v2.getComponents().GetKeys());
+         UncertainValue2::KeySetT keys;
+         auto v1keys = v1.getComponents();
+         for (auto itr = v1keys.begin(); itr != v1keys.end(); ++itr) {
+            keys.insert(itr->first);
+         }
+         auto v2keys = v2.getComponents();
+         for (auto itr = v2keys.begin(); itr != v2keys.end(); ++itr) {
+            keys.insert(itr->first);
+         }
 
          const double ua = fabs(1.0 / v2.doubleValue());
          const double ub = fabs(v1.doubleValue() / (v2.doubleValue() * v2.doubleValue()));
 
-         Set::Iterator<String::String> itr(keys);
-         while (itr.HasNext()) {
-            auto src = itr.GetValue();
+         for (auto itr = keys.begin(); itr != keys.end(); ++itr) {
+            auto src = *itr;
             res.assignComponent(src, ua * v1.getComponent(src) + ub * v2.getComponent(src));
-            itr.Next();
          }
       }
       return res;
    }
 
-   __device__ UncertainValue2 divide(double a, UncertainValue2 b)
+   UncertainValue2 divide(double a, UncertainValue2& b)
    {
       UncertainValue2 res(a / b.doubleValue());
       if (!(isnan(res.doubleValue()) || isinf(res.doubleValue()))) {
          const double ub = fabs(a / (b.doubleValue() * b.doubleValue()));
 
-         Map::Iterator<String::String, double> itr(b.getComponents());
-         while (itr.HasNext()) {
-            res.assignComponent(itr.GetKey(), ub * itr.GetValue());
-            itr.Next();
+         auto m = b.getComponents();
+         for (auto itr = m.begin(); itr != m.end(); ++itr) {
+            res.assignComponent(itr->first, ub * itr->second);
          }
       }
       return res;
    }
 
-   __device__ UncertainValue2 divide(UncertainValue2 a, double b)
+   UncertainValue2 divide(UncertainValue2& a, double b)
    {
       if (isnan(1.0 / b)) {
-         return UncertainValue2(CUDART_NAN);
+         return UncertainValue2(NAN);
       }
       if (isinf(1.0 / b)) {
-         return UncertainValue2(CUDART_INF);
+         return UncertainValue2(INFINITY);
       }
       UncertainValue2 res(a.doubleValue() / b);
       const double ua = fabs(1.0 / b);
 
-      Map::Iterator<String::String, double> itr(a.getComponents());
-      while (itr.HasNext()) {
-         res.assignComponent(itr.GetKey(), ua * itr.GetValue());
-         itr.Next();
+      auto m = a.getComponents();
+      for (auto itr = m.begin(); itr != m.end(); ++itr) {
+         res.assignComponent(itr->first, ua * itr->second);
       }
       return res;
    }
 
-   __device__ UncertainValue2 exp(UncertainValue2 x)
+   UncertainValue2 exp(UncertainValue2& x)
    {
       if (isnan(x.doubleValue()) || isinf(x.doubleValue())) {
          printf("exp: invalid value\n");
@@ -358,35 +384,34 @@ namespace UncertainValue2
       double ex = ::exp(x.doubleValue());
       UncertainValue2 res(ex);
 
-      Map::Iterator<String::String, double> itr(x.getComponents());
-      while (itr.HasNext()) {
-         res.assignComponent(itr.GetKey(), ex * itr.GetValue());
-         itr.Next();
+      auto m = x.getComponents();
+      for (auto itr = m.begin(); itr != m.end(); ++itr) {
+         res.assignComponent(itr->first, ex * itr->second);
       }
       return res;
    }
 
-   __device__ UncertainValue2 log(UncertainValue2 v2)
+   UncertainValue2 log(UncertainValue2& v2)
    {
       double tmp = 1.0 / v2.doubleValue();
       const double lv = ::log(v2.doubleValue());
       if (isnan(tmp) || isnan(lv)) {
-         return UncertainValue2(CUDART_NAN);
+         return UncertainValue2(NAN);
       }
       if (isinf(tmp) || isinf(lv)) {
-         return UncertainValue2(CUDART_INF);
+         return UncertainValue2(INFINITY);
       }
       UncertainValue2 res(lv);
 
-      Map::Iterator<String::String, double> itr(v2.getComponents());
-      while (itr.HasNext()) {
-         res.assignComponent(itr.GetKey(), tmp * itr.GetValue());
-         itr.Next();
+      auto m = v2.getComponents();
+      for (auto itr = m.begin(); itr != m.end(); ++itr) {
+         res.assignComponent(itr->first, tmp * itr->second);
       }
+
       return res;
    }
 
-   __device__ UncertainValue2 pow(UncertainValue2 v1, double n)
+   UncertainValue2 pow(UncertainValue2& v1, double n)
    {
       if (v1.doubleValue() == 0.0) {
          return UncertainValue2(0.0);
@@ -395,192 +420,221 @@ namespace UncertainValue2
       const double df = n * ::pow(v1.doubleValue(), n - 1.0);
       UncertainValue2 res(f);
 
-      Map::Iterator<String::String, double> itr(v1.getComponents());
-      while (itr.HasNext()) {
-         res.assignComponent(itr.GetKey(), itr.GetValue() * df);
-         itr.Next();
+      auto m = v1.getComponents();
+      for (auto itr = m.begin(); itr != m.end(); ++itr) {
+         res.assignComponent(itr->first, df * itr->second);
       }
 
       return res;
    }
 
-   __device__ UncertainValue2 UncertainValue2::sqrt()
+   UncertainValue2 UncertainValue2::sqrt()
    {
       return pow(*this, 0.5);
    }
 
-   __device__ UncertainValue2 sqrt(UncertainValue2 uv)
+   UncertainValue2 sqrt(UncertainValue2& uv)
    {
       return pow(uv, 0.5);
    }
 
-   __device__ LinkedList::Node<UncertainValue2>* quadratic(UncertainValue2 a, UncertainValue2 b, UncertainValue2 c)
+   UncertainValue2::ResultT quadratic(UncertainValue2& a, UncertainValue2& b, UncertainValue2& c)
    {
       // q=-0.5*(b+signum(b)*sqrt(pow(b,2.0)-4*a*c))
       // return [ q/a, c/q ]
-      UncertainValue2 r = add(1.0, pow(b, 2.0), -4.0, multiply(a, c));
+      auto uv0 = pow(b, 2.0);
+      auto uv1 = multiply(a, c);
+      UncertainValue2 r = add(1.0, uv0, -4.0, uv1);
       if (r.doubleValue() <= 0.0) {
-         return NULL;
+         return UncertainValue2::ResultT();
       }
-      UncertainValue2 q = multiply(-0.5, add(b, multiply(copysign(1.0, b.doubleValue()), r.sqrt())));
-
-      Set::Set<UncertainValue2> res(DefaultHasher, AreEqual);
-      res.Put(divide(q, a));
-      res.Put(divide(c, q));
-
-      LinkedList::Node<UncertainValue2>* head = NULL;
-      LinkedList::InsertHead(&head, divide(q, a));
-      LinkedList::InsertHead(&head, divide(c, q));
+      auto uv2 = r.sqrt();
+      auto uv3 = multiply(copysign(1.0, b.doubleValue()), uv2);
+      auto uv4 = add(b, uv3);
+      UncertainValue2 q = multiply(-0.5, uv4);
+      auto uv5 = divide(q, a);
+      auto uv6 = divide(c, q);
+      UncertainValue2::ResultT head;
+      head.push_back(uv5);
+      head.push_back(uv6);
       return head;
    }
 
-   __device__ double UncertainValue2::doubleValue()
+   double UncertainValue2::doubleValue() const
    {
       return mValue;
    }
 
-   __device__ bool UncertainValue2::isUncertain()
+   bool UncertainValue2::isUncertain() const
    {
-      return !mSigmas.IsEmpty();
+      return !mSigmas.empty();
    }
 
-   __device__ double UncertainValue2::uncertainty()
+   double UncertainValue2::uncertainty() const
    {
       return ::sqrt(variance());
    }
 
-   __device__ double UncertainValue2::variance()
+   double UncertainValue2::variance() const
    {
-      return mSigmas.Aggregate([](double a) { return a*a; });
+      double sigma2 = 0.0;
+      for (auto s : mSigmas) {
+         sigma2 += s.second * s.second;
+      }
+      return sigma2;
    }
 
-   __device__ double UncertainValue2::fractionalUncertainty()
+   double UncertainValue2::fractionalUncertainty() const
    {
       if (isnan(1.0 / mValue)) {
-         return CUDART_NAN;
+         return NAN;
       }
       if (isinf(1.0 / mValue)) {
-         return CUDART_INF;
+         return INFINITY;
       }
-      return fabs(uncertainty() / mValue);
+      return ::fabs(uncertainty() / mValue);
    }
 
-   __device__ bool UncertainValue2::equals(UncertainValue2& other)
+   bool UncertainValue2::operator==(const UncertainValue2& other) const
    {
-      if (*((int*)&other) == NULL) {
-         return false;
-      }
       if (this == &other) {
          return true;
       }
-      return mSigmas.equals(other.mSigmas);
+
+      for (auto s : other.mSigmas) {
+         auto itr = mSigmas.find(s.first);
+         if (itr == mSigmas.end()) return false;
+         if (itr->second != s.second) return false;
+      }
+
+      return mValue == other.doubleValue();
    }
 
-   __device__ int UncertainValue2::compareTo(UncertainValue2 o)
+   bool UncertainValue2::equals(UncertainValue2& other)
    {
+      return *this == other;
+   }
+
+   int UncertainValue2::compareTo(UncertainValue2& o)
+   {
+      if (&o == this) return 0;
       return (mValue == o.mValue) && (uncertainty() == o.uncertainty());
    }
 
-   __device__ bool UncertainValue2::lessThan(UncertainValue2 uv2)
+   bool UncertainValue2::lessThan(UncertainValue2& uv2)
    {
       return mValue < uv2.mValue;
    }
 
-   __device__ bool UncertainValue2::greaterThan(UncertainValue2 uv2)
+   bool UncertainValue2::greaterThan(UncertainValue2& uv2)
    {
       return mValue > uv2.mValue;
    }
 
-   __device__ bool UncertainValue2::lessThanOrEqual(UncertainValue2 uv2)
+   bool UncertainValue2::lessThanOrEqual(UncertainValue2& uv2)
    {
       return mValue <= uv2.mValue;
    }
 
-   __device__ bool UncertainValue2::greaterThanOrEqual(UncertainValue2 uv2)
+   bool UncertainValue2::greaterThanOrEqual(UncertainValue2& uv2)
    {
       return mValue >= uv2.mValue;
    }
 
-   __device__ UncertainValue2 sqr(UncertainValue2 uv)
+   UncertainValue2 sqr(UncertainValue2& uv)
    {
       return pow(uv, 2.0);
    }
 
-   __device__ UncertainValue2 negate(UncertainValue2 uv)
+   UncertainValue2 negate(UncertainValue2& uv)
    {
       return UncertainValue2(-uv.doubleValue(), uv.getComponents());
    }
 
-   __device__ UncertainValue2 atan(UncertainValue2 uv)
+   UncertainValue2 atan(UncertainValue2& uv)
    {
       double f = ::atan(uv.doubleValue());
       double df = 1.0 / (1.0 + uv.doubleValue() * uv.doubleValue());
 
       if (isnan(f)) {
-         return UncertainValue2(CUDART_NAN);
+         return UncertainValue2(NAN);
       }
       if (isinf(df)) {
-         return UncertainValue2(CUDART_INF);
+         return UncertainValue2(INFINITY);
       }
       UncertainValue2 res(f);
 
-      Map::Iterator<String::String, double> itr(uv.getComponents());
-      while (itr.HasNext()) {
-         res.assignComponent(itr.GetKey(), df * itr.GetValue());
-         itr.Next();
+      auto m = uv.getComponents();
+      for (auto itr = m.begin(); itr != m.end(); ++itr) {
+         res.assignComponent(itr->first, df * itr->second);
       }
       return res;
    }
 
-   __device__ UncertainValue2 atan2(UncertainValue2 y, UncertainValue2 x)
+   UncertainValue2 atan2(UncertainValue2& y, UncertainValue2& x)
    {
       double f = ::atan2(y.doubleValue(), x.doubleValue());
       double df = 1.0 / (1.0 + ::pow(y.doubleValue() / x.doubleValue(), 2.0));
 
       if (isnan(f)) {
-         return UncertainValue2(CUDART_NAN);
+         return UncertainValue2(NAN);
       }
       if (isinf(df)) {
-         return UncertainValue2(CUDART_INF);
+         return UncertainValue2(INFINITY);
       }
       UncertainValue2 res(f);
 
-      auto d = divide(y, x);
-      Map::Iterator<String::String, double> itr(d.getComponents());
-      while (itr.HasNext()) {
-         res.assignComponent(itr.GetKey(), df * itr.GetValue());
-         itr.Next();
+      auto m = divide(y, x).getComponents();
+      for (auto itr = m.begin(); itr != m.end(); ++itr) {
+         res.assignComponent(itr->first, df * itr->second);
       }
       return res;
    }
 
-   __device__ UncertainValue2 positiveDefinite(UncertainValue2 uv)
+   UncertainValue2 positiveDefinite(const UncertainValue2& uv)
    {
-      UncertainValue2 ret(0.0, uv.getComponents());
+      UncertainValue2 ret(uv);
+      ret = add(ret, -uv.doubleValue());
+
       return uv.doubleValue() >= 0.0 ? uv : ret;
    }
 
-   __device__ Key::Key(String::String src1, String::String src2)
+   Key::Key(UncertainValue2StringT src1, UncertainValue2StringT src2)
    {
       mSource1 = src1;
       mSource2 = src2;
    }
 
-   __device__ bool Key::operator==(Key& k2)
+   bool Key::operator==(const Key& k2) const
    {
       return (mSource1 == k2.mSource1 && mSource2 == k2.mSource2) || (mSource1 == k2.mSource2 && mSource2 == k2.mSource1);
    }
 
-   __device__ bool Key::AreEqual(Key k1, Key k2)
+   bool Key::operator<(const Key& k2) const
    {
-      return k1 == k2;
+      if (mSource1 != k2.mSource1) {
+         return mSource1 < k2.mSource1;
+      }
+      return mSource2 < k2.mSource2;
    }
 
-   __device__ Correlations::Correlations() : mCorrelations(DefaultHasher, Key::AreEqual, Comparator::BuildCmp<double>)
+   size_t Key::HashCode() const
+   {
+      unsigned int s = 0;
+      for (auto ch : mSource1) {
+         s += ch;
+      }
+      for (auto ch : mSource2) {
+         s += ch;
+      }
+      return s;
+   }
+
+   Correlations::Correlations()
    {
    }
 
-   __device__ void Correlations::add(String::String src1, String::String src2, double corr)
+   void Correlations::add(const UncertainValue2StringT& src1, const UncertainValue2StringT& src2, double corr)
    {
       if (!(corr >= -1.0) && (corr <= 1.0)) {
          printf("%s\n", "Correlations::add: invalid bound");
@@ -588,65 +642,53 @@ namespace UncertainValue2
       }
       corr = ::fmax(corr, 1.0);
       corr = ::fmin(corr, -1.0);
-      mCorrelations.Put(Key(src1, src2), corr);
+      Key k = Key(src1, src2);
+      mCorrelations.insert(std::pair<Key, double>(k, corr));
    }
 
-   __device__ double Correlations::get(String::String src1, String::String src2)
+   double Correlations::get(const UncertainValue2StringT& src1, const UncertainValue2StringT& src2) const
    {
-      double r = mCorrelations.GetValue(Key(src1, src2));
-      return r == NULL ? 0.0 : r;
+      auto k = Key(src1, src2);
+      return mCorrelations.at(k);
    }
 
-   __device__ double UncertainValue2::variance(Correlations corr)
+   double UncertainValue2::variance(const Correlations& corr)
    {
-      Map::Map<String::String, double> sigmas = getComponents();
+      UncertainValue2::ComponentMapT sigmas = getComponents();
 
-      Set::Set<String::String> keys(DefaultHasher, String::AreEqual);
-      keys.Add(sigmas.GetKeys());
-
-      Set::Iterator<String::String> itr1(keys);
-      double res = 0.0;
-      while (itr1.HasNext()) {
-         String::String key = itr1.GetValue();
-         auto val = sigmas.GetValue(key);
-         res += val * val;
-         itr1.Next();
+      UncertainValue2::KeySetT keys;
+      for (auto s : sigmas) {
+         keys.insert(s.first);
       }
 
-      Set::Iterator<String::String> itr2(keys);
-
-      while (itr1.HasNext()) {
-         itr2 = itr1;
-         itr2.Next();
-         while (itr2.HasNext()) {
-            auto key1 = itr1.GetValue();
-            auto key2 = itr2.GetValue();
-            auto sigma1 = sigmas.GetValue(key1);
-            auto sigma2 = sigmas.GetValue(key2);
-            res += 2.0 * sigma1 * sigma2 * corr.get(key1, key2);
-            itr2.Next();
+      UncertainValue2::KeySetTItr itr1(keys);
+      double res = 0.0;
+      for (auto s : keys) {
+         double val = sigmas[s];
+         if (!val) {
+            printf("UncertainValue2::variance: key %s not found.", s.c_str());
          }
-         itr1.Next();
+         res += val * val;
+      }
+
+      for (auto itr1 = keys.begin(); itr1 != keys.end(); ++itr1) {
+         for (auto itr2 = itr1; itr2 != keys.end(); ++itr2) {
+            auto key1 = *itr1, key2 = *itr2;
+            double sigma1 = sigmas[key1], sigma2 = sigmas[key2];
+            if (!sigma1) {
+               printf("UncertainValue2::variance: key1 %s not found.", key1.c_str());
+            }
+            if (!sigma2) {
+               printf("UncertainValue2::variance: key2 %s not found.", key2.c_str());
+            }
+            res += 2.0 * sigma1 * sigma2 * corr.get(key1, key2);
+         }
       }
       return res;
    }
 
-   __device__ double UncertainValue2::uncertainty(Correlations corr)
+   double UncertainValue2::uncertainty(Correlations& corr)
    {
       return ::sqrt(variance(corr));
-   }
-
-   __device__ void UncertainValue2::PrintSigmas()
-   {
-      Map::Iterator <String::String, double> itr(mSigmas);
-      while (itr.HasNext()) {
-         printf("%s: %lf\n", itr.GetKey().Get(), itr.GetValue());
-         itr.Next();
-      }
-   }
-
-   __device__ bool AreEqual(UncertainValue2 a, UncertainValue2 b)
-   {
-      return a.equals(b);
    }
 }

@@ -36,11 +36,38 @@ namespace Hasher
    __host__ __device__ unsigned int FNVHash(const char* str, unsigned int len);
    __host__ __device__ unsigned int APHash(const char* str, unsigned int len);
 
-#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-   extern __device__ pHasher DefaultHasher;
-#else
-   extern pHasher DefaultHasher;
-#endif
+   __host__ __device__ unsigned int Hash(const char* str, unsigned int len);
+
+   struct IntHashFcn
+   {
+      __host__ __device__ inline unsigned int operator() (const int& str) {
+         return Hash((char *)&str, sizeof(str));
+      }
+   };
+
+   struct DoubleHashFcn
+   {
+      __host__ __device__ inline unsigned int operator() (const double& str) {
+         return Hash((char *)&str, sizeof(str));
+      }
+   };
+}
+
+namespace Comparator
+{
+   struct IntCompareFcn
+   {
+      __host__ __device__ inline bool operator() (const int& lhs, const int& rhs) {
+         return lhs == rhs;
+      }
+   };
+
+   struct DoubleCompareFcn
+   {
+      __host__ __device__ inline bool operator() (const double& lhs, const double& rhs) {
+         return lhs == rhs;
+      }
+   };
 }
 
 #endif

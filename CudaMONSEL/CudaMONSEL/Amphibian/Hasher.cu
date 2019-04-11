@@ -199,4 +199,9 @@ namespace Hasher
       return hash;
    }
    /* End Of AP Hash Function */
+
+   __host__ __device__ unsigned int Hash(const char* str, unsigned int len)
+   {
+      return APHash(str, len);
+   }
 }
