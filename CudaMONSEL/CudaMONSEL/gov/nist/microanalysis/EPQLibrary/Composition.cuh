@@ -2,7 +2,7 @@
 #define _COMPOSITION_CUH_
 
 #include "Element.cuh"
-#include "..\Utility\UncertainValue2.cuh"
+#include "gov\nist\microanalysis\Utility\UncertainValue2.cuh"
 
 #include <map>
 #include <set>
@@ -19,10 +19,6 @@ namespace Composition
    public:
       //typedef std::unordered_map<Element::Element, double, Element::HashFcn> CompositionMap;
       //typedef std::unordered_map<Element::Element, double, Element::HashFcn>::iterator CompositionMapItr;
-      typedef std::set<Element::Element> OrderedElementSetT;
-      typedef std::set<Element::Element>::iterator OrderedElementSetTItr;
-      typedef std::unordered_set<Element::Element, Element::HashFcn> ElementSetT;
-      typedef std::unordered_set<Element::Element, Element::HashFcn>::iterator ElementSetTItr;
       typedef std::unordered_map<Element::Element, UncertainValue2::UncertainValue2, Element::HashFcn> ConstituentsMapT;
       typedef std::unordered_map<Element::Element, UncertainValue2::UncertainValue2, Element::HashFcn>::iterator ConstituentsMapTItr;
       typedef std::unordered_map<Element::Element, double, Element::HashFcn> ErrorMapT;
@@ -38,8 +34,8 @@ namespace Composition
       bool operator==(const Composition&) const;
       void operator=(const Composition&);
 
-      ElementSetT getElementSet() const;
-      OrderedElementSetT getSortedElements();
+      Element::UnorderedSetT getElementSet() const;
+      Element::OrderedSetT getSortedElements();
       int getElementCount();
       void addElement(int atomicNo, double massFrac);
       void addElement(int atomicNo, UncertainValue2::UncertainValue2 massFrac);
@@ -109,22 +105,22 @@ namespace Composition
       void defineByMaterialFraction(Composition compositions[], int compLen, double matFracs[], int matFracsLen);
       void removeElement(const Element::Element&);
       bool containsElement(const Element::Element&);
-      bool containsAll(const ElementSetT& elms);
+      bool containsAll(const Element::UnorderedSetT& elms);
       double atomicPercent(Element::Element elm);
       double stoichiometry(Element::Element elm);
       UncertainValue2::UncertainValue2 weightAvgAtomicNumberU();
       double weightAvgAtomicNumber();
       double sumWeightFraction();
       UncertainValue2::UncertainValue2 sumWeightFractionU();
-      ////String::String toString();
+      CompositionNameT toString();
       ////String::String stoichiometryString();
       ////String::String weightPercentString(bool normalize);
       ////String::String descriptiveString(bool normalize);
       //Element::Element getNthElementByWeight(int n);
       //Element::Element getNthElementByAtomicFraction(int n);
-      void setName(CompositionNameT name);
+      void setName(const CompositionNameT& name);
       CompositionNameT getName();
-      int compareTo(Composition& comp);
+      int compareTo(const Composition& comp);
       Composition asComposition();
       Composition clone();
       UncertainValue2::UncertainValue2 differenceU(Composition& comp);

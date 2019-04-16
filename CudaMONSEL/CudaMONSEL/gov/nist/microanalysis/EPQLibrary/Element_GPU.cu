@@ -1,6 +1,6 @@
 //#include "Element.cuh"
-//#include "..\..\..\..\CudaUtil.h"
-//#include "..\..\..\..\Amphibian\String.cuh"
+//#include "CudaUtil.h"
+//#include "Amphibian\String.cuh"
 //
 //namespace Element
 //{

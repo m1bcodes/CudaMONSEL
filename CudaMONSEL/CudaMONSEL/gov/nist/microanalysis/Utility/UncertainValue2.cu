@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <math.h>
 
-#include "..\..\..\..\Amphibian\Hasher.cuh"
+#include "Amphibian\Hasher.cuh"
 
 namespace UncertainValue2
 {
@@ -123,6 +123,16 @@ namespace UncertainValue2
       return mSigmas;
    }
 
+   UncertainValue2::KeySetT UncertainValue2::getComponentsKeySet() const 
+   {
+      KeySetT keys;
+      auto akeys = mSigmas;
+      for (auto itr = akeys.begin(); itr != akeys.end(); ++itr) {
+         keys.insert(itr->first);
+      }
+      return keys;
+   }
+
    bool UncertainValue2::hasComponent(const UncertainValue2StringT& src) const
    {
       return getComponent(src) != 0.0;
@@ -140,16 +150,18 @@ namespace UncertainValue2
       }
    }
 
-   UncertainValue2 add(UncertainValue2 uvs[], int uvsLen)
+   UncertainValue2 add(const UncertainValue2 uvs[], int uvsLen)
    {
       UncertainValue2::KeySetT keys;
       double sum = 0.0;
       for (int k = 0; k < uvsLen; ++k) {
          sum += uvs[k].doubleValue();
-         auto m = uvs[k].getComponents();
-         for (auto itr = m.begin(); itr != m.end(); ++itr) {
-            keys.insert(itr->first);
-         }
+         //auto m = uvs[k].getComponents();
+         //for (auto itr = m.begin(); itr != m.end(); ++itr) {
+         //   keys.insert(itr->first);
+         //}
+         auto m = uvs[k].getComponentsKeySet();
+         keys.insert(m.begin(), m.end());
       }
       UncertainValue2 res(sum);
 
@@ -166,18 +178,23 @@ namespace UncertainValue2
       return res;
    }
 
-   UncertainValue2 add(double a, UncertainValue2& uva, double b, UncertainValue2& uvb)
+   UncertainValue2 add(double a, const UncertainValue2& uva, double b, const UncertainValue2& uvb)
    {
       UncertainValue2::KeySetT keys;
       UncertainValue2 res(a * uva.doubleValue() + b * uvb.doubleValue());
-      auto akeys = uva.getComponents();
-      for (auto itr = akeys.begin(); itr != akeys.end(); ++itr) {
-         keys.insert(itr->first);
-      }
-      auto bkeys = uvb.getComponents();
-      for (auto itr = bkeys.begin(); itr != bkeys.end(); ++itr) {
-         keys.insert(itr->first);
-      }
+      //auto akeys = uva.getComponents();
+      //for (auto itr = akeys.begin(); itr != akeys.end(); ++itr) {
+      //   keys.insert(itr->first);
+      //}
+      auto akeys = uva.getComponentsKeySet();
+      keys.insert(akeys.begin(), akeys.end());
+
+      //auto bkeys = uvb.getComponents();
+      //for (auto itr = bkeys.begin(); itr != bkeys.end(); ++itr) {
+      //   keys.insert(itr->first);
+      //}
+      auto bkeys = uvb.getComponentsKeySet();
+      keys.insert(bkeys.begin(), bkeys.end());
 
       for (auto itr = keys.begin(); itr != keys.end(); ++itr) {
          UncertainValue2StringT src = *itr;
@@ -186,18 +203,18 @@ namespace UncertainValue2
       return res;
    }
 
-   UncertainValue2 subtract(UncertainValue2& uva, UncertainValue2& uvb)
+   UncertainValue2 subtract(const UncertainValue2& uva, const UncertainValue2& uvb)
    {
       return add(1.0, uva, -1.0, uvb);
    }
 
-   UncertainValue2 mean(UncertainValue2 uvs[], int uvsLen)
+   UncertainValue2 mean(const UncertainValue2 uvs[], int uvsLen)
    {
       auto uv = add(uvs, uvsLen);
       return divide(uv, (double)uvsLen);
    }
 
-   UncertainValue2 weightedMean(UncertainValue2 cuv[], int uvsLen)
+   UncertainValue2 weightedMean(const UncertainValue2 cuv[], int uvsLen)
    {
       double varSum = 0.0, sum = 0.0;
 
@@ -220,7 +237,7 @@ namespace UncertainValue2
       return UncertainValue2(sum / varSum, str, ::sqrt(1.0 / varSum));
    }
 
-   UncertainValue2 uvmin(UncertainValue2 uvs[], int uvsLen)
+   UncertainValue2 uvmin(const UncertainValue2 uvs[], int uvsLen)
    {
       if (uvsLen == 0) {
          return NULL;
@@ -241,7 +258,7 @@ namespace UncertainValue2
       return res;
    }
 
-   UncertainValue2 uvmax(UncertainValue2 uvs[], int uvsLen)
+   UncertainValue2 uvmax(const UncertainValue2 uvs[], int uvsLen)
    {
       if (uvs == 0) {
          return NULL;
@@ -262,17 +279,21 @@ namespace UncertainValue2
       return res;
    }
 
-   UncertainValue2 add(UncertainValue2& v1, double v2)
+   UncertainValue2 add(const UncertainValue2& v1, double v2)
    {
-      return UncertainValue2(v1.doubleValue() + v2, v1.getComponents());
+      auto tmp = UncertainValue2(v2);
+      return add(1.0, v1, 1.0, tmp);
+      //return UncertainValue2(v1.doubleValue() + v2, v1.getComponents());
    }
 
-   UncertainValue2 add(double v1, UncertainValue2& v2)
+   UncertainValue2 add(double v1, const UncertainValue2& v2)
    {
-      return UncertainValue2(v2.doubleValue() + v1, v2.getComponents());
+      auto tmp = UncertainValue2(v1);
+      return add(1.0, tmp, 1.0, v2);
+      //return UncertainValue2(v2.doubleValue() + v1, v2.getComponents());
    }
 
-   UncertainValue2 add(UncertainValue2& v1, UncertainValue2& v2)
+   UncertainValue2 add(const UncertainValue2& v1, const UncertainValue2& v2)
    {
       return add(1.0, v1, 1.0, v2);
    }
@@ -599,7 +620,7 @@ namespace UncertainValue2
       return uv.doubleValue() >= 0.0 ? uv : ret;
    }
 
-   Key::Key(UncertainValue2StringT src1, UncertainValue2StringT src2)
+   Key::Key(const UncertainValue2StringT& src1, const UncertainValue2StringT& src2)
    {
       mSource1 = src1;
       mSource2 = src2;

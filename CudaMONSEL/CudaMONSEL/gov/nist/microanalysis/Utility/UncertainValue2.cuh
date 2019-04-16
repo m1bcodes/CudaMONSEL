@@ -15,7 +15,7 @@ namespace UncertainValue2
    class Key
    {
    public:
-      Key(UncertainValue2StringT src1, UncertainValue2StringT src2);
+      Key(const UncertainValue2StringT& src1, const UncertainValue2StringT& src2);
       bool operator==(const Key& k2) const;
       bool operator<(const Key& k2) const;
       size_t HashCode() const;
@@ -28,7 +28,7 @@ namespace UncertainValue2
 
    struct KeyCompareFcn
    {
-      inline bool operator() (const Key& lhs, const Key& rhs)
+      inline bool operator() (const Key& lhs, const Key& rhs) const
       {
          return lhs < rhs;
       }
@@ -83,6 +83,9 @@ namespace UncertainValue2
       void assignComponent(UncertainValue2StringT name, double sigma);
       double getComponent(const UncertainValue2StringT& src) const;
       ComponentMapT& getComponents();
+      KeySetT getComponentsKeySet() const;
+      //ComponentMapT::const_iterator getComponentsItrBegin() const;
+      //ComponentMapT::const_iterator getComponentsItrEnd() const;
       bool hasComponent(const UncertainValue2StringT& src) const;
       void renameComponent(const UncertainValue2StringT& oldName, const UncertainValue2StringT& newName);
 
@@ -116,16 +119,16 @@ namespace UncertainValue2
    UncertainValue2 NEGATIVE_INFINITY();
    UncertainValue2 ZERO();
 
-   UncertainValue2 add(UncertainValue2 uvs[], int uvsLen);
-   UncertainValue2 add(double a, UncertainValue2& uva, double b, UncertainValue2& uvb);
-   UncertainValue2 subtract(UncertainValue2& uva, UncertainValue2& uvb);
-   UncertainValue2 mean(UncertainValue2 uvs[], int uvsLen);
-   UncertainValue2 weightedMean(UncertainValue2 uvs[], int uvsLen);
-   UncertainValue2 uvmin(UncertainValue2 uvs[], int uvsLen);
-   UncertainValue2 uvmax(UncertainValue2 uvs[], int uvsLen);
-   UncertainValue2 add(UncertainValue2& v1, double v2);
-   UncertainValue2 add(double v1, UncertainValue2& v2);
-   UncertainValue2 add(UncertainValue2& v1, UncertainValue2& v2);
+   UncertainValue2 add(const UncertainValue2 uvs[], int uvsLen);
+   UncertainValue2 add(double a, const UncertainValue2& uva, double b, const UncertainValue2& uvb);
+   UncertainValue2 subtract(const UncertainValue2& uva, const UncertainValue2& uvb);
+   UncertainValue2 mean(const UncertainValue2 uvs[], int uvsLen);
+   UncertainValue2 weightedMean(const UncertainValue2 uvs[], int uvsLen);
+   UncertainValue2 uvmin(const UncertainValue2 uvs[], int uvsLen);
+   UncertainValue2 uvmax(const UncertainValue2 uvs[], int uvsLen);
+   UncertainValue2 add(const UncertainValue2& v1, double v2);
+   UncertainValue2 add(double v1, const UncertainValue2& v2);
+   UncertainValue2 add(const UncertainValue2& v1, const UncertainValue2& v2);
    UncertainValue2 multiply(double v1, UncertainValue2& v2);
    UncertainValue2 multiply(UncertainValue2& v1, UncertainValue2& v2);
    UncertainValue2 invert(UncertainValue2& v);

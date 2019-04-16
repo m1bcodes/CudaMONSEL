@@ -3,8 +3,8 @@
 //
 //#include <cuda_runtime.h>
 //
-//#include "..\Hasher.cuh"
-//#include "..\Map.cuh"
+//#include "Amphibian\Hasher.cuh"
+//#include "Amphibian\Map.cuh"
 //
 //namespace MapTest
 //{

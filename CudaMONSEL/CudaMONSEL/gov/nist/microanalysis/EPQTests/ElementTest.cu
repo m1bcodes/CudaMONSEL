@@ -1,6 +1,6 @@
 #include "ElementTest.cuh"
-#include "..\EPQLibrary\Element.cuh"
-#include "..\EPQLibrary\FromSI.cuh"
+#include "gov\nist\microanalysis\EPQLibrary\Element.cuh"
+#include "gov\nist\microanalysis\EPQLibrary\FromSI.cuh"
 
 #include <stdio.h>
 #include <math.h>

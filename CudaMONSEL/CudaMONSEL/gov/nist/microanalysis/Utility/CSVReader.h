@@ -1,5 +1,5 @@
-#ifndef CSVREADER_H
-#define CSVREADER_H
+#ifndef _CSVREADER_H_
+#define _CSVREADER_H_
 
 #include <iterator>
 #include <iostream>
@@ -21,9 +21,9 @@ private:
 
 //int main()
 //{
-//   std::ifstream       file("plop.csv");
+//   std::ifstream file("plop.csv");
 //
-//   CSVRow              row;
+//   CSVRow row;
 //   while (file >> row)
 //   {
 //      std::cout << "4th Element(" << row[3] << ")\n";
@@ -52,8 +52,8 @@ public:
 
    CSVRow const& operator*() const;
    CSVRow const* operator->() const;
-   bool operator==(CSVIterator const& rhs);
-   bool operator!=(CSVIterator const& rhs);
+   bool operator==(const CSVIterator& rhs);
+   bool operator!=(const CSVIterator& rhs);
 
 private:
    std::istream* m_str;

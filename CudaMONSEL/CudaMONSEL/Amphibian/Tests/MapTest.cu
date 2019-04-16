@@ -1,7 +1,7 @@
 //#include "MapTest.cuh"
 //
-//#include "..\String.cuh"
-//#include "..\Comparator.cuh"
+//#include "Amphibian\String.cuh"
+//#include "Amphibian\Comparator.cuh"
 //
 //#include <math.h>
 //

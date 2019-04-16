@@ -53,7 +53,7 @@ namespace Material
       }
    }
 
-   double Material::getDensity()
+   double Material::getDensity() const
    {
       return mDensity;
    }
@@ -64,7 +64,7 @@ namespace Material
       mDensity = DEFAULT_DENSITY;
    }
 
-   double Material::atomsPerCubicMeter(Element::Element elm)
+   double Material::atomsPerCubicMeter(const Element::Element& elm)
    {
       if (getElementCount() == 0 || mDensity > 0.0) {
          printf("Material::atomsPerCubicMeter: invalid composition");
@@ -107,12 +107,12 @@ namespace Material
    //      return "None";
    //}
 
-   int Material::compareTo(Composition obj)
+   int Material::compareTo(const Composition& obj)
    {
       return Composition::compareTo(obj);
    }
 
-   int Material::compareTo(Material obj)
+   int Material::compareTo(const Material& obj)
    {
       int res = Composition::compareTo(obj);
       if (res == 0) {
@@ -121,7 +121,7 @@ namespace Material
       return res;
    }
 
-   void Material::replicate(Material mat)
+   void Material::replicate(const Material& mat)
    {
       Composition::replicate(mat);
       mDensity = mat.mDensity;
@@ -156,7 +156,7 @@ namespace Material
       return this == &other || *this == other;
    }
 
-   bool Material::almostEquals(Material other, double tol)
+   bool Material::almostEquals(Material& other, double tol)
    {
       Material otherMat = (Material)other;
       return Composition::almostEquals(other, tol) && (abs(getDensity() - otherMat.getDensity()) / fmax(getDensity(), otherMat.getDensity()) < tol);

@@ -162,18 +162,18 @@ namespace Composition
       mOptimalRepresentation = comp.mOptimalRepresentation;
    }
 
-   Composition::ElementSetT Composition::getElementSet() const
+   Element::UnorderedSetT Composition::getElementSet() const
    {
-      ElementSetT elmset;
+      Element::UnorderedSetT elmset;
       for (auto c : mConstituents) {
          elmset.insert(c.first);
       }
       return elmset;
    }
 
-   Composition::OrderedElementSetT Composition::getSortedElements()
+   Element::OrderedSetT Composition::getSortedElements()
    {
-      OrderedElementSetT elmset;
+      Element::OrderedSetT elmset;
       for (auto c : mConstituents) {
          elmset.insert(c.first);
       }
@@ -219,7 +219,7 @@ namespace Composition
       }
 
       mConstituentsAtomic.clear();
-      ElementSetT constituentsAtomicKeys;
+      Element::UnorderedSetT constituentsAtomicKeys;
       for (auto ca : mConstituentsAtomic) {
          constituentsAtomicKeys.insert(ca.first);
       }
@@ -352,7 +352,7 @@ namespace Composition
    void Composition::recomputeWeightFractions()
    {
       UncertainValue2::UncertainValue2 totalWgt = UncertainValue2::ZERO();
-      ElementSetT constituentsAtomicKeys;
+      Element::UnorderedSetT constituentsAtomicKeys;
       for (auto ca : mConstituentsAtomic) {
          constituentsAtomicKeys.insert(ca.first);
       }
@@ -397,9 +397,9 @@ namespace Composition
       }
    }
 
-   Composition::ElementSetT elementSet(Composition compositions[], int len)
+   Element::UnorderedSetT elementSet(Composition compositions[], int len)
    {
-      Composition::ElementSetT elms;
+      Element::UnorderedSetT elms;
       for (int i = 0; i < len; ++i) {
          auto elmset = compositions[i].getElementSet();
          for (auto elm : elmset) {
@@ -449,7 +449,7 @@ namespace Composition
       return (mConstituents.find(el) != mConstituents.end() && (mConstituents.find(el)->second.doubleValue() > 0.0));
    }
 
-   bool Composition::containsAll(const ElementSetT& elms)
+   bool Composition::containsAll(const Element::UnorderedSetT& elms)
    {
       for (auto elm : elms) {
          if (!containsElement(elm)) {
@@ -529,13 +529,13 @@ namespace Composition
       return res;
    }
 
-   //String::String Composition::toString()
-   //{
-   //   if ((*((int*)&mName) == NULL) || (mName.Length() == 0)) {
-   //      return descriptiveString(false);
-   //   }
-   //   return mName;
-   //}
+   Composition::CompositionNameT Composition::toString()
+   {
+      //if (mName.size() == 0) {
+      //   return descriptiveString(false);
+      //}
+      return mName;
+   }
 
    //String::String Composition::stoichiometryString()
    //{
@@ -643,7 +643,7 @@ namespace Composition
    //   return Element::None;
    //}
 
-   void Composition::setName(Composition::CompositionNameT name)
+   void Composition::setName(const CompositionNameT& name)
    {
       mName = name;
    }
@@ -653,7 +653,7 @@ namespace Composition
       return mName;
    }
 
-   int Composition::compareTo(Composition& comp)
+   int Composition::compareTo(const Composition& comp)
    {
       if (this == &comp) {
          return 0;
@@ -708,7 +708,7 @@ namespace Composition
    {
       // assert (comp.getElementCount() == this.getElementCount());
       UncertainValue2::UncertainValue2 delta = UncertainValue2::ZERO();
-      ElementSetT allElms;
+      Element::UnorderedSetT allElms;
       auto s0 = getElementSet();
       auto s1 = comp.getElementSet();
       allElms.insert(s0.begin(), s0.end());
@@ -804,7 +804,7 @@ namespace Composition
       if (abs(mNormalization.doubleValue() - other.mNormalization.doubleValue()) > tol) {
          return false;
       }
-      Composition::ElementSetT allElms;
+      Element::UnorderedSetT allElms;
       auto elms0 = other.getElementSet();
       for (auto e : elms0) {
          allElms.insert(e);
@@ -842,7 +842,7 @@ namespace Composition
 
    Composition::ErrorMapT Composition::absoluteError(Composition& std, bool normalize)
    {
-      ElementSetT elms;
+      Element::UnorderedSetT elms;
       auto elms0 = std.getElementSet();
       for (auto e : elms0) {
          elms.insert(e);
@@ -862,7 +862,7 @@ namespace Composition
 
    Composition::ErrorMapT Composition::relativeError(Composition& std, bool normalize)
    {
-      ElementSetT elms; auto elms0 = std.getElementSet();
+      Element::UnorderedSetT elms; auto elms0 = std.getElementSet();
       for (auto e : elms0) {
          elms.insert(e);
       }

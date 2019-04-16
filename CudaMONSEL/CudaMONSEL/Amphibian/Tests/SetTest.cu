@@ -1,8 +1,8 @@
 //#include "SetTest.cuh"
 //
-//#include "..\Set.cuh"
-//#include "..\String.cuh"
-//#include "..\Comparator.cuh"
+//#include "Amphibian\Set.cuh"
+//#include "Amphibian\String.cuh"
+//#include "Amphibian\Comparator.cuh"
 //
 //#include <stdio.h>
 //

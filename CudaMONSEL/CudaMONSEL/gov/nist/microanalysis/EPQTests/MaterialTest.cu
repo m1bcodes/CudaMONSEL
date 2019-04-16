@@ -1,8 +1,8 @@
 #include "MaterialTest.cuh"
 
-#include "..\EPQLibrary\Element.cuh"
-#include "..\EPQLibrary\Composition.cuh"
-#include "..\EPQLibrary\Material.cuh"
+#include "gov\nist\microanalysis\EPQLibrary\Element.cuh"
+#include "gov\nist\microanalysis\EPQLibrary\Composition.cuh"
+#include "gov\nist\microanalysis\EPQLibrary\Material.cuh"
 
 namespace MaterialTest
 {
@@ -202,5 +202,4 @@ namespace MaterialTest
       //}
       printf("MaterialTest::testOne() completed\n");
    }
-
 }

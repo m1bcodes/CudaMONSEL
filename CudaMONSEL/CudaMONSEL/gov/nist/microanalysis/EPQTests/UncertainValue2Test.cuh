@@ -1,7 +1,7 @@
 #ifndef _UNCERTAIN_VALUES_2_TEST_CUH_
 #define _UNCERTAIN_VALUES_2_TEST_CUH_
 
-#include "..\Utility\UncertainValue2.cuh"
+#include "gov\nist\microanalysis\Utility\UncertainValue2.cuh"
 
 namespace UncertainValue2Test
 {

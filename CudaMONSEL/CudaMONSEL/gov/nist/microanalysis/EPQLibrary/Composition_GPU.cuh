@@ -1,11 +1,11 @@
 //#ifndef _COMPOSITION_CUH_
 //#define _COMPOSITION_CUH_
 //
-//#include "..\..\..\..\Amphibian\LinkedList.cuh"
-//#include "..\..\..\..\Amphibian\String.cuh"
+//#include "Amphibian\LinkedList.cuh"
+//#include "Amphibian\String.cuh"
 //
 //#include "Element.cuh"
-//#include "..\Utility\UncertainValue2.cuh"
+//#include "gov\nist\microanalysis\Utility\UncertainValue2.cuh"
 //
 //#include <cuda_runtime.h>
 //

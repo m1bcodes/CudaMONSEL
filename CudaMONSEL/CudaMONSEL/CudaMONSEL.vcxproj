@@ -26,8 +26,12 @@
     <CudaCompile Include="Amphibian\Tests\MapTest.cu" />
     <CudaCompile Include="Amphibian\Tests\SetTest.cu" />
     <CudaCompile Include="Amphibian\Tests\StringTest.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\AlgorithmClass.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\AlgorithmUser.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\AtomicShell.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\Composition.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\Composition_GPU.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\EdgeEnergy.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\Element.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\Element_GPU.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\FromSI.cu" />
@@ -36,6 +40,7 @@
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\Material_GPU.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\PhysicalConstants.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\PhysicalConstants_GPU.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\NISTMonte\RegionBase.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\ToSI.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\ToSI_GPU.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQTests\ElementTest.cu" />
@@ -44,8 +49,12 @@
     <CudaCompile Include="gov\nist\microanalysis\EPQTests\MaterialTest_GPU.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQTests\UncertainValue2Test.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQTests\UncertainValue2Test_GPU.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\NISTMonte\Electron.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\NISTMonte\MonteCarloSS.cu" />
     <CudaCompile Include="gov\nist\microanalysis\NISTMonte\MonteCarloSS_GPU.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\Utility\Math2.cu" />
     <CudaCompile Include="gov\nist\microanalysis\Utility\UncertainValue2.cu" />
+    <CudaCompile Include="gov\nist\nanoanalysis\SEmaterial.cu" />
     <CudaCompile Include="Main.cu" />
     <CudaCompile Include="SimRunner.cu" />
   </ItemGroup>
@@ -62,16 +71,24 @@
     <ClInclude Include="Amphibian\Tests\SetTest.cuh" />
     <ClInclude Include="Amphibian\Tests\StringTest.cuh" />
     <ClInclude Include="CudaUtil.h" />
+    <ClInclude Include="gov\nist\microanalysis\EPQLibrary\AlgorithmClass.cuh" />
+    <ClInclude Include="gov\nist\microanalysis\EPQLibrary\AlgorithmUser.cuh" />
+    <ClInclude Include="gov\nist\microanalysis\EPQLibrary\AtomicShell.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\Composition.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\Composition_GPU.cuh" />
+    <ClInclude Include="gov\nist\microanalysis\EPQLibrary\EdgeEnergy.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\Element.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\Element_GPU.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\FromSI.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\FromSI_GPU.cuh" />
+    <ClInclude Include="gov\nist\microanalysis\EPQLibrary\ITransform.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\Material.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\Material_GPU.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\PhysicalConstants.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\PhysicalConstants_GPU.cuh" />
+    <ClInclude Include="gov\nist\microanalysis\NISTMonte\ElectronGun.cuh" />
+    <ClInclude Include="gov\nist\microanalysis\NISTMonte\RegionBase.cuh" />
+    <ClInclude Include="gov\nist\microanalysis\NISTMonte\Shape.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\ToSI.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\ToSI_GPU.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQTests\ElementTest.cuh" />
@@ -81,9 +98,14 @@
     <ClInclude Include="gov\nist\microanalysis\EPQTests\UncertainValue2Test.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQTests\UncertainValue2Test_GPU.cuh" />
     <ClInclude Include="gov\nist\microanalysis\NISTMonte\Electron.cuh" />
+    <ClInclude Include="gov\nist\microanalysis\NISTMonte\IMaterialScatterModel.cuh" />
     <ClInclude Include="gov\nist\microanalysis\NISTMonte\IMaterialScatterModel_GPU.h" />
+    <ClInclude Include="gov\nist\microanalysis\NISTMonte\MonteCarloSS.cuh" />
+    <ClInclude Include="gov\nist\microanalysis\NISTMonte\Types.cuh" />
     <ClInclude Include="gov\nist\microanalysis\Utility\CSVReader.h" />
+    <ClInclude Include="gov\nist\microanalysis\Utility\Math2.cuh" />
     <ClInclude Include="gov\nist\microanalysis\Utility\UncertainValue2.cuh" />
+    <ClInclude Include="gov\nist\nanoanalysis\SEmaterial.cuh" />
     <ClInclude Include="ImageUtil.h" />
     <ClInclude Include="TimeUtil.h" />
   </ItemGroup>
@@ -150,7 +172,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\rey\Documents\GitHub\CudaMONSEL\CudaMONSEL\CudaMONSEL;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

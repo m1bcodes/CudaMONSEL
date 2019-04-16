@@ -4,10 +4,11 @@
 #include <stdio.h>
 #include <fstream>
 
-#include "../Utility/CSVReader.h"
+#include "gov\nist\microanalysis\Utility\CSVReader.h"
 #include "ToSI.cuh"
 
 #include <vector>
+#include <unordered_set>
 
 namespace Element
 {
@@ -301,5 +302,8 @@ namespace Element
    std::vector<std::string> getListOfElements(const Element& minEl, const Element& maxEl);
 
    void InitializeElements();
+
+   typedef std::unordered_set<Element, HashFcn> UnorderedSetT;
+   typedef std::unordered_set<Element, HashFcn> OrderedSetT;
 }
 #endif
