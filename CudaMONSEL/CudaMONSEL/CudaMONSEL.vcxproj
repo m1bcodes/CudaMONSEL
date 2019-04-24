@@ -40,6 +40,8 @@
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\Material_GPU.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\PhysicalConstants.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\PhysicalConstants_GPU.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\NISTMonte\GaussianBeam.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\NISTMonte\NullMaterialScatterModel.cu" />
     <CudaCompile Include="gov\nist\microanalysis\NISTMonte\RegionBase.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\ToSI.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\ToSI_GPU.cu" />
@@ -52,6 +54,7 @@
     <CudaCompile Include="gov\nist\microanalysis\NISTMonte\Electron.cu" />
     <CudaCompile Include="gov\nist\microanalysis\NISTMonte\MonteCarloSS.cu" />
     <CudaCompile Include="gov\nist\microanalysis\NISTMonte\MonteCarloSS_GPU.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\NISTMonte\Sphere.cu" />
     <CudaCompile Include="gov\nist\microanalysis\Utility\Math2.cu" />
     <CudaCompile Include="gov\nist\microanalysis\Utility\UncertainValue2.cu" />
     <CudaCompile Include="gov\nist\nanoanalysis\SEmaterial.cu" />
@@ -86,7 +89,10 @@
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\Material_GPU.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\PhysicalConstants.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\PhysicalConstants_GPU.cuh" />
+    <ClInclude Include="gov\nist\microanalysis\NISTMonte\Declarations.cuh" />
     <ClInclude Include="gov\nist\microanalysis\NISTMonte\ElectronGun.cuh" />
+    <ClInclude Include="gov\nist\microanalysis\NISTMonte\GaussianBeam.cuh" />
+    <ClInclude Include="gov\nist\microanalysis\NISTMonte\NullMaterialScatterModel.cuh" />
     <ClInclude Include="gov\nist\microanalysis\NISTMonte\RegionBase.cuh" />
     <ClInclude Include="gov\nist\microanalysis\NISTMonte\Shape.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\ToSI.cuh" />
@@ -101,7 +107,7 @@
     <ClInclude Include="gov\nist\microanalysis\NISTMonte\IMaterialScatterModel.cuh" />
     <ClInclude Include="gov\nist\microanalysis\NISTMonte\IMaterialScatterModel_GPU.h" />
     <ClInclude Include="gov\nist\microanalysis\NISTMonte\MonteCarloSS.cuh" />
-    <ClInclude Include="gov\nist\microanalysis\NISTMonte\Types.cuh" />
+    <ClInclude Include="gov\nist\microanalysis\NISTMonte\Sphere.cuh" />
     <ClInclude Include="gov\nist\microanalysis\Utility\CSVReader.h" />
     <ClInclude Include="gov\nist\microanalysis\Utility\Math2.cuh" />
     <ClInclude Include="gov\nist\microanalysis\Utility\UncertainValue2.cuh" />

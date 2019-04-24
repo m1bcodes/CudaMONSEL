@@ -57,6 +57,7 @@ bool saveImage(const std::string& szPathName, std::vector<char> lpBits, int w, i
 
    pFile.write(&bitmapDataV[0], bitmapDataV.size());
    pFile.close();
+   delete[] pbmi;
 
    return true;
 }

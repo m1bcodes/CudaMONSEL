@@ -868,7 +868,7 @@ namespace Element
       return ::Element::byAtomicNumber(mAtomicNumber);
    }
 
-   std::vector<std::string> getListOfAbbreviations(const Element& minEl, const Element& maxEl)
+   ElementNameVecT getListOfAbbreviations(const Element& minEl, const Element& maxEl)
    {
       int numEl = maxEl.getAtomicNumber() - minEl.getAtomicNumber() + 1;
       std::vector<std::string> res(numEl, "");
@@ -879,7 +879,7 @@ namespace Element
       return res;
    }
 
-   std::vector<std::string> getListOfElements(const Element& minEl, const Element& maxEl)
+   ElementNameVecT getListOfElements(const Element& minEl, const Element& maxEl)
    {
       std::vector<std::string> res;
       for (int z = minEl.getAtomicNumber(); z <= maxEl.getAtomicNumber(); ++z) {

@@ -20,7 +20,7 @@ namespace Material
       mDensity = other.mDensity;
    }
 
-   Material::Material(Element::Element elms[], int elmsLen, double massFracs[], int massFracsLen, double density, char* name) : Composition(elms, elmsLen, massFracs, massFracsLen, name)
+   Material::Material(const Element::Element elms[], int elmsLen, double massFracs[], int massFracsLen, double density, char* name) : Composition(elms, elmsLen, massFracs, massFracsLen, name)
    {
       mDensity = density;
       renormalize();
@@ -32,7 +32,7 @@ namespace Material
       mDensity = density;
    }
 
-   Material::Material(Element::Element elm[], double density[]) : Composition(elm, 1, density, 1, (char *)elm[0].toString())
+   Material::Material(Element::Element elm[], double density[]) : Composition(elm, 1, density, 1, elm[0].toString())
    {
       mDensity = density[0];
       renormalize();
@@ -64,7 +64,7 @@ namespace Material
       mDensity = DEFAULT_DENSITY;
    }
 
-   double Material::atomsPerCubicMeter(const Element::Element& elm)
+   double Material::atomsPerCubicMeter(const Element::Element& elm) const
    {
       if (getElementCount() == 0 || mDensity > 0.0) {
          printf("Material::atomsPerCubicMeter: invalid composition");
@@ -107,12 +107,12 @@ namespace Material
    //      return "None";
    //}
 
-   int Material::compareTo(const Composition& obj)
+   int Material::compareTo(const Composition& obj) const
    {
       return Composition::compareTo(obj);
    }
 
-   int Material::compareTo(const Material& obj)
+   int Material::compareTo(const Material& obj) const
    {
       int res = Composition::compareTo(obj);
       if (res == 0) {
@@ -127,14 +127,14 @@ namespace Material
       mDensity = mat.mDensity;
    }
 
-   Material Material::clone()
+   Material Material::clone() const
    {
       Material res(mDensity);
       res.replicate(*this);
       return res;
    }
 
-   unsigned int Material::hashCode()
+   unsigned int Material::hashCode() const
    {
       int PRIME = 31;
       int result = Composition::hashCode();
@@ -156,7 +156,7 @@ namespace Material
       return this == &other || *this == other;
    }
 
-   bool Material::almostEquals(Material& other, double tol)
+   bool Material::almostEquals(Material& other, double tol) const
    {
       Material otherMat = (Material)other;
       return Composition::almostEquals(other, tol) && (abs(getDensity() - otherMat.getDensity()) / fmax(getDensity(), otherMat.getDensity()) < tol);

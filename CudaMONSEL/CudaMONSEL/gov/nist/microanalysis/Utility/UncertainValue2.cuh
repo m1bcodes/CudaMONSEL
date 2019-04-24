@@ -74,18 +74,17 @@ namespace UncertainValue2
       UncertainValue2(double v, const ComponentMapT&);
       UncertainValue2(const UncertainValue2&);
       UncertainValue2& operator=(const UncertainValue2&);
-      unsigned int hashCode();
+      unsigned int hashCode() const;
 
       bool operator==(const UncertainValue2&) const;
-      bool equals(UncertainValue2& uv);
+      bool equals(const UncertainValue2& uv) const;
 
       void assignInitialValue(double);
-      void assignComponent(UncertainValue2StringT name, double sigma);
+      void assignComponent(const UncertainValue2StringT name, double sigma);
       double getComponent(const UncertainValue2StringT& src) const;
       ComponentMapT& getComponents();
-      KeySetT getComponentsKeySet() const;
-      //ComponentMapT::const_iterator getComponentsItrBegin() const;
-      //ComponentMapT::const_iterator getComponentsItrEnd() const;
+      ComponentMapT::const_iterator getComponentsItrBegin() const;
+      ComponentMapT::const_iterator getComponentsItrEnd() const;
       bool hasComponent(const UncertainValue2StringT& src) const;
       void renameComponent(const UncertainValue2StringT& oldName, const UncertainValue2StringT& newName);
 
@@ -95,18 +94,16 @@ namespace UncertainValue2
       double variance() const;
       double fractionalUncertainty() const;
 
-      int compareTo(UncertainValue2& o);
-      bool lessThan(UncertainValue2& uv2);
-      bool greaterThan(UncertainValue2& uv2);
-      bool lessThanOrEqual(UncertainValue2& uv2);
-      bool greaterThanOrEqual(UncertainValue2& uv2);
+      int compareTo(const UncertainValue2& o);
+      bool lessThan(const UncertainValue2& uv2);
+      bool greaterThan(const UncertainValue2& uv2);
+      bool lessThanOrEqual(const UncertainValue2& uv2);
+      bool greaterThanOrEqual(const UncertainValue2& uv2);
 
-      UncertainValue2 sqrt();
+      UncertainValue2 sqrt() const;
 
       double variance(const Correlations& corr);
       double uncertainty(Correlations& corr);
-
-      void PrintSigmas();
 
    private:
       ComponentMapT mSigmas;
@@ -129,21 +126,21 @@ namespace UncertainValue2
    UncertainValue2 add(const UncertainValue2& v1, double v2);
    UncertainValue2 add(double v1, const UncertainValue2& v2);
    UncertainValue2 add(const UncertainValue2& v1, const UncertainValue2& v2);
-   UncertainValue2 multiply(double v1, UncertainValue2& v2);
-   UncertainValue2 multiply(UncertainValue2& v1, UncertainValue2& v2);
-   UncertainValue2 invert(UncertainValue2& v);
-   UncertainValue2 divide(UncertainValue2& a, UncertainValue2& b);
-   UncertainValue2 divide(double a, UncertainValue2& b);
-   UncertainValue2 divide(UncertainValue2& a, double b);
-   UncertainValue2 exp(UncertainValue2& x);
-   UncertainValue2 log(UncertainValue2& v2);
-   UncertainValue2 pow(UncertainValue2& v1, double n);
-   UncertainValue2 sqrt(UncertainValue2& uv);
-   UncertainValue2::ResultT quadratic(UncertainValue2& a, UncertainValue2& b, UncertainValue2& c);
-   UncertainValue2 sqr(UncertainValue2& uv);
-   UncertainValue2 negate(UncertainValue2& uv);
-   UncertainValue2 atan(UncertainValue2& uv);
-   UncertainValue2 atan2(UncertainValue2& y, UncertainValue2& x);
+   UncertainValue2 multiply(double v1, const UncertainValue2& v2);
+   UncertainValue2 multiply(const UncertainValue2& v1, const UncertainValue2& v2);
+   UncertainValue2 invert(const UncertainValue2& v);
+   UncertainValue2 divide(const UncertainValue2& a, const UncertainValue2& b);
+   UncertainValue2 divide(double a, const UncertainValue2& b);
+   UncertainValue2 divide(const UncertainValue2& a, double b);
+   UncertainValue2 exp(const UncertainValue2& x);
+   UncertainValue2 log(const UncertainValue2& v2);
+   UncertainValue2 pow(const UncertainValue2& v1, double n);
+   UncertainValue2 sqrt(const UncertainValue2& uv);
+   UncertainValue2::ResultT quadratic(const UncertainValue2& a, const UncertainValue2& b, const UncertainValue2& c);
+   UncertainValue2 sqr(const UncertainValue2& uv);
+   UncertainValue2 negate(const UncertainValue2& uv);
+   UncertainValue2 atan(const UncertainValue2& uv);
+   UncertainValue2 atan2(const UncertainValue2& y, const UncertainValue2& x);
    UncertainValue2 positiveDefinite(const UncertainValue2& uv);
 }
 

@@ -27,33 +27,33 @@ namespace Composition
       Composition();
       ~Composition();
       Composition(const Composition& comp);
-      Composition(Element::Element elms[], int elmsLen, double massFracs[], int massFracsLen);
-      Composition(Element::Element elm);
-      Composition(Element::Element elms[], int elmsLen, double massFracs[], int massFracsLen, char const * name);
+      Composition(const Element::Element elms[], int elmsLen, double massFracs[], int massFracsLen);
+      Composition(const Element::Element elm);
+      Composition(const Element::Element elms[], int elmsLen, double massFracs[], int massFracsLen, char const * name);
 
       bool operator==(const Composition&) const;
       void operator=(const Composition&);
 
       Element::UnorderedSetT getElementSet() const;
-      Element::OrderedSetT getSortedElements();
-      int getElementCount();
+      Element::OrderedSetT getSortedElements() const;
+      int getElementCount() const;
       void addElement(int atomicNo, double massFrac);
-      void addElement(int atomicNo, UncertainValue2::UncertainValue2 massFrac);
+      void addElement(int atomicNo, const UncertainValue2::UncertainValue2 massFrac);
       void addElement(const Element::Element& elm, double massFrac);
-      double weightFraction(const Element::Element& elm, bool normalized);
+      double weightFraction(const Element::Element& elm, bool normalized) const;
       void addElement(const Element::Element& elm, const UncertainValue2::UncertainValue2& massFrac);
-      UncertainValue2::UncertainValue2 weightFractionU(const Element::Element&, bool normalized);
-      UncertainValue2::UncertainValue2 weightFractionU(const Element::Element&, bool normalized, bool positiveOnly);
+      UncertainValue2::UncertainValue2 weightFractionU(const Element::Element&, bool normalized) const;
+      UncertainValue2::UncertainValue2 weightFractionU(const Element::Element&, bool normalized, bool positiveOnly) const;
       void addElementByStoiciometry(const Element::Element&, const UncertainValue2::UncertainValue2&);
-      void addElementByStoiciometry(Element::Element elm, double moleFrac);
-      UncertainValue2::UncertainValue2 atomicPercentU(const Element::Element&);
-      UncertainValue2::UncertainValue2 atomicPercentU(const Element::Element&, bool positiveOnly);
-      void defineByWeightFraction(Element::Element elms[], int elmsLen, double wgtFracs[], int wgtFracsLen);
-      void defineByWeightFraction(Element::Element elms[], int elmsLen, UncertainValue2::UncertainValue2 wgtFracs[], int wgtFracsLen);
+      void addElementByStoiciometry(const Element::Element elm, double moleFrac);
+      UncertainValue2::UncertainValue2 atomicPercentU(const Element::Element&) const;
+      UncertainValue2::UncertainValue2 atomicPercentU(const Element::Element&, bool positiveOnly) const;
+      void defineByWeightFraction(const Element::Element elms[], int elmsLen, double wgtFracs[], int wgtFracsLen);
+      void defineByWeightFraction(const Element::Element elms[], int elmsLen, const UncertainValue2::UncertainValue2 wgtFracs[], int wgtFracsLen);
       void defineByWeightFraction(ConstituentsMapT map);
-      UncertainValue2::UncertainValue2 stoichiometryU(const Element::Element&);
+      UncertainValue2::UncertainValue2 stoichiometryU(const Element::Element&) const;
       double atomsPerKg(Element::Element& elm, bool normalized);
-      UncertainValue2::UncertainValue2 atomsPerKgU(Element::Element elm, bool normalized);
+      UncertainValue2::UncertainValue2 atomsPerKgU(const Element::Element elm, bool normalized) const;
 
       template<typename T>
       Element::Element GetElementBy(T k)
@@ -100,46 +100,46 @@ namespace Composition
       //   renormalize();
       //}
 
-      void defineByMoleFraction(Element::Element elms[], int elmsLen, double moleFracs[], int moleFracsLen);
-      void setOptimalRepresentation(Representation opt);
-      void defineByMaterialFraction(Composition compositions[], int compLen, double matFracs[], int matFracsLen);
+      void defineByMoleFraction(const Element::Element elms[], int elmsLen, double moleFracs[], int moleFracsLen);
+      void setOptimalRepresentation(const Representation opt);
+      void defineByMaterialFraction(const Composition compositions[], int compLen, double matFracs[], int matFracsLen);
       void removeElement(const Element::Element&);
-      bool containsElement(const Element::Element&);
-      bool containsAll(const Element::UnorderedSetT& elms);
-      double atomicPercent(Element::Element elm);
-      double stoichiometry(Element::Element elm);
-      UncertainValue2::UncertainValue2 weightAvgAtomicNumberU();
-      double weightAvgAtomicNumber();
-      double sumWeightFraction();
-      UncertainValue2::UncertainValue2 sumWeightFractionU();
-      CompositionNameT toString();
+      bool containsElement(const Element::Element&) const;
+      bool containsAll(const Element::UnorderedSetT& elms) const;
+      double atomicPercent(const Element::Element elm) const;
+      double stoichiometry(Element::Element elm) const;
+      UncertainValue2::UncertainValue2 weightAvgAtomicNumberU() const;
+      double weightAvgAtomicNumber() const;
+      double sumWeightFraction() const;
+      UncertainValue2::UncertainValue2 sumWeightFractionU() const;
+      CompositionNameT toString() const;
       ////String::String stoichiometryString();
       ////String::String weightPercentString(bool normalize);
       ////String::String descriptiveString(bool normalize);
       //Element::Element getNthElementByWeight(int n);
       //Element::Element getNthElementByAtomicFraction(int n);
       void setName(const CompositionNameT& name);
-      CompositionNameT getName();
-      int compareTo(const Composition& comp);
-      Composition asComposition();
-      Composition clone();
-      UncertainValue2::UncertainValue2 differenceU(Composition& comp);
-      double difference(Composition& comp);
-      Representation getOptimalRepresentation();
-      unsigned int hashCode();
+      CompositionNameT getName() const;
+      int compareTo(const Composition& comp) const;
+      Composition asComposition() const;
+      Composition clone() const;
+      UncertainValue2::UncertainValue2 differenceU(const Composition& comp) const;
+      double difference(const Composition& comp) const;
+      Representation getOptimalRepresentation() const;
+      unsigned int hashCode() const;
       bool sameConstituents(const ConstituentsMapT&) const;
       bool sameConstituentsAtomic(const ConstituentsMapT&) const;
       bool equals(const Composition& other) const;
-      bool almostEquals(Composition& other, double tol);
-      ErrorMapT absoluteError(Composition& std, bool normalize);
-      ErrorMapT relativeError(Composition& std, bool normalize);
+      bool almostEquals(const Composition& other, double tol) const;
+      ErrorMapT absoluteError(const Composition& std, bool normalize) const;
+      ErrorMapT relativeError(const Composition& std, bool normalize) const;
       bool isUncertain();
-      UncertainValue2::UncertainValue2 meanAtomicNumberU();
-      double meanAtomicNumber();
+      UncertainValue2::UncertainValue2 meanAtomicNumberU() const;
+      double meanAtomicNumber() const;
       void forceNormalization();
-      Composition randomize(double offset, double proportional);
-      long indexHashCodeS();
-      long indexHashCodeL();
+      Composition randomize(double offset, double proportional) const;
+      long indexHashCodeS() const;
+      long indexHashCodeL() const;
 
       ConstituentsMapT& GetConstituents();
 
@@ -163,8 +163,8 @@ namespace Composition
       void clear();
    };
 
-   Composition positiveDefinite(Composition& comp);
-   UncertainValue2::UncertainValue2 normalize(UncertainValue2::UncertainValue2& val, UncertainValue2::UncertainValue2& norm, bool positive);
+   Composition positiveDefinite(const Composition& comp);
+   UncertainValue2::UncertainValue2 normalize(const UncertainValue2::UncertainValue2& val, const UncertainValue2::UncertainValue2& norm, bool positive);
    Composition parseGlass(char str[], int numlines);
    void createProjectors(long seed);
 }

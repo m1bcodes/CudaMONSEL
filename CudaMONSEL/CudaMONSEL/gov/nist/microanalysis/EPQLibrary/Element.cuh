@@ -298,12 +298,15 @@ namespace Element
    char const * toString(int el);
    bool isValid(int atomicNo);
 
-   std::vector<std::string> getListOfAbbreviations(const Element& minEl, const Element& maxEl);
-   std::vector<std::string> getListOfElements(const Element& minEl, const Element& maxEl);
+   typedef std::vector<std::string> ElementNameVecT;
+
+   ElementNameVecT getListOfAbbreviations(const Element& minEl, const Element& maxEl);
+   ElementNameVecT getListOfElements(const Element& minEl, const Element& maxEl);
 
    void InitializeElements();
 
    typedef std::unordered_set<Element, HashFcn> UnorderedSetT;
    typedef std::unordered_set<Element, HashFcn> OrderedSetT;
 }
+
 #endif
