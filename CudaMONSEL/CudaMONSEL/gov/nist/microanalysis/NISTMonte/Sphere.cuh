@@ -25,7 +25,7 @@ namespace Sphere
 
    private:
       const double mRadius; // meters
-      double mCenter[]; // = new double[3]; x,y & z in meters
+      PositionVecT mCenter; // = new double[3]; x,y & z in meters
    };
 }
 

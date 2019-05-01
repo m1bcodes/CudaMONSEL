@@ -1,4 +1,5 @@
 #include "gov\nist\microanalysis\Utility\Math2.cuh"
+#include "gov\nist\microanalysis\EPQLibrary\PhysicalConstants.cuh"
 #include "gov\nist\microanalysis\NISTMonte\GaussianBeam.cuh"
 #include "gov\nist\microanalysis\NISTMonte\Electron.cuh"
 #include "gov\nist\microanalysis\NISTMonte\MonteCarloSS.cuh"
@@ -43,10 +44,13 @@ namespace GaussianBeam
 
    ElectronT GaussianBeam::createElectron() const
    {
-      double initialPos[3 * sizeof(double)];
-      memcpy(initialPos, mCenter.data(), sizeof(mCenter));
-      double r = ::sqrt(-2. * ::log((double)rand() / RAND_MAX)) * mWidth;
-      double th = 2.0 * 3.14159265358979323846 * ((double)rand() / RAND_MAX);
+      double initialPos[] = {
+         mCenter[0],
+         mCenter[1],
+         mCenter[2]
+      };
+      double r = ::sqrt(-2. * ::log(Math2::random())) * mWidth;
+      double th = 2.0 * PhysicalConstants::PI * (Math2::random());
       initialPos[0] += r * ::cos(th);
       initialPos[1] += r * ::sin(th);
 

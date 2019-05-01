@@ -3,8 +3,23 @@
 
 #include <string>
 #include <unordered_set>
+#include <map>
 
+typedef std::string StringT;
 typedef std::vector<double> PositionVecT;
+typedef std::vector<float> VectorXf;
+typedef std::vector<VectorXf> MatrixXf;
+typedef std::vector<double> VectorXd;
+typedef std::vector<VectorXd> MatrixXd;
+//typedef std::unordered_set<ElementT, HashFcn> UnorderedSetT;
+//typedef std::unordered_set<ElementT, HashFcn> OrderedSetT;
+
+namespace Element
+{
+   class Element;
+}
+
+typedef Element::Element ElementT;
 
 namespace Material
 {
@@ -55,18 +70,6 @@ namespace ITransform
 
 typedef ITransform::ITransform ITransformT;
 
-namespace Element
-{
-   class Element;
-}
-
-typedef Element::Element ElementT;
-
-//typedef std::unordered_set<ElementT, HashFcn> UnorderedSetT;
-//typedef std::unordered_set<ElementT, HashFcn> OrderedSetT;
-
-typedef std::string StringT;
-
 namespace RegionBase
 {
    class Region;
@@ -101,5 +104,61 @@ namespace Sphere
 }
 
 typedef Sphere::Sphere SphereT;
+
+namespace Reference
+{
+   class Reference;
+}
+
+typedef Reference::Reference ReferenceT;
+
+namespace AlgorithmUser
+{
+   class AlgorithmUser;
+}
+
+typedef AlgorithmUser::AlgorithmUser AlgorithmUserT;
+
+namespace AlgorithmClass
+{
+   class AlgorithmClass;
+}
+
+typedef AlgorithmClass::AlgorithmClass AlgorithmClassT;
+
+namespace RandomizedScatter
+{
+   class RandomizedScatter;
+}
+
+typedef RandomizedScatter::RandomizedScatter RandomizedScatterT;
+
+namespace RandomizedScatterFactory
+{
+   class RandomizedScatterFactory;
+}
+
+typedef RandomizedScatterFactory::RandomizedScatterFactory RandomizedScatterFactoryT;
+
+namespace ScreenedRutherfordRandomizedScatterFactory
+{
+   class ScreenedRutherfordRandomizedScatterFactory;
+}
+
+typedef ScreenedRutherfordRandomizedScatterFactory::ScreenedRutherfordRandomizedScatterFactory ScreenedRutherfordRandomizedScatterFactoryT;
+
+namespace CzyzewskiMottCrossSection
+{
+   class CzyzewskiMottCrossSection;
+}
+
+typedef CzyzewskiMottCrossSection::CzyzewskiMottCrossSection CzyzewskiMottCrossSectionT;
+
+namespace ScreenedRutherfordScatteringAngle
+{
+   class ScreenedRutherfordScatteringAngle;
+}
+
+typedef ScreenedRutherfordScatteringAngle::ScreenedRutherfordScatteringAngle ScreenedRutherfordScatteringAngleT;
 
 #endif

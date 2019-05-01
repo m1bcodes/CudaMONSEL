@@ -4,9 +4,8 @@
 
 namespace Sphere
 {
-   Sphere::Sphere(const double center[], double radius) : mRadius(radius)
+   Sphere::Sphere(const double center[], double radius) : mRadius(radius), mCenter(center, center+3)
    {
-      memcpy(mCenter, center, sizeof(center));
    }
 
    bool Sphere::contains(const double pos[]) const
@@ -24,7 +23,7 @@ namespace Sphere
       // Compute the intersection of the line between pos0 and pos1 and the
       // shell of the sphere.
       const PositionVecT d = Math2::minus(PositionVecT(pos1, pos1 + 3), PositionVecT(pos0, pos0 + 3));
-      const PositionVecT m = Math2::minus(PositionVecT(pos0, pos0 + 3), PositionVecT(mCenter, mCenter + 3));
+      const PositionVecT m = Math2::minus(PositionVecT(pos0, pos0 + 3), mCenter);
       const double ma2 = -2.0 * Math2::dot(d, d);
       const double b = 2.0 * Math2::dot(m, d);
       const double c2 = 2.0 * (Math2::dot(m, m) - mRadius * mRadius);
@@ -105,14 +104,9 @@ namespace Sphere
    //   wr.flush();
    //}
 
-   /**
-   * Gets the current value assigned to center
-   *
-   * @return Returns the coordinates of the sphere's center.
-   */
    PositionVecT Sphere::getCenter() const
    {
-      return PositionVecT(mCenter, mCenter + 3);
+      return mCenter;
    }
 
    char const * const Sphere::toString() const

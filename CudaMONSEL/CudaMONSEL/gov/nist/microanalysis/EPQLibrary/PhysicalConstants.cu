@@ -33,4 +33,6 @@ namespace PhysicalConstants {
 
    const double IcePoint = 273.15; // kelvin
    const double StandardAtmosphere = 101325.0; // pascal
+
+   const double PI = 3.14159265358979323846;
 }

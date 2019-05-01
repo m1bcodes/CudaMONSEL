@@ -1,99 +1,42 @@
-//#include "AlgorithmClass.cuh"
-//
-///**
-//* <p>
-//* A simple class that implements various common properties of classes that
-//* implement algorithms.
-//* </p>
-//* <p>
-//* AlgorithmClass objects have a general type ('class') name and a specific
-//* instance name. They can also contain a reference detailing the source of the
-//* algorithm.
-//* </p>
-//* <p>
-//* AlgorithmClass objects also define a list of default AlgorithmClass instances
-//* on which they depend. Replacements for these default AlgorithmClass instances
-//* can be specified using the Strategy mechanism.
-//* <p>
-//* Copyright: Pursuant to title 17 Section 105 of the United States Code this
-//* software is not subject to copyright protection and is in the public domain
-//* </p>
-//* <p>
-//* Company: National Institute of Standards and Technology
-//* </p>
-//*
-//* @author Nicholas W. M. Ritchie
-//* @version 1.0
-//*/
-//
-//namespace AlgorithmClass
-//{
-//   AlgorithmClass(AlgorithmClass::AlgorithmClassNameT cls, AlgorithmClass::AlgorithmClassNameT name, Reference ref) : mClass(cls), mName(name), mReference(ref)
-//   {
-//   }
-//
-//   protected AlgorithmClass(String clss, String name, String ref) {
-//      super();
-//      mClass = clss;
-//      mName = name;
-//      mReference = new Reference.CrudeReference(ref);
-//   }
-//
-//   /**
-//   * getAllImplementations - Returns a list of all implementations of the
-//   * derived algorithm class. Typically this method is implemented by the
-//   * abstract base class from which more specific implementations are derived.
-//   *
-//   * @return List
-//   */
-//   abstract public List<AlgorithmClass> getAllImplementations();
-//
-//   /**
-//   * compareTo - Sort by name
-//   *
-//   * @param o UncertainValue
-//   * @return int
-//   */
-//   public int compareTo(AlgorithmClass o) {
-//      return toString().compareTo(o.toString());
-//   }
-//
-//   // Overrides Object.toString()
-//   @Override
-//      public String toString() {
-//      return mClass + "[" + mName + "]";
-//   }
-//
-//   /**
-//   * getAlgorithmClass - Get the base AlgorithmClass instance of which this
-//   * class is an instance.
-//   *
-//   * @return String
-//   */
-//   public String getAlgorithmClass() {
-//      return mClass;
-//   }
-//
-//   /**
-//   * getName - Get the abbreviated name of the algorithm.
-//   *
-//   * @return String
-//   */
-//   public String getName() {
-//      return mName;
-//   }
-//
-//   /**
-//   * getReference - Get the literature reference describing the implementation
-//   * of this algorithm.
-//   *
-//   * @return String
-//   */
-//   public String getReference() {
-//      return mReference.getShortForm();
-//   }
-//
-//   public Reference getReferenceObj() {
-//      return mReference;
-//   }
-//}
+#include "AlgorithmClass.cuh"
+
+namespace AlgorithmClass
+{
+   AlgorithmClass::AlgorithmClass(StringT cls, StringT name, const ReferenceT& ref) : mClass(cls), mName(name), mReference(ref)
+   {
+   }
+
+   AlgorithmClass::AlgorithmClass(StringT clss, StringT name, StringT ref) : mReference(Reference::CrudeReference(ref)), mClass(clss), mName(name)
+   {
+   }
+
+   int AlgorithmClass::compareTo(const AlgorithmClass& o) const
+   {
+      return toString() != o.toString();
+   }
+
+   const StringT AlgorithmClass::toString() const
+   {
+      return mClass + "[" + mName + "]";
+   }
+
+   const StringT AlgorithmClass::getAlgorithmClass() const
+   {
+      return mClass;
+   }
+
+   const StringT AlgorithmClass::getName() const
+   {
+      return mName;
+   }
+
+   const StringT AlgorithmClass::getReference() const
+   {
+      return mReference.getShortForm();
+   }
+
+   const ReferenceT& AlgorithmClass::getReferenceObj() const
+   {
+      return mReference;
+   }
+}

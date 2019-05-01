@@ -798,9 +798,9 @@ namespace Composition
       if (this == &other) {
          return true;
       }
-      if (*((int*)&other) == NULL) {
-         return false;
-      }
+      //if (*((int*)&other) == NULL) {
+      //   return false;
+      //}
       if (abs(mNormalization.doubleValue() - other.mNormalization.doubleValue()) > tol) {
          return false;
       }
@@ -828,9 +828,9 @@ namespace Composition
          {
             UncertainValue2::UncertainValue2 uv1 = this->atomicPercentU(elm);
             UncertainValue2::UncertainValue2 uv2 = other.atomicPercentU(elm);
-            if ((*((int*)&uv1) == NULL) || (*((int*)&uv2) == NULL)) {
-               return false;
-            }
+            //if ((*((int*)&uv1) == NULL) || (*((int*)&uv2) == NULL)) {
+            //   return false;
+            //}
             if ((abs(uv1.doubleValue() - uv2.doubleValue()) > tol)
                || (abs(uv1.uncertainty() - uv2.uncertainty()) > tol)) {
                return false;

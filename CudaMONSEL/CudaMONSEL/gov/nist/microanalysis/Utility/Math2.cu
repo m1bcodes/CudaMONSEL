@@ -1281,4 +1281,14 @@ namespace Math2
    //      throw new EPQException("Maximum iteration count exceeded in Math2.rootFind");
    //   }
    //}
+
+   double random()
+   {
+      return (double)rand() / RAND_MAX;
+   } 
+
+   double toRadians(double deg)
+   {
+      return deg * PI / 180.0;
+   }
 }

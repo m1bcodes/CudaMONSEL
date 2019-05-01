@@ -1,25 +1,33 @@
-//#ifndef _ALGORITHM_CLASS_CUH_
-//#define _ALGORITHM_CLASS_CUH_
-//
-//#include "AlgorithmUser.cuh"
-//#include <string>
-//
-//namespace AlgorithmClass
-//{
-//   class AlgorithmClass : AlgorithmUser::AlgorithmUser
-//   {
-//   public:
-//      typedef std::string AlgorithmClassNameT;
-//
-//   protected:
-//      AlgorithmClass(AlgorithmClass::AlgorithmClassNameT cls, AlgorithmClass::AlgorithmClassNameT name, Reference ref);
-//
-//   private:
-//      AlgorithmClassNameT mClass;
-//      AlgorithmClassNameT mName;
-//      Reference mReference;
-//
-//   };
-//};
-//
-//#endif
+#ifndef _ALGORITHM_CLASS_CUH_
+#define _ALGORITHM_CLASS_CUH_
+
+#include "gov\nist\microanalysis\NISTMonte\Declarations.cuh"
+#include "gov\nist\microanalysis\EPQLibrary\AlgorithmUser.cuh"
+#include "gov\nist\microanalysis\EPQLibrary\Reference.cuh"
+
+namespace AlgorithmClass
+{
+   class AlgorithmClass : public AlgorithmUserT
+   {
+   protected:
+      AlgorithmClass(StringT, StringT, const ReferenceT&);
+      AlgorithmClass::AlgorithmClass(StringT clss, StringT name, StringT ref);
+
+   public:
+      virtual AlgorithmClassT const * const * getAllImplementations() const = 0;
+
+      int compareTo(const AlgorithmClass&) const;
+      const StringT toString() const;
+      const StringT getAlgorithmClass() const;
+      const StringT getName() const;
+      const StringT getReference() const;
+      const ReferenceT& getReferenceObj() const;
+
+   private:
+      const StringT mClass;
+      const StringT mName;
+      const ReferenceT& mReference;
+   };
+};
+
+#endif

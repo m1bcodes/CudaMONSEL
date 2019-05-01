@@ -37,6 +37,8 @@ namespace PhysicalConstants
 
    extern const double IcePoint; // kelvin
    extern const double StandardAtmosphere; // pascal
+
+   extern const double PI; // pi
 };
 
 #endif

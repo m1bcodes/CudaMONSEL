@@ -18,8 +18,13 @@ namespace Math2
    double magnitude3d(PositionVecT p);
    double sqr(double x);
    double magnitude(PositionVecT p);
+   double random();
+
+   double toRadians(double deg);
 
    extern double MINUS_Z_AXIS[];
+
+   const double PI = 3.14159265358979323846;
 }
 
 #endif

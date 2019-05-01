@@ -127,7 +127,7 @@ namespace Electron
    {
       // Update mPrevPosition and then mPosition
       mPrevPosition = mPosition;
-      memcpy(mPosition.data(), newPoint, mPosition.size());
+      mPosition.assign(newPoint, newPoint + mPosition.size());
 
       // Update the energy
       previousEnergy = mEnergy;
