@@ -13,8 +13,8 @@ namespace Material
       Material(double density);
       Material(const Material& comp);
       Material(const Composition& comp, double density);
-      Material(Element::Element elm[], double density[]);
-      Material(const Element::Element elms[], int elmsLen, double massFracs[], int massFracsLen, double density, char* name);
+      Material(const Element::Element* elm[], double density[]);
+      Material(const Element::Element* elms[], int elmsLen, double massFracs[], int massFracsLen, double density, char* name);
 
       Material& operator=(const Material&);
       bool operator==(const Material&) const;

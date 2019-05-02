@@ -13,6 +13,7 @@ namespace CzyzewskiMottCrossSection
    {
    public:
       CzyzewskiMottCrossSection(const ElementT& el);
+      CzyzewskiMottCrossSection(int an);
 
       StringT toString() const;
       const ElementT& getElement() const;

@@ -9,7 +9,7 @@ namespace AlgorithmUser
 
    void AlgorithmUser::initializeDefaultStrategyWrapper()
    {
-      initializeDefaultStrategy();
+      //initializeDefaultStrategy();
    }
 
    //EdgeEnergy getDefaultEdgeEnergy()

@@ -4,14 +4,16 @@
 #include "gov\nist\microanalysis\NISTMonte\Declarations.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\RandomizedScatter.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\RandomizedScatterFactory.cuh"
-#include "gov\nist\microanalysis\EPQLibrary\Element.cuh"
 
 namespace GasScatteringCrossSection
 {
    class GasScatteringCrossSection : public RandomizedScatterT
    {
    public:
-      GasScatteringCrossSection::GasScatteringCrossSection(const ElementT& elm);
+      GasScatteringCrossSection(const ElementT& elm);
+      GasScatteringCrossSection(int an);
+      GasScatteringCrossSection(const GasScatteringCrossSection& gscs);
+
       const RandomizedScatterT& getElasticModel();
       double ratioInelasticOverElastic() const;
 
@@ -21,7 +23,7 @@ namespace GasScatteringCrossSection
 
    private:
       const ElementT& mElement;
-      const RandomizedScatterT& mElastic;
+      const ScreenedRutherfordScatteringAngleT& mElastic;
    };
 
    extern const GasScatteringCrossSection GSCS1;

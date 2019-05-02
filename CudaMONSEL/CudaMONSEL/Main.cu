@@ -46,6 +46,7 @@ int main()
    uvTest.testFunctions();
    
    ElementTest::ElementTest elementTest;
+   elementTest.testZero();
    elementTest.testOne();
 
    MaterialTest::MaterialTest mat;

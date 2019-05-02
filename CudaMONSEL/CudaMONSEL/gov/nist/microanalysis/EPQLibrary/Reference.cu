@@ -182,7 +182,7 @@ namespace Reference
    //   Reference.JArmstrong
    //});
 
-   Book::Book(StringT title, StringT publisher, int year, Author authors[], int len) : mTitle(title), mPublisher(publisher), mYear(year), mAuthors(authors, authors + len)
+   Book::Book(StringT title, StringT publisher, int year, const Author authors[], int len) : mTitle(title), mPublisher(publisher), mYear(year), mAuthors(authors, authors + len)
    {
       
    }
@@ -197,7 +197,7 @@ namespace Reference
       return toString(mAuthors) + mTitle + mPublisher + std::to_string(mYear);
    }
    
-   Program::Program(StringT title, StringT version, Author authors[], int len) : mTitle(title), mVersion(version), mAuthors(authors, authors+len)
+   Program::Program(StringT title, StringT version, const Author authors[], int len) : mTitle(title), mVersion(version), mAuthors(authors, authors + len)
    {
    }
 
@@ -211,43 +211,32 @@ namespace Reference
       return toString(mAuthors) + mTitle + mVersion;
    }
 
-   //static public final Program ENDLIB97_Relax = new Reference.Program("RELAX", "ENDLIB97", new Author[] {
-   //   Cullen
-   //});
+   const Author auENDLIB97_Relax[] = { Cullen };
+   const Program ENDLIB97_Relax("RELAX", "ENDLIB97", auENDLIB97_Relax, 1);
 
-   //static public final Program DTSA = new Reference.Program("DTSA", "3.0.1", new Author[] {
-   //   CFiori,
-   //      CSwytThomas,
-   //      RMyklebust
-   //});
+   const Author DTSAAuthor[] = { CFiori, CSwytThomas, RMyklebust };
+   const Program DTSA("DTSA", "3.0.1", DTSAAuthor, 3);
 
-   //static public final Book ElectronProbeQuant = new Book("Electron Probe Quantitation", "Plenum", 1991, new Author[] {
-   //   KHeinrich,
-   //      DNewbury
-   //});
+   const Author ElectronProbeQuantAuthor[] = { KHeinrich, DNewbury };
+   const Book ElectronProbeQuant("Electron Probe Quantitation", "Plenum", 1991, ElectronProbeQuantAuthor, 2);
 
-   //static public final Book Goldstein = new Book("Scanning Electron Microscopy and X-Ray Microanalysis - 3rd edition", "Kluwer Academic/Plenum", 2003, new Author[] {
-   //   JGoldstein,
-   //      CLyman,
-   //      DNewbury,
-   //      ELifshin,
-   //      PEchlin,
-   //      LSawyer,
-   //      DJoy,
-   //      JMichael
-   //});
-   //static public final Book QuantitativeElectronProbeMicroanalysis = new Book("Quantitative Electron Probe Microanalysis - NBS SP 298", "National Bureau of Standards", 1968, new Author[] {
-   //   KHeinrich
-   //});
+   const Author GoldsteinBookAuthor[] = { JGoldstein, CLyman, DNewbury, ELifshin, PEchlin, LSawyer, DJoy, JMichael };
+   const Book GoldsteinBook("Scanning Electron Microscopy and X-Ray Microanalysis - 3rd edition", "Kluwer Academic/Plenum", 2003, GoldsteinBookAuthor, 8);
+
+   const Author QuantitativeElectronProbeMicroanalysisBookAuthor[] = { KHeinrich };
+   const Book QuantitativeElectronProbeMicroanalysisBook("Quantitative Electron Probe Microanalysis - NBS SP 298", "National Bureau of Standards", 1968, QuantitativeElectronProbeMicroanalysisBookAuthor, 1);
+
    //static public final Book ElectronBeamXRayMicroanalysis = new Book("Electron Beam X-Ray Microanalysis", "Van Nostrand Reinhold Company", 1981, new Author[] {
    //   KHeinrich
    //});
+
    //static public final Book EnergyDispersiveXRaySpectrometery = new Book("Energy Dispersive X-Ray Spectrometery - NBS SP 604", "National Bureau of Standards", 1981, new Author[] {
    //   KHeinrich,
    //      DNewbury,
    //      RMyklebust,
    //      CFiori
    //});
+
    //static public final Book CharacterizationOfParticles = new Book("Characterization of Particles NBS SP 533", "National Bureau of Standards", 1978, new Author[] {
    //   KHeinrich
    //});
@@ -280,9 +269,6 @@ namespace Reference
    //      Reference.JDavis
    //});
 
-   ///**
-   //* A class for representing chapters within books.
-   //*/
    //static public class BookChapter
    //   extends Reference {
    //   private final Book mBook;

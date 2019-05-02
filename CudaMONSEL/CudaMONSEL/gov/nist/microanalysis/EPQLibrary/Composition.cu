@@ -49,7 +49,7 @@ namespace Composition
       replicate(comp);
    }
 
-   Composition::Composition(const Element::Element elms[], int elmsLen, double massFracs[], int massFracsLen)
+   Composition::Composition(const Element::Element* elms[], int elmsLen, double massFracs[], int massFracsLen)
    {
       if (elmsLen != massFracsLen) {
          printf("Composition::Composition: elmsLen != massFracsLen, (%d, %d)", elmsLen, massFracsLen);
@@ -61,14 +61,14 @@ namespace Composition
       renormalize();
    }
 
-   Composition::Composition(const Element::Element elm)
+   Composition::Composition(const Element::Element& elm)
    {
-      mConstituents.insert(std::make_pair(elm, UncertainValue2::ONE()));
+      mConstituents.insert(std::make_pair(&elm, UncertainValue2::ONE()));
       recomputeStoiciometry();
       renormalize();
    }
 
-   Composition::Composition(const Element::Element elms[], int elmsLen, double massFracs[], int massFracsLen, char const* name)
+   Composition::Composition(const Element::Element* elms[], int elmsLen, double massFracs[], int massFracsLen, char const* name)
    {
       if (elmsLen == massFracsLen - 1) {
          double* wf = new double[elmsLen];
@@ -203,7 +203,7 @@ namespace Composition
 
    double Composition::weightFraction(const Element::Element& elm, bool normalized) const
    {
-      auto itr = mConstituents.find(elm);
+      auto itr = mConstituents.find(&elm);
       if (itr != mConstituents.end()) {
          auto d = itr->second;
          return normalized ? normalize(d, mNormalization, true).doubleValue() : d.doubleValue();
@@ -215,7 +215,7 @@ namespace Composition
    {
       mMoleNorm = UncertainValue2::ZERO();
       for (auto itr : mConstituents) {
-         mMoleNorm = UncertainValue2::add(mMoleNorm, UncertainValue2::multiply(1.0 / itr.first.getAtomicWeight(), itr.second));
+         mMoleNorm = UncertainValue2::add(mMoleNorm, UncertainValue2::multiply(1.0 / itr.first->getAtomicWeight(), itr.second));
       }
 
       mConstituentsAtomic.clear();
@@ -227,7 +227,7 @@ namespace Composition
       for (auto elm : constituentsAtomicKeys) {
          auto uv0 = UncertainValue2::ZERO();
          auto uv1 = mConstituents.find(elm)->second;
-         auto uv2 = UncertainValue2::multiply(elm.getAtomicWeight() / OUT_OF_THIS_MANY_ATOMS, mMoleNorm);
+         auto uv2 = UncertainValue2::multiply(elm->getAtomicWeight() / OUT_OF_THIS_MANY_ATOMS, mMoleNorm);
          auto uv3 = UncertainValue2::divide(uv1, uv2);
          auto moleFrac = (mMoleNorm.doubleValue() > 0.0 ? uv3 : uv0);
 
@@ -238,7 +238,7 @@ namespace Composition
 
    void Composition::addElement(const Element::Element& elm, const UncertainValue2::UncertainValue2& massFrac)
    {
-      mConstituents.insert(std::make_pair(elm, massFrac));
+      mConstituents.insert(std::make_pair(&elm, massFrac));
       recomputeStoiciometry();
       renormalize();
    }
@@ -250,7 +250,7 @@ namespace Composition
 
    UncertainValue2::UncertainValue2 Composition::weightFractionU(const Element::Element& elm, bool normalized, bool positiveOnly) const
    {
-      auto itr = mConstituents.find(elm);
+      auto itr = mConstituents.find(&elm);
       if (itr != mConstituents.end()) {
          auto d = itr->second;
          return normalized ? normalize(d, mNormalization, positiveOnly) : d;
@@ -263,8 +263,8 @@ namespace Composition
       Composition res;
       auto elemSet = comp.getElementSet();
       for (auto elm : elemSet) {
-         if (comp.weightFraction(elm, false) > 0.0) {
-            res.addElement(elm, comp.weightFractionU(elm, false));
+         if (comp.weightFraction(*elm, false) > 0.0) {
+            res.addElement(*elm, comp.weightFractionU(*elm, false));
          }
       }
       return res;
@@ -272,12 +272,12 @@ namespace Composition
 
    void Composition::addElementByStoiciometry(const Element::Element& elm, const UncertainValue2::UncertainValue2& moleFrac)
    {
-      mConstituentsAtomic.insert(std::make_pair(elm, moleFrac));
+      mConstituentsAtomic.insert(std::make_pair(&elm, moleFrac));
       recomputeWeightFractions();
       renormalize();
    }
 
-   void Composition::addElementByStoiciometry(const Element::Element elm, double moleFrac)
+   void Composition::addElementByStoiciometry(const Element::Element& elm, double moleFrac)
    {
       addElementByStoiciometry(elm, UncertainValue2::UncertainValue2(moleFrac));
    }
@@ -291,7 +291,7 @@ namespace Composition
       mMoleNorm = UncertainValue2::NaN();
    }
 
-   void Composition::defineByWeightFraction(const Element::Element elms[], int elmsLen, double wgtFracs[], int wgtFracsLen)
+   void Composition::defineByWeightFraction(const Element::Element* elms[], int elmsLen, double wgtFracs[], int wgtFracsLen)
    {
       clear();
       if (elmsLen != wgtFracsLen) {
@@ -304,7 +304,7 @@ namespace Composition
       renormalize();
    }
 
-   void Composition::defineByWeightFraction(const Element::Element elms[], int elmsLen, const UncertainValue2::UncertainValue2 wgtFracs[], int wgtFracsLen)
+   void Composition::defineByWeightFraction(const Element::Element* elms[], int elmsLen, const UncertainValue2::UncertainValue2 wgtFracs[], int wgtFracsLen)
    {
       clear();
       if (elmsLen != wgtFracsLen) {
@@ -317,7 +317,7 @@ namespace Composition
       renormalize();
    }
 
-   void Composition::defineByMoleFraction(const Element::Element elms[], int elmsLen, double moleFracs[], int moleFracsLen)
+   void Composition::defineByMoleFraction(const Element::Element* elms[], int elmsLen, double moleFracs[], int moleFracsLen)
    {
       clear();
       if (elmsLen != moleFracsLen) {
@@ -331,7 +331,7 @@ namespace Composition
          moleFracs[k] /= mfSum;
       }
       for (int i = 0; i < moleFracsLen; ++i) {
-         Element::Element elm = elms[i];
+         auto elm = elms[i];
          mConstituentsAtomic.insert(std::make_pair(elm, UncertainValue2::UncertainValue2(moleFracs[i])));
       }
       recomputeWeightFractions();
@@ -345,7 +345,7 @@ namespace Composition
 
    UncertainValue2::UncertainValue2 Composition::atomicPercentU(const Element::Element& elm, bool positiveOnly) const
    {
-      ConstituentsMapT::const_iterator itr = mConstituentsAtomic.find(elm);
+      ConstituentsMapT::const_iterator itr = mConstituentsAtomic.find(&elm);
       return itr == mConstituentsAtomic.cend() ? UncertainValue2::ZERO() : normalize(itr->second, mAtomicNormalization, positiveOnly);
    }
 
@@ -357,14 +357,14 @@ namespace Composition
          constituentsAtomicKeys.insert(ca.first);
       }
       for (auto elm : constituentsAtomicKeys) {
-         auto uv0 = atomicPercentU(elm);
-         auto uv1 = UncertainValue2::multiply(elm.getAtomicWeight(), uv0);
+         auto uv0 = atomicPercentU(*elm);
+         auto uv1 = UncertainValue2::multiply(elm->getAtomicWeight(), uv0);
          totalWgt = UncertainValue2::add(totalWgt, uv1);
       }
 
       mConstituents.clear();
       for (auto elm : constituentsAtomicKeys) {
-         UncertainValue2::UncertainValue2 wgtFrac = UncertainValue2::multiply(elm.getAtomicWeight(), UncertainValue2::divide(atomicPercentU(elm), totalWgt));
+         UncertainValue2::UncertainValue2 wgtFrac = UncertainValue2::multiply(elm->getAtomicWeight(), UncertainValue2::divide(atomicPercentU(*elm), totalWgt));
          mConstituents.insert(std::make_pair(elm, wgtFrac));
       }
       mOptimalRepresentation = Representation::STOICIOMETRY;
@@ -417,14 +417,14 @@ namespace Composition
       clear();
       auto elms = elementSet(compositions, compLen);
       int len = elms.size();
-      std::vector<Element::Element> newElms(len);
+      std::vector<const Element::Element*> newElms(len);
       std::vector<UncertainValue2::UncertainValue2> frac(len);
 
       int ji = 0;
       for (auto el : elms) {
          UncertainValue2::UncertainValue2 sum = UncertainValue2::ZERO();
          for (int i = 0; i < compLen; ++i) {
-            auto uv = UncertainValue2::multiply(matFracs[i], compositions[i].weightFractionU(el, true));
+            auto uv = UncertainValue2::multiply(matFracs[i], compositions[i].weightFractionU(*el, true));
             sum = UncertainValue2::add(sum, uv);
          }
          frac[ji] = sum;
@@ -436,9 +436,9 @@ namespace Composition
 
    void Composition::removeElement(const Element::Element& el)
    {
-      if (mConstituents.find(el) != mConstituents.end()) {
-         mConstituents.erase(el);
-         mConstituentsAtomic.erase(el);
+      if (mConstituents.find(&el) != mConstituents.end()) {
+         mConstituents.erase(&el);
+         mConstituentsAtomic.erase(&el);
          // Don't recomputeStoiciometry or recomputeWeightFractions
          renormalize();
       }
@@ -446,34 +446,34 @@ namespace Composition
 
    bool Composition::containsElement(const Element::Element& el) const
    {
-      return (mConstituents.find(el) != mConstituents.end() && (mConstituents.find(el)->second.doubleValue() > 0.0));
+      return (mConstituents.find(&el) != mConstituents.end() && (mConstituents.find(&el)->second.doubleValue() > 0.0));
    }
 
    bool Composition::containsAll(const Element::UnorderedSetT& elms) const
    {
       for (auto elm : elms) {
-         if (!containsElement(elm)) {
+         if (!containsElement(*elm)) {
             return false;
          }
       }
       return true;
    }
 
-   double Composition::atomicPercent(const Element::Element elm) const
+   double Composition::atomicPercent(const Element::Element& elm) const
    {
       return atomicPercentU(elm).doubleValue();
    }
 
    UncertainValue2::UncertainValue2 Composition::stoichiometryU(const Element::Element& elm) const
    {
-      ConstituentsMapT::const_iterator itr = mConstituentsAtomic.find(elm);
+      ConstituentsMapT::const_iterator itr = mConstituentsAtomic.find(&elm);
       if (itr != mConstituentsAtomic.cend()) {
          return itr->second;
       }
       return UncertainValue2::ZERO();
    }
 
-   double Composition::stoichiometry(Element::Element elm) const
+   double Composition::stoichiometry(const Element::Element& elm) const
    {
       return stoichiometryU(elm).doubleValue();
    }
@@ -483,7 +483,7 @@ namespace Composition
       return weightFraction(elm, normalized) / elm.getMass();
    }
 
-   UncertainValue2::UncertainValue2 Composition::atomsPerKgU(const Element::Element elm, bool normalized) const
+   UncertainValue2::UncertainValue2 Composition::atomsPerKgU(const Element::Element& elm, bool normalized) const
    {
       return UncertainValue2::multiply(1.0 / elm.getMass(), weightFractionU(elm, normalized));
    }
@@ -492,9 +492,9 @@ namespace Composition
    {
       UncertainValue2::UncertainValue2 res = UncertainValue2::ZERO();
       for (auto itr : mConstituents) {
-         Element::Element elm = itr.first;
-         auto uv0 = weightFractionU(elm, true);
-         auto uv = UncertainValue2::multiply(elm.getAtomicNumber(), uv0);
+         auto elm = itr.first;
+         auto uv0 = weightFractionU(*elm, true);
+         auto uv = UncertainValue2::multiply(elm->getAtomicNumber(), uv0);
          res = UncertainValue2::add(res, uv);
       }
       return res;
@@ -662,8 +662,8 @@ namespace Composition
       auto i = mConstituents.begin();
       auto j = comp.mConstituents.begin();
       while (i != mConstituents.end() && j != comp.mConstituents.end()) {
-         int zi = i->first.getAtomicNumber();
-         int zj = j->first.getAtomicNumber();
+         int zi = i->first->getAtomicNumber();
+         int zj = j->first->getAtomicNumber();
          if (zi < zj) {
             return +1;
          }
@@ -715,8 +715,8 @@ namespace Composition
       allElms.insert(s1.begin(), s1.end());
 
       for (auto el : allElms) {
-         auto uv0 = comp.weightFractionU(el, false);
-         auto uv1 = weightFractionU(el, false);
+         auto uv0 = comp.weightFractionU(*el, false);
+         auto uv1 = weightFractionU(*el, false);
          auto uv2 = UncertainValue2::subtract(uv0, uv1);
          delta = UncertainValue2::add(delta, UncertainValue2::sqr(uv2));
       }
@@ -739,12 +739,12 @@ namespace Composition
       int PRIME = 31;
       //result = PRIME * result + mConstituents.hashCode();
       for (auto c : mConstituents) {
-         result = PRIME * result + c.first.hashCode();
+         result = PRIME * result + c.first->hashCode();
          result = PRIME * result + c.second.hashCode();
       }
       //result = PRIME * result + mConstituentsAtomic.hashCode();
       for (auto ca : mConstituentsAtomic) {
-         result = PRIME * result + ca.first.hashCode();
+         result = PRIME * result + ca.first->hashCode();
          result = PRIME * result + ca.second.hashCode();
       }
       result = PRIME * result + std::hash<std::string>()(mName);
@@ -815,8 +815,8 @@ namespace Composition
       }
       for (auto elm : allElms) {
          {
-            UncertainValue2::UncertainValue2 uv1 = weightFractionU(elm, false);
-            UncertainValue2::UncertainValue2 uv2 = other.weightFractionU(elm, false);
+            UncertainValue2::UncertainValue2 uv1 = weightFractionU(*elm, false);
+            UncertainValue2::UncertainValue2 uv2 = other.weightFractionU(*elm, false);
             if ((*((int*)&uv1) == NULL) || (*((int*)&uv2) == NULL)) {
                return false;
             }
@@ -826,8 +826,8 @@ namespace Composition
             }
          }
          {
-            UncertainValue2::UncertainValue2 uv1 = this->atomicPercentU(elm);
-            UncertainValue2::UncertainValue2 uv2 = other.atomicPercentU(elm);
+            UncertainValue2::UncertainValue2 uv1 = this->atomicPercentU(*elm);
+            UncertainValue2::UncertainValue2 uv2 = other.atomicPercentU(*elm);
             //if ((*((int*)&uv1) == NULL) || (*((int*)&uv2) == NULL)) {
             //   return false;
             //}
@@ -853,8 +853,8 @@ namespace Composition
       }
       ErrorMapT res;
       for (auto elm : elms) {
-         double u = weightFractionU(elm, normalize).doubleValue();
-         double s = std.weightFractionU(elm, normalize).doubleValue();
+         double u = weightFractionU(*elm, normalize).doubleValue();
+         double s = std.weightFractionU(*elm, normalize).doubleValue();
          res.insert(std::make_pair(elm, s != 0.0 ? (u - s) / s : (u == 0.0 ? 0.0 : 1.0)));
       }
       return res;
@@ -872,8 +872,8 @@ namespace Composition
       }
       ErrorMapT res;
       for (auto elm : elms) {
-         double u = weightFractionU(elm, normalize).doubleValue();
-         double s = std.weightFractionU(elm, normalize).doubleValue();
+         double u = weightFractionU(*elm, normalize).doubleValue();
+         double s = std.weightFractionU(*elm, normalize).doubleValue();
          res.insert(std::make_pair(elm, u - s));
       }
       return res;
@@ -909,7 +909,7 @@ namespace Composition
       UncertainValue2::UncertainValue2 res = UncertainValue2::ZERO();
       auto elms = getElementSet();
       for (auto elm : elms) {
-         auto uv = UncertainValue2::multiply(elm.getAtomicNumber(), atomicPercentU(elm));
+         auto uv = UncertainValue2::multiply(elm->getAtomicNumber(), atomicPercentU(*elm));
          res = UncertainValue2::add(res, uv);
       }
       return res;
@@ -920,7 +920,7 @@ namespace Composition
       double res = 0.0;
       auto elms = getElementSet();
       for (auto elm : elms) {
-         res += elm.getAtomicNumber() * atomicPercent(elm);
+         res += elm->getAtomicNumber() * atomicPercent(*elm);
       }
       return res;
    }
@@ -1028,11 +1028,11 @@ namespace Composition
       Composition res;
       auto elms = getElementSet();
       for (auto elm : elms) {
-         double w = weightFraction(elm, false);
+         double w = weightFraction(*elm, false);
          double v = w + w * (double)rand() / RAND_MAX * proportional + offset * (double)rand() / RAND_MAX;
          v = v > 0.0 ? v : 0.0;
          v = v < 1.1 ? v : 1.1;
-         res.addElement(elm, v);
+         res.addElement(*elm, v);
       }
       return res;
    }
@@ -1068,10 +1068,10 @@ namespace Composition
          long res = 0;
          auto elms = getElementSet();
          for (auto elm : elms) {
-            int v = (int)sqrt(100.0 * weightFraction(elm, false));
+            int v = (int)sqrt(100.0 * weightFraction(*elm, false));
             v = v > 0 ? v : 0;
             v = v < 10 ? v : 0;
-            res += v * PROJECTORS[elm.getAtomicNumber()];
+            res += v * PROJECTORS[elm->getAtomicNumber()];
          }
          mIndexHashS = res;
       }
@@ -1084,10 +1084,10 @@ namespace Composition
          long res = 0;
          auto elms = getElementSet();
          for (auto elm : elms) {
-            int v = (int)(10.0 * weightFraction(elm, false));
+            int v = (int)(10.0 * weightFraction(*elm, false));
             v = v > 0 ? v : 0;
             v = v < 10 ? v : 0;
-            res += v * PROJECTORS[elm.getAtomicNumber()];
+            res += v * PROJECTORS[elm->getAtomicNumber()];
          }
          mIndexHashL = res;
       }

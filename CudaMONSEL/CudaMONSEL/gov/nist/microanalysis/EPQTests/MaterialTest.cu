@@ -41,9 +41,9 @@ namespace MaterialTest
 
          {
             int elemLen = 2;
-            Element::Element elms[] = {
-               Element::Ti,
-               Element::O
+            const Element::Element* elms[] = {
+               &Element::Ti,
+               &Element::O
             };
             double wgts[] = {
                fac * wTi,
@@ -89,14 +89,14 @@ namespace MaterialTest
       }
       { // K3189 - NIST SRM glass
          int elemLen = 7;
-         Element::Element elms[] = {
-            Element::Si,
-            Element::O,
-            Element::Al,
-            Element::Ca,
-            Element::Mg,
-            Element::Ti,
-            Element::Fe
+         Element::Element const * elms[] = {
+            &Element::Si,
+            &Element::O,
+            &Element::Al,
+            &Element::Ca,
+            &Element::Mg,
+            &Element::Ti,
+            &Element::Fe
          };
          double mF[] = {
             0.151971599,
@@ -119,38 +119,38 @@ namespace MaterialTest
          Material::Material mat(1.0);
          mat.defineByMoleFraction(elms, elemLen, mF, elemLen);
          for (int i = 0; i < elemLen; ++i) {
-            assertEquals(mat.weightFraction(elms[i], true), wF[i], 1.0e-5);
+            assertEquals(mat.weightFraction(*elms[i], true), wF[i], 1.0e-5);
             //printf("%d, %f\n", elms[i].getAtomicNumber(), mF[i]);
-            assertEquals(mat.atomicPercent(elms[i]), mF[i], 1.0e-5);
+            assertEquals(mat.atomicPercent(*elms[i]), mF[i], 1.0e-5);
          }
          { // Try an alternative method to define a K3189
             Material::Material mat0(1.0);
-            Element::Element elms0[] = { Element::Si, Element::O };
+            const Element::Element* elms0[] = { &Element::Si, &Element::O };
             double massFracs0[] = { 1.0, 2.0 };
             mat0.defineByMoleFraction(elms0, 2, massFracs0, 2);
 
             Material::Material mat1(1.0);
-            Element::Element elms1[] = { Element::Al, Element::O };
+            const Element::Element* elms1[] = { &Element::Al, &Element::O };
             double massFracs1[] { 2.0, 3.0 };
             mat1.defineByMoleFraction(elms1, 2, massFracs1, 2);
 
             Material::Material mat2(1.0);
-            Element::Element elms2[] { Element::Ca, Element::O };
+            const Element::Element* elms2[] { &Element::Ca, &Element::O };
             double massFracs2[] { 1.0, 1.0 };
             mat2.defineByMoleFraction(elms2, 2, massFracs2, 2);
 
             Material::Material mat3(1.0);
-            Element::Element elm3[] = { Element::Mg, Element::O };
+            const Element::Element* elm3[] = { &Element::Mg, &Element::O };
             double massFracs3[] = { 1.0, 1.0 };
             mat3.defineByMoleFraction(elm3, 2, massFracs3, 2);
 
             Material::Material mat4(1.0);
-            Element::Element elm4[] = { Element::Ti, Element::O };
+            const Element::Element* elm4[] = { &Element::Ti, &Element::O };
             double massFracs4[] = { 1.0, 2.0 };
             mat4.defineByMoleFraction(elm4, 2, massFracs4, 2);
 
             Material::Material mat5(1.0);
-            Element::Element elm5[] = { Element::Fe, Element::O };
+            const Element::Element* elm5[] = { &Element::Fe, &Element::O };
             double massFracs5[] = { 2.0, 3.0 };
             mat5.defineByMoleFraction(elm5, 2, massFracs5, 2);
 
@@ -173,7 +173,7 @@ namespace MaterialTest
             };
             mat.defineByMaterialFraction(mats, 6, massFracs, 6);
             for (int i = 0; i < elemLen; ++i) {
-               assertEquals(mat.weightFraction(elms[i], true), wF[i], 1.0e-5);
+               assertEquals(mat.weightFraction(*elms[i], true), wF[i], 1.0e-5);
             }
             Material::Material dup = mat.clone();
             assertTrue(mat == dup);

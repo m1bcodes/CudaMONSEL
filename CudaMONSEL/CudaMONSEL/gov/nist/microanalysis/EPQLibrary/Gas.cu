@@ -19,7 +19,7 @@ namespace Gas
    {
       double res = 0.0;
       for (auto elm : getElementSet())
-         res += atomicPercent(elm) * elm.getMass();
+         res += atomicPercent(*elm) * elm->getMass();
       return res;
    }
 

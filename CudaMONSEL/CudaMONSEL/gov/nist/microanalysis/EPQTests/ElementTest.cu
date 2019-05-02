@@ -33,6 +33,16 @@ namespace ElementTest
    {
    }
 
+   void ElementTest::testZero()
+   {
+      for (int i = 0; i < 112; ++i) {
+         auto elm = Element::byAtomicNumber(i + 1);
+         if (elm.getAtomicNumber() != i + 1) printf("ElementTest::testZero wrong atmoic number: %d, %d\n", i + 1, elm.getAtomicNumber()); // check initialization
+      }
+
+      printf("%s completed.\n", "ElementTest::testZero()");
+   }
+
    void ElementTest::testOne()
    {
       Element::Element elm = Element::byAtomicNumber(Element::elmTi);

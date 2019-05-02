@@ -139,7 +139,7 @@ namespace Element
       Element(const Element& atomicNo);
       Element();
 
-      Element& operator=(const Element&);
+      const Element& operator=(const Element&);
 
       bool operator==(const Element&) const;
       bool operator<(const Element&) const;
@@ -153,20 +153,20 @@ namespace Element
       int compareTo(const Element& e) const;
       unsigned int hashCode() const;
       bool equals(const Element& el);
-      char const * toString();
+      char const * toString() const;
       double getIonizationEnergy() const;
 
    private:
-      Element readResolve();
+      const Element& readResolve();
 
       int mAtomicNumber;
    };
 
    struct HashFcn
    {
-      inline unsigned int operator()(const Element& e) const
+      inline unsigned int operator()(const Element* e) const
       {
-         return e.hashCode();
+         return e->hashCode();
       }
    };
 
@@ -284,14 +284,14 @@ namespace Element
    extern const Element Uuu;
    extern const Element Uub;
 
-   void readAtomicWeights();
-   void readIonizationEnergy();
+   //void readAtomicWeights();
+   //void readIonizationEnergy();
    int atomicNumberForName(char const * name);
-   Element byName(char const * name);
-   Element byAtomicNumber(int an);
+   const Element& byName(char const * name);
+   const Element& byAtomicNumber(int an);
    double getAtomicWeight(int atomicNo);
-   Element const * allElements();
-   std::vector<Element> range(const Element& min, const Element& max);
+   Element const * const * allElements();
+   std::vector<const Element*> range(const Element& min, const Element& max);
    //double meanIonizationPotential(int atomicNo);
 
    char const * toAbbrev(int atomicNo);
@@ -305,8 +305,8 @@ namespace Element
 
    void InitializeElements();
 
-   typedef std::unordered_set<Element, HashFcn> UnorderedSetT;
-   typedef std::unordered_set<Element, HashFcn> OrderedSetT;
+   typedef std::unordered_set<const Element*, HashFcn> UnorderedSetT;
+   typedef std::unordered_set<const Element*, HashFcn> OrderedSetT;
 }
 
 #endif

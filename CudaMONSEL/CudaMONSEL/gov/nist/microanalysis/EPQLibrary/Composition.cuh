@@ -19,17 +19,17 @@ namespace Composition
    public:
       //typedef std::unordered_map<Element::Element, double, Element::HashFcn> CompositionMap;
       //typedef std::unordered_map<Element::Element, double, Element::HashFcn>::iterator CompositionMapItr;
-      typedef std::unordered_map<Element::Element, UncertainValue2::UncertainValue2, Element::HashFcn> ConstituentsMapT;
-      typedef std::unordered_map<Element::Element, UncertainValue2::UncertainValue2, Element::HashFcn>::iterator ConstituentsMapTItr;
-      typedef std::unordered_map<Element::Element, double, Element::HashFcn> ErrorMapT;
+      typedef std::unordered_map<const Element::Element*, UncertainValue2::UncertainValue2, Element::HashFcn> ConstituentsMapT;
+      typedef std::unordered_map<const Element::Element*, UncertainValue2::UncertainValue2, Element::HashFcn>::iterator ConstituentsMapTItr;
+      typedef std::unordered_map<const Element::Element*, double, Element::HashFcn> ErrorMapT;
       typedef std::string CompositionNameT;
 
       Composition();
       ~Composition();
       Composition(const Composition& comp);
-      Composition(const Element::Element elms[], int elmsLen, double massFracs[], int massFracsLen);
-      Composition(const Element::Element elm);
-      Composition(const Element::Element elms[], int elmsLen, double massFracs[], int massFracsLen, char const * name);
+      Composition(const Element::Element* elms[], int elmsLen, double massFracs[], int massFracsLen);
+      Composition(const Element::Element& elm);
+      Composition(const Element::Element* elms[], int elmsLen, double massFracs[], int massFracsLen, char const * name);
 
       bool operator==(const Composition&) const;
       void operator=(const Composition&);
@@ -45,15 +45,15 @@ namespace Composition
       UncertainValue2::UncertainValue2 weightFractionU(const Element::Element&, bool normalized) const;
       UncertainValue2::UncertainValue2 weightFractionU(const Element::Element&, bool normalized, bool positiveOnly) const;
       void addElementByStoiciometry(const Element::Element&, const UncertainValue2::UncertainValue2&);
-      void addElementByStoiciometry(const Element::Element elm, double moleFrac);
+      void addElementByStoiciometry(const Element::Element& elm, double moleFrac);
       UncertainValue2::UncertainValue2 atomicPercentU(const Element::Element&) const;
       UncertainValue2::UncertainValue2 atomicPercentU(const Element::Element&, bool positiveOnly) const;
-      void defineByWeightFraction(const Element::Element elms[], int elmsLen, double wgtFracs[], int wgtFracsLen);
-      void defineByWeightFraction(const Element::Element elms[], int elmsLen, const UncertainValue2::UncertainValue2 wgtFracs[], int wgtFracsLen);
+      void defineByWeightFraction(const Element::Element* elms[], int elmsLen, double wgtFracs[], int wgtFracsLen);
+      void defineByWeightFraction(const Element::Element* elms[], int elmsLen, const UncertainValue2::UncertainValue2 wgtFracs[], int wgtFracsLen);
       void defineByWeightFraction(ConstituentsMapT map);
       UncertainValue2::UncertainValue2 stoichiometryU(const Element::Element&) const;
       double atomsPerKg(Element::Element& elm, bool normalized);
-      UncertainValue2::UncertainValue2 atomsPerKgU(const Element::Element elm, bool normalized) const;
+      UncertainValue2::UncertainValue2 atomsPerKgU(const Element::Element& elm, bool normalized) const;
 
       template<typename T>
       Element::Element GetElementBy(T k)
@@ -100,14 +100,14 @@ namespace Composition
       //   renormalize();
       //}
 
-      void defineByMoleFraction(const Element::Element elms[], int elmsLen, double moleFracs[], int moleFracsLen);
+      void defineByMoleFraction(const Element::Element* elms[], int elmsLen, double moleFracs[], int moleFracsLen);
       void setOptimalRepresentation(const Representation opt);
       void defineByMaterialFraction(const Composition compositions[], int compLen, double matFracs[], int matFracsLen);
       void removeElement(const Element::Element&);
       bool containsElement(const Element::Element&) const;
       bool containsAll(const Element::UnorderedSetT& elms) const;
-      double atomicPercent(const Element::Element elm) const;
-      double stoichiometry(Element::Element elm) const;
+      double atomicPercent(const Element::Element& elm) const;
+      double stoichiometry(const Element::Element& elm) const;
       UncertainValue2::UncertainValue2 weightAvgAtomicNumberU() const;
       double weightAvgAtomicNumber() const;
       double sumWeightFraction() const;

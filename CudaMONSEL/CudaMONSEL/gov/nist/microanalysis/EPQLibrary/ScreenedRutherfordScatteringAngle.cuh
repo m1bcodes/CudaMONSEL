@@ -13,6 +13,8 @@ namespace ScreenedRutherfordScatteringAngle
    {
    public:
       ScreenedRutherfordScatteringAngle(const ElementT& elm);
+      ScreenedRutherfordScatteringAngle(int an);
+      ScreenedRutherfordScatteringAngle(const ScreenedRutherfordScatteringAngle& other);
 
       StringT toString() const;
 

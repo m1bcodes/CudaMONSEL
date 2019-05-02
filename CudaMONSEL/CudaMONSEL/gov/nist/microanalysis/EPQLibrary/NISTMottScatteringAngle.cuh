@@ -18,6 +18,11 @@ namespace NISTMottScatteringAngle
    {
    public:
       NISTMottScatteringAngle(const ElementT& elm);
+      NISTMottScatteringAngle(int an);
+      NISTMottScatteringAngle(const NISTMottScatteringAngle& other);
+
+      void loadData(int an);
+
       StringT toString() const;
 
       const ElementT& getElement() const override;

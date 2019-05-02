@@ -7,6 +7,7 @@ namespace ElementTest
    {
    public:
       ElementTest();
+      void testZero();
       void testOne();
    };
 

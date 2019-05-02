@@ -28,7 +28,7 @@ namespace SEmaterial
       eplasmon = 0.; // should correspond to infinite mean free path
    }
 
-   SEmaterial::SEmaterial(Element::Element elms[], int elemLen, double weightFracs[], int wfLen, double density, char* name) : Material(elms, elemLen, weightFracs, wfLen, density, name)
+   SEmaterial::SEmaterial(const Element::Element* elms[], int elemLen, double weightFracs[], int wfLen, double density, char* name) : Material(elms, elemLen, weightFracs, wfLen, density, name)
    {
       workfunction = 0.;
       energyCBbottom = 0.;

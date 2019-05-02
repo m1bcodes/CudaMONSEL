@@ -124,119 +124,119 @@ namespace Element
    const int elmUub = 112;
    const int elmEndOfElements = 113;
 
-   const Element None = Element(0);
-   const Element H = Element(1);
-   const Element He = Element(2);
-   const Element Li = Element(3);
-   const Element Be = Element(4);
-   const Element B = Element(5);
-   const Element C = Element(6);
-   const Element N = Element(7);
-   const Element O = Element(8);
-   const Element F = Element(9);
-   const Element Ne = Element(10);
-   const Element Na = Element(11);
-   const Element Mg = Element(12);
-   const Element Al = Element(13);
-   const Element Si = Element(14);
-   const Element P = Element(15);
-   const Element S = Element(16);
-   const Element Cl = Element(17);
-   const Element Ar = Element(18);
-   const Element K = Element(19);
-   const Element Ca = Element(20);
-   const Element Sc = Element(21);
-   const Element Ti = Element(22);
-   const Element V = Element(23);
-   const Element Cr = Element(24);
-   const Element Mn = Element(25);
-   const Element Fe = Element(26);
-   const Element Co = Element(27);
-   const Element Ni = Element(28);
-   const Element Cu = Element(29);
-   const Element Zn = Element(30);
-   const Element Ga = Element(31);
-   const Element Ge = Element(32);
-   const Element As = Element(33);
-   const Element Se = Element(34);
-   const Element Br = Element(35);
-   const Element Kr = Element(36);
-   const Element Rb = Element(37);
-   const Element Sr = Element(38);
-   const Element Y = Element(39);
-   const Element Zr = Element(40);
-   const Element Nb = Element(41);
-   const Element Mo = Element(42);
-   const Element Tc = Element(43);
-   const Element Ru = Element(44);
-   const Element Rh = Element(45);
-   const Element Pd = Element(46);
-   const Element Ag = Element(47);
-   const Element Cd = Element(48);
-   const Element In = Element(49);
-   const Element Sn = Element(50);
-   const Element Sb = Element(51);
-   const Element Te = Element(52);
-   const Element I = Element(53);
-   const Element Xe = Element(54);
-   const Element Cs = Element(55);
-   const Element Ba = Element(56);
-   const Element La = Element(57);
-   const Element Ce = Element(58);
-   const Element Pr = Element(59);
-   const Element Nd = Element(60);
-   const Element Pm = Element(61);
-   const Element Sm = Element(62);
-   const Element Eu = Element(63);
-   const Element Gd = Element(64);
-   const Element Tb = Element(65);
-   const Element Dy = Element(66);
-   const Element Ho = Element(67);
-   const Element Er = Element(68);
-   const Element Tm = Element(69);
-   const Element Yb = Element(70);
-   const Element Lu = Element(71);
-   const Element Hf = Element(72);
-   const Element Ta = Element(73);
-   const Element W = Element(74);
-   const Element Re = Element(75);
-   const Element Os = Element(76);
-   const Element Ir = Element(77);
-   const Element Pt = Element(78);
-   const Element Au = Element(79);
-   const Element Hg = Element(80);
-   const Element Tl = Element(81);
-   const Element Pb = Element(82);
-   const Element Bi = Element(83);
-   const Element Po = Element(84);
-   const Element At = Element(85);
-   const Element Rn = Element(86);
-   const Element Fr = Element(87);
-   const Element Ra = Element(88);
-   const Element Ac = Element(89);
-   const Element Th = Element(90);
-   const Element Pa = Element(91);
-   const Element U = Element(92);
-   const Element Np = Element(93);
-   const Element Pu = Element(94);
-   const Element Am = Element(95);
-   const Element Cm = Element(96);
-   const Element Bk = Element(97);
-   const Element Cf = Element(98);
-   const Element Es = Element(99);
-   const Element Fm = Element(100);
-   const Element Md = Element(101);
-   const Element No = Element(102);
-   const Element Lr = Element(103);
-   const Element Rf = Element(104);
-   const Element Db = Element(105);
-   const Element Sg = Element(106);
-   const Element Bh = Element(107);
-   const Element Hs = Element(108);
-   const Element Mt = Element(109);
-   const Element Uun = Element(110);
-   const Element Uuu = Element(111);
-   const Element Uub = Element(112);
+   const Element None(0);
+   const Element H(1);
+   const Element He(2);
+   const Element Li(3);
+   const Element Be(4);
+   const Element B(5);
+   const Element C(6);
+   const Element N(7);
+   const Element O(8);
+   const Element F(9);
+   const Element Ne(10);
+   const Element Na(11);
+   const Element Mg(12);
+   const Element Al(13);
+   const Element Si(14);
+   const Element P(15);
+   const Element S(16);
+   const Element Cl(17);
+   const Element Ar(18);
+   const Element K(19);
+   const Element Ca(20);
+   const Element Sc(21);
+   const Element Ti(22);
+   const Element V(23);
+   const Element Cr(24);
+   const Element Mn(25);
+   const Element Fe(26);
+   const Element Co(27);
+   const Element Ni(28);
+   const Element Cu(29);
+   const Element Zn(30);
+   const Element Ga(31);
+   const Element Ge(32);
+   const Element As(33);
+   const Element Se(34);
+   const Element Br(35);
+   const Element Kr(36);
+   const Element Rb(37);
+   const Element Sr(38);
+   const Element Y(39);
+   const Element Zr(40);
+   const Element Nb(41);
+   const Element Mo(42);
+   const Element Tc(43);
+   const Element Ru(44);
+   const Element Rh(45);
+   const Element Pd(46);
+   const Element Ag(47);
+   const Element Cd(48);
+   const Element In(49);
+   const Element Sn(50);
+   const Element Sb(51);
+   const Element Te(52);
+   const Element I(53);
+   const Element Xe(54);
+   const Element Cs(55);
+   const Element Ba(56);
+   const Element La(57);
+   const Element Ce(58);
+   const Element Pr(59);
+   const Element Nd(60);
+   const Element Pm(61);
+   const Element Sm(62);
+   const Element Eu(63);
+   const Element Gd(64);
+   const Element Tb(65);
+   const Element Dy(66);
+   const Element Ho(67);
+   const Element Er(68);
+   const Element Tm(69);
+   const Element Yb(70);
+   const Element Lu(71);
+   const Element Hf(72);
+   const Element Ta(73);
+   const Element W(74);
+   const Element Re(75);
+   const Element Os(76);
+   const Element Ir(77);
+   const Element Pt(78);
+   const Element Au(79);
+   const Element Hg(80);
+   const Element Tl(81);
+   const Element Pb(82);
+   const Element Bi(83);
+   const Element Po(84);
+   const Element At(85);
+   const Element Rn(86);
+   const Element Fr(87);
+   const Element Ra(88);
+   const Element Ac(89);
+   const Element Th(90);
+   const Element Pa(91);
+   const Element U(92);
+   const Element Np(93);
+   const Element Pu(94);
+   const Element Am(95);
+   const Element Cm(96);
+   const Element Bk(97);
+   const Element Cf(98);
+   const Element Es(99);
+   const Element Fm(100);
+   const Element Md(101);
+   const Element No(102);
+   const Element Lr(103);
+   const Element Rf(104);
+   const Element Db(105);
+   const Element Sg(106);
+   const Element Bh(107);
+   const Element Hs(108);
+   const Element Mt(109);
+   const Element Uun(110);
+   const Element Uuu(111);
+   const Element Uub(112);
 
    char const * const mElementNames[] = {
       "None",
@@ -472,130 +472,295 @@ namespace Element
       "EOE"
    };
 
-   Element mAllElements[numAtomicWeight];
+   Element const * mAllElements[numAtomicWeight] = {
+      &H,
+      &He,
+      &Li,
+      &Be,
+      &B,
+      &C,
+      &N,
+      &O,
+      &F,
+      &Ne,
+      &Na,
+      &Mg,
+      &Al,
+      &Si,
+      &P,
+      &S,
+      &Cl,
+      &Ar,
+      &K,
+      &Ca,
+      &Sc,
+      &Ti,
+      &V,
+      &Cr,
+      &Mn,
+      &Fe,
+      &Co,
+      &Ni,
+      &Cu,
+      &Zn,
+      &Ga,
+      &Ge,
+      &As,
+      &Se,
+      &Br,
+      &Kr,
+      &Rb,
+      &Sr,
+      &Y,
+      &Zr,
+      &Nb,
+      &Mo,
+      &Tc,
+      &Ru,
+      &Rh,
+      &Pd,
+      &Ag,
+      &Cd,
+      &In,
+      &Sn,
+      &Sb,
+      &Te,
+      &I,
+      &Xe,
+      &Cs,
+      &Ba,
+      &La,
+      &Ce,
+      &Pr,
+      &Nd,
+      &Pm,
+      &Sm,
+      &Eu,
+      &Gd,
+      &Tb,
+      &Dy,
+      &Ho,
+      &Er,
+      &Tm,
+      &Yb,
+      &Lu,
+      &Hf,
+      &Ta,
+      &W,
+      &Re,
+      &Os,
+      &Ir,
+      &Pt,
+      &Au,
+      &Hg,
+      &Tl,
+      &Pb,
+      &Bi,
+      &Po,
+      &At,
+      &Rn,
+      &Fr,
+      &Ra,
+      &Ac,
+      &Th,
+      &Pa,
+      &U,
+      &Np,
+      &Pu,
+      &Am,
+      &Cm,
+      &Bk,
+      &Cf,
+      &Es,
+      &Fm,
+      &Md,
+      &No,
+      &Lr,
+      &Rf,
+      &Db,
+      &Sg,
+      &Bh,
+      &Hs,
+      &Mt,
+      &Uun,
+      &Uuu,
+      &Uub
+   };
+
    float mIonizationEnergy[numIonizationEnergy];
    float mAtomicWeight[numAtomicWeight];
+
+   static void readAtomicWeights()
+   {
+      float hAtomicWeight[numAtomicWeight];
+      try {
+         char filepath[] = ".\\gov\\nist\\microanalysis\\EPQLibrary\\AtomicWeights.csv";
+         std::ifstream file(filepath);
+         printf("Reading: %s\n", filepath);
+         int idx = 0;
+         for (CSVIterator loop(file); loop != CSVIterator(); ++loop) {
+            if ((*loop)[0][0] == '/' && (*loop)[0][1] == '/') { // check if the first line should be removed
+               continue;
+            }
+            hAtomicWeight[idx] = std::stof((*loop)[0]);
+            ++idx;
+         }
+      }
+      catch (std::exception&) {
+         printf("didnt see file AtomicWeights.csv\n");
+         throw 0; //throw new EPQFatalException("Fatal error while attempting to load the atomic weights data file.");
+      }
+      memcpy(mAtomicWeight, hAtomicWeight, sizeof(hAtomicWeight));
+      //checkCudaErrors(cudaMemcpyToSymbol(mAtomicWeight, &hAtomicWeight, sizeof(float) * 112));
+   }
+
+   static void readIonizationEnergy()
+   {
+      char filepath[] = ".\\gov\\nist\\microanalysis\\EPQLibrary\\IonizationEnergies.csv";
+      float hIonizationEnergy[numIonizationEnergy];
+      try {
+         printf("Reading: %s\n", filepath);
+         std::ifstream file(filepath);
+         int idx = 0;
+         for (CSVIterator loop(file); loop != CSVIterator(); ++loop) {
+            if ((*loop)[0][0] == '/' && (*loop)[0][1] == '/') { // check if the first line should be removed
+               continue;
+            }
+            if (CSVIterator::IsNaN((*loop)[0])) {
+               hIonizationEnergy[idx] = -1.0;
+            }
+            else {
+               hIonizationEnergy[idx] = std::stof((*loop)[0]);
+            }
+            ++idx;
+         }
+      }
+      catch (std::exception&) {
+         printf("Fatal error while attempting to load the ionization data file: %s.\n", filepath);
+      }
+      memcpy(mIonizationEnergy, hIonizationEnergy, sizeof(hIonizationEnergy));
+   }
 
    void InitializeElements()
    {
       readAtomicWeights();
       readIonizationEnergy();
 
-      Element tmpAllElements[] = {
-         H,
-         He,
-         Li,
-         Be,
-         B,
-         C,
-         N,
-         O,
-         F,
-         Ne,
-         Na,
-         Mg,
-         Al,
-         Si,
-         P,
-         S,
-         Cl,
-         Ar,
-         K,
-         Ca,
-         Sc,
-         Ti,
-         V,
-         Cr,
-         Mn,
-         Fe,
-         Co,
-         Ni,
-         Cu,
-         Zn,
-         Ga,
-         Ge,
-         As,
-         Se,
-         Br,
-         Kr,
-         Rb,
-         Sr,
-         Y,
-         Zr,
-         Nb,
-         Mo,
-         Tc,
-         Ru,
-         Rh,
-         Pd,
-         Ag,
-         Cd,
-         In,
-         Sn,
-         Sb,
-         Te,
-         I,
-         Xe,
-         Cs,
-         Ba,
-         La,
-         Ce,
-         Pr,
-         Nd,
-         Pm,
-         Sm,
-         Eu,
-         Gd,
-         Tb,
-         Dy,
-         Ho,
-         Er,
-         Tm,
-         Yb,
-         Lu,
-         Hf,
-         Ta,
-         W,
-         Re,
-         Os,
-         Ir,
-         Pt,
-         Au,
-         Hg,
-         Tl,
-         Pb,
-         Bi,
-         Po,
-         At,
-         Rn,
-         Fr,
-         Ra,
-         Ac,
-         Th,
-         Pa,
-         U,
-         Np,
-         Pu,
-         Am,
-         Cm,
-         Bk,
-         Cf,
-         Es,
-         Fm,
-         Md,
-         No,
-         Lr,
-         Rf,
-         Db,
-         Sg,
-         Bh,
-         Hs,
-         Mt,
-         Uun,
-         Uuu,
-         Uub
-      };
-      memcpy(mAllElements, tmpAllElements, sizeof(tmpAllElements));
+      //Element tmpAllElements[] = {
+      //   H,
+      //   He,
+      //   Li,
+      //   Be,
+      //   B,
+      //   C,
+      //   N,
+      //   O,
+      //   F,
+      //   Ne,
+      //   Na,
+      //   Mg,
+      //   Al,
+      //   Si,
+      //   P,
+      //   S,
+      //   Cl,
+      //   Ar,
+      //   K,
+      //   Ca,
+      //   Sc,
+      //   Ti,
+      //   V,
+      //   Cr,
+      //   Mn,
+      //   Fe,
+      //   Co,
+      //   Ni,
+      //   Cu,
+      //   Zn,
+      //   Ga,
+      //   Ge,
+      //   As,
+      //   Se,
+      //   Br,
+      //   Kr,
+      //   Rb,
+      //   Sr,
+      //   Y,
+      //   Zr,
+      //   Nb,
+      //   Mo,
+      //   Tc,
+      //   Ru,
+      //   Rh,
+      //   Pd,
+      //   Ag,
+      //   Cd,
+      //   In,
+      //   Sn,
+      //   Sb,
+      //   Te,
+      //   I,
+      //   Xe,
+      //   Cs,
+      //   Ba,
+      //   La,
+      //   Ce,
+      //   Pr,
+      //   Nd,
+      //   Pm,
+      //   Sm,
+      //   Eu,
+      //   Gd,
+      //   Tb,
+      //   Dy,
+      //   Ho,
+      //   Er,
+      //   Tm,
+      //   Yb,
+      //   Lu,
+      //   Hf,
+      //   Ta,
+      //   W,
+      //   Re,
+      //   Os,
+      //   Ir,
+      //   Pt,
+      //   Au,
+      //   Hg,
+      //   Tl,
+      //   Pb,
+      //   Bi,
+      //   Po,
+      //   At,
+      //   Rn,
+      //   Fr,
+      //   Ra,
+      //   Ac,
+      //   Th,
+      //   Pa,
+      //   U,
+      //   Np,
+      //   Pu,
+      //   Am,
+      //   Cm,
+      //   Bk,
+      //   Cf,
+      //   Es,
+      //   Fm,
+      //   Md,
+      //   No,
+      //   Lr,
+      //   Rf,
+      //   Db,
+      //   Sg,
+      //   Bh,
+      //   Hs,
+      //   Mt,
+      //   Uun,
+      //   Uuu,
+      //   Uub
+      //};
+      //memcpy(mAllElements, tmpAllElements, sizeof(tmpAllElements));
       printf("InitializeElements() completed: %d bytes\n", sizeof(mAllElements));
    }
 
@@ -625,10 +790,10 @@ namespace Element
       mAtomicNumber = other.mAtomicNumber;
    }
 
-   Element& Element::operator=(const Element& other)
+   const Element& Element::operator=(const Element& other)
    {
       if (*this == other) return *this;
-      mAtomicNumber = other.mAtomicNumber;
+      return byAtomicNumber(other.mAtomicNumber);
    }
 
    bool Element::operator<(const Element& other) const
@@ -636,31 +801,7 @@ namespace Element
       return mAtomicNumber < other.mAtomicNumber;
    }
 
-   void readAtomicWeights()
-   {
-      float hAtomicWeight[numAtomicWeight];
-      try {
-         char filepath[] = ".\\gov\\nist\\microanalysis\\EPQLibrary\\AtomicWeights.csv";
-         std::ifstream file(filepath);
-         printf("Reading: %s\n", filepath);
-         int idx = 0;
-         for (CSVIterator loop(file); loop != CSVIterator(); ++loop) {
-            if ((*loop)[0][0] == '/' && (*loop)[0][1] == '/') { // check if the first line should be removed
-               continue;
-            }
-            hAtomicWeight[idx] = std::stof((*loop)[0]);
-            ++idx;
-         }
-      }
-      catch (std::exception&) {
-         printf("didnt see file AtomicWeights.csv\n");
-         throw 0; //throw new EPQFatalException("Fatal error while attempting to load the atomic weights data file.");
-      }
-      memcpy(mAtomicWeight, hAtomicWeight, sizeof(hAtomicWeight));
-      //checkCudaErrors(cudaMemcpyToSymbol(mAtomicWeight, &hAtomicWeight, sizeof(float) * 112));
-   }
-
-   int atomicNumberForName(char const * name)
+   static int atomicNumberForName(char const * name)
    {
       std::string strName(name);
       std::transform(strName.begin(), strName.end(), strName.begin(), ::tolower);
@@ -676,15 +817,15 @@ namespace Element
       return atoi(name);
    }
 
-   Element byName(char const * name)
+   const Element& byName(char const * name)
    {
       int z = atomicNumberForName(name);
-      return z == 0 ? None : mAllElements[z - 1];
+      return z == 0 ? None : *mAllElements[z - 1];
    }
 
-   Element byAtomicNumber(int an)
+   const Element& byAtomicNumber(int an)
    {      
-      return (an > 0) && (an < numAtomicWeight) ? mAllElements[an - 1] : None;
+      return (an > 0) && (an <= numAtomicWeight) ? *mAllElements[an - 1] : None;
    }
 
    double getAtomicWeight(int atomicNo)
@@ -701,19 +842,19 @@ namespace Element
       return mAtomicWeight[atomicNo - 1];
    }
 
-   Element const * allElements()
+   Element const * const * allElements()
    {
       return mAllElements;
    }
 
-   std::vector<Element> range(const Element& min, const Element& max)
+   std::vector<const Element*> range(const Element& min, const Element& max)
    {
       if (min.getAtomicNumber() <= max.getAtomicNumber()) {
          printf("make sure min < max when calling range");
-         return std::vector<Element>();
+         return std::vector<const Element*>();
       }
       int numElem = max.getAtomicNumber() - min.getAtomicNumber() + 1;
-      std::vector<Element> res(numElem);
+      std::vector<Element const *> res(numElem);
       for (int k = 0; k < numElem; ++k) {
          res[k] = mAllElements[min.getAtomicNumber() - 1 + k];
       }
@@ -817,36 +958,9 @@ namespace Element
       return *this == el;
    }
 
-   char const * Element::toString()
+   char const * Element::toString() const
    {
       return mElementNames[mAtomicNumber];
-   }
-
-   void readIonizationEnergy()
-   {
-      char filepath[] = ".\\gov\\nist\\microanalysis\\EPQLibrary\\IonizationEnergies.csv";
-      float hIonizationEnergy[numIonizationEnergy];
-      try {
-         printf("Reading: %s\n", filepath);
-         std::ifstream file(filepath);
-         int idx = 0;
-         for (CSVIterator loop(file); loop != CSVIterator(); ++loop) {
-            if ((*loop)[0][0] == '/' && (*loop)[0][1] == '/') { // check if the first line should be removed
-               continue;
-            }
-            if (CSVIterator::IsNaN((*loop)[0])) {
-               hIonizationEnergy[idx] = -1.0;
-            }
-            else {
-               hIonizationEnergy[idx] = std::stof((*loop)[0]);
-            }
-            ++idx;
-         }
-      }
-      catch (std::exception&) {
-         printf("Fatal error while attempting to load the ionization data file: %s.\n", filepath);
-      }
-      memcpy(mIonizationEnergy, hIonizationEnergy, sizeof(hIonizationEnergy));
    }
 
    double Element::getIonizationEnergy() const
@@ -863,7 +977,7 @@ namespace Element
       return res;
    }
 
-   Element Element::readResolve()
+   const Element& Element::readResolve()
    {
       return ::Element::byAtomicNumber(mAtomicNumber);
    }

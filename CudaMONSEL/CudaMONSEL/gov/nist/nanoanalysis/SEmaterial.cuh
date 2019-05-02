@@ -18,7 +18,7 @@ namespace SEmaterial
       SEmaterial();
       SEmaterial(const SEmaterial&);
       SEmaterial(const Composition& comp, double density);
-      SEmaterial(Element::Element elms[], int elemLen, double weightFracs[], int wfLen, double density, char* name);
+      SEmaterial(const Element::Element* elms[], int elemLen, double weightFracs[], int wfLen, double density, char* name);
       SEmaterial(const Material& mat);
 
       SEmaterial& operator=(const SEmaterial&);

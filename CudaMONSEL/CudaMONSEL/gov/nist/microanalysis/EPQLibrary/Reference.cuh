@@ -77,7 +77,7 @@ namespace Reference
       AuthorList mAuthors;
 
    public:
-      Book(StringT title, StringT publisher, int year, Author authors[], int len);
+      Book(StringT title, StringT publisher, int year, const Author authors[], int len);
       StringT getShortForm() const override;
       StringT getLongForm() const override;
    };
@@ -90,7 +90,7 @@ namespace Reference
       AuthorList mAuthors;
 
    public:
-      Program(StringT title, StringT version, Author authors[], int len);
+      Program(StringT title, StringT version, const Author authors[], int len);
 
       StringT getShortForm() const;
       StringT getLongForm() const;
