@@ -21,10 +21,10 @@ namespace Reference
       Author(StringT first, StringT last, StringT affiliation);
       Author(StringT first, StringT last);
       Author(const Author&);
-      StringT getAuthor();
-      StringT getAffiliation();
-      StringT getFirst();
-      StringT getLast();
+      StringT getAuthor() const;
+      StringT getAffiliation() const;
+      StringT getFirst() const;
+      StringT getLast() const;
 
    private:
       StringT mFirst;
@@ -32,7 +32,7 @@ namespace Reference
       StringT mAffiliation;
    };
 
-   typedef std::vector<Author> AuthorList;
+   typedef std::vector<const Author*> AuthorList;
 
    static StringT toString(AuthorList authors);
    static StringT toAbbrev(AuthorList authors);
@@ -54,8 +54,8 @@ namespace Reference
    class JournalArticle : public Reference
    {
    public:
-      JournalArticle(StringT title, Journal journal, StringT vol, StringT pages, int year, const Author authors[], int len);
-      JournalArticle(const Journal& journal, StringT vol, StringT pages, int year, const Author authors[], int len);
+      JournalArticle(StringT title, const Journal& journal, StringT vol, StringT pages, int year, const Author* authors[], int len);
+      JournalArticle(const Journal& journal, StringT vol, StringT pages, int year, const Author* authors[], int len);
       StringT getShortForm() const override;
       StringT getLongForm() const override;
 
@@ -77,7 +77,12 @@ namespace Reference
       AuthorList mAuthors;
 
    public:
-      Book(StringT title, StringT publisher, int year, const Author authors[], int len);
+      Book(StringT title, StringT publisher, int year, const Author* authors[], int len);
+      StringT GetTitle() const;
+      StringT GetPublisher() const;
+      int GetYear() const;
+      AuthorList GetAuthors() const;
+
       StringT getShortForm() const override;
       StringT getLongForm() const override;
    };
@@ -90,10 +95,26 @@ namespace Reference
       AuthorList mAuthors;
 
    public:
-      Program(StringT title, StringT version, const Author authors[], int len);
+      Program(StringT title, StringT version, const Author* authors[], int len);
 
-      StringT getShortForm() const;
-      StringT getLongForm() const;
+      StringT getShortForm() const override;
+      StringT getLongForm() const override;
+   };
+
+   class BookChapter : public Reference
+   {
+   private:
+      Book mBook;
+      StringT mPages;
+      AuthorList mAuthors;
+
+   public:
+      BookChapter(const Book& book, StringT pages, const Author* authors[], int len);
+      BookChapter(const Book& book, const Author* authors[], int len);
+
+      StringT getPages() const;
+      StringT getShortForm() const override;
+      StringT getLongForm() const override;
    };
 
    class WebSite : public Reference
@@ -105,7 +126,7 @@ namespace Reference
       const AuthorList mAuthors;
 
    public:
-      WebSite(StringT url, StringT title, StringT date, const Author authors[], int len);
+      WebSite(StringT url, StringT title, StringT date, const Author* authors[], int len);
 
       StringT getShortForm() const override;
       StringT getLongForm() const override;
@@ -192,6 +213,9 @@ namespace Reference
    extern const Journal AtDatNucData;
    extern const Journal PhysRevA;
    extern const Journal ApplPhysLett;
+
+   // default
+   extern const CrudeReference NullReference;
 }
 
 #endif

@@ -8,7 +8,7 @@
 
 namespace NISTMottScatteringAngle
 {
-   static const Reference::Author auRef[] = { Reference::CPowell, Reference::FSalvat, Reference::AJablonski };
+   static const Reference::Author* auRef[] = { &Reference::CPowell, &Reference::FSalvat, &Reference::AJablonski };
    static const Reference::WebSite REFERENCE("http://www.nist.gov/srd/nist64.htm", "NIST Electron Elastic-Scattering Cross-Section Database version 3.1", "2007 AUGUST 24", auRef, 3);
 
    const int SPWEM_LEN = 61;

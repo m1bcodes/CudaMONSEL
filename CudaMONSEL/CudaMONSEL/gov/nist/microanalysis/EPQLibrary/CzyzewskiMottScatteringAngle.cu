@@ -10,7 +10,7 @@
 
 namespace CzyzewskiMottScatteringAngle
 {
-   static const Reference::Author alRef[] = { Reference::Czyzewski, Reference::MacCallum, Reference::DJoy };
+   static const Reference::Author* alRef[] = { &Reference::Czyzewski, &Reference::MacCallum, &Reference::DJoy };
    static const Reference::JournalArticle REFERENCE(Reference::JApplPhys, "68, No. 7", "", 1990, alRef, 3);
 
    const double MAX_CZYZEWSKI = ToSI::keV(30.0);

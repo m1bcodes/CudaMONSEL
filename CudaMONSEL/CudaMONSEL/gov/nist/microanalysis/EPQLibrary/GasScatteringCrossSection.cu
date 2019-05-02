@@ -7,7 +7,7 @@
 
 namespace GasScatteringCrossSection
 {
-   Reference::Author al[] = { Reference::RFEdgerton };
+   const Reference::Author* al[] = { &Reference::RFEdgerton };
    const Reference::Book REFERENCE("Electron Energy-Loss Spectroscopy in the Electron Microscope, Second Edition", "Plenum Press, NY & London", 1996, al, 1);
 
    static const double E0 = PhysicalConstants::ElectronMass * PhysicalConstants::SpeedOfLight * PhysicalConstants::SpeedOfLight;

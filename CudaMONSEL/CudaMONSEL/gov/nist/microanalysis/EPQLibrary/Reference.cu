@@ -14,22 +14,22 @@ namespace Reference
    {
    }
 
-   StringT Author::getAuthor()
+   StringT Author::getAuthor() const
    {
       return mLast + " " + mFirst.substr(0, 1);
    }
 
-   StringT Author::getAffiliation()
+   StringT Author::getAffiliation() const
    {
       return mAffiliation;
    }
 
-   StringT Author::getFirst()
+   StringT Author::getFirst() const
    {
       return mFirst;
    }
 
-   StringT Author::getLast()
+   StringT Author::getLast() const
    {
       return mLast;
    }
@@ -40,16 +40,17 @@ namespace Reference
       for (int i = 0; i < authors.size(); ++i) {
          if (i != 0)
             ret.append(i == authors.size() - 1 ? " & " : ", ");
-         ret.append(authors[i].getAuthor());
+         ret.append(authors[i]->getAuthor());
       }
       return ret;
    }
 
-   StringT toAbbrev(AuthorList authors) {
+   StringT toAbbrev(AuthorList authors)
+   {
       if (authors.size() > 1)
-         return authors[0].getLast() + " et al";
+         return authors[0]->getLast() + " et al";
       else if (authors.size() > 0)
-         return authors[0].getLast();
+         return authors[0]->getLast();
       else
          return "";
    }
@@ -148,11 +149,11 @@ namespace Reference
    const Journal ApplPhysLett("Applied Physics Letters", "Appl. Phys. Let.", "American Physical Society");
 
 
-   JournalArticle::JournalArticle(StringT title, Journal journal, StringT vol, StringT pages, int year, const Author authors[], int len) : Reference(), mAuthors(authors, authors + len), mJournal(journal), mTitle(title), mVolume(vol), mPages(pages), mYear(year)
+   JournalArticle::JournalArticle(StringT title, const Journal& journal, StringT vol, StringT pages, int year, const Author* authors[], int len) : Reference(), mAuthors(authors, authors + len), mJournal(journal), mTitle(title), mVolume(vol), mPages(pages), mYear(year)
    {
    }
 
-   JournalArticle::JournalArticle(const Journal& journal, StringT vol, StringT pages, int year, const Author authors[], int len) : mJournal(journal), mAuthors(authors, authors + len), mVolume(vol), mPages(pages), mYear(year)
+   JournalArticle::JournalArticle(const Journal& journal, StringT vol, StringT pages, int year, const Author* authors[], int len) : mJournal(journal), mAuthors(authors, authors + len), mVolume(vol), mPages(pages), mYear(year)
    {
    }
 
@@ -168,23 +169,37 @@ namespace Reference
       return toString(mAuthors) + " " + mTitle + " " + mVolume + mPages + " " + std::to_string(mYear);
    }
 
-   static Author auLoveScott1978[] = { GLove, VScott };
-   static JournalArticle LoveScott1978(JPhysD, "11", "p 1369", 1978, auLoveScott1978, 2);
+   const Author* auLoveScott1978[] = { &GLove, &VScott };
+   JournalArticle LoveScott1978(JPhysD, "11", "p 1369", 1978, auLoveScott1978, 2);
 
+   const Author* alProza96[] = { &GBastin, &JDijkstra, &HHeijligers };
+   JournalArticle Proza96(XRaySpec, "27", "p 3-10", 1998, alProza96, 3);
 
-   static Author alProza96[] = { GBastin, JDijkstra, HHeijligers };
-   static JournalArticle Proza96(XRaySpec, "27", "p 3-10", 1998, alProza96, 3);
+   const Author* alProza96Extended[] = { &GBastin, &Oberndorff, &JDijkstra, &HHeijligers };
+   JournalArticle Proza96Extended(XRaySpec, "30", "p 382-387", 2001, alProza96Extended, 4);
 
-   static Author alProza96Extended[] = { GBastin, Oberndorff, JDijkstra, HHeijligers };
-   static JournalArticle Proza96Extended(XRaySpec, "30", "p 382-387", 2001, alProza96Extended, 4);
-
-   //static final Reference JTA1982 = new Reference.BookChapter(Reference.MicrobeamAnalysis, "175-180", new Author[] {
-   //   Reference.JArmstrong
-   //});
-
-   Book::Book(StringT title, StringT publisher, int year, const Author authors[], int len) : mTitle(title), mPublisher(publisher), mYear(year), mAuthors(authors, authors + len)
+   Book::Book(StringT title, StringT publisher, int year, const Author* authors[], int len) : mTitle(title), mPublisher(publisher), mYear(year), mAuthors(authors, authors + len)
    {
-      
+   }
+
+   StringT Book::GetTitle() const
+   {
+      return mTitle;
+   }
+
+   StringT Book::GetPublisher() const
+   {
+      return mPublisher;
+   }
+
+   int Book::GetYear() const
+   {
+      return mYear;
+   }
+
+   AuthorList Book::GetAuthors() const
+   {
+      return mAuthors;
    }
 
    StringT Book::getShortForm() const
@@ -196,8 +211,8 @@ namespace Reference
    {
       return toString(mAuthors) + mTitle + mPublisher + std::to_string(mYear);
    }
-   
-   Program::Program(StringT title, StringT version, const Author authors[], int len) : mTitle(title), mVersion(version), mAuthors(authors, authors + len)
+
+   Program::Program(StringT title, StringT version, const Author* authors[], int len) : mTitle(title), mVersion(version), mAuthors(authors, authors + len)
    {
    }
 
@@ -211,120 +226,82 @@ namespace Reference
       return toString(mAuthors) + mTitle + mVersion;
    }
 
-   const Author auENDLIB97_Relax[] = { Cullen };
-   const Program ENDLIB97_Relax("RELAX", "ENDLIB97", auENDLIB97_Relax, 1);
+   const Author* alENDLIB97_Relax[] = { &Cullen };
+   const Program ENDLIB97_Relax("RELAX", "ENDLIB97", alENDLIB97_Relax, 1);
 
-   const Author DTSAAuthor[] = { CFiori, CSwytThomas, RMyklebust };
-   const Program DTSA("DTSA", "3.0.1", DTSAAuthor, 3);
+   const Author* alDTSA[] = { &CFiori, &CSwytThomas, &RMyklebust };
+   const Program DTSA("DTSA", "3.0.1", alDTSA, 3);
 
-   const Author ElectronProbeQuantAuthor[] = { KHeinrich, DNewbury };
-   const Book ElectronProbeQuant("Electron Probe Quantitation", "Plenum", 1991, ElectronProbeQuantAuthor, 2);
+   const Author* alElectronProbeQuant[] = { &KHeinrich, &DNewbury };
+   const Book ElectronProbeQuant("Electron Probe Quantitation", "Plenum", 1991, alElectronProbeQuant, 2);
 
-   const Author GoldsteinBookAuthor[] = { JGoldstein, CLyman, DNewbury, ELifshin, PEchlin, LSawyer, DJoy, JMichael };
-   const Book GoldsteinBook("Scanning Electron Microscopy and X-Ray Microanalysis - 3rd edition", "Kluwer Academic/Plenum", 2003, GoldsteinBookAuthor, 8);
+   const Author* alGoldsteinBook[] = { &JGoldstein, &CLyman, &DNewbury, &ELifshin, &PEchlin, &LSawyer, &DJoy, &JMichael };
+   const Book GoldsteinBook("Scanning Electron Microscopy and X-Ray Microanalysis - 3rd edition", "Kluwer Academic/Plenum", 2003, alGoldsteinBook, 8);
 
-   const Author QuantitativeElectronProbeMicroanalysisBookAuthor[] = { KHeinrich };
-   const Book QuantitativeElectronProbeMicroanalysisBook("Quantitative Electron Probe Microanalysis - NBS SP 298", "National Bureau of Standards", 1968, QuantitativeElectronProbeMicroanalysisBookAuthor, 1);
+   const Author* alQuantitativeElectronProbeMicroanalysisBook[] = { &KHeinrich };
+   const Book QuantitativeElectronProbeMicroanalysisBook("Quantitative Electron Probe Microanalysis - NBS SP 298", "National Bureau of Standards", 1968, alQuantitativeElectronProbeMicroanalysisBook, 1);
 
-   //static public final Book ElectronBeamXRayMicroanalysis = new Book("Electron Beam X-Ray Microanalysis", "Van Nostrand Reinhold Company", 1981, new Author[] {
-   //   KHeinrich
-   //});
+   const Author* alElectronBeamXRayMicroanalysis[] = { &KHeinrich };
+   const Book ElectronBeamXRayMicroanalysis("Electron Beam X-Ray Microanalysis", "Van Nostrand Reinhold Company", 1981, alElectronBeamXRayMicroanalysis, 1);
 
-   //static public final Book EnergyDispersiveXRaySpectrometery = new Book("Energy Dispersive X-Ray Spectrometery - NBS SP 604", "National Bureau of Standards", 1981, new Author[] {
-   //   KHeinrich,
-   //      DNewbury,
-   //      RMyklebust,
-   //      CFiori
-   //});
+   const Author* alEnergyDispersiveXRaySpectrometery[] = { &KHeinrich, &DNewbury, &RMyklebust, &CFiori };
+   const Book EnergyDispersiveXRaySpectrometery("Energy Dispersive X-Ray Spectrometery - NBS SP 604", "National Bureau of Standards", 1981, alEnergyDispersiveXRaySpectrometery, 4);
 
-   //static public final Book CharacterizationOfParticles = new Book("Characterization of Particles NBS SP 533", "National Bureau of Standards", 1978, new Author[] {
-   //   KHeinrich
-   //});
+   const Author* alCharacterizationOfParticles[] = {&KHeinrich};
+   const Book CharacterizationOfParticles("Characterization of Particles NBS SP 533", "National Bureau of Standards", 1978, alCharacterizationOfParticles, 1);
 
-   //static public final Book FrameBook = new Book("FRAME: An On-Line Correction Procedure for Quantitative Electron Probe Micronanalysis, NBS Tech Note 796", "National Bureau of Standards", 1973, new Author[] {
-   //   HYakowitz,
-   //      RMyklebust,
-   //      KHeinrich
-   //});
+   const Author* alFrameBook[] = { &HYakowitz, &RMyklebust, &KHeinrich };
+   const Book FrameBook("FRAME: An On-Line Correction Procedure for Quantitative Electron Probe Micronanalysis, NBS Tech Note 796", "National Bureau of Standards", 1973, alFrameBook, 3);
 
-   //static public final Book ElectronMicroprobe = new Book("The Electron Microprobe", "Wiley (New York)", 1966, new Author[] {
-   //   TMcKinley,
-   //      KHeinrich,
-   //      DWittry,
-   //});
+   const Author* alElectronMicroprobe[] = { &TMcKinley, &KHeinrich, &DWittry };
+   const Book ElectronMicroprobe("The Electron Microprobe", "Wiley (New York)", 1966, alElectronMicroprobe, 3);
 
-   //static public final Book MicrobeamAnalysis = new Book("Microbeam Analysis", "San Francisco Press", 1982, new Author[] {
-   //   KHeinrich
-   //});
+   const Author* alMicrobeamAnalysis[] = { &KHeinrich };
+   const Book MicrobeamAnalysis("Microbeam Analysis", "San Francisco Press", 1982, alMicrobeamAnalysis, 1);
 
-   //static public final Book HandbookOfXRaySpectrometry = new Book("Handbook of X-Ray Spectrometry", "Marcel Dekker", 2002, new Author[] {
-   //   VanGrieken,
-   //      Markowicz
+   const Author* alHandbookOfXRaySpectrometry[] { &VanGrieken, &Markowicz };
+   const Book HandbookOfXRaySpectrometry("Handbook of X-Ray Spectrometry", "Marcel Dekker", 2002, alHandbookOfXRaySpectrometry, 2);
 
-   //});
+   const Author* alHenke1993[] { &BHenke, &EGullikson, &JDavis };
+   const JournalArticle Henke1993("X-ray interactions: photoabsorption, scattering, transmission, and reflection at E=50-30000 eV, Z=1-92", AtDatNucData, "54", "181-342", 1993, alHenke1993, 3);
 
-   //static public Reference.JournalArticle Henke1993 = new Reference.JournalArticle("X-ray interactions: photoabsorption, scattering, transmission, and reflection at E=50-30000 eV, Z=1-92", Reference.AtDatNucData, "54", "181-342", 1993, new Reference.Author[] {
-   //   Reference.BHenke,
-   //      Reference.EGullikson,
-   //      Reference.JDavis
-   //});
+   BookChapter::BookChapter(const Book& book, StringT pages, const Author* authors[], int len) : mBook(book), mPages(pages), mAuthors(authors, authors + len)
+   {
+   }
 
-   //static public class BookChapter
-   //   extends Reference {
-   //   private final Book mBook;
-   //   private String mPages;
-   //   private final Author[] mAuthors;
+   BookChapter::BookChapter(const Book& book, const Author* authors[], int len) : mBook(book), mAuthors(authors, authors + len)
+   {
+   }
 
-   //   public BookChapter(Book book, String pages, Author[] authors) {
-   //      mBook = book;
-   //      mPages = pages;
-   //      mAuthors = authors;
-   //   }
+   StringT BookChapter::getPages() const
+   {
+      return mPages;
+   }
 
-   //   public BookChapter(Book book, Author[] authors) {
-   //      mBook = book;
-   //      mAuthors = authors;
-   //   }
+   StringT BookChapter::getShortForm() const
+   {
+      return toAbbrev(mAuthors) + mBook.GetTitle() + toAbbrev(mBook.GetAuthors()) + mBook.GetPublisher() + std::to_string(mBook.GetYear());
+   }
 
-   //   public String getPages() {
-   //      return mPages;
-   //   }
+   StringT BookChapter::getLongForm() const
+   {
+      return toString(mAuthors) + mBook.GetTitle() + toString(mBook.GetAuthors()) + mBook.GetPublisher() + std::to_string(mBook.GetYear());
+   }
 
-   //   @Override
-   //      public String getShortForm() {
-   //      return String.format("%s in \"%s\" eds. %s %s (%d)", new Object[] {
-   //         Author.toAbbrev(mAuthors),
-   //            mBook.mTitle,
-   //            Author.toAbbrev(mBook.mAuthors),
-   //            mBook.mPublisher,
-   //            new Integer(mBook.mYear)
-   //      });
-   //   }
+   const Author* AuthorPAPinEPQ[] = { &JPouchou, &FPichoir };
+   const BookChapter PAPinEPQ(ElectronProbeQuant, "p XXX-XXX", AuthorPAPinEPQ, 2);
 
-   //   @Override
-   //      public String getLongForm() {
-   //      return String.format("%s in \"%s\" eds. %s %s (%d)", new Object[] {
-   //         Author.toString(mAuthors),
-   //            mBook.mTitle,
-   //            Author.toString(mBook.mAuthors),
-   //            mBook.mPublisher,
-   //            new Integer(mBook.mYear)
-   //      });
-   //   }
-   //}
+   const Author* alJTA1982[] = { &JArmstrong };
+   const BookChapter JTA1982(MicrobeamAnalysis, "175-180", alJTA1982, 1);
 
-   //static public BookChapter PAPinEPQ = new BookChapter(Reference.ElectronProbeQuant, "p XXX-XXX", new Author[] {
-   //   Reference.JPouchou,
-   //      Reference.FPichoir
-   //});
-
-   //static public Date createDate(int yr, int month, int day) {
+   //Date createDate(int yr, int month, int day)
+   //{
    //   final Calendar cal = Calendar.getInstance(Locale.US);
    //   cal.set(yr, month, 24);
    //   return cal.getTime();
    //}
 
-   WebSite::WebSite(StringT url, StringT title, StringT date, const Author authors[], int len) : mUrl(url), mTitle(title), mDate(date), mAuthors(authors, authors+len)
+   WebSite::WebSite(StringT url, StringT title, StringT date, const Author* authors[], int len) : mUrl(url), mTitle(title), mDate(date), mAuthors(authors, authors + len)
    {
    }
 
@@ -352,5 +329,5 @@ namespace Reference
       return mReference;
    }
 
-   //static public final Reference NullReference = new CrudeReference("-");
+   const CrudeReference NullReference("-");
 }
