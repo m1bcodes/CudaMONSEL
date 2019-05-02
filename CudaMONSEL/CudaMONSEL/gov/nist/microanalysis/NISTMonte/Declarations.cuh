@@ -161,4 +161,11 @@ namespace ScreenedRutherfordScatteringAngle
 
 typedef ScreenedRutherfordScatteringAngle::ScreenedRutherfordScatteringAngle ScreenedRutherfordScatteringAngleT;
 
+namespace AtomicShell
+{
+   class AtomicShell;
+}
+
+typedef AtomicShell::AtomicShell AtomicShellT;
+
 #endif
