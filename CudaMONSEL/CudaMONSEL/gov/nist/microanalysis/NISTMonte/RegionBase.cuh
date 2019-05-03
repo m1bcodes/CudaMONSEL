@@ -40,7 +40,7 @@ namespace RegionBase
       double getAtomsPerCubicMeter(const ElementT& el) const;
       const RegionBase& getParent() const;
       bool isContainingRegion(const RegionBase& searchTarget) const;
-      char const * const toString() const;
+      char const * toString() const;
    };
 
    class TransformableRegion : public RegionBase, public ITransformT

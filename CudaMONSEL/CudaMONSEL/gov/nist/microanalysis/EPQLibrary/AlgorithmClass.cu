@@ -6,9 +6,9 @@ namespace AlgorithmClass
    {
    }
 
-   AlgorithmClass::AlgorithmClass(StringT clss, StringT name, StringT ref) : mReference(Reference::CrudeReference(ref)), mClass(clss), mName(name)
-   {
-   }
+   //AlgorithmClass::AlgorithmClass(StringT clss, StringT name, StringT ref) : mReference(Reference::CrudeReference(ref)), mClass(clss), mName(name)
+   //{
+   //}
 
    int AlgorithmClass::compareTo(const AlgorithmClass& o) const
    {

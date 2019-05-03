@@ -21,7 +21,7 @@ namespace Sphere
       void translate(double distance[]) override;
 
       PositionVecT getCenter() const;
-      char const * const toString() const override;
+      char const * toString() const override;
 
    private:
       const double mRadius; // meters

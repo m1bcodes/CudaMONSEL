@@ -11,7 +11,7 @@ namespace AlgorithmClass
    {
    protected:
       AlgorithmClass(StringT, StringT, const ReferenceT&);
-      AlgorithmClass::AlgorithmClass(StringT clss, StringT name, StringT ref);
+      //AlgorithmClass(StringT clss, StringT name, StringT ref);
 
    public:
       virtual AlgorithmClassT const * const * getAllImplementations() const = 0;

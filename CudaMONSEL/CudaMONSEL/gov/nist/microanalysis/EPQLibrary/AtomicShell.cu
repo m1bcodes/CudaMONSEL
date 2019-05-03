@@ -1,63 +1,64 @@
 #include "AtomicShell.cuh"
 #include "AlgorithmUser.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\Element.cuh"
+#include "gov\nist\microanalysis\EPQLibrary\EdgeEnergy.cuh"
 
 #include "gov\nist\microanalysis\Utility\CSVReader.h"
 
 namespace AtomicShell
 {
-   static const int K = 0;
-   static const int LI = 1;
-   static const int LII = 2;
-   static const int LIII = 3;
-   static const int MI = 4;
-   static const int MII = 5;
-   static const int MIII = 6;
-   static const int MIV = 7;
-   static const int MV = 8;
-   static const int NI = 9;
-   static const int NII = 10;
-   static const int NIII = 11;
-   static const int NIV = 12;
-   static const int NV = 13;
-   static const int NVI = 14;
-   static const int NVII = 15;
-   static const int OI = 16;
-   static const int OII = 17;
-   static const int OIII = 18;
-   static const int OIV = 19;
-   static const int OV = 20;
-   static const int OVI = 21;
-   static const int OVII = 22;
-   static const int OVIII = 23;
-   static const int OIX = 24;
-   static const int PI = 25;
-   static const int PII = 26;
-   static const int PIII = 27;
-   static const int PIV = 28;
-   static const int PV = 29;
-   static const int PVI = 30;
-   static const int PVII = 31;
-   static const int PVIII = 32;
-   static const int PIX = 33;
-   static const int PX = 34;
-   static const int PXI = 35;
-   static const int QI = 36;
-   static const int QII = 37;
-   static const int QIII = 38;
-   static const int QIV = 39;
-   static const int QV = 40;
-   static const int QVI = 41;
-   static const int QVII = 42;
-   static const int QVIII = 43;
-   static const int QIX = 44;
-   static const int QX = 45;
-   static const int QXI = 46;
-   static const int QXII = 47;
-   static const int QXIII = 48;
-   static const int Last = 49;
-   static const int Continuum = 1000;
-   static const int NoShell = 1001;
+   const int K = 0;
+   const int LI = 1;
+   const int LII = 2;
+   const int LIII = 3;
+   const int MI = 4;
+   const int MII = 5;
+   const int MIII = 6;
+   const int MIV = 7;
+   const int MV = 8;
+   const int NI = 9;
+   const int NII = 10;
+   const int NIII = 11;
+   const int NIV = 12;
+   const int NV = 13;
+   const int NVI = 14;
+   const int NVII = 15;
+   const int OI = 16;
+   const int OII = 17;
+   const int OIII = 18;
+   const int OIV = 19;
+   const int OV = 20;
+   const int OVI = 21;
+   const int OVII = 22;
+   const int OVIII = 23;
+   const int OIX = 24;
+   const int PI = 25;
+   const int PII = 26;
+   const int PIII = 27;
+   const int PIV = 28;
+   const int PV = 29;
+   const int PVI = 30;
+   const int PVII = 31;
+   const int PVIII = 32;
+   const int PIX = 33;
+   const int PX = 34;
+   const int PXI = 35;
+   const int QI = 36;
+   const int QII = 37;
+   const int QIII = 38;
+   const int QIV = 39;
+   const int QV = 40;
+   const int QVI = 41;
+   const int QVII = 42;
+   const int QVIII = 43;
+   const int QIX = 44;
+   const int QX = 45;
+   const int QXI = 46;
+   const int QXII = 47;
+   const int QXIII = 48;
+   const int Last = 49;
+   const int Continuum = 1000;
+   const int NoShell = 1001;
 
    // Shell families
    static const int NoFamily = 1999;
@@ -172,7 +173,7 @@ namespace AtomicShell
       "QXIII"
    };
 
-   static const char const * const mIUPACNames[] = {
+   static char const * const mIUPACNames[] = {
       "K",
       "L1",
       "L2",
@@ -382,18 +383,8 @@ namespace AtomicShell
       // N =7
    };
 
-   int AtomicShell::getGroundStateOccupancy() const
-   {
-      auto occ = mOccupancy[mElement.getAtomicNumber() - 1];
-      return occ.size() > mShell ? occ[mShell] : 0;
-   }
-
-   bool isLineFamily(int f)
-   {
-      return (f == KFamily) || (f == LFamily) || (f == MFamily) || (f == NFamily) || (f == OFamily);
-   }
-
-   void AtomicShell::loadGroundStateOccupancy()
+   static MatrixXi mOccupancy;
+   static void loadGroundStateOccupancy()
    {
       if (mOccupancy.empty()) {
          mOccupancy.resize(102);
@@ -424,6 +415,17 @@ namespace AtomicShell
             printf("Fatal error while attempting to load the ionization data file: %s.\n", filepath);
          }
       }
+   }
+
+   int AtomicShell::getGroundStateOccupancy() const
+   {
+      auto occ = mOccupancy[mElement.getAtomicNumber() - 1];
+      return occ.size() > mShell ? occ[mShell] : 0;
+   }
+
+   bool isLineFamily(int f)
+   {
+      return (f == KFamily) || (f == LFamily) || (f == MFamily) || (f == NFamily) || (f == OFamily);
    }
 
    AtomicShell::AtomicShell(const ElementT& el, int shell) : mElement(el), mShell(shell)
@@ -521,14 +523,15 @@ namespace AtomicShell
       return NoShell;
    }
 
-//   double getEdgeEnergy(Element::Element el, int shell)
-//   {
-//      return AlgorithmUser::getDefaultEdgeEnergy().compute(new AtomicShell(el, shell));
-//   }
+   double getEdgeEnergy(const ElementT& el, int shell)
+   {
+      return AlgorithmUser::getDefaultEdgeEnergy().compute(AtomicShell(el, shell));
+   }
 
-//   double getEdgeEnergy() {
-//      return AlgorithmUser::getDefaultEdgeEnergy().compute(this);
-//   }
+   double AtomicShell::getEdgeEnergy() const
+   {
+      return AlgorithmUser::getDefaultEdgeEnergy().compute(*this);
+   }
 
    int getCapacity(int shell)
    {
@@ -580,6 +583,7 @@ namespace AtomicShell
       default:
          printf("Unknown family in getFirstInFamily");
       }
+      return NoShell;
    }
 
    int getLastInFamily(int family)
@@ -598,6 +602,7 @@ namespace AtomicShell
       default:
          printf("Unknown family in getFirstInFamily");
       }
+      return NoShell;
    }
 
    char const * getFamilyName(int family)
@@ -613,9 +618,8 @@ namespace AtomicShell
          return "N";
       case OFamily:
          return "O";
-      default:
-         return "None";
       }
+      return "None";
    }
 
    int parseFamilyName(char const * s)
@@ -634,9 +638,7 @@ namespace AtomicShell
          return NFamily;
       else if (str == "O")
          return OFamily;
-      else
-         return NoFamily;
-      return 0;
+      return NoFamily;
    }
 
    int AtomicShell::getFamily() const
@@ -665,6 +667,7 @@ namespace AtomicShell
       else if (shell <= QXIII)
          return 7;
       printf("Unexpected shell in AtomicShell.getPrincipleQuantumNumber: %d" + shell);
+      return -1;
    }
 
    int AtomicShell::getPrincipalQuantumNumber() const
@@ -672,10 +675,10 @@ namespace AtomicShell
       return ::AtomicShell::getPrincipalQuantumNumber(mShell);
    }
 
-//   double AtomicShell::getEnergy()
-//   {
-//      return getGroundStateOccupancy() > 0 ? getEdgeEnergy(mElement, mShell) + mElement.getIonizationEnergy() : NAN;
-//   }
+   double AtomicShell::getEnergy() const
+   {
+      return getGroundStateOccupancy() > 0 ? getEdgeEnergy() + mElement.getIonizationEnergy() : NAN;
+   }
 
    const ElementT& AtomicShell::getElement() const
    {
@@ -687,7 +690,7 @@ namespace AtomicShell
       return mShell;
    }
 
-   char const * const AtomicShell::toString() const
+   char const * AtomicShell::toString() const
    {
       StringT elm(mElement.toAbbrev());
       StringT shell(::AtomicShell::getIUPACName(mShell));
@@ -736,15 +739,15 @@ namespace AtomicShell
       return (sh.mElement == mElement) && (sh.mShell == mShell);
    }
 
-//   bool exists(const Element::Element& elm, int shell)
-//   {
-//      return getEdgeEnergy(elm, shell) > 0.0;
-//   }
+   bool exists(const Element::Element& elm, int shell)
+   {
+      return getEdgeEnergy(elm, shell) > 0.0;
+   }
 
-//   bool exists()
-//   {
-//      return getEdgeEnergy() > 0.0;
-//   }
+   bool AtomicShell::exists() const
+   {
+      return getEdgeEnergy() > 0.0;
+   }
 
    int getOrbitalAngularMomentum(int shell)
    {

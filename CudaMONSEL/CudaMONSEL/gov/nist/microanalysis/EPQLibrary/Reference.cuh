@@ -200,6 +200,7 @@ namespace Reference
    extern const Author Oberndorff;
    extern const Author Czyzewski;
    extern const Author MacCallum;
+   extern const Author Bote;
 
    // Commonly referenced journals
    extern const Journal MandM;

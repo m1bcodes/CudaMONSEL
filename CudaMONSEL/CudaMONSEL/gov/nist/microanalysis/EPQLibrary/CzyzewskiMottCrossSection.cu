@@ -162,7 +162,7 @@ namespace CzyzewskiMottCrossSection
    // checked with JMONSEL version
    void CzyzewskiMottCrossSection::loadTables(int atomicNo)
    {
-      std::string name = ".\\gov\\nist\\microanalysis\\EPQLibrary\\CzyzewskiXSec/" + (atomicNo < 10 ? "0" + std::to_string(atomicNo) : std::to_string(atomicNo)) + ".dat";
+      std::string name(".\\gov\\nist\\microanalysis\\EPQLibrary\\CzyzewskiXSec/" + (atomicNo < 10 ? "0" + std::to_string(atomicNo) : std::to_string(atomicNo)) + ".dat");
       printf("Reading: %s\n", name.c_str());
       try {
          std::ifstream t(name);
@@ -186,7 +186,7 @@ namespace CzyzewskiMottCrossSection
                   std::getline(t, line);
                   tok = strtok_s((char*)line.c_str(), delim, &next_token);
                }
-               mValues[r][c] = sciToDub(tok);
+               mValues[r][c] = (float)sciToDub(tok);
                tok = strtok_s(NULL, delim, &next_token);
             }
          }
@@ -194,7 +194,7 @@ namespace CzyzewskiMottCrossSection
       }
       catch (std::exception ex) {
          //throw new EPQFatalException("Fatal error loading a Mott cross section data file. - " + name);
-         printf("Fatal error loading a Mott cross section data file. - %s\n", name);
+         printf("Fatal error loading a Mott cross section data file. - %s\n", name.c_str());
       }
    }
 

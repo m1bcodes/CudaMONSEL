@@ -11,6 +11,8 @@ typedef std::vector<float> VectorXf;
 typedef std::vector<VectorXf> MatrixXf;
 typedef std::vector<double> VectorXd;
 typedef std::vector<VectorXd> MatrixXd;
+typedef std::vector<int> VectorXi;
+typedef std::vector<VectorXi> MatrixXi;
 //typedef std::unordered_set<ElementT, HashFcn> UnorderedSetT;
 //typedef std::unordered_set<ElementT, HashFcn> OrderedSetT;
 
@@ -167,5 +169,12 @@ namespace AtomicShell
 }
 
 typedef AtomicShell::AtomicShell AtomicShellT;
+
+namespace EdgeEnergy
+{
+   class EdgeEnergy;
+}
+
+typedef EdgeEnergy::EdgeEnergy EdgeEnergyT;
 
 #endif

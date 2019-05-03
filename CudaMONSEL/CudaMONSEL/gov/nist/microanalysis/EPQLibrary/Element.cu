@@ -967,12 +967,12 @@ namespace Element
    {
       if (mIonizationEnergy <= 0 || mIonizationEnergy[mAtomicNumber - 1] <= 0) {
          readIonizationEnergy();
-         printf("load mIonizationEnergy by calling readIonizationEnergy first\n");
+         printf("Element::getIonizationEnergy: load mIonizationEnergy by calling readIonizationEnergy first\n");
       }
 
       double res = (mAtomicNumber - 1 <= numIonizationEnergy) ? mIonizationEnergy[mAtomicNumber - 1] : -1.0;
       if (res == -1.0) {
-         printf("The ionization energy is not available for %s\n", toAbbrev()); // new EPQFatalException(");
+         printf("Element::getIonizationEnergy: The ionization energy is not available for %s\n", toAbbrev());
       }
       return res;
    }

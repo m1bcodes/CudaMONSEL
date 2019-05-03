@@ -31,8 +31,8 @@ namespace Material
 
       void clear();
       double atomsPerCubicMeter(const Element::Element& elm) const;
-      void defineByMaterialFraction(Material mats[], int matsLen, double matFracs[], int matFracsLen);
-      void defineByMaterialFraction(Composition compositions[], int compositionsLen, double matFracs[], int matFracsLen, double density);
+      void defineByMaterialFraction(const Material* mats[], int matsLen, double matFracs[], int matFracsLen);
+      void defineByMaterialFraction(const Composition* compositions[], int compositionsLen, double matFracs[], int matFracsLen, double density);
       //char* descriptiveString(bool normalize);
       int compareTo(const Composition& obj) const;
       int compareTo(const Material& obj) const;
@@ -40,7 +40,7 @@ namespace Material
       Material clone() const;
       unsigned int hashCode() const;
       bool equals(const Material& obj) const;
-      bool almostEquals(Material& other, double tol) const;
+      bool almostEquals(const Material& other, double tol) const;
 
    private:
       double mDensity;
@@ -48,7 +48,4 @@ namespace Material
 
    static Material Default(0);
 }
-
-//typedef Material::Material MaterialT;
-
 #endif

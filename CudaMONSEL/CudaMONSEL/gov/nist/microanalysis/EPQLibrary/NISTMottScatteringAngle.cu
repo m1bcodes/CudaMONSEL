@@ -43,7 +43,7 @@ namespace NISTMottScatteringAngle
 
    void NISTMottScatteringAngle::loadData(int an)
    {
-      std::string name = an < 10 ? ".\\gov\\nist\\microanalysis\\EPQLibrary\\NistXSec/E0" + std::to_string(an) + ".D64" : ".\\gov\\nist\\microanalysis\\EPQLibrary\\NistXSec/E" + std::to_string(an) + ".D64";
+      std::string name(an < 10 ? ".\\gov\\nist\\microanalysis\\EPQLibrary\\NistXSec/E0" + std::to_string(an) + ".D64" : ".\\gov\\nist\\microanalysis\\EPQLibrary\\NistXSec/E" + std::to_string(an) + ".D64");
       printf("Reading: %s\n", name.c_str());
       try {
          std::ifstream t(name);
@@ -87,7 +87,6 @@ namespace NISTMottScatteringAngle
    {
       return mElement;
    }
-
    
    double NISTMottScatteringAngle::totalCrossSection(double energy) const
    {
@@ -119,7 +118,7 @@ namespace NISTMottScatteringAngle
          double e1 = e2 - PARAM;
          int i = (logE - e1 < e2 - logE ? j : j + 1); // offset to
          // zero-based
-         if (!((i >= 0) && (i < SPWEM_LEN))) printf("%s\n", std::to_string(i) + "\t" + std::to_string(FromSI::eV(energy)) + "\t" + std::to_string(e1) + "\t" + std::to_string(e2));
+         if (!((i >= 0) && (i < SPWEM_LEN))) printf("%s\n", StringT(std::to_string(i) + "\t" + std::to_string(FromSI::eV(energy)) + "\t" + std::to_string(e1) + "\t" + std::to_string(e2)).c_str());
          // via j
          int k = (int)(200.0 * Math2::random()); // offset to
          // zero-based

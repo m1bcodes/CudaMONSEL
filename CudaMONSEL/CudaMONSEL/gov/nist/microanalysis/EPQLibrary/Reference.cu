@@ -116,6 +116,7 @@ namespace Reference
    const Author Oberndorff("P. J. T. L.", "Oberndorff", "");
    const Author Czyzewski("", "Czyzewski", "");
    const Author MacCallum("", "MacCallum", "");
+   const Author Bote("David", "Bote", "Facultat de Física (ECM), Universitat de Barcelona, Diagonal 647, 08028 Barcelona, Spain");
 
    Journal::Journal(StringT name, StringT abbrev, StringT publisher) : mName(name), mAbbreviation(abbrev), mPublisher(publisher)
    {

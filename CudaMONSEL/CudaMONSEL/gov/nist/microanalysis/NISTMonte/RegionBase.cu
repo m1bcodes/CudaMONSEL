@@ -159,7 +159,7 @@ namespace RegionBase
       return false;
    }
    
-   char const * const RegionBase::toString() const
+   char const * RegionBase::toString() const
    {
       std::string str(std::string(mShape->toString()) + " of " + getMaterial().toString());
       return str.c_str();

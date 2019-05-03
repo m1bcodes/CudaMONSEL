@@ -26,8 +26,8 @@ namespace MonteCarloSS
    static const int XAxis = 0;
    static const int YAxis = 1;
    static const int ZAxis = 2;
-   const float ChamberRadius = 0.1;
-   static const float SMALL_DISP = 1.0e-15;
+   const float ChamberRadius = 0.1f;
+   static const float SMALL_DISP = 1.0e-15f;
 
    MonteCarloSS::MonteCarloSS()
    {
@@ -36,7 +36,7 @@ namespace MonteCarloSS
          0.0,
          0.0
       };
-      SphereT sphere(center, ChamberRadius);
+      SphereT sphere(center, ChamberRadius); // TODO: sphere will disappear when constructor exists
       mGun = new GaussianBeamT(1.0e-8);
       mGun->setCenter(sphere.getInitialPoint().data());
       mGun->setBeamEnergy(ToSI::keV(20.0));

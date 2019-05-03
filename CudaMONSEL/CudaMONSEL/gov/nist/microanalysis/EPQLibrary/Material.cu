@@ -73,21 +73,21 @@ namespace Material
       return weightFraction(elm, true) * mDensity / elm.getMass();
    }
 
-   void Material::defineByMaterialFraction(Material mats[], int matsLen, double matFracs[], int matFracsLen)
+   void Material::defineByMaterialFraction(const Material* mats[], int matsLen, double matFracs[], int matFracsLen)
    {
-      std::vector<Composition> comp;
+      std::vector<const Composition*> comp;
       for (int k = 0; k < matsLen; ++k) {
          comp.push_back(mats[k]);
       }
       Composition::defineByMaterialFraction(comp.data(), matsLen, matFracs, matFracsLen);
       double den = 0.0;
       for (int i = 0; i < matsLen; ++i) {
-         den += matFracs[i] * mats[i].getDensity();
+         den += matFracs[i] * mats[i]->getDensity();
       }
       setDensity(den);
    }
 
-   void Material::defineByMaterialFraction(Composition compositions[], int compositionsLen, double matFracs[], int matFracsLen, double density)
+   void Material::defineByMaterialFraction(const Composition* compositions[], int compositionsLen, double matFracs[], int matFracsLen, double density)
    {
       Composition::defineByMaterialFraction(compositions, compositionsLen, matFracs, matFracsLen);
       setDensity(density);
@@ -156,7 +156,7 @@ namespace Material
       return this == &other || *this == other;
    }
 
-   bool Material::almostEquals(Material& other, double tol) const
+   bool Material::almostEquals(const Material& other, double tol) const
    {
       Material otherMat = (Material)other;
       return Composition::almostEquals(other, tol) && (abs(getDensity() - otherMat.getDensity()) / fmax(getDensity(), otherMat.getDensity()) < tol);

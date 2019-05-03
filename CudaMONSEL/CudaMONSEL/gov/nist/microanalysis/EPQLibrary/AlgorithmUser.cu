@@ -1,4 +1,5 @@
 #include "gov\nist\microanalysis\EPQLibrary\AlgorithmUser.cuh"
+#include "gov\nist\microanalysis\EPQLibrary\EdgeEnergy.cuh"
 
 namespace AlgorithmUser
 {
@@ -12,10 +13,12 @@ namespace AlgorithmUser
       //initializeDefaultStrategy();
    }
 
-   //EdgeEnergy getDefaultEdgeEnergy()
-   //{
-   //   return sDefaultEdgeEnergy == NULL ? EdgeEnergy.SuperSet : sDefaultEdgeEnergy;
-   //}
+   const EdgeEnergyT& sDefaultEdgeEnergy = EdgeEnergy::SuperSet;
+
+   const EdgeEnergyT& getDefaultEdgeEnergy()
+   {
+      return sDefaultEdgeEnergy;
+   }
 
    //static CorrectionAlgorithm getDefaultCorrectionAlgorithm()
    //{
@@ -53,13 +56,6 @@ namespace AlgorithmUser
    //   return res;
    //}
 
-   ///**
-   //* getAlgorithm - Returns the specific algorithm associated with the base
-   //* class provided as an argument.
-   //*
-   //* @param cls
-   //* @return AlgorithmClass
-   //*/
    // AlgorithmClass getAlgorithm(Class< ? > cls) {
    //   AlgorithmClass res = null;
    //   if (mGlobalOverride != null)
@@ -69,13 +65,6 @@ namespace AlgorithmUser
    //   return res;
    //}
 
-   ///**
-   //* getAlgorithm - Returns the specific algorithm associated with the base
-   //* class provided as an argument.
-   //*
-   //* @param clsName
-   //* @return AlgorithmClass
-   //*/
    // AlgorithmClass getAlgorithm(String clsName) {
    //   AlgorithmClass res = null;
    //   if (mGlobalOverride != null)
@@ -103,12 +92,6 @@ namespace AlgorithmUser
    //      clearGlobalOverride();
    //}
 
-   ///**
-   //* Returns the current global algorithm strategy based on defaults and global
-   //* overrides.
-   //*
-   //* @return Strategy
-   //*/
    //static  Strategy getGlobalStrategy() {
    //   Strategy res = new Strategy();
    //   res.addAll(mGlobalOverride);
@@ -123,10 +106,6 @@ namespace AlgorithmUser
    //   return res;
    //}
 
-   ///**
-   //* clearGlobalOverride - Clear the global strategy override restoring each
-   //* algorithm to use its default algorithms.
-   //*/
    //static  void clearGlobalOverride() {
    //   mGlobalOverride = null;
    //   sDefaultTransitionEnergy = null;
@@ -138,13 +117,6 @@ namespace AlgorithmUser
    //   sDefaultAngularDistribution = null;
    //}
 
-   ///**
-   //* addDefaultAlgorithm - Specify a default algorithm. (Use applyStrategy to
-   //* override)
-   //*
-   //* @param cls
-   //* @param ac
-   //*/
    //protected void addDefaultAlgorithm(Class< ? > cls, AlgorithmClass ac) {
    //   assert ac != null;
    //   if (mLocalOverride == null)
@@ -152,12 +124,6 @@ namespace AlgorithmUser
    //   mLocalOverride.addAlgorithm(cls, ac);
    //}
 
-   ///**
-   //* Outputs a description of the current Strategy to the specified Writer.
-   //*
-   //* @param wr
-   //* @throws IOException
-   //*/
    // void documentStrategy(Writer wr)
    //   throws IOException{
    //   for (final String cls : mGlobalOverride.getStrategyMap().keySet()) {
@@ -177,11 +143,6 @@ namespace AlgorithmUser
    //   return strat;
    //}
 
-   ///**
-   //* Returns a list of all algorithms on which this algorithm depends.
-   //*
-   //* @return SortedSet<AlgorithmClass>
-   //*/
    // Strategy getEffectiveStrategy() {
    //   final Strategy strat = getEffectiveStrategyHelper();
    //   strat.apply(mGlobalOverride);

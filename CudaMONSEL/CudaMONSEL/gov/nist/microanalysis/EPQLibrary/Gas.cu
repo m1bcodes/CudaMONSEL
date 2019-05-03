@@ -62,7 +62,7 @@ namespace Gas
 
    void Gas::replicate(const Gas& gas)
    {
-      replicate(gas);
+      MaterialT::replicate(gas);
       mPressure = gas.mPressure;
       mTemperature = gas.mTemperature;
    }

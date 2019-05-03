@@ -109,7 +109,7 @@ namespace Sphere
       return mCenter;
    }
 
-   char const * const Sphere::toString() const
+   char const * Sphere::toString() const
    {
       StringT ret = "Sphere[" + std::to_string(mCenter[0]) + std::to_string(mCenter[1]) + std::to_string(mCenter[2]) + ", r=" + std::to_string(mRadius) + "]";
       return ret.c_str();

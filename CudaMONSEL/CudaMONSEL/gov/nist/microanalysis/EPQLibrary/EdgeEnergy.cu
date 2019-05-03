@@ -1,388 +1,346 @@
-//#include "gov\nist\microanalysis\Utility\CSVReader.h"
-//#include "gov\nist\microanalysis\Utility\Math2.cuh"
-//
-///**
-//* <p>
-//* Various different implementations of classes that return the edge energy for
-//* a specified AtomicShell.
-//* </p>
-//* <p>
-//* Copyright: Pursuant to title 17 Section 105 of the United States Code this
-//* software is not subject to copyright protection and is in the public domain
-//* </p>
-//* <p>
-//* Company: National Institute of Standards and Technology
-//* </p>
-//*
-//* @author Nicholas W. M. Ritchie
-//* @version 1.0
-//*/
-//
-//namespace EdgeEnergy
-//{
-//
-//   @Override
-//      protected void initializeDefaultStrategy() {
-//      // Don't do anything...
-//   }
-//
-//   protected EdgeEnergy(String name, String ref) {
-//      super("Edge Energy", name, ref);
-//   }
-//
-//   protected EdgeEnergy(String name, Reference ref) {
-//      super("Edge Energy", name, ref);
-//   }
-//
-//   /**
-//   * getAllImplementations - Returns a full list of all available algorithms.
-//   * Each item is an implements the EdgeEnergy class.
-//   *
-//   * @return List
-//   */
-//   @Override
-//      public List<AlgorithmClass> getAllImplementations() {
-//      return Arrays.asList(mAllImplementations);
-//   }
-//
-//   /**
-//   * Returns the edge energy associated with the specified atomic shell (in
-//   * Joules). Returns zero for shells not associated with edges.
-//   *
-//   * @param shell AtomicShell
-//   * @return double
-//   */
-//   abstract public double compute(AtomicShell shell);
-//
-//   /**
-//   * Returns the edge energy (in Joules) associated with the specified
-//   * tranition.
-//   *
-//   * @param xrt XRayTransition
-//   * @return double
-//   */
-//   public double compute(XRayTransition xrt) {
-//      return compute(xrt.getDestination());
-//   }
-//
-//   /**
-//   * supports - Does this particular implementation provide a non-zero edge
-//   * energy for the specified transition?
-//   *
-//   * @param shell AtomicShell
-//   * @return boolean
-//   */
-//   abstract public boolean isSupported(AtomicShell shell);
-//
-//   public static class DiracHartreeSlaterIonizationEnergies
-//      extends EdgeEnergy {
-//
-//      static double[][] mUis; // nominally [100][9]
-//
-//      public DiracHartreeSlaterIonizationEnergies() {
-//         super("Bote-Salvat 2008", new Reference.JournalArticle(Reference.PhysRevA, "77", "042701-1 to 24", 2008, new Reference.Author[] {
-//            new Reference.Author("David", "Bote", "Facultat de Física (ECM), Universitat de Barcelona, Diagonal 647, 08028 Barcelona, Spain"),
-//               Reference.FSalvat
-//         }));
-//      }
-//
-//      private void initialize() {
-//         synchronized(DiracHartreeSlaterIonizationEnergies.class) {
-//            if (mUis == null) {
-//               mUis = new double[100][];
-//               final double[][] uisTmp = (new CSVReader.ResourceReader("SalvatXion/xionUis.csv", false)).getResource(EdgeEnergy.class);
-//               assert uisTmp.length == 99;
-//               for (int r = 0; r < uisTmp.length; ++r) {
-//                  assert Math.round(uisTmp[r][0]) == r + 1;
-//                  mUis[r + 1] = Math2.slice(uisTmp[r], 1, uisTmp[r].length - 1);
-//               }
-//            }
-//         }
-//      }
-//
-//      /**
-//      * @see gov.nist.microanalysis.EPQLibrary.EdgeEnergy#compute(gov.nist.microanalysis.EPQLibrary.AtomicShell)
-//      */
-//      @Override
-//         public double compute(AtomicShell shell) {
-//         if (mUis == null)
-//            initialize();
-//         return ToSI.eV(mUis[shell.getElement().getAtomicNumber()][shell.getShell()]);
-//      }
-//
-//      /**
-//      * @see gov.nist.microanalysis.EPQLibrary.EdgeEnergy#isSupported(gov.nist.microanalysis.EPQLibrary.AtomicShell)
-//      */
-//      @Override
-//         public boolean isSupported(AtomicShell shell) {
-//         if (mUis == null)
-//            initialize();
-//         final int z = shell.getElement().getAtomicNumber();
-//         final int sh = shell.getShell();
-//         return (z >= 1) && (z <= 99) && (sh < mUis[z].length);
-//      }
-//   };
-//
-//   public static final EdgeEnergy DHSIonizationEnergy = new DiracHartreeSlaterIonizationEnergies();
-//
-//   /**
-//   * NISTxrtdb - The NIST x-ray transition database provides edge energies for
-//   * the K and L shells for atomic numbers from 10 to 100.
-//   */
-//   public static class NISTEdgeEnergy
-//      extends EdgeEnergy {
-//      NISTEdgeEnergy() {
-//         super("NIST X-ray transition database", "http://physics.nist.gov/PhysRefData/XrayTrans/");
-//      }
-//
-//      private double[][] mEnergies;
-//
-//      @Override
-//         public double compute(AtomicShell shell) {
-//         if (mEnergies == null)
-//            mEnergies = (new CSVReader.ResourceReader("NISTxrtdb.csv", false)).getResource(EdgeEnergy.class);
-//         final int an = shell.getElement().getAtomicNumber();
-//         if ((an < Element.elmNe) || (an > Element.elmFm))
-//            throw new IllegalArgumentException(toString() + " only supports elements Ne (10) to Fm (100)");
-//         final int sh = shell.getShell();
-//         if ((sh < AtomicShell.K) || (sh > AtomicShell.LIII))
-//            throw new IllegalArgumentException(toString() + " only supports shells K, L1, L2 and L3");
-//         return ToSI.eV(mEnergies[an - Element.elmNe][sh - AtomicShell.K]);
-//      }
-//
-//      @Override
-//         public boolean isSupported(AtomicShell shell) {
-//         if (mEnergies == null)
-//            mEnergies = (new CSVReader.ResourceReader("NISTxrtdb.csv", false)).getResource(EdgeEnergy.class);
-//         final int an = shell.getElement().getAtomicNumber();
-//         final int sh = shell.getShell();
-//         return (an >= Element.elmNe) && (an <= Element.elmFm) && (sh >= AtomicShell.K) && (sh <= AtomicShell.LIII)
-//            && (mEnergies[an - Element.elmNe][sh - AtomicShell.K] > 0.0);
-//      }
-//   };
-//
-//   public static final EdgeEnergy NISTxrtdb = new NISTEdgeEnergy();
-//
-//   /**
-//   * Chantler2005 - A set of edge energies from "Chantler, C.T., Olsen, K.,
-//   * Dragoset, R.A., Kishore, A.R., Kotochigova, S.A., and Zucker, D.S. (2005),
-//   * X-Ray Form Factor, Attenuation and Scattering Tables (version 2.1).
-//   * [Online] Available: http://physics.nist.gov/ffast 10-Mar-2005. National
-//   * Institute of Standards and Technology, Gaithersburg, MD. Originally
-//   * published as Chantler, C.T., J. Phys. Chem. Ref. Data 29(4), 597-1048
-//   * (2000); and Chantler, C.T., J. Phys. Chem. Ref. Data 24, 71-643 (1995)."
-//   * Supports elements H to U and shells K to O5, P1 to P3.
-//   */
-//
-//   public static class ChantlerEdgeEnergy
-//      extends EdgeEnergy {
-//      ChantlerEdgeEnergy() {
-//         super("NIST-Chantler 2005", "http://physics.nist.gov/ffast");
-//      }
-//
-//      private double[][] mEnergies;
-//
-//      private final int index(int sh) {
-//         if ((sh < AtomicShell.K) || (sh > AtomicShell.PIII))
-//            return -1;
-//         if (sh <= AtomicShell.OV)
-//            return sh;
-//         if (sh >= AtomicShell.PI)
-//            return sh - 4; // (AtomicShell.PI-AtomicShell.OV + 1);
-//         return -1;
-//      }
-//
-//      private void load() {
-//         synchronized(this) {
-//            if (mEnergies == null) {
-//               mEnergies = (new CSVReader.ResourceReader("FFastEdgeDB.csv", true)).getResource(EdgeEnergy.class);
-//               // Convert from eV to Joules
-//               for (int r = 0; r < mEnergies.length; ++r)
-//                  if (mEnergies[r].length > 0)
-//                     for (int c = 0; c < mEnergies[r].length; ++c)
-//                        mEnergies[r][c] = ToSI.eV(mEnergies[r][c]);
-//            }
-//         }
-//      }
-//
-//      @Override
-//         public double compute(AtomicShell shell) {
-//         if (mEnergies == null)
-//            load();
-//         final int an = shell.getElement().getAtomicNumber();
-//         if ((an < Element.elmH) || (an > Element.elmU))
-//            throw new IllegalArgumentException(toString() + " only supports elements H (1) to U (92)");
-//         final int sh = shell.getShell();
-//         final int i = index(sh);
-//         if (i == -1)
-//            throw new IllegalArgumentException(toString() + " only supports shells K to O5, P1 to P3");
-//         assert mEnergies.length > an - Element.elmH : "Too few elements in EdgeEnergy database.";
-//         return mEnergies[an - Element.elmH].length > i ? mEnergies[an - Element.elmH][i] : 0.0;
-//      }
-//
-//      @Override
-//         public boolean isSupported(AtomicShell shell) {
-//         if (mEnergies == null)
-//            load();
-//         final int an = shell.getElement().getAtomicNumber();
-//         final int i = index(shell.getShell());
-//         return (an >= Element.elmLi) && (an <= Element.elmU) && (i >= 0) && (mEnergies[an - Element.elmH].length > i)
-//            && (mEnergies[an - Element.elmH][i] > 0.0);
-//      }
-//   };
-//
-//   public static final EdgeEnergy Chantler2005 = new ChantlerEdgeEnergy();
-//
-//   /**
-//   * Wernish84 - Wernisch et al., 1984 - Taken from Markowitz in the Handbook
-//   * of X-ray Spectroscopy
-//   */
-//   public static class WernishEdgeEnergy
-//      extends EdgeEnergy {
-//      WernishEdgeEnergy() {
-//         super("Wernisch et al., 1984", "Wernisch et al., 1984 - Taken from Markowitz in the Handbook of X-ray Spectroscopy");
-//      }
-//
-//      @Override
-//         public double compute(AtomicShell shell) {
-//         final double z = shell.getElement().getAtomicNumber();
-//         if (!isSupported(shell))
-//            throw new IllegalArgumentException("Unsupported shell " + shell.toString() + " in " + toString());
-//         switch (shell.getShell()) {
-//         case AtomicShell.K:
-//            return ToSI.keV(-1.304e-1 + z * (-2.633e-3 + z * (9.718e-3 + z * 4.144e-5)));
-//         case AtomicShell.LI:
-//            return ToSI.keV(-4.506e-1 + z * (1.566e-2 + z * (7.599e-4 + z * 1.792e-5)));
-//         case AtomicShell.LII:
-//            return ToSI.keV(-6.018e-1 + z * (1.964e-2 + z * (5.935e-4 + z * 1.843e-5)));
-//         case AtomicShell.LIII:
-//            return ToSI.keV(3.390e-1 + z * (-4.931e-2 + z * (2.336e-3 + z * 1.836e-6)));
-//         case AtomicShell.MI:
-//            return ToSI.keV(-8.645 + z * (3.977e-1 + z * (-5.963e-3 + z * 3.624e-5)));
-//         case AtomicShell.MII:
-//            return ToSI.keV(-7.499 + z * (3.459e-1 + z * (-5.250e-3 + z * 3.263e-5)));
-//         case AtomicShell.MIII:
-//            return ToSI.keV(-6.280 + z * (2.831e-1 + z * (-4.117e-3 + z * 2.505e-5)));
-//         case AtomicShell.MIV:
-//            return ToSI.keV(-4.778 + z * (2.184e-1 + z * (-3.303e-3 + z * 2.115e-5)));
-//         case AtomicShell.MV:
-//            return ToSI.keV(-2.421 + z * (1.172e-1 + z * (-1.845e-3 + z * 1.397e-5)));
-//         default:
-//            throw new IllegalArgumentException("Unsupported shell in " + toString());
-//         }
-//      }
-//
-//      @Override
-//         public boolean isSupported(AtomicShell shell) {
-//         final int z = shell.getElement().getAtomicNumber();
-//         switch (shell.getShell()) {
-//         case AtomicShell.K:
-//            return ((z >= 11) && (z <= 63));
-//         case AtomicShell.LI:
-//            return ((z >= 28) && (z <= 83));
-//         case AtomicShell.LII:
-//            return ((z >= 30) && (z <= 83));
-//         case AtomicShell.LIII:
-//            return ((z >= 30) && (z <= 83));
-//         case AtomicShell.MI:
-//            return ((z >= 52) && (z <= 83));
-//         case AtomicShell.MII:
-//            return ((z >= 55) && (z <= 83));
-//         case AtomicShell.MIII:
-//            return ((z >= 55) && (z <= 83));
-//         case AtomicShell.MIV:
-//            return ((z >= 60) && (z <= 83));
-//         case AtomicShell.MV:
-//            return ((z >= 61) && (z <= 83));
-//         default:
-//            return false;
-//         }
-//      }
-//   }
-//
-//   public static final EdgeEnergy Wernish84 = new WernishEdgeEnergy();
-//
-//   /**
-//   * DTSA - From DTSA at
-//   * http://www.cstl.nist.gov/div837/Division/outputs/DTSA/DTSA.htm
-//   */
-//   public static class DTSAEdgeEnergy
-//      extends EdgeEnergy {
-//      DTSAEdgeEnergy() {
-//         super("DTSA", "From DTSA at http://www.cstl.nist.gov/div837/Division/outputs/DTSA/DTSA.htm");
-//      }
-//
-//      private double[][] mEdgeEnergy;
-//
-//      @Override
-//         public double compute(AtomicShell shell) {
-//         if (mEdgeEnergy == null)
-//            mEdgeEnergy = (new CSVReader.ResourceReader("EdgeEnergies.csv", true)).getResource(EdgeEnergy.class);
-//         final int sh = shell.getShell();
-//         if ((sh < AtomicShell.K) || (sh > AtomicShell.NI))
-//            throw new EPQFatalException("Unsupported shell " + shell.toString() + " in " + toString());
-//         final int i = shell.getElement().getAtomicNumber() - 1;
-//         if ((i < 0) || (i >= mEdgeEnergy.length))
-//            throw new EPQFatalException("Unsupported element " + shell.toString() + " in " + toString());
-//         return (mEdgeEnergy[i] != null) && (mEdgeEnergy[i].length > sh) ? ToSI.eV(mEdgeEnergy[i][sh]) : 0.0;
-//      }
-//
-//      @Override
-//         public boolean isSupported(AtomicShell shell) {
-//         if (mEdgeEnergy == null)
-//            mEdgeEnergy = (new CSVReader.ResourceReader("EdgeEnergies.csv", true)).getResource(EdgeEnergy.class);
-//         final int sh = shell.getShell();
-//         final int zp = shell.getElement().getAtomicNumber() - 1;
-//         return (zp < mEdgeEnergy.length) && (mEdgeEnergy[zp] != null) && (mEdgeEnergy[zp].length > sh);
-//      }
-//   }
-//
-//   public static final EdgeEnergy DTSA = new DTSAEdgeEnergy();
-//
-//   /**
-//   * A super set to cover the largest range of shells
-//   */
-//   public static class SuperSetEdgeEnergy
-//      extends EdgeEnergy {
-//      SuperSetEdgeEnergy() {
-//         super("Superset", "Chantler then NIST then DTSA");
-//      }
-//
-//      @Override
-//         public double compute(AtomicShell shell) {
-//         try {
-//            return Chantler2005.compute(shell);
-//         }
-//         catch (Throwable e0) {
-//            try {
-//               return NISTxrtdb.compute(shell);
-//            }
-//            catch (Throwable e1) {
-//               try {
-//                  return DTSA.compute(shell);
-//               }
-//               catch (Throwable e2) {
-//                  return -1.0;
-//               }
-//            }
-//         }
-//      }
-//
-//      @Override
-//         public boolean isSupported(AtomicShell shell) {
-//         return Chantler2005.isSupported(shell) || NISTxrtdb.isSupported(shell) || DTSA.isSupported(shell);
-//      }
-//   }
-//
-//   public static final EdgeEnergy SuperSet = new SuperSetEdgeEnergy();
-//
-//   static private final AlgorithmClass[] mAllImplementations = {
-//      EdgeEnergy.DTSA,
-//      EdgeEnergy.Chantler2005,
-//      EdgeEnergy.NISTxrtdb,
-//      EdgeEnergy.Wernish84,
-//      EdgeEnergy.DHSIonizationEnergy,
-//      EdgeEnergy.SuperSet
-//   };
-//
-//};
+#include "gov\nist\microanalysis\EPQLibrary\EdgeEnergy.cuh"
+#include "gov\nist\microanalysis\EPQLibrary\Reference.cuh"
+#include "gov\nist\microanalysis\EPQLibrary\ToSI.cuh"
+#include "gov\nist\microanalysis\EPQLibrary\AtomicShell.cuh"
+#include "gov\nist\microanalysis\EPQLibrary\Element.cuh"
+
+#include "gov\nist\microanalysis\Utility\CSVReader.h"
+#include "gov\nist\microanalysis\Utility\Math2.cuh"
+
+namespace EdgeEnergy
+{
+   static const Reference::CrudeReference sCrudeRef("Edge Energy");
+
+   void EdgeEnergy::initializeDefaultStrategy()
+   {
+   }
+
+   EdgeEnergy::EdgeEnergy(StringT name, StringT ref) : AlgorithmClassT(name, ref, sCrudeRef)
+   {
+   }
+
+   EdgeEnergy::EdgeEnergy(StringT name, const ReferenceT& ref) : AlgorithmClassT("Edge Energy", name, ref)
+   {
+   }
+
+   //double compute(XRayTransition xrt)
+   //{
+   //   return compute(xrt.getDestination());
+   //}
+
+   // https://www.oreilly.com/library/view/c-cookbook/0596007612/ch03s06.html
+   static double sciToDub(const std::string& str)
+   {
+      std::stringstream ss(str);
+      double d = 0;
+      ss >> d;
+
+      if (ss.fail()) {
+         std::string s = "Unable to format ";
+         s += str;
+         s += " as a number!";
+         throw (s);
+      }
+
+      return d;
+   }
+
+   static MatrixXd mUis; // nominally [100][9]
+   static void loadxionUis()
+   {
+      if (mUis.empty()) {
+         std::string name(".\\gov\\nist\\microanalysis\\EPQLibrary\\SalvatXion/xionUis.csv");
+         printf("Reading: %s\n", name.c_str());
+         try {
+            std::ifstream file(name);
+            if (!file.good()) throw 0;
+            mUis.resize(100);
+            int idx = 0;
+            for (CSVIterator loop(file); loop != CSVIterator(); ++loop) {
+               int z = std::stoi((*loop)[0]);
+               if (z != idx + 1) printf("DiracHartreeSlaterIonizationEnergies::initialize: wrong line %d\n", z);
+               for (int k = 1; k < (*loop).size(); ++k) {
+                  double cur = sciToDub((*loop)[k]);
+                  mUis[idx + 1].push_back(cur);
+               }
+               ++idx;
+            }
+         }
+         catch (const std::exception&) {
+            printf("loadxionUis: %s\n", name.c_str());
+         }
+      }
+   }
+
+   static const Reference::Author* al[] = { &Reference::Bote, &Reference::FSalvat };
+   static const Reference::JournalArticle ja(Reference::PhysRevA, "77", "042701-1 to 24", 2008, al, 2);
+
+   DiracHartreeSlaterIonizationEnergies::DiracHartreeSlaterIonizationEnergies() : EdgeEnergy("Bote-Salvat 2008", ja)
+   {
+      loadxionUis();
+   }
+
+   double DiracHartreeSlaterIonizationEnergies::compute(const AtomicShellT& shell) const
+   {
+      return ToSI::eV(mUis[shell.getElement().getAtomicNumber()][shell.getShell()]);
+   }
+
+   bool DiracHartreeSlaterIonizationEnergies::isSupported(const AtomicShellT& shell) const
+   {
+      int z = shell.getElement().getAtomicNumber();
+      int sh = shell.getShell();
+      return (z >= 1) && (z <= 99) && (sh < mUis[z].size());
+   };
+
+   const DiracHartreeSlaterIonizationEnergies DHSIonizationEnergyRef;
+   const EdgeEnergy& DHSIonizationEnergy = DHSIonizationEnergyRef;
+
+
+   static MatrixXd NISTEdgeEnergies;
+   static void loadNISTxrtdb()
+   {
+      if (NISTEdgeEnergies.empty()) {
+         std::string name(".\\gov\\nist\\microanalysis\\EPQLibrary\\NISTxrtdb.csv");
+         printf("Reading: %s\n", name.c_str());
+         try {
+            std::ifstream file(name);
+            if (!file.good()) throw 0;
+            NISTEdgeEnergies.resize(91, VectorXd(4, 0));
+            int idx = 0;
+            for (CSVIterator loop(file); loop != CSVIterator(); ++loop) {
+               for (int k = 0; k < (*loop).size(); ++k) {
+                  double cur = sciToDub((*loop)[k]);
+                  NISTEdgeEnergies[idx][k] = cur;
+               }
+               ++idx;
+            }
+         }
+         catch (const std::exception&) {
+            printf("loadNISTxrtdb: %s\n", name.c_str());
+         }
+      }
+   }
+
+   NISTEdgeEnergy::NISTEdgeEnergy() : EdgeEnergy("NIST X-ray transition database", "http://physics.nist.gov/PhysRefData/XrayTrans/")
+   {
+      loadNISTxrtdb();
+   }
+
+   double NISTEdgeEnergy::compute(const AtomicShellT& shell) const
+   {
+      int an = shell.getElement().getAtomicNumber();
+      if ((an < Element::elmNe) || (an > Element::elmFm)) printf("NISTEdgeEnergy::compute: %d - only supports elements Ne (10) to Fm (100)", an);
+      int sh = shell.getShell();
+      if ((sh < AtomicShell::K) || (sh > AtomicShell::LIII)) printf("NISTEdgeEnergy::compute: %d - only supports shells K, L1, L2 and L3", sh);
+      return ToSI::eV(NISTEdgeEnergies[an - Element::elmNe][sh - AtomicShell::K]);
+   }
+
+   bool NISTEdgeEnergy::isSupported(const AtomicShellT& shell) const
+   {
+      int an = shell.getElement().getAtomicNumber();
+      int sh = shell.getShell();
+      return (an >= Element::elmNe) && (an <= Element::elmFm) && (sh >= AtomicShell::K) && (sh <= AtomicShell::LIII) && (NISTEdgeEnergies[an - Element::elmNe][sh - AtomicShell::K] > 0.0);
+   }
+
+   const NISTEdgeEnergy NISTxrtdbRef;
+   const EdgeEnergy& NISTxrtdb = NISTxrtdbRef;
+
+   static MatrixXd ChantlerEdgeEnergies;
+   static void loadFFastEdgeDB()
+   {
+      if (ChantlerEdgeEnergies.empty()) {
+         std::string name(".\\gov\\nist\\microanalysis\\EPQLibrary\\FFastEdgeDB.csv");
+         printf("Reading: %s\n", name.c_str());
+         try {
+            std::ifstream file(name);
+            if (!file.good()) throw 0;
+            ChantlerEdgeEnergies.resize(92, VectorXd());
+            int idx = 0;
+            for (CSVIterator loop(file); loop != CSVIterator(); ++loop) {
+               for (int k = 0; k < (*loop).size(); ++k) {
+                  double cur = sciToDub((*loop)[k]);
+                  if (cur) ChantlerEdgeEnergies[idx].push_back(ToSI::eV(cur));
+               }
+               ++idx;
+            }
+         }
+         catch (const std::exception&) {
+            printf("loadFFastEdgeDB: %s\n", name.c_str());
+         }
+      }
+   }
+
+   ChantlerEdgeEnergy::ChantlerEdgeEnergy() : EdgeEnergy("NIST-Chantler 2005", "http://physics.nist.gov/ffast")
+   {
+      loadFFastEdgeDB();
+   }
+
+   static int index(int sh)
+   {
+      if ((sh < AtomicShell::K) || (sh > AtomicShell::PIII))
+         return -1;
+      if (sh <= AtomicShell::OV)
+         return sh;
+      if (sh >= AtomicShell::PI)
+         return sh - 4; // (AtomicShell::PI-AtomicShell::OV + 1);
+      return -1;
+   }
+
+   double ChantlerEdgeEnergy::compute(const AtomicShellT& shell) const
+   {
+      if (ChantlerEdgeEnergies.empty()) printf("ChantlerEdgeEnergy::isSupported ChantlerEdgeEnergies empty!\n");
+      int an = shell.getElement().getAtomicNumber();
+      if ((an < Element::elmH) || (an > Element::elmU)) printf("ChantlerEdgeEnergy::compute: %d - only supports elements H (1) to U (92)\n", an);
+      int sh = shell.getShell();
+      int i = index(sh);
+      if (i == -1) printf("ChantlerEdgeEnergy::compute: %d - only supports shells K to O5, P1 to P3\n", i);
+      if (!(ChantlerEdgeEnergies.size() > an - Element::elmH)) printf("Too few elements in EdgeEnergy database.");
+      return ChantlerEdgeEnergies[an - Element::elmH].size() > i ? ChantlerEdgeEnergies[an - Element::elmH][i] : 0.0;
+   }
+
+   bool ChantlerEdgeEnergy::isSupported(const AtomicShellT& shell) const
+   {
+      if (ChantlerEdgeEnergies.empty()) printf("ChantlerEdgeEnergy::isSupported ChantlerEdgeEnergies empty!\n");
+      int an = shell.getElement().getAtomicNumber();
+      int i = index(shell.getShell());
+      return (an >= Element::elmLi) && (an <= Element::elmU) && (i >= 0) && (ChantlerEdgeEnergies[an - Element::elmH].size() > i) && (ChantlerEdgeEnergies[an - Element::elmH][i] > 0.0);
+   }
+
+   const ChantlerEdgeEnergy Chantler2005Ref;
+   const EdgeEnergy& Chantler2005 = Chantler2005Ref;
+
+   WernishEdgeEnergy::WernishEdgeEnergy() : EdgeEnergy("Wernisch et al., 1984", "Wernisch et al., 1984 - Taken from Markowitz in the Handbook of X-ray Spectroscopy") {
+   }
+
+   double WernishEdgeEnergy::compute(const AtomicShellT& shell) const
+   {
+      double z = shell.getElement().getAtomicNumber();
+      if (!isSupported(shell)) printf(StringT("Unsupported shell " + StringT(shell.toString()) + " in " + toString()).c_str());
+      if (shell.getShell() == AtomicShell::K) return ToSI::keV(-1.304e-1 + z * (-2.633e-3 + z * (9.718e-3 + z * 4.144e-5)));
+      if (shell.getShell() == AtomicShell::LI) return ToSI::keV(-4.506e-1 + z * (1.566e-2 + z * (7.599e-4 + z * 1.792e-5)));
+      if (shell.getShell() == AtomicShell::LII) return ToSI::keV(-6.018e-1 + z * (1.964e-2 + z * (5.935e-4 + z * 1.843e-5)));
+      if (shell.getShell() == AtomicShell::LIII) return ToSI::keV(3.390e-1 + z * (-4.931e-2 + z * (2.336e-3 + z * 1.836e-6)));
+      if (shell.getShell() == AtomicShell::MI) return ToSI::keV(-8.645 + z * (3.977e-1 + z * (-5.963e-3 + z * 3.624e-5)));
+      if (shell.getShell() == AtomicShell::MII) return ToSI::keV(-7.499 + z * (3.459e-1 + z * (-5.250e-3 + z * 3.263e-5)));
+      if (shell.getShell() == AtomicShell::MIII) return ToSI::keV(-6.280 + z * (2.831e-1 + z * (-4.117e-3 + z * 2.505e-5)));
+      if (shell.getShell() == AtomicShell::MIV) return ToSI::keV(-4.778 + z * (2.184e-1 + z * (-3.303e-3 + z * 2.115e-5)));
+      if (shell.getShell() == AtomicShell::MV) return ToSI::keV(-2.421 + z * (1.172e-1 + z * (-1.845e-3 + z * 1.397e-5)));
+      printf(StringT("Unsupported shell in " + toString()).c_str());
+      return -1;
+   }
+
+   bool WernishEdgeEnergy::isSupported(const AtomicShellT& shell) const
+   {
+      int z = shell.getElement().getAtomicNumber();
+      if (shell.getShell() == AtomicShell::K) return ((z >= 11) && (z <= 63));
+      if (shell.getShell() == AtomicShell::LI) return ((z >= 28) && (z <= 83));
+      if (shell.getShell() == AtomicShell::LII) return ((z >= 30) && (z <= 83));
+      if (shell.getShell() == AtomicShell::LIII) return ((z >= 30) && (z <= 83));
+      if (shell.getShell() == AtomicShell::MI) return ((z >= 52) && (z <= 83));
+      if (shell.getShell() == AtomicShell::MII) return ((z >= 55) && (z <= 83));
+      if (shell.getShell() == AtomicShell::MIII) return ((z >= 55) && (z <= 83));
+      if (shell.getShell() == AtomicShell::MIV) return ((z >= 60) && (z <= 83));
+      if (shell.getShell() == AtomicShell::MV) return ((z >= 61) && (z <= 83));
+      return false;
+   }
+
+   const WernishEdgeEnergy Wernish84Ref;
+   const EdgeEnergy& Wernish84 = Wernish84Ref;
+
+   static MatrixXd DTSAEdgeEnergies;
+   static void loadEdgeEnergies()
+   {
+      if (DTSAEdgeEnergies.empty()) {
+         std::string name(".\\gov\\nist\\microanalysis\\EPQLibrary\\EdgeEnergies.csv");
+         printf("Reading: %s\n", name.c_str());
+         try {
+            std::ifstream file(name);
+            if (!file.good()) throw 0;
+            DTSAEdgeEnergies.resize(99, VectorXd());
+            int idx = 0;
+            for (CSVIterator loop(file); loop != CSVIterator(); ++loop) {
+               if ((*loop).size()) {
+                  for (int k = 0; k < (*loop).size(); ++k) {
+                     double cur = sciToDub((*loop)[k]);
+                     if (cur) DTSAEdgeEnergies[idx].push_back(cur);
+                  }
+                  ++idx;
+               }
+            }
+         }
+         catch (const std::exception&) {
+            printf("loadEdgeEnergies: %s\n", name.c_str());
+         }
+      }
+   }
+
+   DTSAEdgeEnergy::DTSAEdgeEnergy() : EdgeEnergy("DTSA", "From DTSA at http://www.cstl.nist.gov/div837/Division/outputs/DTSA/DTSA.htm")
+   {
+      loadEdgeEnergies();
+   }
+
+   double DTSAEdgeEnergy::compute(const AtomicShellT& shell) const
+   {
+      int sh = shell.getShell();
+      if ((sh < AtomicShell::K) || (sh > AtomicShell::NI)) printf(StringT("Unsupported shell " + StringT(shell.toString()) + " in " + toString()).c_str());
+      int i = shell.getElement().getAtomicNumber() - 1;
+      if ((i < 0) || (i >= DTSAEdgeEnergies.size())) printf(StringT("Unsupported element " + StringT(shell.toString()) + " in " + toString()).c_str());
+      return (!DTSAEdgeEnergies[i].empty() && DTSAEdgeEnergies[i].size() > sh) ? ToSI::eV(DTSAEdgeEnergies[i][sh]) : 0.0;
+   }
+
+   bool DTSAEdgeEnergy::isSupported(const AtomicShellT& shell) const
+   {
+      int sh = shell.getShell();
+      int zp = shell.getElement().getAtomicNumber() - 1;
+      return (zp < DTSAEdgeEnergies.size() && !DTSAEdgeEnergies[zp].empty()) && (DTSAEdgeEnergies[zp].size() > sh);
+   }
+
+   const DTSAEdgeEnergy DTSARef;
+   const EdgeEnergy& DTSA = DTSARef;
+
+   SuperSetEdgeEnergy::SuperSetEdgeEnergy() : EdgeEnergy("Superset", "Chantler then NIST then DTSA")
+   {
+   }
+
+   double SuperSetEdgeEnergy::compute(const AtomicShellT& shell) const
+   {
+      try {
+         return Chantler2005.compute(shell);
+      }
+      catch (const std::exception&) {
+         try {
+            return NISTxrtdb.compute(shell);
+         }
+         catch (const std::exception&) {
+            try {
+               return DTSA.compute(shell);
+            }
+            catch (const std::exception&) {
+               return -1.0;
+            }
+         }
+      }
+   }
+
+   bool SuperSetEdgeEnergy::isSupported(const AtomicShellT& shell) const
+   {
+      return Chantler2005.isSupported(shell) || NISTxrtdb.isSupported(shell) || DTSA.isSupported(shell);
+   }
+
+   const SuperSetEdgeEnergy SuperSetRef;
+   const EdgeEnergy& SuperSet = SuperSetRef;
+
+   const AlgorithmClassT* mAllImplementations[] = {
+      &DTSA,
+      &Chantler2005,
+      &NISTxrtdb,
+      &Wernish84,
+      &DHSIonizationEnergy,
+      &SuperSet
+   };
+
+   AlgorithmClassT const * const * EdgeEnergy::getAllImplementations() const
+   {
+      return mAllImplementations;
+   }
+};

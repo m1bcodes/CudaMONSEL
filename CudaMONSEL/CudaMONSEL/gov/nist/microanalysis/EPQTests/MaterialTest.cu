@@ -154,7 +154,7 @@ namespace MaterialTest
             double massFracs5[] = { 2.0, 3.0 };
             mat5.defineByMoleFraction(elm5, 2, massFracs5, 2);
 
-            Material::Material mats[6] = { mat0, mat1, mat2, mat3, mat4, mat5 };
+            const Material::Material* mats[6] = { &mat0, &mat1, &mat2, &mat3, &mat4, &mat5 };
             //printf("%d\n", mat0.GetConstituents().size());
             //printf("%d\n", mat1.GetConstituents().size());
             //printf("%d\n", mat2.GetConstituents().size());

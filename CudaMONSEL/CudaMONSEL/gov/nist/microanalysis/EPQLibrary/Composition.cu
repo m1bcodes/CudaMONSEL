@@ -397,11 +397,11 @@ namespace Composition
       }
    }
 
-   Element::UnorderedSetT elementSet(const Composition compositions[], int len)
+   Element::UnorderedSetT elementSet(const Composition* compositions[], int len)
    {
       Element::UnorderedSetT elms;
       for (int i = 0; i < len; ++i) {
-         auto elmset = compositions[i].getElementSet();
+         auto elmset = compositions[i]->getElementSet();
          for (auto elm : elmset) {
             elms.insert(elm);
          }
@@ -409,7 +409,7 @@ namespace Composition
       return elms;
    }
 
-   void Composition::defineByMaterialFraction(const Composition compositions[], int compLen, double matFracs[], int matFracsLen)
+   void Composition::defineByMaterialFraction(const Composition* compositions[], int compLen, double matFracs[], int matFracsLen)
    {
       if (compLen != matFracsLen) {
          printf("Composition::defineByMaterialFraction: lengths are different (%d, %d)", compLen , matFracsLen);
@@ -424,7 +424,7 @@ namespace Composition
       for (auto el : elms) {
          UncertainValue2::UncertainValue2 sum = UncertainValue2::ZERO();
          for (int i = 0; i < compLen; ++i) {
-            auto uv = UncertainValue2::multiply(matFracs[i], compositions[i].weightFractionU(*el, true));
+            auto uv = UncertainValue2::multiply(matFracs[i], compositions[i]->weightFractionU(*el, true));
             sum = UncertainValue2::add(sum, uv);
          }
          frac[ji] = sum;
