@@ -13,7 +13,12 @@ namespace AlgorithmUser
       //initializeDefaultStrategy();
    }
 
-   const EdgeEnergyT& sDefaultEdgeEnergy = EdgeEnergy::SuperSet;
+   //const EdgeEnergyT& sDefaultEdgeEnergy = EdgeEnergy::SuperSet;
+   const EdgeEnergyT& sDefaultEdgeEnergy = EdgeEnergy::DTSA;
+   //const EdgeEnergyT& sDefaultEdgeEnergy = EdgeEnergy::Chantler2005;
+   //const EdgeEnergyT& sDefaultEdgeEnergy = EdgeEnergy::NISTxrtdb;
+   //const EdgeEnergyT& sDefaultEdgeEnergy = EdgeEnergy::Wernish84;
+   //const EdgeEnergyT& sDefaultEdgeEnergy = EdgeEnergy::DHSIonizationEnergy;
 
    const EdgeEnergyT& getDefaultEdgeEnergy()
    {

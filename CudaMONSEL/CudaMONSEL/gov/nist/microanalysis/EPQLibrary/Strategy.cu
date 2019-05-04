@@ -64,5 +64,4 @@ namespace Strategy
       }
       return ret;
    }
-
 }

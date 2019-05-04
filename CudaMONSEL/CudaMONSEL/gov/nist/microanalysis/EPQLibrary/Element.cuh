@@ -12,8 +12,8 @@
 
 namespace Element
 {
-   extern float mIonizationEnergy[104]; // Nominal in Joules, IonizationEnergies.csv
-   extern float mAtomicWeight[112]; // nominal, in AMU, AtomicWeights.csv
+   //extern float mIonizationEnergy[104]; // Nominal in Joules, IonizationEnergies.csv
+   //extern float mAtomicWeight[112]; // nominal, in AMU, AtomicWeights.csv
 
    extern const long long serialVersionUID;
 

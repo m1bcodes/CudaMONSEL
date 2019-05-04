@@ -61,13 +61,13 @@ namespace AtomicShell
    const int NoShell = 1001;
 
    // Shell families
-   static const int NoFamily = 1999;
-   static const int KFamily = 2000;
-   static const int LFamily = 2001;
-   static const int MFamily = 2002;
-   static const int NFamily = 2003;
-   static const int OFamily = 2004;
-   static const int LastFamily = 2005;
+   const int NoFamily = 1999;
+   const int KFamily = 2000;
+   const int LFamily = 2001;
+   const int MFamily = 2002;
+   const int NFamily = 2003;
+   const int OFamily = 2004;
+   const int LastFamily = 2005;
 
    static char const * const mAtomicNames[] = {
       "1S",
@@ -648,7 +648,7 @@ namespace AtomicShell
 
    int getPrincipalQuantumNumber(int shell)
    {
-      if (isValid(shell)) {
+      if (!isValid(shell)) {
          printf("AtomicShell::getPrincipalQuantumNumber invalid argument: %d\n", shell);
          return -1;
       }

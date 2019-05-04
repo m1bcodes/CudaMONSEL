@@ -10,13 +10,11 @@ namespace EdgeEnergy
    {
    protected:
       void initializeDefaultStrategy() override;
-
       EdgeEnergy(StringT name, StringT ref);
       EdgeEnergy(StringT name, const ReferenceT& ref);
 
    public:
       AlgorithmClassT const * const * getAllImplementations() const override;
-
       virtual double compute(const AtomicShellT& shell) const = 0;
       virtual bool isSupported(const AtomicShellT& shell) const = 0;
    };
@@ -25,7 +23,6 @@ namespace EdgeEnergy
    {
    public:
       DiracHartreeSlaterIonizationEnergies();
-
       double compute(const AtomicShellT& shell) const override;
       bool isSupported(const AtomicShellT& shell) const override;
    };
@@ -34,16 +31,16 @@ namespace EdgeEnergy
    {
    public:
       NISTEdgeEnergy();
-      double compute(const AtomicShellT& shell) const;
-      bool isSupported(const AtomicShellT& shell) const;
+      double compute(const AtomicShellT& shell) const override;
+      bool isSupported(const AtomicShellT& shell) const override;
    };
 
    class ChantlerEdgeEnergy : public EdgeEnergy
    {
    public:
       ChantlerEdgeEnergy();
-      double compute(const AtomicShellT& shell) const;
-      bool isSupported(const AtomicShellT& shell) const;
+      double compute(const AtomicShellT& shell) const override;
+      bool isSupported(const AtomicShellT& shell) const override;
    };
 
 

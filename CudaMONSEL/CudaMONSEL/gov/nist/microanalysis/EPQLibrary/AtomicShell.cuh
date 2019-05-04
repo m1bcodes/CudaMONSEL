@@ -58,6 +58,15 @@ namespace AtomicShell
    extern const int Continuum;
    extern const int NoShell;
 
+   // Shell families
+   extern const int NoFamily;
+   extern const int KFamily;
+   extern const int LFamily;
+   extern const int MFamily;
+   extern const int NFamily;
+   extern const int OFamily;
+   extern const int LastFamily;
+
    class AtomicShell final
    {
    public:
@@ -104,6 +113,7 @@ namespace AtomicShell
    int getFirstInFamily(int family);
    char const * getFamilyName(int family);
    int parseFamilyName(char const * s);
+   int getPrincipalQuantumNumber(int shell);
 
    bool exists(const ElementT& elm, int shell);
    int getOrbitalAngularMomentum(int shell);

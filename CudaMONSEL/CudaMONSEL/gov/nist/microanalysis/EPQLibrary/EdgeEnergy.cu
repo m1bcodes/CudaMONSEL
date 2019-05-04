@@ -44,31 +44,32 @@ namespace EdgeEnergy
 
       return d;
    }
-
-   static MatrixXd mUis; // nominally [100][9]
+   
+   //static MatrixXd Uis(100, VectorXd()); // nominally [100][9]
+   static MatrixXd Uis; // nominally [100][9]
    static void loadxionUis()
    {
-      if (mUis.empty()) {
-         std::string name(".\\gov\\nist\\microanalysis\\EPQLibrary\\SalvatXion/xionUis.csv");
-         printf("Reading: %s\n", name.c_str());
-         try {
-            std::ifstream file(name);
-            if (!file.good()) throw 0;
-            mUis.resize(100);
-            int idx = 0;
-            for (CSVIterator loop(file); loop != CSVIterator(); ++loop) {
-               int z = std::stoi((*loop)[0]);
-               if (z != idx + 1) printf("DiracHartreeSlaterIonizationEnergies::initialize: wrong line %d\n", z);
-               for (int k = 1; k < (*loop).size(); ++k) {
-                  double cur = sciToDub((*loop)[k]);
-                  mUis[idx + 1].push_back(cur);
-               }
-               ++idx;
+      if (!Uis.empty()) return;
+
+      std::string name(".\\gov\\nist\\microanalysis\\EPQLibrary\\SalvatXion/xionUis.csv");
+      printf("Reading: %s\n", name.c_str());
+      try {
+         std::ifstream file(name);
+         if (!file.good()) throw 0;
+         Uis.resize(100, VectorXd());
+         int idx = 0;
+         for (CSVIterator loop(file); loop != CSVIterator(); ++loop) {
+            int z = std::stoi((*loop)[0]);
+            if (z != idx + 1) printf("loadxionUis: wrong line %d\n", z);
+            for (int k = 1; k < (*loop).size(); ++k) {
+               double cur = sciToDub((*loop)[k]);
+               Uis[z].push_back(cur);
             }
+            ++idx;
          }
-         catch (const std::exception&) {
-            printf("loadxionUis: %s\n", name.c_str());
-         }
+      }
+      catch (const std::exception&) {
+         printf("cannot load loadxionUis: %s\n", name.c_str());
       }
    }
 
@@ -77,53 +78,52 @@ namespace EdgeEnergy
 
    DiracHartreeSlaterIonizationEnergies::DiracHartreeSlaterIonizationEnergies() : EdgeEnergy("Bote-Salvat 2008", ja)
    {
-      loadxionUis();
+      //loadxionUis();
    }
 
    double DiracHartreeSlaterIonizationEnergies::compute(const AtomicShellT& shell) const
    {
-      return ToSI::eV(mUis[shell.getElement().getAtomicNumber()][shell.getShell()]);
+      return ToSI::eV(Uis[shell.getElement().getAtomicNumber()][shell.getShell()]);
    }
 
    bool DiracHartreeSlaterIonizationEnergies::isSupported(const AtomicShellT& shell) const
    {
       int z = shell.getElement().getAtomicNumber();
       int sh = shell.getShell();
-      return (z >= 1) && (z <= 99) && (sh < mUis[z].size());
+      return (z >= 1) && (z <= 99) && (sh < Uis[z].size());
    };
 
    const DiracHartreeSlaterIonizationEnergies DHSIonizationEnergyRef;
    const EdgeEnergy& DHSIonizationEnergy = DHSIonizationEnergyRef;
 
-
    static MatrixXd NISTEdgeEnergies;
    static void loadNISTxrtdb()
    {
-      if (NISTEdgeEnergies.empty()) {
-         std::string name(".\\gov\\nist\\microanalysis\\EPQLibrary\\NISTxrtdb.csv");
-         printf("Reading: %s\n", name.c_str());
-         try {
-            std::ifstream file(name);
-            if (!file.good()) throw 0;
-            NISTEdgeEnergies.resize(91, VectorXd(4, 0));
-            int idx = 0;
-            for (CSVIterator loop(file); loop != CSVIterator(); ++loop) {
-               for (int k = 0; k < (*loop).size(); ++k) {
-                  double cur = sciToDub((*loop)[k]);
-                  NISTEdgeEnergies[idx][k] = cur;
-               }
-               ++idx;
+      if (!NISTEdgeEnergies.empty()) return;
+
+      std::string name(".\\gov\\nist\\microanalysis\\EPQLibrary\\NISTxrtdb.csv");
+      printf("Reading: %s\n", name.c_str());
+      try {
+         std::ifstream file(name);
+         if (!file.good()) throw 0;
+         NISTEdgeEnergies.resize(91, VectorXd(4, 0));
+         int idx = 0;
+         for (CSVIterator loop(file); loop != CSVIterator(); ++loop) {
+            for (int k = 0; k < (*loop).size(); ++k) {
+               double cur = sciToDub((*loop)[k]);
+               NISTEdgeEnergies[idx][k] = cur;
             }
+            ++idx;
          }
-         catch (const std::exception&) {
-            printf("loadNISTxrtdb: %s\n", name.c_str());
-         }
+      }
+      catch (const std::exception&) {
+         printf("cannot load loadNISTxrtdb: %s\n", name.c_str());
       }
    }
 
    NISTEdgeEnergy::NISTEdgeEnergy() : EdgeEnergy("NIST X-ray transition database", "http://physics.nist.gov/PhysRefData/XrayTrans/")
    {
-      loadNISTxrtdb();
+      //loadNISTxrtdb();
    }
 
    double NISTEdgeEnergy::compute(const AtomicShellT& shell) const
@@ -148,31 +148,31 @@ namespace EdgeEnergy
    static MatrixXd ChantlerEdgeEnergies;
    static void loadFFastEdgeDB()
    {
-      if (ChantlerEdgeEnergies.empty()) {
-         std::string name(".\\gov\\nist\\microanalysis\\EPQLibrary\\FFastEdgeDB.csv");
-         printf("Reading: %s\n", name.c_str());
-         try {
-            std::ifstream file(name);
-            if (!file.good()) throw 0;
-            ChantlerEdgeEnergies.resize(92, VectorXd());
-            int idx = 0;
-            for (CSVIterator loop(file); loop != CSVIterator(); ++loop) {
-               for (int k = 0; k < (*loop).size(); ++k) {
-                  double cur = sciToDub((*loop)[k]);
-                  if (cur) ChantlerEdgeEnergies[idx].push_back(ToSI::eV(cur));
-               }
-               ++idx;
+      if (!ChantlerEdgeEnergies.empty()) return;
+
+      std::string name(".\\gov\\nist\\microanalysis\\EPQLibrary\\FFastEdgeDB.csv");
+      printf("Reading: %s\n", name.c_str());
+      try {
+         std::ifstream file(name);
+         if (!file.good()) throw 0;
+         ChantlerEdgeEnergies.resize(92, VectorXd());
+         int idx = 0;
+         for (CSVIterator loop(file); loop != CSVIterator(); ++loop) {
+            for (int k = 0; k < (*loop).size(); ++k) {
+               double cur = sciToDub((*loop)[k]);
+               if (cur) ChantlerEdgeEnergies[idx].push_back(ToSI::eV(cur));
             }
+            ++idx;
          }
-         catch (const std::exception&) {
-            printf("loadFFastEdgeDB: %s\n", name.c_str());
-         }
+      }
+      catch (const std::exception&) {
+         printf("cannot load loadFFastEdgeDB: %s\n", name.c_str());
       }
    }
 
    ChantlerEdgeEnergy::ChantlerEdgeEnergy() : EdgeEnergy("NIST-Chantler 2005", "http://physics.nist.gov/ffast")
    {
-      loadFFastEdgeDB();
+      //loadFFastEdgeDB();
    }
 
    static int index(int sh)
@@ -215,7 +215,7 @@ namespace EdgeEnergy
    double WernishEdgeEnergy::compute(const AtomicShellT& shell) const
    {
       double z = shell.getElement().getAtomicNumber();
-      if (!isSupported(shell)) printf(StringT("Unsupported shell " + StringT(shell.toString()) + " in " + toString()).c_str());
+      if (!isSupported(shell)) printf(StringT("Unsupported shell " + StringT(shell.toString()) + " in " + toString() + "\n").c_str());
       if (shell.getShell() == AtomicShell::K) return ToSI::keV(-1.304e-1 + z * (-2.633e-3 + z * (9.718e-3 + z * 4.144e-5)));
       if (shell.getShell() == AtomicShell::LI) return ToSI::keV(-4.506e-1 + z * (1.566e-2 + z * (7.599e-4 + z * 1.792e-5)));
       if (shell.getShell() == AtomicShell::LII) return ToSI::keV(-6.018e-1 + z * (1.964e-2 + z * (5.935e-4 + z * 1.843e-5)));
@@ -250,39 +250,38 @@ namespace EdgeEnergy
    static MatrixXd DTSAEdgeEnergies;
    static void loadEdgeEnergies()
    {
-      if (DTSAEdgeEnergies.empty()) {
-         std::string name(".\\gov\\nist\\microanalysis\\EPQLibrary\\EdgeEnergies.csv");
-         printf("Reading: %s\n", name.c_str());
-         try {
-            std::ifstream file(name);
-            if (!file.good()) throw 0;
-            DTSAEdgeEnergies.resize(99, VectorXd());
-            int idx = 0;
-            for (CSVIterator loop(file); loop != CSVIterator(); ++loop) {
-               if ((*loop).size()) {
-                  for (int k = 0; k < (*loop).size(); ++k) {
-                     double cur = sciToDub((*loop)[k]);
-                     if (cur) DTSAEdgeEnergies[idx].push_back(cur);
-                  }
-                  ++idx;
+      if (!DTSAEdgeEnergies.empty()) return;
+      std::string name(".\\gov\\nist\\microanalysis\\EPQLibrary\\EdgeEnergies.csv");
+      printf("Reading: %s\n", name.c_str());
+      try {
+         std::ifstream file(name);
+         if (!file.good()) throw 0;
+         DTSAEdgeEnergies.resize(99, VectorXd());
+         int idx = 0;
+         for (CSVIterator loop(file); loop != CSVIterator(); ++loop) {
+            if ((*loop).size()) {
+               for (int k = 0; k < (*loop).size(); ++k) {
+                  double cur = sciToDub((*loop)[k]);
+                  if (cur) DTSAEdgeEnergies[idx].push_back(cur);
                }
+               ++idx;
             }
          }
-         catch (const std::exception&) {
-            printf("loadEdgeEnergies: %s\n", name.c_str());
-         }
+      }
+      catch (const std::exception&) {
+         printf("cannot load loadEdgeEnergies: %s\n", name.c_str());
       }
    }
 
    DTSAEdgeEnergy::DTSAEdgeEnergy() : EdgeEnergy("DTSA", "From DTSA at http://www.cstl.nist.gov/div837/Division/outputs/DTSA/DTSA.htm")
    {
-      loadEdgeEnergies();
+      //loadEdgeEnergies();
    }
 
    double DTSAEdgeEnergy::compute(const AtomicShellT& shell) const
    {
       int sh = shell.getShell();
-      if ((sh < AtomicShell::K) || (sh > AtomicShell::NI)) printf(StringT("Unsupported shell " + StringT(shell.toString()) + " in " + toString()).c_str());
+      if ((sh < AtomicShell::K) || (sh > AtomicShell::NI)) printf(StringT("Unsupported shell " + StringT(shell.toString()) + " in " + toString() + "\n").c_str());
       int i = shell.getElement().getAtomicNumber() - 1;
       if ((i < 0) || (i >= DTSAEdgeEnergies.size())) printf(StringT("Unsupported element " + StringT(shell.toString()) + " in " + toString()).c_str());
       return (!DTSAEdgeEnergies[i].empty() && DTSAEdgeEnergies[i].size() > sh) ? ToSI::eV(DTSAEdgeEnergies[i][sh]) : 0.0;
@@ -300,11 +299,16 @@ namespace EdgeEnergy
 
    SuperSetEdgeEnergy::SuperSetEdgeEnergy() : EdgeEnergy("Superset", "Chantler then NIST then DTSA")
    {
+      loadxionUis();
+      loadNISTxrtdb();
+      loadFFastEdgeDB();
+      loadEdgeEnergies();
    }
 
    double SuperSetEdgeEnergy::compute(const AtomicShellT& shell) const
    {
       try {
+         //printf("Chantler2005.compute %d, %d\n", shell.getElement().getAtomicNumber(), shell.getShell());
          return Chantler2005.compute(shell);
       }
       catch (const std::exception&) {

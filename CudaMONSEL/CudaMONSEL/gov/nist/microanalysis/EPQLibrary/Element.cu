@@ -587,12 +587,15 @@ namespace Element
       &Uub
    };
 
-   float mIonizationEnergy[numIonizationEnergy];
-   float mAtomicWeight[numAtomicWeight];
+   static std::vector<float> mAtomicWeight; // nominal, in AMU, AtomicWeights.csv
+   static std::vector<float> mIonizationEnergy; // Nominal in Joules, IonizationEnergies.csv
 
    static void readAtomicWeights()
    {
-      float hAtomicWeight[numAtomicWeight];
+      if (mAtomicWeight.size()) return;
+      mAtomicWeight.resize(numAtomicWeight);
+
+      //float hAtomicWeight[numAtomicWeight];
       try {
          char filepath[] = ".\\gov\\nist\\microanalysis\\EPQLibrary\\AtomicWeights.csv";
          std::ifstream file(filepath);
@@ -602,7 +605,7 @@ namespace Element
             if ((*loop)[0][0] == '/' && (*loop)[0][1] == '/') { // check if the first line should be removed
                continue;
             }
-            hAtomicWeight[idx] = std::stof((*loop)[0]);
+            mAtomicWeight[idx] = std::stof((*loop)[0]);
             ++idx;
          }
       }
@@ -610,27 +613,31 @@ namespace Element
          printf("didnt see file AtomicWeights.csv\n");
          throw 0; //throw new EPQFatalException("Fatal error while attempting to load the atomic weights data file.");
       }
-      memcpy(mAtomicWeight, hAtomicWeight, sizeof(hAtomicWeight));
+      //memcpy(mAtomicWeight, hAtomicWeight, sizeof(hAtomicWeight));
       //checkCudaErrors(cudaMemcpyToSymbol(mAtomicWeight, &hAtomicWeight, sizeof(float) * 112));
    }
 
    static void readIonizationEnergy()
    {
+      if (mIonizationEnergy.size()) return;
+      mIonizationEnergy.resize(numIonizationEnergy);
+
       char filepath[] = ".\\gov\\nist\\microanalysis\\EPQLibrary\\IonizationEnergies.csv";
-      float hIonizationEnergy[numIonizationEnergy];
+      //float hIonizationEnergy[numIonizationEnergy];
       try {
          printf("Reading: %s\n", filepath);
          std::ifstream file(filepath);
+         if (!file.good()) throw 0;
          int idx = 0;
          for (CSVIterator loop(file); loop != CSVIterator(); ++loop) {
             if ((*loop)[0][0] == '/' && (*loop)[0][1] == '/') { // check if the first line should be removed
                continue;
             }
             if (CSVIterator::IsNaN((*loop)[0])) {
-               hIonizationEnergy[idx] = -1.0;
+               mIonizationEnergy[idx] = -1.0;
             }
             else {
-               hIonizationEnergy[idx] = std::stof((*loop)[0]);
+               mIonizationEnergy[idx] = ToSI::eV(std::stof((*loop)[0]));
             }
             ++idx;
          }
@@ -638,7 +645,7 @@ namespace Element
       catch (std::exception&) {
          printf("Fatal error while attempting to load the ionization data file: %s.\n", filepath);
       }
-      memcpy(mIonizationEnergy, hIonizationEnergy, sizeof(hIonizationEnergy));
+      //memcpy(mIonizationEnergy, hIonizationEnergy, sizeof(hIonizationEnergy));
    }
 
    void InitializeElements()
@@ -835,7 +842,7 @@ namespace Element
          //printf("invalid atmoic number: %d\n", atomicNo);
          return -1;
       }
-      else if (!mAtomicWeight || !mAtomicWeight[atomicNo - 1]) {
+      else if (!mAtomicWeight.size() || !mAtomicWeight[atomicNo - 1]) {
          readAtomicWeights();
          printf("need to load mAtomicWeight array by calling readAtomicWeights first\n");
       }
@@ -965,7 +972,7 @@ namespace Element
 
    double Element::getIonizationEnergy() const
    {
-      if (mIonizationEnergy <= 0 || mIonizationEnergy[mAtomicNumber - 1] <= 0) {
+      if (mIonizationEnergy.size() <= 0 || mIonizationEnergy[mAtomicNumber - 1] <= 0) {
          readIonizationEnergy();
          printf("Element::getIonizationEnergy: load mIonizationEnergy by calling readIonizationEnergy first\n");
       }

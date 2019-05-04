@@ -17,6 +17,7 @@
 #include "gov\nist\microanalysis\EPQTests\UncertainValue2Test.cuh"
 #include "gov\nist\microanalysis\EPQTests\ElementTest.cuh"
 #include "gov\nist\microanalysis\EPQTests\MaterialTest.cuh"
+#include "gov\nist\microanalysis\EPQTests\AtomicShellTest.cuh"
 
 #include "ImageUtil.h"
 
@@ -51,6 +52,8 @@ int main()
 
    MaterialTest::MaterialTest mat;
    mat.testOne();
+
+   AtomicShellTest::testOne();
 
    return 0;
 }
