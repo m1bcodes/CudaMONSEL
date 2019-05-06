@@ -13,7 +13,7 @@ namespace RegionBase
    class RegionBase
    {
    public:
-      typedef std::vector<RegionBase*> RBListT;
+      typedef std::unordered_set<RegionBase*> RBListT;
 
    protected:
       TransformableRegion * mParent;
@@ -22,15 +22,15 @@ namespace RegionBase
       RBListT mSubRegions;
 
    public:
-      RegionBase();
-      RegionBase(const RegionBase& rb);
+      //RegionBase();
+      //RegionBase(const RegionBase& rb);
       bool operator==(const RegionBase& rb) const;
       void updateMaterial(const MaterialT& oldMat, const IMaterialScatterModelT& newMat);
       void updateMaterial(const IMaterialScatterModelT& oldMat, const IMaterialScatterModelT& newMat);
       const MaterialT& getMaterial() const;
       const IMaterialScatterModelT& getScatterModel() const;
       RBListT getSubRegions() const;
-      void addRegion(RegionBase * const);
+      void addRegion(RegionBase&);
 
    protected:
       const RegionBase* containingSubRegion(double pos[]) const;
@@ -54,7 +54,7 @@ namespace RegionBase
    {
    public:
       Region(Region* const parent, IMaterialScatterModelT const * const msm, ShapeT const * const shape);
-      void removeSubRegion(const RegionBase& subRegion);
+      void removeSubRegion(RegionBase& subRegion);
       void clearSubRegions();
    };
 }

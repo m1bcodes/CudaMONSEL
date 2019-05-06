@@ -11,13 +11,12 @@ namespace AlgorithmUser
       AlgorithmUser();
 
       virtual void initializeDefaultStrategy() = 0;
-      void initializeDefaultStrategyWrapper(); // https://stackoverflow.com/questions/8630160/call-to-pure-virtual-function-from-base-class-constructor
 
    //private:
       //Strategy mLocalOverride = null;
    };
 
-   //static Strategy mGlobalOverride = null;
+   // Strategy mGlobalOverride = null;
 
    extern const EdgeEnergyT& sDefaultEdgeEnergy;
    //static TransitionEnergy sDefaultTransitionEnergy = null;

@@ -33,12 +33,11 @@ namespace MonteCarloSS
    class MonteCarloSS final
    {
    public:
-      MonteCarloSS();
-      ~MonteCarloSS();
+      MonteCarloSS(ElectronGunT& gun, RegionT& mChamber);
 
    private:
-      RegionT * mChamber;
-      ElectronGunT * mGun;
+      RegionT& mChamber;
+      ElectronGunT& mGun;
       ElectronT * mElectron;
       std::vector<ElectronT*> mElectronStack;
 

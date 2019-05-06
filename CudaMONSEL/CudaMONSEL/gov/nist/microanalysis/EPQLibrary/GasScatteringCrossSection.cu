@@ -370,7 +370,6 @@ namespace GasScatteringCrossSection
 
    const RandomizedScatterT& GasScatteringRandomizedScatterFactory::get(const ElementT& elm) const
    {
-      //if (!mScatter[elm.getAtomicNumber()]) mScatter[elm.getAtomicNumber()] = ;
       return *mScatter[elm.getAtomicNumber()];
    }
 

@@ -52,9 +52,7 @@ namespace AtomicShellTest
       assertEquals(as.getEdgeEnergy(), ToSI::keV(0.933), 0.010);
       assertTrue(as.getElement(), Element::Cu);
       assertEquals(FromSI::eV(1), FromSI::EV, 10.0);
-      assertEquals(FromSI::eV(as.getEnergy()), 933.0, 10.0);
-      //assertEquals(FromSI::eV(as.getEnergy()), 933.0, 10.0);
-      //assertEquals(FromSI::eV(as.getEnergy()), 933.0, 10.0);
+      assertEquals(FromSI::eV(as.getEnergy()), 933.0, 10.0); // TODO: get more
       assertTrue(as.getFamily(), AtomicShell::LFamily);
       assertTrue(as.getShell(), AtomicShell::LIII);
       assertTrue(as.getOrbitalAngularMomentum(), 1);

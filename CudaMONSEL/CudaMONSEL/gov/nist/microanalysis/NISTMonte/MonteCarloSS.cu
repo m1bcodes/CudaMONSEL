@@ -29,24 +29,18 @@ namespace MonteCarloSS
    const float ChamberRadius = 0.1f;
    static const float SMALL_DISP = 1.0e-15f;
 
-   MonteCarloSS::MonteCarloSS()
+   MonteCarloSS::MonteCarloSS(ElectronGunT& gun, RegionT& chamber) : mGun(gun), mChamber(chamber)
    {
-      const double center[] = {
-         0.0,
-         0.0,
-         0.0
-      };
-      SphereT sphere(center, ChamberRadius); // TODO: sphere will disappear when constructor exists
-      mGun = new GaussianBeamT(1.0e-8);
-      mGun->setCenter(sphere.getInitialPoint().data());
-      mGun->setBeamEnergy(ToSI::keV(20.0));
-      mChamber = new RegionT(NULL, &NULL_MSM, &sphere);
-   }
-
-   MonteCarloSS::~MonteCarloSS()
-   {
-      delete mGun;
-      delete mChamber;
+      //TODO: shift the responsibility to the caller
+      //const double center[] = {
+      //   0.0,
+      //   0.0,
+      //   0.0
+      //};
+      //SphereT sphere(center, ChamberRadius);
+      //mGun.setCenter(sphere.getInitialPoint().data());
+      //mGun.setBeamEnergy(ToSI::keV(20.0));
+      //mChamber = new RegionT(NULL, &NULL_MSM, &sphere);
    }
 
    double distance(const double pos0[], const double pos1[])

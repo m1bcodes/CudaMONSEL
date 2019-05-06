@@ -44,10 +44,9 @@ namespace EdgeEnergy
 
       return d;
    }
-   
-   //static MatrixXd Uis(100, VectorXd()); // nominally [100][9]
-   static MatrixXd Uis; // nominally [100][9]
-   static void loadxionUis()
+
+   MatrixXd DiracHartreeSlaterIonizationEnergies::Uis;
+   void DiracHartreeSlaterIonizationEnergies::loadxionUis()
    {
       if (!Uis.empty()) return;
 
@@ -56,7 +55,7 @@ namespace EdgeEnergy
       try {
          std::ifstream file(name);
          if (!file.good()) throw 0;
-         Uis.resize(100, VectorXd());
+         Uis.resize(100);
          int idx = 0;
          for (CSVIterator loop(file); loop != CSVIterator(); ++loop) {
             int z = std::stoi((*loop)[0]);
@@ -78,7 +77,7 @@ namespace EdgeEnergy
 
    DiracHartreeSlaterIonizationEnergies::DiracHartreeSlaterIonizationEnergies() : EdgeEnergy("Bote-Salvat 2008", ja)
    {
-      //loadxionUis();
+      loadxionUis();
    }
 
    double DiracHartreeSlaterIonizationEnergies::compute(const AtomicShellT& shell) const
@@ -96,8 +95,8 @@ namespace EdgeEnergy
    const DiracHartreeSlaterIonizationEnergies DHSIonizationEnergyRef;
    const EdgeEnergy& DHSIonizationEnergy = DHSIonizationEnergyRef;
 
-   static MatrixXd NISTEdgeEnergies;
-   static void loadNISTxrtdb()
+   MatrixXd NISTEdgeEnergy::NISTEdgeEnergies;
+   void NISTEdgeEnergy::loadNISTxrtdb()
    {
       if (!NISTEdgeEnergies.empty()) return;
 
@@ -123,7 +122,7 @@ namespace EdgeEnergy
 
    NISTEdgeEnergy::NISTEdgeEnergy() : EdgeEnergy("NIST X-ray transition database", "http://physics.nist.gov/PhysRefData/XrayTrans/")
    {
-      //loadNISTxrtdb();
+      loadNISTxrtdb();
    }
 
    double NISTEdgeEnergy::compute(const AtomicShellT& shell) const
@@ -145,8 +144,8 @@ namespace EdgeEnergy
    const NISTEdgeEnergy NISTxrtdbRef;
    const EdgeEnergy& NISTxrtdb = NISTxrtdbRef;
 
-   static MatrixXd ChantlerEdgeEnergies;
-   static void loadFFastEdgeDB()
+   MatrixXd ChantlerEdgeEnergy::ChantlerEdgeEnergies;
+   void ChantlerEdgeEnergy::loadFFastEdgeDB()
    {
       if (!ChantlerEdgeEnergies.empty()) return;
 
@@ -155,7 +154,7 @@ namespace EdgeEnergy
       try {
          std::ifstream file(name);
          if (!file.good()) throw 0;
-         ChantlerEdgeEnergies.resize(92, VectorXd());
+         ChantlerEdgeEnergies.resize(92);
          int idx = 0;
          for (CSVIterator loop(file); loop != CSVIterator(); ++loop) {
             for (int k = 0; k < (*loop).size(); ++k) {
@@ -172,7 +171,7 @@ namespace EdgeEnergy
 
    ChantlerEdgeEnergy::ChantlerEdgeEnergy() : EdgeEnergy("NIST-Chantler 2005", "http://physics.nist.gov/ffast")
    {
-      //loadFFastEdgeDB();
+      loadFFastEdgeDB();
    }
 
    static int index(int sh)
@@ -247,16 +246,17 @@ namespace EdgeEnergy
    const WernishEdgeEnergy Wernish84Ref;
    const EdgeEnergy& Wernish84 = Wernish84Ref;
 
-   static MatrixXd DTSAEdgeEnergies;
-   static void loadEdgeEnergies()
+   MatrixXd DTSAEdgeEnergy::DTSAEdgeEnergies;
+   void DTSAEdgeEnergy::loadEdgeEnergies()
    {
       if (!DTSAEdgeEnergies.empty()) return;
+
       std::string name(".\\gov\\nist\\microanalysis\\EPQLibrary\\EdgeEnergies.csv");
       printf("Reading: %s\n", name.c_str());
       try {
          std::ifstream file(name);
          if (!file.good()) throw 0;
-         DTSAEdgeEnergies.resize(99, VectorXd());
+         DTSAEdgeEnergies.resize(99);
          int idx = 0;
          for (CSVIterator loop(file); loop != CSVIterator(); ++loop) {
             if ((*loop).size()) {
@@ -275,7 +275,7 @@ namespace EdgeEnergy
 
    DTSAEdgeEnergy::DTSAEdgeEnergy() : EdgeEnergy("DTSA", "From DTSA at http://www.cstl.nist.gov/div837/Division/outputs/DTSA/DTSA.htm")
    {
-      //loadEdgeEnergies();
+      loadEdgeEnergies();
    }
 
    double DTSAEdgeEnergy::compute(const AtomicShellT& shell) const
@@ -299,16 +299,11 @@ namespace EdgeEnergy
 
    SuperSetEdgeEnergy::SuperSetEdgeEnergy() : EdgeEnergy("Superset", "Chantler then NIST then DTSA")
    {
-      loadxionUis();
-      loadNISTxrtdb();
-      loadFFastEdgeDB();
-      loadEdgeEnergies();
    }
 
    double SuperSetEdgeEnergy::compute(const AtomicShellT& shell) const
    {
       try {
-         //printf("Chantler2005.compute %d, %d\n", shell.getElement().getAtomicNumber(), shell.getShell());
          return Chantler2005.compute(shell);
       }
       catch (const std::exception&) {

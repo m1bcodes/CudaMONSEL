@@ -9,23 +9,23 @@ namespace RegionBase
 {
    static double SMALL_DISP = 1.0e-15; // 1 fm
 
-   RegionBase::RegionBase() : mParent(NULL), mScatterModel(NULL), mShape(NULL)
-   {
-   }
+   //RegionBase::RegionBase() : mParent(NULL), mScatterModel(NULL), mShape(NULL)
+   //{
+   //}
 
-   RegionBase::RegionBase(const RegionBase& rb) : mParent(rb.mParent), mScatterModel(rb.mScatterModel), mShape(rb.mShape)
-   {
-      if (&rb == this) return;
-   
-      //mParent = rb.mParent;
-      //mScatterModel = rb.mScatterModel;
-      //mShape = rb.mShape;
-   
-      mSubRegions.clear();
-      for (auto sr : rb.mSubRegions) {
-         mSubRegions.push_back(sr);
-      }
-   }
+   //RegionBase::RegionBase(const RegionBase& rb) : mParent(rb.mParent), mScatterModel(rb.mScatterModel), mShape(rb.mShape)
+   //{
+   //   if (&rb == this) return;
+   //
+   //   //mParent = rb.mParent;
+   //   //mScatterModel = rb.mScatterModel;
+   //   //mShape = rb.mShape;
+   //
+   //   mSubRegions.clear();
+   //   for (auto sr : rb.mSubRegions) {
+   //      mSubRegions.insert(sr);
+   //   }
+   //}
 
    bool RegionBase::operator==(const RegionBase& rb) const
    {
@@ -65,9 +65,9 @@ namespace RegionBase
       return mSubRegions;
    }
 
-   void RegionBase::addRegion(RegionBase * const rb)
+   void RegionBase::addRegion(RegionBase& rb)
    {
-      mSubRegions.push_back(rb);
+      mSubRegions.insert(&rb);
    }
    
    const RegionBase* RegionBase::containingSubRegion(double pos[]) const
@@ -209,12 +209,13 @@ namespace RegionBase
       mParent = parent;
       mScatterModel = msm;
       mShape = shape;
-      if (mParent != NULL) mParent->addRegion(this);
+      if (mParent != NULL) mParent->addRegion(*this);
    }
 
-   void Region::removeSubRegion(const RegionBase& subRegion)
+   void Region::removeSubRegion(RegionBase& subRegion)
    {
-      mSubRegions.erase(std::find(mSubRegions.begin(), mSubRegions.end(), &subRegion));
+      auto itr = mSubRegions.find(&subRegion);
+      if (itr != mSubRegions.end()) mSubRegions.erase(itr);
    }
 
    void Region::clearSubRegions()

@@ -3,18 +3,15 @@
 
 namespace AlgorithmUser
 {
+   // TODO: figure out what to do with this
+   // https://stackoverflow.com/questions/8630160/call-to-pure-virtual-function-from-base-class-constructor
    AlgorithmUser::AlgorithmUser()
-   {
-      initializeDefaultStrategyWrapper();
-   }
-
-   void AlgorithmUser::initializeDefaultStrategyWrapper()
    {
       //initializeDefaultStrategy();
    }
 
-   //const EdgeEnergyT& sDefaultEdgeEnergy = EdgeEnergy::SuperSet;
-   const EdgeEnergyT& sDefaultEdgeEnergy = EdgeEnergy::DTSA;
+   const EdgeEnergyT& sDefaultEdgeEnergy = EdgeEnergy::SuperSet;
+   //const EdgeEnergyT& sDefaultEdgeEnergy = EdgeEnergy::DTSA;
    //const EdgeEnergyT& sDefaultEdgeEnergy = EdgeEnergy::Chantler2005;
    //const EdgeEnergyT& sDefaultEdgeEnergy = EdgeEnergy::NISTxrtdb;
    //const EdgeEnergyT& sDefaultEdgeEnergy = EdgeEnergy::Wernish84;
