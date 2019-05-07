@@ -9,15 +9,17 @@ namespace NullMaterialScatterModel
    class NullMaterialScatterModel : public IMaterialScatterModelT
    {
    public:
-      ElectronT& barrierScatter(ElectronT& pe, const RegionBaseT& nextRegion) override;
+      NullMaterialScatterModel();
 
-      double calculateEnergyLoss(double len, ElectronT& pe) const override;
+      ElectronT* barrierScatter(ElectronT* pe, const RegionBaseT* nextRegion) const override;
+
+      double calculateEnergyLoss(double len, const ElectronT& pe) const override;
 
       const MaterialT& getMaterial() const override;
 
-      double randomMeanPathLength(ElectronT& pe) const override;
+      double randomMeanPathLength(ElectronT& pe) override;
 
-      ElectronT& scatter(ElectronT& pe) override;
+      ElectronT* scatter(ElectronT& pe) override;
 
       double getMinEforTracking() const override;
 

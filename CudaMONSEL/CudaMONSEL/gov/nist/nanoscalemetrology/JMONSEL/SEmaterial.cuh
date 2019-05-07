@@ -2,6 +2,7 @@
 #define _SE_MATERIAL_CUH_
 
 #include "gov\nist\microanalysis\EPQLibrary\Material.cuh"
+#include "gov\nist\microanalysis\NISTMonte\Declarations.cuh"
 
 namespace SEmaterial
 {
@@ -9,10 +10,6 @@ namespace SEmaterial
    {
    protected:
       void replicate(const SEmaterial& mat);
-
-   public:
-      typedef std::vector<double> SEmaterialArrayT;
-      typedef std::set<double> SEmaterialSetT;
 
    public:
       SEmaterial();
@@ -26,21 +23,21 @@ namespace SEmaterial
 
       void addBindingEnergy(double bindingEnergy, double density);
       void addBindingEnergy(double bindingEnergy, double kineticEnergy, double density);
-      void addBindingEnergy(const SEmaterialArrayT& bindingEnergy, const SEmaterialArrayT& density);
-      void addBindingEnergy(const SEmaterialArrayT& bindingEnergy, const SEmaterialArrayT& kineticEnergy, const SEmaterialArrayT& density);
+      void addBindingEnergy(const VectorXd& bindingEnergy, const VectorXd& density);
+      void addBindingEnergy(const VectorXd& bindingEnergy, const VectorXd& kineticEnergy, const VectorXd& density);
 
       void addCoreEnergy(double coreEnergy);
-      void addCoreEnergy(const SEmaterialSetT& coreEnergy);
+      void addCoreEnergy(const Setd& coreEnergy);
 
       //SEmaterial clone();
       long get_version() const;
-      SEmaterialArrayT getBindingEnergyArray() const;
-      SEmaterialSetT getCoreEnergyArray() const;
+      VectorXd getBindingEnergyArray() const;
+      Setd getCoreEnergyArray() const;
       double getEFermi() const;
-      SEmaterialArrayT getElectronDensityArray() const;
+      VectorXd getElectronDensityArray() const;
       double getEnergyCBbottom() const;
       double getEplasmon() const;
-      SEmaterialArrayT getKineticEnergyArray() const;
+      VectorXd getKineticEnergyArray() const;
       double getWorkfunction() const;
       double getBandgap() const;
       double getEpsr() const;
@@ -51,18 +48,20 @@ namespace SEmaterial
 
       void setBindingEnergy(int index, double energy);
       void setCoreEnergy();
-      void setCoreEnergy(const SEmaterialSetT& coreEnergy);
+      void setCoreEnergy(const Setd& coreEnergy);
       void setElectronDensity(int index, double density);
       void setEnergyCBbottom(double energyCBbottom);
       void setBandgap(double bandgap);
       void setEplasmon(double eplasmon);
-      //void setEstimatedCoreEnergy();
-      //void setEstimatedCoreEnergy(double cutoff);
+      void setEstimatedCoreEnergy();
+      void setEstimatedCoreEnergy(double cutoff);
       void setKEtoDefault();
       void setKineticEnergy(int index, double energy);
       void setWorkfunction(double workfunction);
       void setEpsr(double epsr);
       void setDielectricBreakdownField(double breakdownField);
+
+      bool isSEmaterial() const override;
 
    private:
       double workfunction; // work function
@@ -73,12 +72,12 @@ namespace SEmaterial
       double bandgap = 0.; // width of the bandgap
       long version = 0L; // Updates each time the data change
 
-      SEmaterialArrayT bindingEnergy;
-      SEmaterialArrayT electronDensity;
-      SEmaterialArrayT kineticEnergy;
+      VectorXd bindingEnergy;
+      VectorXd electronDensity;
+      VectorXd kineticEnergy;
       bool userSetKE = false; // Flag = true when user sets a kinetic
 
-      SEmaterialSetT coreEnergy;
+      Setd coreEnergy;
    };
 }
 

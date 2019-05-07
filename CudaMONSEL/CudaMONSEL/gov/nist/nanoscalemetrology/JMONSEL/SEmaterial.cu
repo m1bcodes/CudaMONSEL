@@ -1,6 +1,7 @@
 #include "SEmaterial.cuh"
 
 #include "gov\nist\microanalysis\EPQLIbrary\Composition.cuh"
+#include "gov\nist\microanalysis\EPQLIbrary\AtomicSHell.cuh"
 
 static const long serialVersionUID = 0x42;
 
@@ -112,7 +113,7 @@ namespace SEmaterial
       version = (version == _UI32_MAX) ? 0L : version + 1L;
    }
 
-   void SEmaterial::addBindingEnergy(const SEmaterialArrayT& bindingEnergy, const SEmaterialArrayT& density)
+   void SEmaterial::addBindingEnergy(const VectorXd& bindingEnergy, const VectorXd& density)
    {
       if (bindingEnergy.size() != density.size()) {
          printf("Unequal # of binding energies and densities");
@@ -143,7 +144,7 @@ namespace SEmaterial
       version = (version == _UI32_MAX) ? 0L : version + 1L;
    }
 
-   void SEmaterial::addBindingEnergy(const SEmaterialArrayT& bindingEnergy, const SEmaterialArrayT& kineticEnergy, const SEmaterialArrayT& density)
+   void SEmaterial::addBindingEnergy(const VectorXd& bindingEnergy, const VectorXd& kineticEnergy, const VectorXd& density)
    {
       // Error checking
       if ((bindingEnergy.size() != density.size()) || (kineticEnergy.size() != density.size())) {
@@ -186,7 +187,7 @@ namespace SEmaterial
       version = (version == _UI32_MAX) ? 0L : version + 1L;
    }
 
-   void SEmaterial::addCoreEnergy(const SEmaterialSetT& coreEnergy)
+   void SEmaterial::addCoreEnergy(const Setd& coreEnergy)
    {
       // Error checking
       for (double cE : coreEnergy) {
@@ -210,12 +211,12 @@ namespace SEmaterial
       return version;
    }
 
-   SEmaterial::SEmaterialArrayT SEmaterial::getBindingEnergyArray() const
+   VectorXd SEmaterial::getBindingEnergyArray() const
    {
       return bindingEnergy;
    }
 
-   SEmaterial::SEmaterialSetT SEmaterial::getCoreEnergyArray() const
+   Setd SEmaterial::getCoreEnergyArray() const
    {
       return coreEnergy;
    }
@@ -225,7 +226,7 @@ namespace SEmaterial
       return -energyCBbottom - workfunction;
    }
 
-   SEmaterial::SEmaterialArrayT SEmaterial::getElectronDensityArray() const
+   VectorXd SEmaterial::getElectronDensityArray() const
    {
       return electronDensity;
    }
@@ -240,7 +241,7 @@ namespace SEmaterial
       return eplasmon;
    }
 
-   SEmaterial::SEmaterialArrayT SEmaterial::getKineticEnergyArray() const
+   VectorXd SEmaterial::getKineticEnergyArray() const
    {
       return kineticEnergy;
    }
@@ -318,7 +319,7 @@ namespace SEmaterial
       this->coreEnergy.clear();
    }
 
-   void SEmaterial::setCoreEnergy(const SEmaterialSetT& coreEnergy)
+   void SEmaterial::setCoreEnergy(const Setd& coreEnergy)
    {
       setCoreEnergy();
       for (double cE : coreEnergy) {
@@ -327,7 +328,7 @@ namespace SEmaterial
          }
          this->coreEnergy.insert(cE);
       }
-      
+
       version = (version == _UI32_MAX) ? 0L : version + 1L;
    }
 
@@ -363,26 +364,26 @@ namespace SEmaterial
 
    static const double coreEnergyCutoff = ToSI::eV(20.);
 
-   //void SEmaterial::setEstimatedCoreEnergy()
-   //{
-   //   setEstimatedCoreEnergy(coreEnergyCutoff);
-   //}
+   void SEmaterial::setEstimatedCoreEnergy()
+   {
+      setEstimatedCoreEnergy(coreEnergyCutoff);
+   }
 
-   //void SEmaterial::setEstimatedCoreEnergy(double cutoff)
-   //{
-   //   double shellenergy;
-   //   setCoreEnergy(); // Clear any existing ones.
-   //   auto constituentElements = this->getElementSet();
-   //   for (auto el : constituentElements) {
-   //      int i = 0;
-   //      auto as = new AtomicShell(el, i);
-   //      while ((shellenergy = as.getGroundStateOccupancy() > 0 ? as.getEdgeEnergy() : NAN) > cutoff) {
-   //         addCoreEnergy(shellenergy);
-   //         i++;
-   //         as = new AtomicShell(el, i);
-   //      }
-   //   }
-   //}
+   void SEmaterial::setEstimatedCoreEnergy(double cutoff)
+   {
+      setCoreEnergy(); // Clear any existing ones.
+      auto constituentElements = this->getElementSet();
+      for (auto el : constituentElements) {
+         int i = 0;
+         while (true) {
+            AtomicShellT as(*el, i);
+            double shellenergy = as.getGroundStateOccupancy() > 0 ? as.getEdgeEnergy() : NAN;
+            if (shellenergy <= cutoff) break;
+            addCoreEnergy(shellenergy);
+            i++;
+         }
+      }
+   }
 
    void SEmaterial::setKEtoDefault()
    {
@@ -427,5 +428,10 @@ namespace SEmaterial
    {
       dielectricBreakdownField = breakdownField;
       version = (version == _UI32_MAX) ? 0L : version + 1L;
+   }
+
+   bool SEmaterial::isSEmaterial() const
+   {
+      return true;
    }
 }

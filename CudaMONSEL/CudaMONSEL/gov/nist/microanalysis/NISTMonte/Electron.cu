@@ -34,7 +34,7 @@ namespace Electron
    Electron::Electron(const Electron& parent, double theta, double phi, double kE)
    {
       Init(parent.getPosition().data(), theta, phi, kE);
-      mCurrentRegion = &parent.getCurrentRegion();
+      mCurrentRegion = parent.getCurrentRegion();
       mPrevRegion = mCurrentRegion;
       parentID = parent.getIdent();
    }
@@ -60,14 +60,14 @@ namespace Electron
       return mPrevPosition;
    }
 
-   const RegionBaseT& Electron::getCurrentRegion() const
+   const RegionBaseT* Electron::getCurrentRegion() const
    {
-      return *mCurrentRegion;
+      return mCurrentRegion;
    }
 
-   const RegionBaseT& Electron::getPreviousRegion() const
+   const RegionBaseT* Electron::getPreviousRegion() const
    {
-      return *mPrevRegion;
+      return mPrevRegion;
    }
 
    double Electron::getEnergy() const
@@ -87,7 +87,7 @@ namespace Electron
 
    double Electron::stepLength() const
    {
-      return MonteCarloSS::distance(mPrevPosition.data(), mPosition.data());
+      return MonteCarloSS::dist(mPrevPosition.data(), mPosition.data());
    }
 
    PositionVecT Electron::candidatePoint(double dS) const
@@ -145,20 +145,20 @@ namespace Electron
       previousEnergy = newPreviousEnergy;
    }
 
-   void Electron::setCurrentRegion(const RegionBaseT& reg)
+   void Electron::setCurrentRegion(const RegionBaseT* reg)
    {
       mPrevRegion = mCurrentRegion;
-      mCurrentRegion = &reg;
+      mCurrentRegion = reg;
    }
 
-   const ElementT& Electron::getScatteringElement() const
+   const ElementT* Electron::getScatteringElement() const
    {
-      return *mScatteringElement;
+      return mScatteringElement;
    }
 
-   void Electron::setScatteringElement(const ElementT& scatteringElement)
+   void Electron::setScatteringElement(const ElementT* scatteringElement)
    {
-      mScatteringElement = &scatteringElement;
+      mScatteringElement = scatteringElement;
    }
 
    double Electron::getPhi() const

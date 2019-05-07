@@ -42,7 +42,7 @@ namespace GaussianBeam
       return mCenter;
    }
 
-   ElectronT GaussianBeam::createElectron() const
+   ElectronT* GaussianBeam::createElectron() const
    {
       double initialPos[] = {
          mCenter[0],
@@ -54,6 +54,6 @@ namespace GaussianBeam
       initialPos[0] += r * ::cos(th);
       initialPos[1] += r * ::sin(th);
 
-      return ElectronT(initialPos, mBeamEnergy);
+      return new ElectronT(initialPos, mBeamEnergy);
    }
 }

@@ -161,4 +161,9 @@ namespace Material
       Material otherMat = (Material)other;
       return Composition::almostEquals(other, tol) && (abs(getDensity() - otherMat.getDensity()) / fmax(getDensity(), otherMat.getDensity()) < tol);
    }
+
+   bool Material::isSEmaterial() const
+   {
+      return false;
+   }
 }

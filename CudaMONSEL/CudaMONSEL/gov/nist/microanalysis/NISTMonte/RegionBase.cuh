@@ -6,8 +6,6 @@
 #include "gov\nist\microanalysis\EPQLibrary\Element.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\ITransform.cuh"
 
-#include <vector>
-
 namespace RegionBase
 {
    class RegionBase
@@ -17,28 +15,25 @@ namespace RegionBase
 
    protected:
       TransformableRegion * mParent;
-      IMaterialScatterModelT const * mScatterModel;
+      IMaterialScatterModelT * mScatterModel;
       ShapeT const * mShape;
       RBListT mSubRegions;
 
    public:
-      //RegionBase();
-      //RegionBase(const RegionBase& rb);
-      bool operator==(const RegionBase& rb) const;
-      void updateMaterial(const MaterialT& oldMat, const IMaterialScatterModelT& newMat);
-      void updateMaterial(const IMaterialScatterModelT& oldMat, const IMaterialScatterModelT& newMat);
+      //void updateMaterial(const MaterialT& oldMat, const IMaterialScatterModelT& newMat);
+      void updateMaterial(const IMaterialScatterModelT& oldMat, IMaterialScatterModelT& newMat);
       const MaterialT& getMaterial() const;
-      const IMaterialScatterModelT& getScatterModel() const;
-      RBListT getSubRegions() const;
-      void addRegion(RegionBase&);
-
-   protected:
+      IMaterialScatterModelT* getScatterModel() const;
+      const RBListT& getSubRegions() const;
+      void addRegion(RegionBase&); // protected member inaccessble via pointer
       const RegionBase* containingSubRegion(double pos[]) const;
       Element::UnorderedSetT getElements(bool recurse) const;
       const RegionBase* findEndOfStep(double p0[], double p1[]) const;
-      const ShapeT& getShape() const;
+      const ShapeT* getShape() const;
+
+   //protected:
       double getAtomsPerCubicMeter(const ElementT& el) const;
-      const RegionBase& getParent() const;
+      const RegionBase* getParent() const;
       bool isContainingRegion(const RegionBase& searchTarget) const;
       char const * toString() const;
    };
@@ -53,7 +48,8 @@ namespace RegionBase
    class Region : public TransformableRegion
    {
    public:
-      Region(Region* const parent, IMaterialScatterModelT const * const msm, ShapeT const * const shape);
+      Region(Region* const parent, IMaterialScatterModelT * const msm, ShapeT const * const shape);
+      Region(const Region&);
       void removeSubRegion(RegionBase& subRegion);
       void clearSubRegions();
    };

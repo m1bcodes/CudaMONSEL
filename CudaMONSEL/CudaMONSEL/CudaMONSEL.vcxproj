@@ -33,6 +33,7 @@
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\Composition_GPU.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\CzyzewskiMottCrossSection.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\CzyzewskiMottScatteringAngle.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\Detector\ElectronProbe.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\EdgeEnergy.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\Element.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\Element_GPU.cu" />
@@ -51,6 +52,7 @@
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\ScreenedRutherfordScatteringAngle.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\Strategy.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQTests\AtomicShellTest.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\EPQTests\RegionBaseTest.cu" />
     <CudaCompile Include="gov\nist\microanalysis\NISTMonte\BasicMaterialModel.cu" />
     <CudaCompile Include="gov\nist\microanalysis\NISTMonte\GaussianBeam.cu" />
     <CudaCompile Include="gov\nist\microanalysis\NISTMonte\NullMaterialScatterModel.cu" />
@@ -70,7 +72,9 @@
     <CudaCompile Include="Amphibian\Algorithm.cu" />
     <CudaCompile Include="gov\nist\microanalysis\Utility\Math2.cu" />
     <CudaCompile Include="gov\nist\microanalysis\Utility\UncertainValue2.cu" />
-    <CudaCompile Include="gov\nist\nanoanalysis\SEmaterial.cu" />
+    <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSEL\ExpQMBarrierSM.cu" />
+    <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSEL\MONSEL_MaterialScatterModel.cu" />
+    <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSEL\SEmaterial.cu" />
     <CudaCompile Include="Main.cu" />
     <CudaCompile Include="SimRunner.cu" />
   </ItemGroup>
@@ -94,6 +98,7 @@
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\Composition_GPU.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\CzyzewskiMottCrossSection.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\CzyzewskiMottScatteringAngle.cuh" />
+    <ClInclude Include="gov\nist\microanalysis\EPQLibrary\Detector\ElectronProbe.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\EdgeEnergy.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\Element.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\Element_GPU.cuh" />
@@ -113,6 +118,7 @@
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\ScreenedRutherfordScatteringAngle.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\Strategy.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQTests\AtomicShellTest.cuh" />
+    <ClInclude Include="gov\nist\microanalysis\EPQTests\RegionBaseTest.cuh" />
     <ClInclude Include="gov\nist\microanalysis\NISTMonte\BasicMaterialModel.cuh" />
     <ClInclude Include="gov\nist\microanalysis\NISTMonte\Declarations.cuh" />
     <ClInclude Include="gov\nist\microanalysis\NISTMonte\ElectronGun.cuh" />
@@ -137,7 +143,13 @@
     <ClInclude Include="gov\nist\microanalysis\Utility\CSVReader.h" />
     <ClInclude Include="gov\nist\microanalysis\Utility\Math2.cuh" />
     <ClInclude Include="gov\nist\microanalysis\Utility\UncertainValue2.cuh" />
-    <ClInclude Include="gov\nist\nanoanalysis\SEmaterial.cuh" />
+    <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\BarrierScatterMechanism.cuh" />
+    <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\ExpQMBarrierSM.cuh" />
+    <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\MONSEL_MaterialScatterModel.cuh" />
+    <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\NormalShape.cuh" />
+    <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\ScatterMechanism.cuh" />
+    <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\SEmaterial.cuh" />
+    <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\SlowingDownAlg.cuh" />
     <ClInclude Include="ImageUtil.h" />
     <ClInclude Include="TimeUtil.h" />
   </ItemGroup>

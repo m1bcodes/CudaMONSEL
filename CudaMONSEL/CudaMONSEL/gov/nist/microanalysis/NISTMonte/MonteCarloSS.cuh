@@ -4,49 +4,49 @@
 #include "gov\nist\microanalysis\Utility\Math2.cuh"
 #include "gov\nist\microanalysis\NISTMonte\NullMaterialScatterModel.cuh"
 #include "gov\nist\microanalysis\NISTMonte\Declarations.cuh"
-#include <vector>
-#include <string>
-
-////#include "gov\nist\microanalysis\EPQLibrary\ITransform.cuh"
-////#include "gov\nist\microanalysis\NISTMonte\IMaterialScatterModel.cuh"
-////#include "gov\nist\microanalysis\NISTMonte\Electron.cuh"
-////#include "gov\nist\microanalysis\EPQLibrary\Element.cuh"
-////#include "gov\nist\microanalysis\EPQLibrary\Material.cuh"
-//
-//#include <vector>
-//#include <string>
-//
-//class MonteCarloSS
-//{
-//public:
-//   typedef std::string MonteCarloSSNameT;
-//
-//   MonteCarloSS();
-//
-//   virtual int GetId() = 0;
-//};
+#include "gov\nist\microanalysis\EPQLibrary\Element.cuh"
 
 namespace MonteCarloSS
 {
    extern const float ChamberRadius;
+   extern const float SMALL_DISP;
 
    class MonteCarloSS final
    {
+      typedef std::stack<ElectronT*> ElectronStack;
+
    public:
-      MonteCarloSS(ElectronGunT& gun, RegionT& mChamber);
+      MonteCarloSS(ElectronGunT const * gun, RegionT * mChamber, ElectronT * electron);
+      const RegionT* getChamber() const;
+      void initializeTrajectory();
+
+      void takeStep();
+
+      void trackSecondaryElectron(ElectronT* newElectron);
+      bool allElectronsComplete();
+      void runTrajectory();
+      void runMultipleTrajectories(int n);
+      double getBeamEnergy();
+      void setElectronGun(ElectronGunT& gun);
+      //void setBeamEnergy(double beamEnergy);
+      PositionVecT computeDetectorPosition(double elevation, double theta);
+      Element::UnorderedSetT getElementSet() const;
+      void rotate(double pivot[], double phi, double theta, double psi);
+      void translate(double distance[]);
+      const RegionBaseT* findRegionContaining(double point[]) const;
 
    private:
-      RegionT& mChamber;
-      ElectronGunT& mGun;
+      RegionT * mChamber;
+      ElectronGunT const * mGun;
       ElectronT * mElectron;
-      std::vector<ElectronT*> mElectronStack;
+      ElectronStack mElectronStack;
 
       //virtual int GetId() = 0;
    };
 
-   double distance(const double pos0[], const double pos1[]);
+   double dist(const double pos0[], const double pos1[]);
 
-   static const NullMaterialScatterModelT NULL_MSM;
+   const NullMaterialScatterModelT NULL_MSM;
 }
 
 #endif

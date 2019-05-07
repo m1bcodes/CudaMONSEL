@@ -45,7 +45,7 @@ namespace EdgeEnergy
       return d;
    }
 
-   MatrixXd DiracHartreeSlaterIonizationEnergies::Uis;
+   MatrixXd DiracHartreeSlaterIonizationEnergies::Uis; // TODO: fix initialization order
    void DiracHartreeSlaterIonizationEnergies::loadxionUis()
    {
       if (!Uis.empty()) return;

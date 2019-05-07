@@ -42,6 +42,8 @@ namespace Material
       bool equals(const Material& obj) const;
       bool almostEquals(const Material& other, double tol) const;
 
+      virtual bool isSEmaterial() const;
+
    private:
       double mDensity;
    };

@@ -6,15 +6,20 @@
 
 namespace NullMaterialScatterModel
 {
-   ElectronT& NullMaterialScatterModel::barrierScatter(ElectronT& pe, const RegionBaseT& nextRegion)
+
+   NullMaterialScatterModel::NullMaterialScatterModel() : minEforTracking(ToSI::eV(0.1))
    {
-      minEforTracking = ToSI::eV(0.1);
-      pe.setCurrentRegion(nextRegion);
-      pe.setScatteringElement(NULL);
-      return Electron::Default;
    }
 
-   double NullMaterialScatterModel::calculateEnergyLoss(double len, ElectronT& pe) const
+   ElectronT* NullMaterialScatterModel::barrierScatter(ElectronT* pe, const RegionBaseT* nextRegion) const
+   {
+      //minEforTracking = ToSI::eV(0.1);
+      pe->setCurrentRegion(nextRegion);
+      pe->setScatteringElement(NULL);
+      return &Electron::Default;
+   }
+
+   double NullMaterialScatterModel::calculateEnergyLoss(double len, const ElectronT& pe) const
    {
       return 0.0;
    }
@@ -24,14 +29,14 @@ namespace NullMaterialScatterModel
       return Material::Default;
    }
 
-   double NullMaterialScatterModel::randomMeanPathLength(ElectronT& pe) const
+   double NullMaterialScatterModel::randomMeanPathLength(ElectronT& pe)
    {
       return 1.0;
    }
 
-   ElectronT& NullMaterialScatterModel::scatter(ElectronT& pe)
+   ElectronT* NullMaterialScatterModel::scatter(ElectronT& pe)
    {
-      return Electron::Default;
+      return &Electron::Default;
    }
 
    double NullMaterialScatterModel::getMinEforTracking() const

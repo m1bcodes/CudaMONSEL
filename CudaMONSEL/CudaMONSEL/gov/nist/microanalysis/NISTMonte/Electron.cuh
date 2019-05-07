@@ -18,8 +18,8 @@ namespace Electron
       PositionVecT getPosition() const;
       void setPosition(double newpos[]);
       PositionVecT getPrevPosition() const;
-      const RegionBaseT& getCurrentRegion() const;
-      const RegionBaseT& getPreviousRegion() const;
+      const RegionBaseT* getCurrentRegion() const;
+      const RegionBaseT* getPreviousRegion() const;
       double getEnergy() const;
       double getPreviousEnergy() const;
       int getStepCount() const;
@@ -29,9 +29,9 @@ namespace Electron
       void move(double newPoint[], double dE);
       void setEnergy(double newEnergy);
       void setPreviousEnergy(double newPreviousEnergy);
-      void setCurrentRegion(const RegionBaseT& reg);
-      const ElementT& getScatteringElement() const;
-      void setScatteringElement(const ElementT& scatteringElement);
+      void setCurrentRegion(const RegionBaseT* reg);
+      const ElementT* getScatteringElement() const;
+      void setScatteringElement(const ElementT* scatteringElement);
       double getPhi() const;
       double getTheta() const;
       bool isTrajectoryComplete() const;

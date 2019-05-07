@@ -8,40 +8,17 @@
 namespace RegionBase
 {
    static double SMALL_DISP = 1.0e-15; // 1 fm
-
-   //RegionBase::RegionBase() : mParent(NULL), mScatterModel(NULL), mShape(NULL)
-   //{
-   //}
-
-   //RegionBase::RegionBase(const RegionBase& rb) : mParent(rb.mParent), mScatterModel(rb.mScatterModel), mShape(rb.mShape)
-   //{
-   //   if (&rb == this) return;
-   //
-   //   //mParent = rb.mParent;
-   //   //mScatterModel = rb.mScatterModel;
-   //   //mShape = rb.mShape;
-   //
-   //   mSubRegions.clear();
-   //   for (auto sr : rb.mSubRegions) {
-   //      mSubRegions.insert(sr);
-   //   }
-   //}
-
-   bool RegionBase::operator==(const RegionBase& rb) const
-   {
-      return &rb == this;
-   }
    
-   void RegionBase::updateMaterial(const MaterialT& oldMat, const IMaterialScatterModelT& newMat)
-   {
-      // Recursively replace all instances of oldMat with newMat
-      if (mScatterModel->getMaterial() == oldMat)
-         mScatterModel = &newMat;
-      for (auto reg : mSubRegions)
-         reg->updateMaterial(oldMat, newMat);
-   }
+   //void RegionBase::updateMaterial(const MaterialT& oldMat, const IMaterialScatterModelT& newMat)
+   //{
+   //   // Recursively replace all instances of oldMat with newMat
+   //   if (mScatterModel->getMaterial() == oldMat)
+   //      mScatterModel = &newMat;
+   //   for (auto reg : mSubRegions)
+   //      reg->updateMaterial(oldMat, newMat);
+   //}
    
-   void RegionBase::updateMaterial(const IMaterialScatterModelT& oldMat, const IMaterialScatterModelT& newMat)
+   void RegionBase::updateMaterial(const IMaterialScatterModelT& oldMat, IMaterialScatterModelT& newMat)
    {
       // Recursively replace all instances of oldMat with newMat
       if (mScatterModel == &oldMat)
@@ -55,19 +32,19 @@ namespace RegionBase
       return mScatterModel->getMaterial();
    }
    
-   const IMaterialScatterModelT& RegionBase::getScatterModel() const
+   IMaterialScatterModelT* RegionBase::getScatterModel() const
    {
-      return *mScatterModel;
+      return mScatterModel;
    }
    
-   RegionBase::RBListT RegionBase::getSubRegions() const
+   const RegionBase::RBListT& RegionBase::getSubRegions() const
    {
       return mSubRegions;
    }
 
-   void RegionBase::addRegion(RegionBase& rb)
+   void RegionBase::addRegion(RegionBase& reg)
    {
-      mSubRegions.insert(&rb);
+      mSubRegions.insert(&reg);
    }
    
    const RegionBase* RegionBase::containingSubRegion(double pos[]) const
@@ -75,8 +52,7 @@ namespace RegionBase
       if (mShape->contains(pos)) {
          for (auto reg : mSubRegions) {
             auto csr = reg->containingSubRegion(pos);
-            if (csr != NULL)
-               return csr;
+            if (csr != NULL) return csr;
          }
          return this;
       }
@@ -101,7 +77,7 @@ namespace RegionBase
       const RegionBase* base = this;
    
       double t = mShape->getFirstIntersection(pos0.data(), pos1.data());
-      std::string str(std::string(mShape->toString()) + " " + std::to_string(t));
+      StringT str(StringT(mShape->toString()) + " " + std::to_string(t));
       if (t < 0.0)  printf("%s\n", str.c_str());
       if ((t <= 1.0) && mParent != NULL)
          base = mParent;
@@ -115,7 +91,7 @@ namespace RegionBase
          }
       }
       if (t < 0.0) {
-         printf("findEndOfStep\n");
+         printf("findEndOfStep invalid t: %.10e\n", t);
       }
       if (t <= 1.0) {
          PositionVecT delta = Math2::minus(pos1, pos0);
@@ -136,9 +112,9 @@ namespace RegionBase
       return res;
    }
    
-   const ShapeT& RegionBase::getShape() const
+   const ShapeT* RegionBase::getShape() const
    {
-      return *mShape;
+      return mShape;
    }
    
    double RegionBase::getAtomsPerCubicMeter(const ElementT& el) const
@@ -146,9 +122,9 @@ namespace RegionBase
       return getMaterial().atomsPerCubicMeter(el);
    }
    
-   const RegionBase& RegionBase::getParent() const
+   const RegionBase* RegionBase::getParent() const
    {
-      return *mParent;
+      return mParent;
    }
    
    bool RegionBase::isContainingRegion(const RegionBase& searchTarget) const
@@ -204,7 +180,7 @@ namespace RegionBase
       //}
    }
 
-   Region::Region(Region* const parent, IMaterialScatterModelT const * const msm, ShapeT const * const shape)
+   Region::Region(Region* const parent, IMaterialScatterModelT * const msm, ShapeT const * const shape)
    {
       mParent = parent;
       mScatterModel = msm;
