@@ -6,7 +6,7 @@
 
 namespace NUTableInterpolation
 {
-   std::unordered_map<StringT, const NUTableInterpolationT*> instanceMap;
+   static std::unordered_map<StringT, const NUTableInterpolationT*> instanceMap;
 
    /**
    * getInstance - Returns an instance of a RegularTableInterpolation object
@@ -19,7 +19,7 @@ namespace NUTableInterpolation
    {
       const NUTableInterpolation* uniqueInstance = instanceMap[tableFileName];
       if (uniqueInstance == NULL) {
-         uniqueInstance = new NUTableInterpolation(tableFileName);
+         uniqueInstance = new NUTableInterpolation(tableFileName); // TODO: fix
          instanceMap[tableFileName] = uniqueInstance;
       }
       return uniqueInstance;

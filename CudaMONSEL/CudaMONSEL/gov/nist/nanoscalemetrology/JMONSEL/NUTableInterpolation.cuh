@@ -4,6 +4,8 @@
 
 namespace NUTableInterpolation
 {
+   const NUTableInterpolation* getInstance(char const * tableFileName);
+
    class NUTableInterpolation
    {
    public:
