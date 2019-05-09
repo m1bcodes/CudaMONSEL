@@ -20,6 +20,7 @@
 #include "gov\nist\microanalysis\EPQTests\AtomicShellTest.cuh"
 #include "gov\nist\microanalysis\EPQTests\EdgeEnergyTest.cuh"
 #include "gov\nist\microanalysis\EPQTests\MeanIonizationPotentialTest.cuh"
+#include "gov\nist\microanalysis\EPQTests\SphereTest.cuh"
 
 #include "ImageUtil.h"
 
@@ -60,6 +61,9 @@ int main()
    EdgeEnergyTest::testOne();
 
    MeanIonizationPotentialTest::testOne();
+   
+   SphereTest::testContains();
+   SphereTest::testGetFirstIntersection();
 
    return 0;
 }

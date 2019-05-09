@@ -58,6 +58,7 @@
     <CudaCompile Include="gov\nist\microanalysis\EPQTests\EdgeEnergyTest.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQTests\MeanIonizationPotentialTest.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQTests\RegionBaseTest.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\EPQTests\SphereTest.cu" />
     <CudaCompile Include="gov\nist\microanalysis\NISTMonte\BasicMaterialModel.cu" />
     <CudaCompile Include="gov\nist\microanalysis\NISTMonte\GaussianBeam.cu" />
     <CudaCompile Include="gov\nist\microanalysis\NISTMonte\NullMaterialScatterModel.cu" />
@@ -136,6 +137,7 @@
     <ClInclude Include="gov\nist\microanalysis\EPQTests\EdgeEnergyTest.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQTests\MeanIonizationPotentialTest.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQTests\RegionBaseTest.cuh" />
+    <ClInclude Include="gov\nist\microanalysis\EPQTests\SphereTest.cuh" />
     <ClInclude Include="gov\nist\microanalysis\NISTMonte\BasicMaterialModel.cuh" />
     <ClInclude Include="gov\nist\microanalysis\NISTMonte\Declarations.cuh" />
     <ClInclude Include="gov\nist\microanalysis\NISTMonte\ElectronGun.cuh" />
