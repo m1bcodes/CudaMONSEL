@@ -10,6 +10,8 @@ namespace SlowingDownAlg
    public:
       virtual void setMaterial(const SEmaterialT* mat) = 0;
       virtual double compute(double d, const ElectronT* pe) const = 0;
+
+      char const * toString() const { return "class SlowingDownAlg"; }
    };
 }
 

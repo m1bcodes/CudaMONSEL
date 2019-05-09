@@ -22,7 +22,7 @@ namespace Composition
       typedef std::unordered_map<const Element::Element*, UncertainValue2::UncertainValue2, Element::HashFcn> ConstituentsMapT;
       typedef std::unordered_map<const Element::Element*, UncertainValue2::UncertainValue2, Element::HashFcn>::iterator ConstituentsMapTItr;
       typedef std::unordered_map<const Element::Element*, double, Element::HashFcn> ErrorMapT;
-      typedef std::string CompositionNameT;
+      typedef std::string StringT;
 
       Composition();
       ~Composition();
@@ -68,7 +68,7 @@ namespace Composition
       }
 
       template<>
-      Element::Element GetElementBy<CompositionNameT>(CompositionNameT s)
+      Element::Element GetElementBy<StringT>(StringT s)
       {
          return Element::byName(s.c_str());
       }
@@ -112,14 +112,14 @@ namespace Composition
       double weightAvgAtomicNumber() const;
       double sumWeightFraction() const;
       UncertainValue2::UncertainValue2 sumWeightFractionU() const;
-      CompositionNameT toString() const;
+      StringT toString() const;
       ////String::String stoichiometryString();
       ////String::String weightPercentString(bool normalize);
       ////String::String descriptiveString(bool normalize);
       //Element::Element getNthElementByWeight(int n);
       //Element::Element getNthElementByAtomicFraction(int n);
-      void setName(const CompositionNameT& name);
-      CompositionNameT getName() const;
+      void setName(const StringT& name);
+      StringT getName() const;
       int compareTo(const Composition& comp) const;
       Composition asComposition() const;
       Composition clone() const;
@@ -153,7 +153,7 @@ namespace Composition
 
       UncertainValue2::UncertainValue2 mNormalization;// = UncertainValue2::ONE();
       UncertainValue2::UncertainValue2 mAtomicNormalization;// = UncertainValue2::ONE();
-      CompositionNameT mName;
+      StringT mName;
       Representation mOptimalRepresentation;// = Representation::UNDETERMINED;
       UncertainValue2::UncertainValue2 mMoleNorm;// = UncertainValue2::NaN();
 

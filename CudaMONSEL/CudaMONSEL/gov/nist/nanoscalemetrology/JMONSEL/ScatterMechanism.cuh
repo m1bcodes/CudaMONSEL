@@ -8,8 +8,8 @@ namespace ScatterMechanism
    class ScatterMechanism
    {
    public:
-      virtual double scatterRate(const ElectronT* pe) const = 0;
-      virtual ElectronT* scatter(const ElectronT* pe) = 0;
+      virtual double scatterRate(const ElectronT* pe) = 0;
+      virtual ElectronT* scatter(ElectronT* pe) = 0;
       virtual void setMaterial(const MaterialT* mat) = 0;
    };
 }

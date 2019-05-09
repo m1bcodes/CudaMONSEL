@@ -410,6 +410,7 @@ namespace AtomicShell
                }
                ++idx;
             }
+            file.close();
          }
          catch (std::exception&) {
             printf("Fatal error while attempting to load the ionization data file: %s.\n", filepath);

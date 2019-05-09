@@ -20,7 +20,7 @@ namespace Material
       mDensity = other.mDensity;
    }
 
-   Material::Material(const Element::Element* elms[], int elmsLen, double massFracs[], int massFracsLen, double density, char* name) : Composition(elms, elmsLen, massFracs, massFracsLen, name)
+   Material::Material(const Element::Element* elms[], int elmsLen, double massFracs[], int massFracsLen, double density, const char* name) : Composition(elms, elmsLen, massFracs, massFracsLen, name)
    {
       mDensity = density;
       renormalize();

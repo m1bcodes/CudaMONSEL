@@ -28,6 +28,7 @@ private:
 //   {
 //      std::cout << "4th Element(" << row[3] << ")\n";
 //   }
+//   file.close();
 //}
 
 class CSVIterator
@@ -67,6 +68,7 @@ private:
 //   for (CSVIterator loop(file); loop != CSVIterator(); ++loop) {
 //      std::cout << "4th Element(" << (*loop)[3] << ")\n";
 //   }
+//   file.close();
 //
 //   return 0;
 //}

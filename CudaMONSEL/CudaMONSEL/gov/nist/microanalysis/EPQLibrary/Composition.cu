@@ -529,7 +529,7 @@ namespace Composition
       return res;
    }
 
-   Composition::CompositionNameT Composition::toString() const
+   Composition::StringT Composition::toString() const
    {
       //if (mName.size() == 0) {
       //   return descriptiveString(false);
@@ -643,12 +643,12 @@ namespace Composition
    //   return Element::None;
    //}
 
-   void Composition::setName(const CompositionNameT& name)
+   void Composition::setName(const StringT& name)
    {
       mName = name;
    }
 
-   Composition::CompositionNameT Composition::getName() const
+   Composition::StringT Composition::getName() const
    {
       return mName;
    }
@@ -952,7 +952,7 @@ namespace Composition
             ++k;
          }
          ++c;
-         Composition::CompositionNameT strline(line);
+         Composition::StringT strline(line);
          if (pos == 0) {
             if (!strline.find("NBS GLASS K ")) {
                result.setName("K" "NBS GLASS K");

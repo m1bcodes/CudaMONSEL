@@ -132,6 +132,11 @@ namespace MONSEL_MaterialScatterModel
       return scatterArray.at(index)->scatter(&pe);
    }
 
+   ElectronT* MONSEL_MaterialScatterModel::barrierScatter(ElectronT* pe, const RegionBaseT* nextRegion) const
+   {
+      return barrierSM->barrierScatter(pe, nextRegion);
+   }
+
    const BarrierScatterMechanismT* MONSEL_MaterialScatterModel::getBarrierSM() const
    {
       return barrierSM;
@@ -203,10 +208,5 @@ namespace MONSEL_MaterialScatterModel
    void MONSEL_MaterialScatterModel::setMinEforTracking(double minEforTracking)
    {
       this->minEforTracking = minEforTracking;
-   }
-
-   ElectronT* MONSEL_MaterialScatterModel::barrierScatter(ElectronT* pe, const RegionBaseT* nextRegion) const
-   {
-      return barrierSM->barrierScatter(pe, nextRegion);
    }
 }

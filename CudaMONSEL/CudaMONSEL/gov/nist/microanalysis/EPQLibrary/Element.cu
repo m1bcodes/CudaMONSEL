@@ -608,6 +608,7 @@ namespace Element
             mAtomicWeight[idx] = std::stof((*loop)[0]);
             ++idx;
          }
+         file.close();
       }
       catch (std::exception&) {
          printf("didnt see file AtomicWeights.csv\n");
@@ -641,6 +642,7 @@ namespace Element
             }
             ++idx;
          }
+         file.close();
       }
       catch (std::exception&) {
          printf("Fatal error while attempting to load the ionization data file: %s.\n", filepath);

@@ -18,6 +18,8 @@
 #include "gov\nist\microanalysis\EPQTests\ElementTest.cuh"
 #include "gov\nist\microanalysis\EPQTests\MaterialTest.cuh"
 #include "gov\nist\microanalysis\EPQTests\AtomicShellTest.cuh"
+#include "gov\nist\microanalysis\EPQTests\EdgeEnergyTest.cuh"
+#include "gov\nist\microanalysis\EPQTests\MeanIonizationPotentialTest.cuh"
 
 #include "ImageUtil.h"
 
@@ -54,6 +56,10 @@ int main()
    mat.testOne();
 
    AtomicShellTest::testOne();
+
+   EdgeEnergyTest::testOne();
+
+   MeanIonizationPotentialTest::testOne();
 
    return 0;
 }

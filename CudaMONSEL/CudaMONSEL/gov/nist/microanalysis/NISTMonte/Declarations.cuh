@@ -4,6 +4,7 @@
 #include <string>
 #include <unordered_set>
 #include <map>
+#include <unordered_map>
 #include <stack>
 
 typedef std::string StringT;
@@ -12,6 +13,8 @@ typedef std::vector<float> VectorXf;
 typedef std::vector<VectorXf> MatrixXf;
 typedef std::vector<double> VectorXd;
 typedef std::vector<VectorXd> MatrixXd;
+typedef std::vector<MatrixXd> Matrix3DXd;
+typedef std::vector<Matrix3DXd> Matrix4DXd;
 typedef std::vector<int> VectorXi;
 typedef std::vector<VectorXi> MatrixXi;
 typedef std::unordered_set<double> Setd;
@@ -22,6 +25,13 @@ namespace Element
 }
 
 typedef Element::Element ElementT;
+
+namespace Composition
+{
+   class Composition;
+}
+
+typedef Composition::Composition CompositionT;
 
 namespace Material
 {
@@ -211,5 +221,12 @@ namespace SlowingDownAlg
 }
 
 typedef SlowingDownAlg::SlowingDownAlg SlowingDownAlgT;
+
+namespace NUTableInterpolation
+{
+   class NUTableInterpolation;
+}
+
+typedef NUTableInterpolation::NUTableInterpolation NUTableInterpolationT;
 
 #endif

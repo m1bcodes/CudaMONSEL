@@ -66,6 +66,7 @@ namespace EdgeEnergy
             }
             ++idx;
          }
+         file.close();
       }
       catch (const std::exception&) {
          printf("cannot load loadxionUis: %s\n", name.c_str());
@@ -82,11 +83,13 @@ namespace EdgeEnergy
 
    double DiracHartreeSlaterIonizationEnergies::compute(const AtomicShellT& shell) const
    {
+      if (Uis.empty()) printf("DTSAEdgeEnergy::compute: DTSAEdgeEnergies.empty()\n");
       return ToSI::eV(Uis[shell.getElement().getAtomicNumber()][shell.getShell()]);
    }
 
    bool DiracHartreeSlaterIonizationEnergies::isSupported(const AtomicShellT& shell) const
    {
+      if (Uis.empty()) printf("DTSAEdgeEnergy::isSupported: DTSAEdgeEnergies.empty()\n");
       int z = shell.getElement().getAtomicNumber();
       int sh = shell.getShell();
       return (z >= 1) && (z <= 99) && (sh < Uis[z].size());
@@ -114,6 +117,7 @@ namespace EdgeEnergy
             }
             ++idx;
          }
+         file.close();
       }
       catch (const std::exception&) {
          printf("cannot load loadNISTxrtdb: %s\n", name.c_str());
@@ -127,15 +131,17 @@ namespace EdgeEnergy
 
    double NISTEdgeEnergy::compute(const AtomicShellT& shell) const
    {
+      if (NISTEdgeEnergies.empty()) printf("DTSAEdgeEnergy::compute: DTSAEdgeEnergies.empty()\n");
       int an = shell.getElement().getAtomicNumber();
-      if ((an < Element::elmNe) || (an > Element::elmFm)) printf("NISTEdgeEnergy::compute: %d - only supports elements Ne (10) to Fm (100)", an);
+      if ((an < Element::elmNe) || (an > Element::elmFm)) printf("NISTEdgeEnergy::compute: %d - only supports elements Ne (10) to Fm (100)\n", an);
       int sh = shell.getShell();
-      if ((sh < AtomicShell::K) || (sh > AtomicShell::LIII)) printf("NISTEdgeEnergy::compute: %d - only supports shells K, L1, L2 and L3", sh);
+      if ((sh < AtomicShell::K) || (sh > AtomicShell::LIII)) printf("NISTEdgeEnergy::compute: %d - only supports shells K, L1, L2 and L3\n", sh);
       return ToSI::eV(NISTEdgeEnergies[an - Element::elmNe][sh - AtomicShell::K]);
    }
 
    bool NISTEdgeEnergy::isSupported(const AtomicShellT& shell) const
    {
+      if (NISTEdgeEnergies.empty()) printf("DTSAEdgeEnergy::isSupported: DTSAEdgeEnergies.empty()\n");
       int an = shell.getElement().getAtomicNumber();
       int sh = shell.getShell();
       return (an >= Element::elmNe) && (an <= Element::elmFm) && (sh >= AtomicShell::K) && (sh <= AtomicShell::LIII) && (NISTEdgeEnergies[an - Element::elmNe][sh - AtomicShell::K] > 0.0);
@@ -163,6 +169,7 @@ namespace EdgeEnergy
             }
             ++idx;
          }
+         file.close();
       }
       catch (const std::exception&) {
          printf("cannot load loadFFastEdgeDB: %s\n", name.c_str());
@@ -187,13 +194,13 @@ namespace EdgeEnergy
 
    double ChantlerEdgeEnergy::compute(const AtomicShellT& shell) const
    {
-      if (ChantlerEdgeEnergies.empty()) printf("ChantlerEdgeEnergy::isSupported ChantlerEdgeEnergies empty!\n");
+      if (ChantlerEdgeEnergies.empty()) printf("ChantlerEdgeEnergy::compute ChantlerEdgeEnergies empty!\n");
       int an = shell.getElement().getAtomicNumber();
       if ((an < Element::elmH) || (an > Element::elmU)) printf("ChantlerEdgeEnergy::compute: %d - only supports elements H (1) to U (92)\n", an);
       int sh = shell.getShell();
       int i = index(sh);
       if (i == -1) printf("ChantlerEdgeEnergy::compute: %d - only supports shells K to O5, P1 to P3\n", i);
-      if (!(ChantlerEdgeEnergies.size() > an - Element::elmH)) printf("Too few elements in EdgeEnergy database.");
+      if (!(ChantlerEdgeEnergies.size() > an - Element::elmH)) printf("Too few elements in EdgeEnergy database.\n");
       return ChantlerEdgeEnergies[an - Element::elmH].size() > i ? ChantlerEdgeEnergies[an - Element::elmH][i] : 0.0;
    }
 
@@ -267,6 +274,7 @@ namespace EdgeEnergy
                ++idx;
             }
          }
+         file.close();
       }
       catch (const std::exception&) {
          printf("cannot load loadEdgeEnergies: %s\n", name.c_str());
@@ -280,6 +288,7 @@ namespace EdgeEnergy
 
    double DTSAEdgeEnergy::compute(const AtomicShellT& shell) const
    {
+      if (DTSAEdgeEnergies.empty()) printf("DTSAEdgeEnergy::compute: DTSAEdgeEnergies.empty()\n");
       int sh = shell.getShell();
       if ((sh < AtomicShell::K) || (sh > AtomicShell::NI)) printf(StringT("Unsupported shell " + StringT(shell.toString()) + " in " + toString() + "\n").c_str());
       int i = shell.getElement().getAtomicNumber() - 1;
@@ -289,6 +298,7 @@ namespace EdgeEnergy
 
    bool DTSAEdgeEnergy::isSupported(const AtomicShellT& shell) const
    {
+      if (DTSAEdgeEnergies.empty()) printf("DTSAEdgeEnergy::isSupported: DTSAEdgeEnergies.empty()\n");
       int sh = shell.getShell();
       int zp = shell.getElement().getAtomicNumber() - 1;
       return (zp < DTSAEdgeEnergies.size() && !DTSAEdgeEnergies[zp].empty()) && (DTSAEdgeEnergies[zp].size() > sh);

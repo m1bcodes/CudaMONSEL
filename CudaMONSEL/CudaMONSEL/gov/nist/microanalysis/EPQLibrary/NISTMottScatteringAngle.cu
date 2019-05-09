@@ -58,6 +58,7 @@ namespace NISTMottScatteringAngle
                mX1[j][i] = sciToDub(line);
             }
          }
+         t.close();
       }
       catch (std::exception ex) {
          printf("Unable to construct NISTMottScatteringAngle: %s\n", name.c_str());
