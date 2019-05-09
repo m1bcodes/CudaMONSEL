@@ -36,7 +36,7 @@ namespace Sphere
          if (un < 0.0)
             un = INT_MAX;
          const double res = ::fmin(up, un);
-         if (!(res == INT_MAX) || (Math2::magnitude(Math2::plus(m, Math2::multiply(res, d))) - mRadius < ::fmax(1.0e-12, Math2::distance(PositionVecT(pos0, pos0 + 3), PositionVecT(pos1, pos1 + 3)) * 1.0e-9))) {
+         if (!((res == INT_MAX) || (Math2::magnitude(Math2::plus(m, Math2::multiply(res, d))) - mRadius < ::fmax(1.0e-12, Math2::distance(PositionVecT(pos0, pos0 + 3), PositionVecT(pos1, pos1 + 3)) * 1.0e-9)))) {
             printf("%s\n", std::to_string(Math2::magnitude(Math2::plus(m, Math2::multiply(res, d))) - mRadius).c_str());
          }
          return res;

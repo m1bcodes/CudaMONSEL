@@ -53,6 +53,7 @@
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\Strategy.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQTests\AtomicShellTest.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQTests\RegionBaseTest.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\EPQTests\SphereTest.cu" />
     <CudaCompile Include="gov\nist\microanalysis\NISTMonte\BasicMaterialModel.cu" />
     <CudaCompile Include="gov\nist\microanalysis\NISTMonte\GaussianBeam.cu" />
     <CudaCompile Include="gov\nist\microanalysis\NISTMonte\NullMaterialScatterModel.cu" />
@@ -119,6 +120,7 @@
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\Strategy.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQTests\AtomicShellTest.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQTests\RegionBaseTest.cuh" />
+    <ClInclude Include="gov\nist\microanalysis\EPQTests\SphereTest.cuh" />
     <ClInclude Include="gov\nist\microanalysis\NISTMonte\BasicMaterialModel.cuh" />
     <ClInclude Include="gov\nist\microanalysis\NISTMonte\Declarations.cuh" />
     <ClInclude Include="gov\nist\microanalysis\NISTMonte\ElectronGun.cuh" />
