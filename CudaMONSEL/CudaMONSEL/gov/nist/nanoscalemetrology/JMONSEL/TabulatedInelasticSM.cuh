@@ -10,18 +10,31 @@ namespace TabulatedInelasticSM
    {
    public:
       //TabulatedInelasticSM();
-      TabulatedInelasticSM(const SEmaterialT& mat, int methodSE, StringT tables[], int tableslen, double energyOffset);
-      //TabulatedInelasticSM(const SEmaterialT* mat, int methodSE, StringT tables[]);
+      TabulatedInelasticSM(const SEmaterialT& mat, int methodSE, StringT tables[], double energyOffset);
+      TabulatedInelasticSM(const SEmaterialT& mat, int methodSE, StringT tables[]);
 
       double scatterRate(const ElectronT* pe) override;
       ElectronT* scatter(ElectronT* pe) override;
       void setMaterial(const MaterialT* mat) override;
 
+      void setMinEgenSE(double minEgenSE);
+      double getMinEgenSE() const;
+      int getMethodSE() const;
+      void setBranchingRatios();
+      void setBranchingRatios(double ratios[], int);
+      void setEnergyGap(double energyGap);
+      void setRateMult(double rateMult);
+      bool isE0fromDispersion() const;
+      void setE0fromDispersion(bool e0fromDispersion);
+
       StringT toString() const;
 
    private:
+      VectorXd simESEf(double Eq, double deltaE, double r);
+      double pickBE(double Eq, double deltaE);
+
       const int methodSE;
-      double energyOffset = 0.;
+      double energyOffset;
 
       const NUTableInterpolationT* tableIIMFP;
       const NUTableInterpolationT* tableReducedDeltaE;

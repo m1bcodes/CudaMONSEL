@@ -7,24 +7,24 @@
 
 namespace Math2
 {
-   PositionVecT minus(PositionVecT a, PositionVecT b);
-   PositionVecT divide(PositionVecT a, double b);
-   PositionVecT plus(PositionVecT a, PositionVecT b);
-   PositionVecT normalize(PositionVecT p);
-   PositionVecT multiply(double a, PositionVecT b);
-   double distance(PositionVecT p1, PositionVecT p2);
-   double distance3d(const double p1[], const double p2[]);
-   double dot(PositionVecT a, PositionVecT b);
-   double magnitude3d(PositionVecT p);
-   double sqr(double x);
-   double magnitude(PositionVecT p);
-   double random();
+   extern PositionVecT minus(PositionVecT a, PositionVecT b);
+   extern PositionVecT divide(PositionVecT a, double b);
+   extern PositionVecT plus(PositionVecT a, PositionVecT b);
+   extern PositionVecT normalize(PositionVecT p);
+   extern PositionVecT multiply(double a, PositionVecT b);
+   extern double distance(PositionVecT p1, PositionVecT p2);
+   extern double distance3d(const double p1[], const double p2[]);
+   extern double dot(PositionVecT a, PositionVecT b);
+   extern double magnitude3d(PositionVecT p);
+   extern double sqr(double x);
+   extern double magnitude(PositionVecT p);
+   extern double random();
 
-   double toRadians(double deg);
+   extern double toRadians(double deg);
 
    extern double MINUS_Z_AXIS[];
 
-   const double PI = 3.14159265358979323846;
+   extern const double PI;
 }
 
 #endif

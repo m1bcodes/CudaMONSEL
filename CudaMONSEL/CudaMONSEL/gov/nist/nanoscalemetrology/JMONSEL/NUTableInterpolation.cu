@@ -94,7 +94,7 @@ namespace NUTableInterpolation
    * @return double - The estimated value of the tabulated function at the
    *         supplied coordinate.
    */
-   double NUTableInterpolation::interpolate(double xval[], int xvallen, int order)
+   double NUTableInterpolation::interpolate(double xval[], int xvallen, int order) const
    {
       if (xvallen < dim)
          printf("Attempt to interpolate %s at x with %d dimensions", tableFileName.c_str(), dim);

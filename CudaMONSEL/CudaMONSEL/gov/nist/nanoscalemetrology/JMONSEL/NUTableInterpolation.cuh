@@ -11,7 +11,7 @@ namespace NUTableInterpolation
    public:
       NUTableInterpolation(char const * tableFileName);
 
-      double interpolate(double xval[], int xvallen, int order);
+      double interpolate(double xval[], int xvallen, int order) const;
 
       MatrixXd getDomain() const;
       VectorXd getRange() const;

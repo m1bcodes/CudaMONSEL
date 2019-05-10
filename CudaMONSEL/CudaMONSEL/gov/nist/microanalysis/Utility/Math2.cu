@@ -4,6 +4,8 @@
 
 namespace Math2
 {
+   const double PI = 3.14159265358979323846;
+
    //public class Math2 {
    //
    //   public final double[] ORIGIN_3D = {

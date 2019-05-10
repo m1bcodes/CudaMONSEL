@@ -21,6 +21,7 @@
 #include "gov\nist\microanalysis\EPQTests\EdgeEnergyTest.cuh"
 #include "gov\nist\microanalysis\EPQTests\MeanIonizationPotentialTest.cuh"
 #include "gov\nist\microanalysis\EPQTests\SphereTest.cuh"
+#include "gov\nist\microanalysis\EPQTests\Math2Test.cuh"
 
 #include "ImageUtil.h"
 
@@ -64,6 +65,9 @@ int main()
    
    SphereTest::testContains();
    SphereTest::testGetFirstIntersection();
+
+   Math2Test::testRandom1();
+   Math2Test::testRandom2();
 
    return 0;
 }
