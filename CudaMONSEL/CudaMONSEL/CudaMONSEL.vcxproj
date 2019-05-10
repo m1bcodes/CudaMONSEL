@@ -82,6 +82,7 @@
     <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSELutils\NULagrangeInterpolation.cu" />
     <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSEL\ExpQMBarrierSM.cu" />
     <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSEL\FittedInelSM.cu" />
+    <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSEL\GanachaudMokraniPhononInelasticSM.cu" />
     <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSEL\GanachaudMokraniPolaronTrapSM.cu" />
     <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSEL\JoyLuoNieminenCSD.cu" />
     <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSEL\MONSEL_MaterialScatterModel.cu" />
@@ -168,6 +169,7 @@
     <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\BarrierScatterMechanism.cuh" />
     <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\ExpQMBarrierSM.cuh" />
     <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\FittedInelSM.cuh" />
+    <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\GanachaudMokraniPhononInelasticSM.cuh" />
     <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\GanachaudMokraniPolaronTrapSM.cuh" />
     <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\JoyLuoNieminenCSD.cuh" />
     <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\MONSEL_MaterialScatterModel.cuh" />

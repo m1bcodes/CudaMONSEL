@@ -29,6 +29,9 @@ int main()
 {
    Element::InitializeElements();
 
+   Math2Test::testRandom1();
+   Math2Test::testRandom2();
+
    UncertainValue2::UncertainValue2 v0(0, "abc", 5);
    UncertainValue2::UncertainValue2 v1(1);
    UncertainValue2::UncertainValue2 v2(2, 10);
@@ -65,9 +68,6 @@ int main()
    
    SphereTest::testContains();
    SphereTest::testGetFirstIntersection();
-
-   Math2Test::testRandom1();
-   Math2Test::testRandom2();
 
    return 0;
 }

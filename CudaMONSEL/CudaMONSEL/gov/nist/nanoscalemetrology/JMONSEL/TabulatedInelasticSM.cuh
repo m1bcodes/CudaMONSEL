@@ -9,7 +9,6 @@ namespace TabulatedInelasticSM
    class TabulatedInelasticSM : public ScatterMechanismT
    {
    public:
-      //TabulatedInelasticSM();
       TabulatedInelasticSM(const SEmaterialT& mat, int methodSE, StringT tables[], double energyOffset);
       TabulatedInelasticSM(const SEmaterialT& mat, int methodSE, StringT tables[]);
 
