@@ -314,7 +314,7 @@ namespace Math2
    * @param p2
    * @return double
    */
-   double distance(const PositionVecT p1, const PositionVecT p2)
+   double distance(const VectorXd& p1, const VectorXd& p2)
    {
       if (p1.size() != p2.size()) return -1;
       double sum2 = 0.0;
@@ -324,7 +324,7 @@ namespace Math2
       return ::sqrt(sum2);
    }
 
-   double distance3d(const double p1[], const double p2[])
+   double distance3d(const VectorXd& p1, const VectorXd& p2)
    {
       double sum2 = 0.0;
       for (int i = 0; i < 3; ++i)
@@ -361,7 +361,7 @@ namespace Math2
    //      return Math.sqrt(sum2);
    //   }
 
-   double magnitude(const PositionVecT p)
+   double magnitude(const VectorXd& p)
    {
       double sum2 = 0.0;
       for (int i = 0; i < p.size(); ++i)
@@ -380,7 +380,7 @@ namespace Math2
    //   return divide(p, Math2.magnitude(p));
    //}
 
-   PositionVecT normalize(const PositionVecT p)
+   VectorXd normalize(const VectorXd& p)
    {
       return Math2::divide(p, Math2::magnitude(p));
    }
@@ -430,9 +430,9 @@ namespace Math2
    //   return res;
    //}
 
-   PositionVecT plus(const PositionVecT a, const PositionVecT b)
+   VectorXd plus(const VectorXd& a, const VectorXd& b)
    {
-      PositionVecT res(a.size(), 0);
+      VectorXd res(a.size(), 0);
       if (a.size() != b.size()) {
          printf("Math2::plus bad len: %d, %d", a.size(), b.size());
          return res;
@@ -490,9 +490,9 @@ namespace Math2
    //   return res;
    //}
    //
-   PositionVecT minus(const PositionVecT a, const PositionVecT b)
+   VectorXd minus(const VectorXd& a, const VectorXd& b)
    {
-      PositionVecT res(a.size(), 0);
+      VectorXd res(a.size(), 0);
       if (a.size() != b.size()) {
          printf("Math2::plus bad len: %d, %d", a.size(), b.size());
          return res;
@@ -523,7 +523,7 @@ namespace Math2
       * @param b
       * @return The dot product of a and b
       */
-   double dot(const PositionVecT a, const PositionVecT b)
+   double dot(const VectorXd& a, const VectorXd& b)
    {
       if (a.size() != b.size()) printf("Both arguments to the dot product must be the same length.");
       double res = 0.0;
@@ -555,7 +555,7 @@ namespace Math2
       * @return A three-vector perpendicular to both a and b and of length |a||b|
       *         sin(th) where th is the angle between a and b
       */
-   VectorXd cross(const VectorXd a, const VectorXd b)
+   VectorXd cross(const VectorXd& a, const VectorXd& b)
    {
       if ((a.size() != 3) | (b.size()!= 3)) printf("Both arguments to the cross product must be the three-vectors.");
       return VectorXd({ a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0] });
@@ -576,9 +576,9 @@ namespace Math2
    //      return res;
    //   }
    //
-   PositionVecT multiply(double a, const PositionVecT b)
+   VectorXd multiply(double a, const VectorXd& b)
    {
-      PositionVecT res(b.size(), 0);
+      VectorXd res(b.size(), 0);
       for (int i = 0; i < 3; ++i)
          res[i] = a * b[i];
       return res;
@@ -612,24 +612,25 @@ namespace Math2
    //      return res;
    //   }
    //
-   //   /**
-   //   * Returns a point that is a fraction <code>f</code> of the distance between
-   //   * <code>a</code> and <code>b</code>. If f=0, then the result is
-   //   * <code>a</code>. If f=1, then the result is <code>b</code>. This function
-   //   * works in an arbitrary number of dimensions but <code>a</code> and
-   //   * <code>b</code> must have the same number of dimensions.
-   //   *
-   //   * @param a
-   //   * @param b
-   //   * @param f
-   //   * @return double[] - a point
-   //   */
-   //   final public double[] pointBetween(double[] a, double[] b, double f) {
-   //      final double[] res = new double[a.length];
-   //      for (int i = 0; i < res.length; ++i)
-   //         res[i] = a[i] + (b[i] - a[i]) * f;
-   //      return res;
-   //   }
+   /**
+   * Returns a point that is a fraction <code>f</code> of the distance between
+   * <code>a</code> and <code>b</code>. If f=0, then the result is
+   * <code>a</code>. If f=1, then the result is <code>b</code>. This function
+   * works in an arbitrary number of dimensions but <code>a</code> and
+   * <code>b</code> must have the same number of dimensions.
+   *
+   * @param a
+   * @param b
+   * @param f
+   * @return double[] - a point
+   */
+   VectorXd pointBetween(const VectorXd& a, const VectorXd& b, double f)
+   {
+      VectorXd res(a.size());
+      for (int i = 0; i < res.size(); ++i)
+         res[i] = a[i] + (b[i] - a[i]) * f;
+      return res;
+   }
    //
    //   /**
    //   * Returns true if the argument vector has magnitude of 1.0.
@@ -667,9 +668,9 @@ namespace Math2
    //      return res;
    //   }
    //
-   PositionVecT divide(const PositionVecT a, double b)
+   VectorXd divide(const VectorXd& a, double b)
    {
-      PositionVecT res(a.size(), 0);
+      VectorXd res(a.size(), 0);
       for (int i = 0; i < 3; ++i)
          res[i] = a[i] / b;
       return res;

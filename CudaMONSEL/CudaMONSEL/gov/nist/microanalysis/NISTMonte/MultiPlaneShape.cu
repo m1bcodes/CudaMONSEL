@@ -411,7 +411,7 @@ namespace MultiPlaneShape
    //   wr.flush();
    //}
 
-   Planes MultiPlaneShape::getPlanes() const
+   MultiPlaneShape::Planes MultiPlaneShape::getPlanes() const
    {
       return mPlanes;
    }

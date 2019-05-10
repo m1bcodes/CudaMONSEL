@@ -95,7 +95,7 @@ namespace EdgeEnergy
       return (z >= 1) && (z <= 99) && (sh < Uis[z].size());
    };
 
-   const DiracHartreeSlaterIonizationEnergies DHSIonizationEnergyRef;
+   static const DiracHartreeSlaterIonizationEnergies DHSIonizationEnergyRef;
    const EdgeEnergy& DHSIonizationEnergy = DHSIonizationEnergyRef;
 
    MatrixXd NISTEdgeEnergy::NISTEdgeEnergies;
@@ -147,7 +147,7 @@ namespace EdgeEnergy
       return (an >= Element::elmNe) && (an <= Element::elmFm) && (sh >= AtomicShell::K) && (sh <= AtomicShell::LIII) && (NISTEdgeEnergies[an - Element::elmNe][sh - AtomicShell::K] > 0.0);
    }
 
-   const NISTEdgeEnergy NISTxrtdbRef;
+   static const NISTEdgeEnergy NISTxrtdbRef;
    const EdgeEnergy& NISTxrtdb = NISTxrtdbRef;
 
    MatrixXd ChantlerEdgeEnergy::ChantlerEdgeEnergies;
@@ -212,7 +212,7 @@ namespace EdgeEnergy
       return (an >= Element::elmLi) && (an <= Element::elmU) && (i >= 0) && (ChantlerEdgeEnergies[an - Element::elmH].size() > i) && (ChantlerEdgeEnergies[an - Element::elmH][i] > 0.0);
    }
 
-   const ChantlerEdgeEnergy Chantler2005Ref;
+   static const ChantlerEdgeEnergy Chantler2005Ref;
    const EdgeEnergy& Chantler2005 = Chantler2005Ref;
 
    WernishEdgeEnergy::WernishEdgeEnergy() : EdgeEnergy("Wernisch et al., 1984", "Wernisch et al., 1984 - Taken from Markowitz in the Handbook of X-ray Spectroscopy") {
@@ -250,7 +250,7 @@ namespace EdgeEnergy
       return false;
    }
 
-   const WernishEdgeEnergy Wernish84Ref;
+   static const WernishEdgeEnergy Wernish84Ref;
    const EdgeEnergy& Wernish84 = Wernish84Ref;
 
    MatrixXd DTSAEdgeEnergy::DTSAEdgeEnergies;
@@ -288,11 +288,12 @@ namespace EdgeEnergy
 
    double DTSAEdgeEnergy::compute(const AtomicShellT& shell) const
    {
+      StringT shellinfo(shell.toString());
       if (DTSAEdgeEnergies.empty()) printf("DTSAEdgeEnergy::compute: DTSAEdgeEnergies.empty()\n");
       int sh = shell.getShell();
-      if ((sh < AtomicShell::K) || (sh > AtomicShell::NI)) printf(StringT("Unsupported shell " + StringT(shell.toString()) + " in " + toString() + "\n").c_str());
+      if ((sh < AtomicShell::K) || (sh > AtomicShell::NI)) printf(StringT("Unsupported shell " + shellinfo + " in " + toString() + "\n").c_str());
       int i = shell.getElement().getAtomicNumber() - 1;
-      if ((i < 0) || (i >= DTSAEdgeEnergies.size())) printf(StringT("Unsupported element " + StringT(shell.toString()) + " in " + toString()).c_str());
+      if ((i < 0) || (i >= DTSAEdgeEnergies.size())) printf(StringT("Unsupported element " + shellinfo + " in " + toString() + "\n").c_str());
       return (!DTSAEdgeEnergies[i].empty() && DTSAEdgeEnergies[i].size() > sh) ? ToSI::eV(DTSAEdgeEnergies[i][sh]) : 0.0;
    }
 
@@ -304,7 +305,7 @@ namespace EdgeEnergy
       return (zp < DTSAEdgeEnergies.size() && !DTSAEdgeEnergies[zp].empty()) && (DTSAEdgeEnergies[zp].size() > sh);
    }
 
-   const DTSAEdgeEnergy DTSARef;
+   static const DTSAEdgeEnergy DTSARef;
    const EdgeEnergy& DTSA = DTSARef;
 
    SuperSetEdgeEnergy::SuperSetEdgeEnergy() : EdgeEnergy("Superset", "Chantler then NIST then DTSA")
@@ -336,7 +337,7 @@ namespace EdgeEnergy
       return Chantler2005.isSupported(shell) || NISTxrtdb.isSupported(shell) || DTSA.isSupported(shell);
    }
 
-   const SuperSetEdgeEnergy SuperSetRef;
+   static const SuperSetEdgeEnergy SuperSetRef;
    const EdgeEnergy& SuperSet = SuperSetRef;
 
    const AlgorithmClassT* mAllImplementations[] = {

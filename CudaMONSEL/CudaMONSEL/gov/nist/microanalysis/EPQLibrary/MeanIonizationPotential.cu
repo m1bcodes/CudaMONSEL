@@ -5,8 +5,6 @@
 
 namespace MeanIonizationPotential
 {
-   //Reference::CrudeReference(ref);
-
    MeanIonizationPotential::MeanIonizationPotential(StringT name, const ReferenceT& reference) : AlgorithmClass("Mean Ionization Potential", name, reference) {
    }
 

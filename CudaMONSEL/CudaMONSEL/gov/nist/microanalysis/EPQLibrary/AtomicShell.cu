@@ -691,12 +691,12 @@ namespace AtomicShell
       return mShell;
    }
 
-   char const * AtomicShell::toString() const
+   StringT AtomicShell::toString() const
    {
       StringT elm(mElement.toAbbrev());
       StringT shell(::AtomicShell::getIUPACName(mShell));
       StringT ret = elm + " " + shell;
-      return ret.c_str();
+      return ret;
    }
 
    AtomicShell parseString(char const * const s)

@@ -236,11 +236,32 @@ namespace MultiPlaneShape
 
 typedef MultiPlaneShape::MultiPlaneShape MultiPlaneShapeT;
 
+namespace MultiPlaneShape
+{
+   class Plane;
+}
+
+typedef MultiPlaneShape::Plane PlaneT;
+
 namespace NormalShape
 {
    class NormalShape;
 }
 
 typedef NormalShape::NormalShape NormalShapeT;
+
+namespace NormalMultiPlaneShape
+{
+   class NormalMultiPlaneShape;
+}
+
+typedef NormalMultiPlaneShape::NormalMultiPlaneShape NormalMultiPlaneShapeT;
+
+namespace NormalIntersectionShape
+{
+   class NormalIntersectionShape;
+}
+
+typedef NormalIntersectionShape::NormalIntersectionShape NormalIntersectionShapeT;
 
 #endif

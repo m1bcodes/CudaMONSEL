@@ -17,7 +17,7 @@ namespace AlgorithmClass
 
    const StringT AlgorithmClass::toString() const
    {
-      return mClass + "[" + mName + "]";
+      return mClass + " [" + mName + "]";
    }
 
    const StringT AlgorithmClass::getAlgorithmClass() const

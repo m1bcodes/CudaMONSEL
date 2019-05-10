@@ -86,7 +86,7 @@ namespace AtomicShell
       double getEnergy() const;
       const ElementT& getElement() const;
       int getShell() const;
-      char const * toString() const;
+      StringT toString() const;
       int compareTo(const AtomicShell& otherShell) const;
       AtomicShell clone() const;
       int hashCode() const;

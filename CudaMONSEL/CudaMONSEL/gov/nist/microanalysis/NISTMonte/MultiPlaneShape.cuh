@@ -7,7 +7,7 @@
 
 namespace MultiPlaneShape
 {
-   class Plane : public ShapeT, public ITransformT//, TrajectoryVRML.IRender
+   class Plane : public ShapeT, public ITransformT
    {
    public:
       Plane(const double normal[], int normallen, const double point[], int pointlen);
@@ -30,11 +30,12 @@ namespace MultiPlaneShape
       VectorXd mPoint;
    };
 
-   typedef std::vector<Plane*> Planes;
 
-   class MultiPlaneShape : public ShapeT, public ITransformT
+   class MultiPlaneShape : public ShapeT, public ITransformT//, TrajectoryVRML.IRender
    {
    public:
+      typedef std::vector<Plane*> Planes;
+
       MultiPlaneShape();
 
       bool contains(const double pos[]) const override;
@@ -46,11 +47,11 @@ namespace MultiPlaneShape
 
       //void addOffsetPlane(const double normal[], const double pt[], double dist);
       //void addPlane(const double normal[], const double point[]);
-      void addPlane(Plane& plane);
+      virtual void addPlane(Plane& plane);
 
       Planes getPlanes() const;
 
-   private:
+   protected:
       Planes mPlanes;
       VectorXd mInsidePos;
    };
