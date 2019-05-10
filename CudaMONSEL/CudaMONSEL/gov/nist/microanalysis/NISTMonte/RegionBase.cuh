@@ -16,7 +16,7 @@ namespace RegionBase
    protected:
       TransformableRegion * mParent;
       IMaterialScatterModelT * mScatterModel;
-      ShapeT const * mShape;
+      ShapeT * mShape;
       RBListT mSubRegions;
 
    public:
@@ -41,8 +41,8 @@ namespace RegionBase
    class TransformableRegion : public RegionBase, public ITransformT
    {
    public:
-      void rotate(double pivot[], double phi, double theta, double psi) override;
-      void translate(double distance[]) override;
+      void rotate(const double pivot[], double phi, double theta, double psi) override;
+      void translate(const double distance[]) override;
    };
 
    class Region : public TransformableRegion

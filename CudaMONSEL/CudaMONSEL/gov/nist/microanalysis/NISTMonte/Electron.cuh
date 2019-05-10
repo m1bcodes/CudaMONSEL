@@ -70,11 +70,10 @@ namespace Electron
       long parentID = 0; // 0 if from e-gun. Otherwise ID of parent.
    };
 
-   static long lastID = 0; // ID of last generated electron
-   static long getlastIdent();
+   extern long getlastIdent();
 
    extern double DefaultPos[];
-   static Electron Default(DefaultPos, INT_MAX);
+   extern const Electron Default;
 }
 
 #endif

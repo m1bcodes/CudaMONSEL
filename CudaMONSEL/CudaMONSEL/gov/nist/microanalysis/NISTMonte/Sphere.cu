@@ -18,7 +18,7 @@ namespace Sphere
       return mRadius;
    }
 
-   double Sphere::getFirstIntersection(const double pos0[], const double pos1[]) const
+   double Sphere::getFirstIntersection(const double pos0[], const double pos1[])
    {
       // Compute the intersection of the line between pos0 and pos1 and the
       // shell of the sphere.
@@ -63,13 +63,13 @@ namespace Sphere
    }
 
    // JavaDoc in ITransform
-   void Sphere::rotate(double pivot[], double phi, double theta, double psi)
+   void Sphere::rotate(const double pivot[], double phi, double theta, double psi)
    {
       //mCenter = Transform3D.rotate(mCenter, pivot, phi, theta, psi);
    }
 
    // JavaDoc in ITransform
-   void Sphere::translate(double distance[])
+   void Sphere::translate(const double distance[])
    {
       mCenter[0] += distance[0];
       mCenter[1] += distance[1];

@@ -5,20 +5,27 @@
 
 namespace Electron
 {
+   static long lastID = 0; // ID of last generated electron
+
+   long getlastIdent()
+   {
+      return lastID;
+   }
+
    void Electron::Init(double initialPos[], double theta, double phi, double kE)
    {
       mPosition.assign(initialPos, initialPos + 3);
       mPrevPosition.assign(initialPos, initialPos + 3);
-      mScatteringElement = NULL;
-      mCurrentRegion = NULL;
-      mPrevRegion = NULL;
-      mEnergy = kE;
-      previousEnergy = kE;
-      mTheta = theta;
-      mPhi = phi;
-      mStepCount = 0;
-      mTrajectoryComplete = false;
-      ident = ++lastID;
+      mScatteringElement = (NULL);
+      mCurrentRegion = (NULL);
+      mPrevRegion = (NULL);
+      mEnergy = (kE);
+      previousEnergy = (kE);
+      mTheta = (theta);
+      mPhi = (phi);
+      mStepCount = (0);
+      mTrajectoryComplete = (false);
+      ident = (++lastID);
    }
 
    Electron::Electron(double initialPos[], double kE)
@@ -191,11 +198,6 @@ namespace Electron
       return parentID;
    }
 
-   static long getlastIdent()
-   {
-      return lastID;
-   }
-
    double DefaultPos[] = { INT_MAX, INT_MAX, INT_MAX };
-   //const Electron Default(DefaultPos, INT_MAX);
+   const Electron Default(DefaultPos, INT_MAX);
 }

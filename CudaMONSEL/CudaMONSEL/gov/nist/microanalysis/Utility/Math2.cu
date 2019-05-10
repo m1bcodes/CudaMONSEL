@@ -6,45 +6,42 @@ namespace Math2
 {
    const double PI = 3.14159265358979323846;
 
-   //public class Math2 {
-   //
-   //   public final double[] ORIGIN_3D = {
-   //      0.0,
-   //      0.0,
-   //      0.0
-   //   };
-   //   public final double[] ONE = {
-   //      1.0,
-   //      1.0,
-   //      1.0
-   //   };
-   //   public final double[] X_AXIS = {
-   //      1.0,
-   //      0.0,
-   //      0.0
-   //   };
-   //   public final double[] Y_AXIS = {
-   //      0.0,
-   //      1.0,
-   //      0.0
-   //   };
-   //   public final double[] Z_AXIS = {
-   //      0.0,
-   //      0.0,
-   //      1.0
-   //   };
-   //   public final double[] MINUS_X_AXIS = {
-   //      -1.0,
-   //      0.0,
-   //      0.0
-   //   };
-   //   public final double[] MINUS_Y_AXIS = {
-   //      0.0,
-   //      -1.0,
-   //      0.0
-   //   };
-   double MINUS_Z_AXIS[] =
-   {
+   const double ORIGIN_3D[] = {
+      0.0,
+      0.0,
+      0.0
+   };
+   const double ONE[] = {
+      1.0,
+      1.0,
+      1.0
+   };
+   const double X_AXIS[] = {
+      1.0,
+      0.0,
+      0.0
+   };
+   const double Y_AXIS[] = {
+      0.0,
+      1.0,
+      0.0
+   };
+   const double Z_AXIS[] = {
+      0.0,
+      0.0,
+      1.0
+   };
+   const double MINUS_X_AXIS[] = {
+      -1.0,
+      0.0,
+      0.0
+   };
+   const double MINUS_Y_AXIS[] = {
+      0.0,
+      -1.0,
+      0.0
+   };
+   const double MINUS_Z_AXIS[] = {
       0.0,
       0.0,
       -1.0
@@ -53,7 +50,7 @@ namespace Math2
    //   /**
    //   * SQRT_PI - The square root of Pi ~ 1.772
    //   */
-   //   public final double SQRT_PI = Math.sqrt(Math.PI);
+   //   const double SQRT_PI = Math.sqrt(Math.PI);
    //
    //   /**
    //   * A random number generator. It is invoked by, e.g., rgen.nextDouble(). By
@@ -83,10 +80,10 @@ namespace Math2
    //   * @param x double
    //   * @return double
    //   */
-      double sqr(double x)
-      {
-         return x * x;
-      }
+   double sqr(double x)
+   {
+      return x * x;
+   }
    //
    //   /**
    //   * erf - The error function (2/sqrt(pi))*Integrate[Exp[-t^2],{t,0,x}] <br>
@@ -95,7 +92,7 @@ namespace Math2
    //   * @param x double
    //   * @return double
    //   */
-   //   public final double erf(double x) {
+   //   const double erf(double x) {
    //      return x < 0.0 ? -gammap(0.5, x * x) : gammap(0.5, x * x);
    //   }
    //
@@ -106,7 +103,7 @@ namespace Math2
    //   * @param x double
    //   * @return double
    //   */
-   //   public final double erfc(double x) {
+   //   const double erfc(double x) {
    //      return x < 0.0 ? 1.0 + gammap(0.5, x * x) : gammq(0.5, x * x);
    //   }
    //
@@ -118,7 +115,7 @@ namespace Math2
    //   * @param x double
    //   * @return double
    //   */
-   //   public final double gammq(double a, double x) {
+   //   const double gammq(double a, double x) {
    //      assert(x >= 0.0);
    //      assert(a > 0.0);
    //      if (x < (a + 1.0))
@@ -137,7 +134,7 @@ namespace Math2
    //   * @param x double
    //   * @return double
    //   */
-   //   public final double gammap(double a, double x) {
+   //   const double gammap(double a, double x) {
    //      assert(x >= 0.0);
    //      assert(a > 0.0);
    //      if (x < (a + 1.0))
@@ -255,7 +252,7 @@ namespace Math2
    //   * @param xx double
    //   * @return double
    //   */
-   //   public final double gammaln(double xx) {
+   //   const double gammaln(double xx) {
    //      // Coefficients used by gammaln
    //      final double[] coeff = {
    //         76.18009172947146,
@@ -310,30 +307,30 @@ namespace Math2
    //      };
    //   }
    
-      /**
-      * distance - What is the Euclidean distance between p1 and p2.
-      *
-      * @param p1
-      * @param p2
-      * @return double
-      */
-      double distance(PositionVecT p1, PositionVecT p2) 
-      {
-         if (p1.size() != p2.size()) return -1;
-         double sum2 = 0.0;
-         for (int i = 0; i < p1.size(); ++i) {
-            sum2 += Math2::sqr(p2[i] - p1[i]);
-         }
-         return ::sqrt(sum2);
+   /**
+   * distance - What is the Euclidean distance between p1 and p2.
+   *
+   * @param p1
+   * @param p2
+   * @return double
+   */
+   double distance(const PositionVecT p1, const PositionVecT p2)
+   {
+      if (p1.size() != p2.size()) return -1;
+      double sum2 = 0.0;
+      for (int i = 0; i < p1.size(); ++i) {
+         sum2 += Math2::sqr(p2[i] - p1[i]);
       }
+      return ::sqrt(sum2);
+   }
 
-      double distance3d(const double p1[], const double p2[])
-      {
-         double sum2 = 0.0;
-         for (int i = 0; i < 3; ++i)
-            sum2 += Math2::sqr(p2[i] - p1[i]);
-         return ::sqrt(sum2);
-      }
+   double distance3d(const double p1[], const double p2[])
+   {
+      double sum2 = 0.0;
+      for (int i = 0; i < 3; ++i)
+         sum2 += Math2::sqr(p2[i] - p1[i]);
+      return ::sqrt(sum2);
+   }
    
    //   /**
    //   * distanceSqr - What is the square of the Euclidean distance between p1 and
@@ -364,7 +361,7 @@ namespace Math2
    //      return Math.sqrt(sum2);
    //   }
 
-   double magnitude(PositionVecT p)
+   double magnitude(const PositionVecT p)
    {
       double sum2 = 0.0;
       for (int i = 0; i < p.size(); ++i)
@@ -383,7 +380,7 @@ namespace Math2
    //   return divide(p, Math2.magnitude(p));
    //}
 
-   PositionVecT normalize(PositionVecT p)
+   PositionVecT normalize(const PositionVecT p)
    {
       return Math2::divide(p, Math2::magnitude(p));
    }
@@ -433,7 +430,7 @@ namespace Math2
    //   return res;
    //}
 
-   PositionVecT plus(PositionVecT a, PositionVecT b)
+   PositionVecT plus(const PositionVecT a, const PositionVecT b)
    {
       PositionVecT res(a.size(), 0);
       if (a.size() != b.size()) {
@@ -493,7 +490,7 @@ namespace Math2
    //   return res;
    //}
    //
-   PositionVecT minus(PositionVecT a, PositionVecT b)
+   PositionVecT minus(const PositionVecT a, const PositionVecT b)
    {
       PositionVecT res(a.size(), 0);
       if (a.size() != b.size()) {
@@ -526,7 +523,7 @@ namespace Math2
       * @param b
       * @return The dot product of a and b
       */
-   double dot(PositionVecT a, PositionVecT b)
+   double dot(const PositionVecT a, const PositionVecT b)
    {
       if (a.size() != b.size()) printf("Both arguments to the dot product must be the same length.");
       double res = 0.0;
@@ -550,23 +547,19 @@ namespace Math2
    //      return na;
    //   }
    //
-   //   /**
-   //   * cross - Computes the cross product of two three-vectors a and b
-   //   *
-   //   * @param a
-   //   * @param b
-   //   * @return A three-vector perpendicular to both a and b and of length |a||b|
-   //   *         sin(th) where th is the angle between a and b
-   //   */
-   //   final public double[] cross(double[] a, double[] b) {
-   //      if ((a.length != 3) | (b.length != 3))
-   //         throw new IllegalArgumentException("Both arguments to the cross product must be the three-vectors.");
-   //      return new double[] {
-   //         a[1] * b[2] - a[2] * b[1],
-   //            a[2] * b[0] - a[0] * b[2],
-   //            a[0] * b[1] - a[1] * b[0]
-   //      };
-   //   }
+      /**
+      * cross - Computes the cross product of two three-vectors a and b
+      *
+      * @param a
+      * @param b
+      * @return A three-vector perpendicular to both a and b and of length |a||b|
+      *         sin(th) where th is the angle between a and b
+      */
+   VectorXd cross(const VectorXd a, const VectorXd b)
+   {
+      if ((a.size() != 3) | (b.size()!= 3)) printf("Both arguments to the cross product must be the three-vectors.");
+      return VectorXd({ a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0] });
+   }
    //
    //   /**
    //   * multiply - Returns a vector containing the product of a, a scalar, times
@@ -583,7 +576,7 @@ namespace Math2
    //      return res;
    //   }
    //
-   PositionVecT multiply(double a, PositionVecT b)
+   PositionVecT multiply(double a, const PositionVecT b)
    {
       PositionVecT res(b.size(), 0);
       for (int i = 0; i < 3; ++i)
@@ -674,7 +667,7 @@ namespace Math2
    //      return res;
    //   }
    //
-   PositionVecT divide(PositionVecT a, double b)
+   PositionVecT divide(const PositionVecT a, double b)
    {
       PositionVecT res(a.size(), 0);
       for (int i = 0; i < 3; ++i)
@@ -709,7 +702,7 @@ namespace Math2
    //      };
    //   }
    //
-   //   public final double cubeRoot(double x) {
+   //   const double cubeRoot(double x) {
    //      return x < 0.0 ? -Math.pow(-x, 1.0 / 3.0) : Math.pow(x, 1.0 / 3.0);
    //   }
    //
@@ -869,7 +862,7 @@ namespace Math2
    //   * @param x
    //   * @return x if x>0, 0 if x<=0
    //   */
-   //   public final double positive(double x) {
+   //   const double positive(double x) {
    //      return x > 0.0 ? x : 0.0;
    //   }
    //
@@ -879,7 +872,7 @@ namespace Math2
    //   * @param x
    //   * @return x if x<0, 0 otherwise
    //   */
-   //   public final double negative(double x) {
+   //   const double negative(double x) {
    //      return x < 0.0 ? x : 0.0;
    //   }
    //
@@ -1282,7 +1275,6 @@ namespace Math2
    //      }
    //      throw new EPQException("Maximum iteration count exceeded in Math2.rootFind");
    //   }
-   //}
 
    double random()
    {
