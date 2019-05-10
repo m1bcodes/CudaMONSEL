@@ -240,7 +240,7 @@ namespace MultiPlaneShape
             // call to MCSS_MultiPlaneShape.getFirstIntersection, pos0 will
             // equal the stored pos1.
             if ((minU > 1.0) && (minU != INT_MAX)) {
-               mInsidePos.resize(3);
+               if (mInsidePos.empty()) mInsidePos.resize(3);
                mInsidePos[0] = pos1[0];
                mInsidePos[1] = pos1[1];
                mInsidePos[2] = pos1[2];
@@ -271,7 +271,7 @@ namespace MultiPlaneShape
                }
             }
             if (minU < 1.0) {
-               mInsidePos.resize(3);
+               if (mInsidePos.empty()) mInsidePos.resize(3);
                mInsidePos[0] = pos1[0];
                mInsidePos[1] = pos1[1];
                mInsidePos[2] = pos1[2];
@@ -414,5 +414,15 @@ namespace MultiPlaneShape
    Planes MultiPlaneShape::getPlanes() const
    {
       return mPlanes;
+   }
+
+   char const * Plane::toString() const
+   {
+      return "Plane";
+   }
+
+   char const * MultiPlaneShape::toString() const
+   {
+      return "MultiPlaneShape";
    }
 }

@@ -11,9 +11,11 @@ namespace Sphere
    {
    public:
       Sphere(const double center[], double radius);
+
       bool contains(const double pos[]) const override;
       double getRadius() const;
-      double getFirstIntersection(const double pos0[], const double pos1[]) const override;
+      double getFirstIntersection(const double pos0[], const double pos1[]) override;
+
       PositionVecT getInitialPoint() const;
       PositionVecT getPointAt(double phi, double theta, double frac) const;
 

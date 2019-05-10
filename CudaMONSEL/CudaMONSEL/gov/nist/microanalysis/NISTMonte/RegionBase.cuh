@@ -48,7 +48,7 @@ namespace RegionBase
    class Region : public TransformableRegion
    {
    public:
-      Region(Region* const parent, IMaterialScatterModelT * const msm, ShapeT const * const shape);
+      Region(Region* const parent, IMaterialScatterModelT * const msm, ShapeT * const shape);
       Region(const Region&);
       void removeSubRegion(RegionBase& subRegion);
       void clearSubRegions();

@@ -229,4 +229,18 @@ namespace NUTableInterpolation
 
 typedef NUTableInterpolation::NUTableInterpolation NUTableInterpolationT;
 
+namespace MultiPlaneShape
+{
+   class MultiPlaneShape;
+}
+
+typedef MultiPlaneShape::MultiPlaneShape MultiPlaneShapeT;
+
+namespace NormalShape
+{
+   class NormalShape;
+}
+
+typedef NormalShape::NormalShape NormalShapeT;
+
 #endif

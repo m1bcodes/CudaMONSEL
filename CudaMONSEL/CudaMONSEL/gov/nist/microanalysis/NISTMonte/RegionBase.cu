@@ -141,7 +141,7 @@ namespace RegionBase
       return str.c_str();
    }
 
-   void TransformableRegion::rotate(double pivot[], double phi, double theta, double psi)
+   void TransformableRegion::rotate(const double pivot[], double phi, double theta, double psi)
    {
       //// check whether we can....
       //if (mShape instanceof ITransform)
@@ -161,7 +161,7 @@ namespace RegionBase
    }
 
    // documented in ITransform
-   void TransformableRegion::translate(double distance[])
+   void TransformableRegion::translate(const double distance[])
    {
       //// check whether we can....
       //if (mShape instanceof ITransform)
@@ -180,7 +180,7 @@ namespace RegionBase
       //}
    }
 
-   Region::Region(Region* const parent, IMaterialScatterModelT * const msm, ShapeT const * const shape)
+   Region::Region(Region* const parent, IMaterialScatterModelT * const msm, ShapeT * const shape)
    {
       mParent = parent;
       mScatterModel = msm;

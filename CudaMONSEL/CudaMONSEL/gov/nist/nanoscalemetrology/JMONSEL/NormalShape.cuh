@@ -10,8 +10,8 @@ namespace NormalShape
    {
    public:
       virtual bool contains(const double pos0[], const double pos1[]) const = 0;
-      virtual PositionVecT getFirstNormal(double pos0[], double pos1[]) const = 0;
-      virtual PositionVecT getPreviousNormal() const = 0;
+      virtual VectorXd getFirstNormal(const double pos0[], const double pos1[]) const = 0;
+      virtual VectorXd getPreviousNormal() const = 0;
 
       bool isNormalShape() const override {
          return true;

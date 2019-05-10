@@ -7,7 +7,7 @@
 
 namespace Math2
 {
-   extern PositionVecT minus(const const PositionVecT a, const PositionVecT b);
+   extern PositionVecT minus(const PositionVecT a, const PositionVecT b);
    extern PositionVecT divide(const PositionVecT a, double b);
    extern PositionVecT plus(const PositionVecT a, const PositionVecT b);
    extern PositionVecT normalize(const PositionVecT p);

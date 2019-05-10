@@ -7,7 +7,7 @@
 
 namespace MultiPlaneShape
 {
-   class Plane : public ShapeT, public ITransformT
+   class Plane : public ShapeT, public ITransformT//, TrajectoryVRML.IRender
    {
    public:
       Plane(const double normal[], int normallen, const double point[], int pointlen);

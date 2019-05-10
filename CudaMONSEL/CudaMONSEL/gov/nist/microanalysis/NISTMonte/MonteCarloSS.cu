@@ -55,7 +55,7 @@ namespace MonteCarloSS
    //   return new RegionT(parent, new BasicMaterialModel(mat), shape);
    //}
 
-   RegionT* addSubRegion(RegionT& parent, IMaterialScatterModelT& msm, const ShapeT& shape)
+   RegionT* addSubRegion(RegionT& parent, IMaterialScatterModelT& msm, ShapeT& shape)
    {
       return new RegionT(&parent, &msm, &shape); // TODO: deal with this
    }

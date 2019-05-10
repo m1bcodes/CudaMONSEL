@@ -73,7 +73,7 @@ namespace Electron
    extern long getlastIdent();
 
    extern double DefaultPos[];
-   extern const Electron Default;
+   extern Electron Default;
 }
 
 #endif

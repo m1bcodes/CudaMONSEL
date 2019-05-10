@@ -199,5 +199,5 @@ namespace Electron
    }
 
    double DefaultPos[] = { INT_MAX, INT_MAX, INT_MAX };
-   const Electron Default(DefaultPos, INT_MAX);
+   Electron Default(DefaultPos, INT_MAX);
 }
