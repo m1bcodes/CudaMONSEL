@@ -55,6 +55,7 @@
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\ScreenedRutherfordScatteringAngle.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\Strategy.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQTests\AtomicShellTest.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\EPQTests\CylindricalShapeTest.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQTests\EdgeEnergyTest.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQTests\Math2Test.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQTests\MeanIonizationPotentialTest.cu" />
@@ -80,6 +81,7 @@
     <CudaCompile Include="gov\nist\microanalysis\NISTMonte\Sphere.cu" />
     <CudaCompile Include="Amphibian\Algorithm.cu" />
     <CudaCompile Include="gov\nist\microanalysis\Utility\Math2.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\Utility\Transform3D.cu" />
     <CudaCompile Include="gov\nist\microanalysis\Utility\UncertainValue2.cu" />
     <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSELutils\NULagrangeInterpolation.cu" />
     <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSEL\ExpQMBarrierSM.cu" />
@@ -141,6 +143,7 @@
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\ScreenedRutherfordScatteringAngle.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\Strategy.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQTests\AtomicShellTest.cuh" />
+    <ClInclude Include="gov\nist\microanalysis\EPQTests\CylindricalShapeTest.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQTests\EdgeEnergyTest.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQTests\Math2Test.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQTests\MeanIonizationPotentialTest.cuh" />
@@ -171,6 +174,7 @@
     <ClInclude Include="Amphibian\Algorithm.cuh" />
     <ClInclude Include="gov\nist\microanalysis\Utility\CSVReader.h" />
     <ClInclude Include="gov\nist\microanalysis\Utility\Math2.cuh" />
+    <ClInclude Include="gov\nist\microanalysis\Utility\Transform3D.cuh" />
     <ClInclude Include="gov\nist\microanalysis\Utility\UncertainValue2.cuh" />
     <ClInclude Include="gov\nist\nanoscalemetrology\JMONSELutils\NULagrangeInterpolation.cuh" />
     <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\BarrierScatterMechanism.cuh" />

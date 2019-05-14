@@ -203,8 +203,7 @@ namespace CylindricalShape
    }
 
    /**
-   * @see gov.nist.microanalysis.EPQLibrary.ITransform#rotate(double[], double,
-   *      double, double)
+   * @see gov.nist.microanalysis.EPQLibrary.ITransform#rotate(double[], double, double, double)
    */
    void CylindricalShape::rotate(const double pivot[], double phi, double theta, double psi)
    {
@@ -240,7 +239,7 @@ namespace CylindricalShape
    /**
    * @see java.lang.Object#toString()
    */
-   char const * CylindricalShape::toString() const
+   StringT CylindricalShape::toString() const
    {
       StringT res = "Cylinder([";
       double* end1 = getEnd1().data();

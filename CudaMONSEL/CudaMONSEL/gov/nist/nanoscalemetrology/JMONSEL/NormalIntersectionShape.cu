@@ -270,7 +270,7 @@ namespace NormalIntersectionShape
    }
 
 
-   char const * NormalIntersectionShape::toString() const
+   StringT NormalIntersectionShape::toString() const
    {
       return "NormalIntersectionShape";
    }

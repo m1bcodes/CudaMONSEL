@@ -14,7 +14,7 @@ namespace NormalMultiPlaneShape
 
       bool contains(const double pos[]) const override;
       double getFirstIntersection(const double pos0[], const double pos1[]) override;
-      char const * toString() const override;
+      StringT toString() const override;
 
       void rotate(const double pivot[], double phi, double theta, double psi) override;
       void translate(const double distance[]) override;

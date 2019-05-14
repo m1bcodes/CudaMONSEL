@@ -416,12 +416,12 @@ namespace MultiPlaneShape
       return mPlanes;
    }
 
-   char const * Plane::toString() const
+   StringT Plane::toString() const
    {
       return "Plane";
    }
 
-   char const * MultiPlaneShape::toString() const
+   StringT MultiPlaneShape::toString() const
    {
       return "MultiPlaneShape";
    }

@@ -264,7 +264,7 @@ namespace NormalMultiPlaneShape
       //updateCach();
    }
 
-   char const * NormalMultiPlaneShape::toString() const
+   StringT NormalMultiPlaneShape::toString() const
    {
       return "NormalMultiPlaneShape";
    }

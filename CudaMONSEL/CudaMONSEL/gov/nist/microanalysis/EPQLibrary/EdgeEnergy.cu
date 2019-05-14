@@ -45,7 +45,7 @@ namespace EdgeEnergy
       return d;
    }
 
-   MatrixXd DiracHartreeSlaterIonizationEnergies::Uis; // TODO: fix initialization order
+   MatrixXd DiracHartreeSlaterIonizationEnergies::Uis;
    void DiracHartreeSlaterIonizationEnergies::loadxionUis()
    {
       if (!Uis.empty()) return;
@@ -253,7 +253,7 @@ namespace EdgeEnergy
    static const WernishEdgeEnergy Wernish84Ref;
    const EdgeEnergy& Wernish84 = Wernish84Ref;
 
-   MatrixXd DTSAEdgeEnergy::DTSAEdgeEnergies;
+   MatrixXd DTSAEdgeEnergy::DTSAEdgeEnergies; // TODO: fix
    void DTSAEdgeEnergy::loadEdgeEnergies()
    {
       if (!DTSAEdgeEnergies.empty()) return;

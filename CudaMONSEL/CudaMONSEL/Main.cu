@@ -22,6 +22,7 @@
 #include "gov\nist\microanalysis\EPQTests\MeanIonizationPotentialTest.cuh"
 #include "gov\nist\microanalysis\EPQTests\SphereTest.cuh"
 #include "gov\nist\microanalysis\EPQTests\Math2Test.cuh"
+#include "gov\nist\microanalysis\EPQTests\CylindricalShapeTest.cuh"
 
 #include "ImageUtil.h"
 
@@ -68,6 +69,20 @@ int main()
    
    SphereTest::testContains();
    SphereTest::testGetFirstIntersection();
+
+   CylindricalShapeTest::testZero();
+   CylindricalShapeTest::testOne();
+   CylindricalShapeTest::testTwo();
+   CylindricalShapeTest::testThree();
+   CylindricalShapeTest::testFour();
+   CylindricalShapeTest::testFive();
+   CylindricalShapeTest::testSix();
+   CylindricalShapeTest::testSeven();
+   CylindricalShapeTest::testEight();
+   CylindricalShapeTest::testNine();
+   CylindricalShapeTest::testTen();
+   CylindricalShapeTest::testEleven();
+   CylindricalShapeTest::testTwelve();
 
    return 0;
 }

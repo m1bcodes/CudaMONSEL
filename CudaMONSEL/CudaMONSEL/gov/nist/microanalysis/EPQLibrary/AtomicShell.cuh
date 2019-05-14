@@ -76,9 +76,9 @@ namespace AtomicShell
       bool operator=(const AtomicShell&);
 
       int getGroundStateOccupancy() const;
-      char const * getAtomicName() const;
-      char const * getSiegbahnName() const;
-      char const * getIUPACName() const;
+      StringT getAtomicName() const;
+      StringT getSiegbahnName() const;
+      StringT getIUPACName() const;
       double getEdgeEnergy() const;
       int getCapacity() const;
       int getFamily() const;

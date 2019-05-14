@@ -264,4 +264,11 @@ namespace NormalIntersectionShape
 
 typedef NormalIntersectionShape::NormalIntersectionShape NormalIntersectionShapeT;
 
+namespace CylindricalShape
+{
+   class CylindricalShape;
+}
+
+typedef CylindricalShape::CylindricalShape CylindricalShapeT;
+
 #endif

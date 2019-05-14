@@ -452,12 +452,11 @@ namespace AtomicShell
       }
    }
 
-   char const * AtomicShell::getAtomicName() const
+   StringT AtomicShell::getAtomicName() const
    {
       StringT elm(mElement.toAbbrev());
       StringT shell(::AtomicShell::getAtomicName(mShell));
-      StringT ret = elm + " " + shell;
-      return ret.c_str();
+      return elm + " " + shell;
    }
 
    char const * getSiegbahnName(int shell)
@@ -484,12 +483,11 @@ namespace AtomicShell
 
    }
 
-   char const * AtomicShell::getSiegbahnName() const
+   StringT AtomicShell::getSiegbahnName() const
    {
       StringT elm(mElement.toAbbrev());
       StringT shell(::AtomicShell::getSiegbahnName(mShell));
-      StringT ret = elm + " " + shell;
-      return ret.c_str();
+      return elm + " " + shell;
    }
 
    char const * getIUPACName(int shell)
@@ -502,12 +500,11 @@ namespace AtomicShell
          return "Unknown";
    }
 
-   char const * AtomicShell::getIUPACName() const
+   StringT AtomicShell::getIUPACName() const
    {
       StringT elm(mElement.toAbbrev());
       StringT shell(::AtomicShell::getIUPACName(mShell));
-      StringT ret = elm + " " + shell;
-      return ret.c_str();
+      return elm + " " + shell;
    }
 
    int parseIUPACName(char const * s)
