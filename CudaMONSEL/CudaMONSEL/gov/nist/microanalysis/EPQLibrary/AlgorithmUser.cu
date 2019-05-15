@@ -4,7 +4,7 @@
 
 namespace AlgorithmUser
 {
-   StrategyT* mGlobalOverride = NULL;
+   StrategyT mGlobalOverride;
 
    const EdgeEnergyT& sDefaultEdgeEnergy = EdgeEnergy::SuperSet;
    //const EdgeEnergyT& sDefaultEdgeEnergy = EdgeEnergy::DTSA;
@@ -23,7 +23,7 @@ namespace AlgorithmUser
 
    // TODO: figure out what to do with this
    // https://stackoverflow.com/questions/8630160/call-to-pure-virtual-function-from-base-class-constructor
-   AlgorithmUser::AlgorithmUser() : mLocalOverride(NULL)
+   AlgorithmUser::AlgorithmUser()
    {
       //initializeDefaultStrategy();
    }
@@ -82,17 +82,17 @@ namespace AlgorithmUser
    const AlgorithmClassT* AlgorithmUser::getAlgorithm(char clsName[]) const
    {
       const AlgorithmClassT* res = nullptr;
-      if (mGlobalOverride != nullptr)
-         res = mGlobalOverride->getAlgorithm(clsName);
-      if ((res == nullptr) && (mLocalOverride != nullptr))
-         res = mLocalOverride->getAlgorithm(clsName);
+      if (mGlobalOverride.empty())
+         res = mGlobalOverride.getAlgorithm(clsName);
+      if ((res == nullptr) && !(mLocalOverride.empty()))
+         res = mLocalOverride.getAlgorithm(clsName);
       return res;
    }
 
 
    void clearGlobalOverride()
    {
-      mGlobalOverride = NULL;
+      mGlobalOverride.clear();
       //sDefaultTransitionEnergy = NULL;
       //sDefaultEdgeEnergy = NULL;
       //sDefaultMAC = NULL;
@@ -105,7 +105,7 @@ namespace AlgorithmUser
    void applyGlobalOverride(StrategyT* strat)
    {
       if (strat != NULL) {
-         mGlobalOverride = strat;
+         mGlobalOverride.addAll(*strat);
          //sDefaultTransitionEnergy = (TransitionEnergy)strat.getAlgorithm(TransitionEnergy.class);
          //sDefaultEdgeEnergy = (EdgeEnergy)strat.getAlgorithm(EdgeEnergy.class);
          //sDefaultMAC = (MassAbsorptionCoefficient)strat.getAlgorithm(MassAbsorptionCoefficient.class);
@@ -136,7 +136,7 @@ namespace AlgorithmUser
    void AlgorithmUser::addDefaultAlgorithm(char cls[], AlgorithmClassT const * const ac)
    {
       if (ac == nullptr) printf("AlgorithmUser::addDefaultAlgorithm: NULL class");
-      mLocalOverride->addAlgorithm(cls, ac);
+      mLocalOverride.addAlgorithm(cls, ac);
    }
 
    // void documentStrategy(Writer wr)

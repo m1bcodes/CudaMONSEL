@@ -14,15 +14,16 @@ namespace AlgorithmUser
       void addDefaultAlgorithm(char cls[], const AlgorithmClassT* ac);
       const AlgorithmClassT* getAlgorithm(char clsName[]) const;
 
+      //virtual void initializeDefaultStrategy() = 0;
       virtual void initializeDefaultStrategy() = 0;
 
    private:
-      StrategyT* mLocalOverride;
+      StrategyT mLocalOverride;
    };
 
    extern const BetheElectronEnergyLossT* getDefaultBetheEnergyLoss();
 
-   extern StrategyT* mGlobalOverride;
+   extern StrategyT mGlobalOverride;
 
    extern const EdgeEnergyT& sDefaultEdgeEnergy;
    //extern TransitionEnergy sDefaultTransitionEnergy = null;

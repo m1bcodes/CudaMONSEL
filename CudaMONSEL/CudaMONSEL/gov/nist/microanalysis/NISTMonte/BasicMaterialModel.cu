@@ -21,7 +21,8 @@
 namespace BasicMaterialModel
 {
    BasicMaterialModel::BasicMaterialModel(const MaterialT& mat) : mMaterial(mat), minEforTracking(ToSI::eV(50.0))
-   {  
+   {
+      initializeDefaultStrategy();
       //if (mMaterial instanceof Gas) {
       //   addDefaultAlgorithm(RandomizedScatterFactory.class, GasScatteringCrossSection.Factory);
       //}
@@ -101,6 +102,7 @@ namespace BasicMaterialModel
    {
       // addDefaultAlgorithm(RandomizedScatterFactory.class,
       // ScreenedRutherfordScatteringAngle.Factory);
+      printf("BasicMaterialModel::initializeDefaultStrategy\n");
       addDefaultAlgorithm("RandomizedScatterFactory", &NISTMottScatteringAngle::Factory);
    }
 }

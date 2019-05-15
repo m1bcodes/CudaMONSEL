@@ -30,6 +30,9 @@ namespace Strategy
 
       Algorithms getAlgorithms() const;
 
+      void clear();
+      bool empty() const;
+
    private:
       AlgorithmMap mMap;
    };

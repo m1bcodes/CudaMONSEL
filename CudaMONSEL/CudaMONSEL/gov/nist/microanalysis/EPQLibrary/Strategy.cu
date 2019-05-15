@@ -53,7 +53,9 @@ namespace Strategy
 
    const AlgorithmClassT* Strategy::getAlgorithm(StringT cls) const
    {
-      return mMap.at(cls);
+      //return mMap.at(cls);
+      auto itr = mMap.find(cls);
+      return (itr != mMap.end()) ? itr->second : nullptr;
    }
 
    Algorithms Strategy::getAlgorithms() const
@@ -63,5 +65,15 @@ namespace Strategy
          ret.insert(e.second);
       }
       return ret;
+   }
+
+   void Strategy::clear()
+   {
+      mMap.clear();
+   }
+
+   bool Strategy::empty() const
+   {
+      return mMap.empty();
    }
 }
