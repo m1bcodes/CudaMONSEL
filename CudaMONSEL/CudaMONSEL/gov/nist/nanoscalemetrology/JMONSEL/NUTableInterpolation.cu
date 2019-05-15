@@ -17,6 +17,7 @@ namespace NUTableInterpolation
    */
    const NUTableInterpolation* getInstance(char const * tableFileName)
    {
+      printf("NUTableInterpolation* getInstance\n");
       const NUTableInterpolation* uniqueInstance = instanceMap[tableFileName];
       if (uniqueInstance == NULL) {
          uniqueInstance = new NUTableInterpolation(tableFileName); // TODO: fix

@@ -73,7 +73,6 @@ namespace MONSEL_MaterialScatterModel
       * I should probably convert this to an ArrayList (so I can use the
       * .get(index) method) and get rid of the scatterArray.
       */
-
    };
 }
 

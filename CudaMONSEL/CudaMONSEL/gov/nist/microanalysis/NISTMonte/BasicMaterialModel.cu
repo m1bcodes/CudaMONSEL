@@ -101,7 +101,6 @@ namespace BasicMaterialModel
    {
       // addDefaultAlgorithm(RandomizedScatterFactory.class,
       // ScreenedRutherfordScatteringAngle.Factory);
-      printf("BasicMaterialModel::initializeDefaultStrategy\n");
       addDefaultAlgorithm("RandomizedScatterFactory", &NISTMottScatteringAngle::Factory);
    }
 }

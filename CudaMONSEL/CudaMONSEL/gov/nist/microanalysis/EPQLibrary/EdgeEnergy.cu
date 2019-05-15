@@ -253,7 +253,7 @@ namespace EdgeEnergy
    static const WernishEdgeEnergy Wernish84Ref;
    const EdgeEnergy& Wernish84 = Wernish84Ref;
 
-   MatrixXd DTSAEdgeEnergy::DTSAEdgeEnergies; // TODO: fix
+   MatrixXd DTSAEdgeEnergy::DTSAEdgeEnergies; // TODO: fix initialization
    void DTSAEdgeEnergy::loadEdgeEnergies()
    {
       if (!DTSAEdgeEnergies.empty()) return;

@@ -327,7 +327,7 @@ namespace TabulatedInelasticSM
          thetaSE = Math2::PI / 2. - theta;
          phiSE = phi + Math2::PI;
          // Generate SE, apply energy loss and trajectory change to SE here
-         se = new ElectronT(*pe, theta0PE, phi0PE, energySE);
+         se = new ElectronT(*pe, theta0PE, phi0PE, energySE); // TODO: 
          se->updateDirection(thetaSE, phiSE);
          break;
       case 2:
@@ -354,7 +354,7 @@ namespace TabulatedInelasticSM
          thetaSE = Math2::PI / 2. - theta;
          phiSE = phi + Math2::PI;
          // Generate SE, apply energy loss and trajectory change to SE here
-         se = new ElectronT(*pe, theta0PE, phi0PE, energySE);
+         se = new ElectronT(*pe, theta0PE, phi0PE, energySE); // TODO: 
          se->updateDirection(thetaSE, phiSE);
          break;
       case 3:
@@ -371,7 +371,7 @@ namespace TabulatedInelasticSM
             phiSE = 2. * Math2::PI * Math2::random();
             // Generate SE, apply energy loss and trajectory change to SE
             // here
-            se = new ElectronT(*pe, thetaSE, phiSE, energySE);
+            se = new ElectronT(*pe, thetaSE, phiSE, energySE); // TODO: 
          }
          else { // SE generation from extended band
             double root = 2. * ::sqrt(offsetFermiEnergy * (offsetFermiEnergy + deltaE));
@@ -385,7 +385,7 @@ namespace TabulatedInelasticSM
                if ((energySE + energyCBbottom) < minEgenSE)
                   return NULL;
                // Generate SE in PE direction with correct energy
-               se = new ElectronT(*pe, theta0PE, phi0PE, energySE);
+               se = new ElectronT(*pe, theta0PE, phi0PE, energySE); // TODO: 
                // Determine angles of SE q vector relative to PE original direction
                thetaSE = Math2::PI / 2. - theta;
                phiSE = phi + Math2::PI;
@@ -421,7 +421,7 @@ namespace TabulatedInelasticSM
                phiSE = 2 * Math2::PI * Math2::random();
                // Generate SE, apply energy loss and trajectory change to SE
                // here
-               se = new ElectronT(*pe, thetaSE, phiSE, energySE);
+               se = new ElectronT(*pe, thetaSE, phiSE, energySE); // TODO: 
             }
          }
          break;
