@@ -121,7 +121,7 @@ namespace NISTMottScatteringAngle
          // zero-based
          if (!((i >= 0) && (i < SPWEM_LEN))) printf("%s\n", StringT(std::to_string(i) + "\t" + std::to_string(FromSI::eV(energy)) + "\t" + std::to_string(e1) + "\t" + std::to_string(e2)).c_str());
          // via j
-         int k = (int)(200.0 * Math2::random()); // offset to
+         int k = Math2::randomInt(200); // offset to
          // zero-based
          double x = (mX1[i][k + 1] - mX1[i][k]) * Math2::random();
          double q = mX1[i][k] + x;

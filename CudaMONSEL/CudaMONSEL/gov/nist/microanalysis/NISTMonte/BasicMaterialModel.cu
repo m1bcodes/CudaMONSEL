@@ -43,8 +43,7 @@ namespace BasicMaterialModel
       const RandomizedScatterFactoryT* rsf = (RandomizedScatterFactoryT*)getAlgorithm("RandomizedScatterFactory");
       if (!(rsf != NULL)) printf("BasicMaterialModel::randomMeanPathLength: rsf == NULL\n");
       for (auto el : mMaterial.getElementSet()) {
-         const double mfp = (el->getMass() * Math2::expRand())
-            / (den * mMaterial.weightFraction(*el, true) * rsf->get(*el).totalCrossSection(kE));
+         const double mfp = (el->getMass() * Math2::expRand()) / (den * mMaterial.weightFraction(*el, true) * rsf->get(*el).totalCrossSection(kE));
          if (mfp < minMfp) {
             minMfp = mfp;
             bestEl = el;

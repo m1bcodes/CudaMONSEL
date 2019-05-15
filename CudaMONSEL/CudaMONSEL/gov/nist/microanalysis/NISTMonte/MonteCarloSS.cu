@@ -98,7 +98,7 @@ namespace MonteCarloSS
       mElectron = mGun->createElectron();
       mElectron->setCurrentRegion(mChamber->containingSubRegion(mElectron->getPosition().data()));
       // Stop when you can't generate any more x-rays
-      mElectron->setScatteringElement(NULL);
+      mElectron->setScatteringElement(nullptr);
    }
 
    void MonteCarloSS::takeStep()
@@ -106,10 +106,10 @@ namespace MonteCarloSS
       auto pos0 = mElectron->getPosition();
 
       auto currentRegion = mElectron->getCurrentRegion();
-      if ((currentRegion == NULL) || !(currentRegion->getShape()->contains(pos0.data()))) {
+      if ((currentRegion == nullptr) || !(currentRegion->getShape()->contains(pos0.data()))) {
          currentRegion = mChamber->containingSubRegion(pos0.data());
          mElectron->setCurrentRegion(currentRegion);
-         if (currentRegion == NULL) {
+         if (currentRegion == nullptr) {
             mElectron->setTrajectoryComplete(true);
             return;
          }
@@ -126,9 +126,9 @@ namespace MonteCarloSS
       mElectron->setTrajectoryComplete(tc);
       if (!tc) {
          if (nextRegion == currentRegion) {
-            if (mChamber == nullptr) printf("");
-            if (mElectron == nullptr);
-            if (currentRegion == nullptr);
+            if (mChamber == nullptr) printf("MonteCarloSS::takeStep(): mChamber == nullptr");
+            if (mElectron == nullptr) printf("MonteCarloSS::takeStep(): mElectron == nullptr");
+            if (currentRegion == nullptr) printf("MonteCarloSS::takeStep(): currentRegion == nullptr");
             //fireEvent(ScatterEvent);
             auto secondary = msm->scatter(*mElectron);
             //fireEvent(PostScatterEvent);
@@ -137,7 +137,7 @@ namespace MonteCarloSS
                trackSecondaryElectron(secondary);
             }
 
-            if (mElectron->getCurrentRegion() != currentRegion) printf("\n");
+            if (mElectron->getCurrentRegion() != currentRegion) printf("MonteCarloSS::takeStep()MonteCarloSS::takeStep(): mElectron->getCurrentRegion() != currentRegion\n");
          }
          else if (nextRegion != nullptr) {
             //fireEvent(NonScatterEvent);
@@ -189,16 +189,24 @@ namespace MonteCarloSS
    {
       initializeTrajectory();
       //fireEvent(TrajectoryStartEvent);
-      while (!allElectronsComplete())
+      //int i = 0;
+      while (!allElectronsComplete()) {
+         //if (i == 239)
+         //   printf("%d\n", i);
+         //++i;
          takeStep();
+      }
       //fireEvent(TrajectoryEndEvent);
    }
 
    void MonteCarloSS::runMultipleTrajectories(int n)
    {
       //fireEvent(FirstTrajectoryEvent);
-      for (int i = 0; i < n; ++i)
+      for (int i = 0; i < n; ++i) {
+         //if (i == 44)
+            printf("%d\n", i);
          runTrajectory();
+      }
       //fireEvent(LastTrajectoryEvent);
    }
 

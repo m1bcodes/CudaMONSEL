@@ -11,6 +11,7 @@ namespace BetheElectronEnergyLoss
 {
    BetheElectronEnergyLoss::BetheElectronEnergyLoss(StringT name, const ReferenceT& ref) : AlgorithmClass("Stopping power", name, ref)
    {
+      initializeDefaultStrategy();
    }
 
    JoyLuoBetheElectronEnergyLoss::JoyLuoBetheElectronEnergyLoss() : BetheElectronEnergyLoss("Joy-Luo", Reference::GoldsteinBook), K(-(785 * ToSI::EV * ::pow(ToSI::CM, 3.0)) / (ToSI::ANGSTROM * ToSI::GRAM))

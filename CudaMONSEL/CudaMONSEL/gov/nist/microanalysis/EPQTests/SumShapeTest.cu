@@ -37,11 +37,6 @@
 */
 namespace SumShapeTest
 {
-   static const double beamEnergy = ToSI::keV(20.0);
-   static const double beamDia = 1.0e-8;
-   static const double length = 1.0e-6;
-   static const double radius = 0.5e-6;
-
    static const ElementT* mat1Elements[] = {
       &Element::C,
       &Element::O,
@@ -93,6 +88,8 @@ namespace SumShapeTest
       0,
       -0.05
    };
+   static const double beamEnergy = ToSI::keV(20.0);
+   static const double beamDia = 1.0e-8;
    static const GaussianBeamT beam(beamDia, beamEnergy, center);
 
    static MonteCarloSS::MonteCarloSS mMonte(&beam, &mChamber, beam.createElectron());
@@ -101,6 +98,8 @@ namespace SumShapeTest
    static PlaneT* pls[] = { &pl };
    static MultiPlaneShape::MultiPlaneShape blk(pls, 1);
 
+   static const double radius = 0.5e-6;
+   static const double length = 1.0e-6;
    static const double end0[] = {
       -length,
       0.0,

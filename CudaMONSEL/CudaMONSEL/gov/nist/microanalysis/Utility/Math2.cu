@@ -1289,7 +1289,9 @@ namespace Math2
 
    double expRand()
    {
-      return -::log(random());
+      double r = (double)rand() / RAND_MAX;
+      while (r <= 0 || r >= 1) r = (double)rand() / RAND_MAX;
+      return -::log(r);
    }
 
    double toRadians(double deg)
