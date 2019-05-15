@@ -55,10 +55,10 @@ namespace MonteCarloSS
    //   return new RegionT(parent, new BasicMaterialModel(mat), shape);
    //}
 
-   RegionT* addSubRegion(RegionT& parent, IMaterialScatterModelT& msm, ShapeT& shape)
-   {
-      return new RegionT(&parent, &msm, &shape); // TODO: deal with this
-   }
+   //RegionT* addSubRegion(RegionT& parent, IMaterialScatterModelT& msm, ShapeT& shape)
+   //{
+   //   return new RegionT(&parent, &msm, &shape); // TODO: deal with this, DO NOT USE IT
+   //}
 
    //public Map<Material, Double> getMaterialMap(double[] startPt, double[] endPt) { // used
    //   final HashMap<Material, Double> traj = new HashMap<Material, Double>();
@@ -88,7 +88,7 @@ namespace MonteCarloSS
    //   }
    //}
 
-   const RegionT* MonteCarloSS::getChamber() const
+   RegionT* MonteCarloSS::getChamber()
    {
       return mChamber;
    }
@@ -215,7 +215,7 @@ namespace MonteCarloSS
 
    //void MonteCarloSS::setBeamEnergy(double beamEnergy)
    //{
-   //   mGun->setBeamEnergy(beamEnergy);
+   //   //mGun->setBeamEnergy(beamEnergy);
    //   //fireEvent(BeamEnergyChanged);
    //}
 

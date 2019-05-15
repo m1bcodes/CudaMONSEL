@@ -1,5 +1,6 @@
 #include "gov\nist\microanalysis\NISTMonte\MultiPlaneShape.cuh"
 #include "gov\nist\microanalysis\Utility\Math2.cuh"
+#include "gov\nist\microanalysis\Utility\Transform3D.cuh"
 
 namespace MultiPlaneShape
 {
@@ -49,14 +50,12 @@ namespace MultiPlaneShape
          return INT_MAX;
    }
 
-   // See ITransform for JavaDoc
    void Plane::rotate(const double pivot[], double phi, double theta, double psi)
    {
-      //mNormal = Transform3D.rotate(mNormal, phi, theta, psi);
-      //mPoint = Transform3D.rotate(mPoint, pivot, phi, theta, psi);
+      mNormal = Transform3D::rotate(mNormal.data(), phi, theta, psi);
+      mPoint = Transform3D::rotate(mPoint.data(), pivot, phi, theta, psi);
    }
 
-   // See ITransform for JavaDoc
    void Plane::translate(const double distance[])
    {
       mPoint[0] += distance[0];
@@ -126,6 +125,10 @@ namespace MultiPlaneShape
    //}
 
    MultiPlaneShape::MultiPlaneShape()
+   {
+   }
+
+   MultiPlaneShape::MultiPlaneShape(Plane* const planes[], int len) : mPlanes(planes, planes + len)
    {
    }
 
@@ -284,15 +287,15 @@ namespace MultiPlaneShape
    // See ITransform for JavaDoc
    void MultiPlaneShape::rotate(const double pivot[], double phi, double theta, double psi)
    {
-      //for (final ITransform t : mPlanes)
-      //   t.rotate(pivot, phi, theta, psi);
+      for (auto t : mPlanes)
+         t->rotate(pivot, phi, theta, psi);
    }
 
    // See ITransform for JavaDoc
    void MultiPlaneShape::translate(const double distance[])
    {
-      //for (final ITransform t : mPlanes)
-      //   t.translate(distance);
+      for (auto t : mPlanes)
+         t->translate(distance);
    }
 
    //public void render(TrajectoryVRML.RenderContext rc, Writer wr)

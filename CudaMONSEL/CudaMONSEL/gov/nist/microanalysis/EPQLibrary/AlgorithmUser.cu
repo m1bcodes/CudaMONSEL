@@ -1,14 +1,10 @@
 #include "gov\nist\microanalysis\EPQLibrary\AlgorithmUser.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\EdgeEnergy.cuh"
+#include "gov\nist\microanalysis\EPQLibrary\BetheElectronEnergyLoss.cuh"
 
 namespace AlgorithmUser
 {
-   // TODO: figure out what to do with this
-   // https://stackoverflow.com/questions/8630160/call-to-pure-virtual-function-from-base-class-constructor
-   AlgorithmUser::AlgorithmUser()
-   {
-      //initializeDefaultStrategy();
-   }
+   StrategyT* mGlobalOverride = NULL;
 
    const EdgeEnergyT& sDefaultEdgeEnergy = EdgeEnergy::SuperSet;
    //const EdgeEnergyT& sDefaultEdgeEnergy = EdgeEnergy::DTSA;
@@ -17,6 +13,21 @@ namespace AlgorithmUser
    //const EdgeEnergyT& sDefaultEdgeEnergy = EdgeEnergy::Wernish84;
    //const EdgeEnergyT& sDefaultEdgeEnergy = EdgeEnergy::DHSIonizationEnergy;
 
+   //TransitionEnergy sDefaultTransitionEnergy = NULL;
+   //MassAbsorptionCoefficient sDefaultMAC = NULL;
+   //FluorescenceYieldMean sDefaultFluorescenceYieldMean = NULL;
+   //FluorescenceYield sDefaultFluorescenceYield = NULL;
+   BetheElectronEnergyLossT* sDefaultBetheEnergyLoss = NULL;
+   //Bremsstrahlung.AngularDistribution sDefaultAngularDistribution = NULL;
+   //CorrectionAlgorithm sDefaultCorrectionAlgorithm = NULL;
+
+   // TODO: figure out what to do with this
+   // https://stackoverflow.com/questions/8630160/call-to-pure-virtual-function-from-base-class-constructor
+   AlgorithmUser::AlgorithmUser() : mLocalOverride(NULL)
+   {
+      //initializeDefaultStrategy();
+   }
+
    const EdgeEnergyT& getDefaultEdgeEnergy()
    {
       return sDefaultEdgeEnergy;
@@ -24,77 +35,91 @@ namespace AlgorithmUser
 
    //static CorrectionAlgorithm getDefaultCorrectionAlgorithm()
    //{
-   //   return sDefaultCorrectionAlgorithm == null ? CorrectionAlgorithm.XPPExtended : sDefaultCorrectionAlgorithm;
+   //   return sDefaultCorrectionAlgorithm == NULL ? CorrectionAlgorithm.XPPExtended : sDefaultCorrectionAlgorithm;
    //}
 
    // static TransitionEnergy getDefaultTransitionEnergy() {
-   //   return sDefaultTransitionEnergy == null ? TransitionEnergy.SuperSet : sDefaultTransitionEnergy;
+   //   return sDefaultTransitionEnergy == NULL ? TransitionEnergy.SuperSet : sDefaultTransitionEnergy;
    //}
 
    // static MassAbsorptionCoefficient getDefaultMAC() {
-   //   return sDefaultMAC == null ? MassAbsorptionCoefficient.Chantler2005 : sDefaultMAC;
+   //   return sDefaultMAC == NULL ? MassAbsorptionCoefficient.Chantler2005 : sDefaultMAC;
    //}
 
    // static FluorescenceYieldMean getDefaultFluorescenceYieldMean() {
-   //   return sDefaultFluorescenceYieldMean == null ? FluorescenceYieldMean.DefaultMean : sDefaultFluorescenceYieldMean;
+   //   return sDefaultFluorescenceYieldMean == NULL ? FluorescenceYieldMean.DefaultMean : sDefaultFluorescenceYieldMean;
    //}
 
    // static FluorescenceYield getDefaultFluorescenceYield() {
-   //   return sDefaultFluorescenceYield == null ? FluorescenceYield.DefaultShell : sDefaultFluorescenceYield;
+   //   return sDefaultFluorescenceYield == NULL ? FluorescenceYield.DefaultShell : sDefaultFluorescenceYield;
    //}
 
-   // static BetheElectronEnergyLoss getDefaultBetheEnergyLoss() {
-   //   return sDefaultBetheEnergyLoss == null ? BetheElectronEnergyLoss.JoyLuo1989 : sDefaultBetheEnergyLoss;
-   //}
+   const BetheElectronEnergyLossT* getDefaultBetheEnergyLoss()
+   {
+      return sDefaultBetheEnergyLoss == nullptr ? &BetheElectronEnergyLoss::JoyLuo1989 : sDefaultBetheEnergyLoss;
+   }
 
    // static Bremsstrahlung.AngularDistribution getDefaultAngularDistribution() {
-   //   return sDefaultAngularDistribution == null ? Bremsstrahlung.AngularDistribution.Isotropic : sDefaultAngularDistribution;
+   //   return sDefaultAngularDistribution == NULL ? Bremsstrahlung.AngularDistribution.Isotropic : sDefaultAngularDistribution;
    //}
 
    //Strategy getActiveStrategy() {
-   //   final Strategy res = mLocalOverride != null ? (Strategy)mLocalOverride.clone() : new Strategy();
-   //   if (mGlobalOverride != null)
+   //   final Strategy res = mLocalOverride != NULL ? (Strategy)mLocalOverride.clone() : new Strategy();
+   //   if (mGlobalOverride != NULL)
    //      res.apply(mGlobalOverride);
    //   return res;
    //}
 
    // AlgorithmClass getAlgorithm(Class< ? > cls) {
-   //   AlgorithmClass res = null;
-   //   if (mGlobalOverride != null)
+   //   AlgorithmClass res = NULL;
+   //   if (mGlobalOverride != NULL)
    //      res = mGlobalOverride.getAlgorithm(cls);
-   //   if ((res == null) && (mLocalOverride != null))
+   //   if ((res == NULL) && (mLocalOverride != NULL))
    //      res = mLocalOverride.getAlgorithm(cls);
    //   return res;
    //}
 
-   // AlgorithmClass getAlgorithm(String clsName) {
-   //   AlgorithmClass res = null;
-   //   if (mGlobalOverride != null)
-   //      res = mGlobalOverride.getAlgorithm(clsName);
-   //   if ((res == null) && (mLocalOverride != null))
-   //      res = mLocalOverride.getAlgorithm(clsName);
-   //   return res;
-   //}
+   const AlgorithmClassT* AlgorithmUser::getAlgorithm(char clsName[]) const
+   {
+      const AlgorithmClassT* res = nullptr;
+      if (mGlobalOverride != nullptr)
+         res = mGlobalOverride->getAlgorithm(clsName);
+      if ((res == nullptr) && (mLocalOverride != nullptr))
+         res = mLocalOverride->getAlgorithm(clsName);
+      return res;
+   }
 
 
-   //static void applyGlobalOverride(Strategy strat)
-   //{
-   //   if (strat != null) {
-   //      mGlobalOverride = strat;
-   //      sDefaultTransitionEnergy = (TransitionEnergy)strat.getAlgorithm(TransitionEnergy.class);
-   //      sDefaultEdgeEnergy = (EdgeEnergy)strat.getAlgorithm(EdgeEnergy.class);
-   //      sDefaultMAC = (MassAbsorptionCoefficient)strat.getAlgorithm(MassAbsorptionCoefficient.class);
-   //      sDefaultFluorescenceYield = (FluorescenceYield)strat.getAlgorithm(FluorescenceYield.class);
-   //      sDefaultFluorescenceYieldMean = (FluorescenceYieldMean)strat.getAlgorithm(FluorescenceYieldMean.class);
-   //      sDefaultBetheEnergyLoss = (BetheElectronEnergyLoss)strat.getAlgorithm(BetheElectronEnergyLoss.class);
-   //      sDefaultAngularDistribution = (Bremsstrahlung.AngularDistribution) strat.getAlgorithm(Bremsstrahlung.AngularDistribution.class);
-   //      sDefaultCorrectionAlgorithm = (CorrectionAlgorithm)strat.getAlgorithm(CorrectionAlgorithm.class);
-   //   }
-   //   else
-   //      clearGlobalOverride();
-   //}
+   void clearGlobalOverride()
+   {
+      mGlobalOverride = NULL;
+      //sDefaultTransitionEnergy = NULL;
+      //sDefaultEdgeEnergy = NULL;
+      //sDefaultMAC = NULL;
+      //sDefaultFluorescenceYield = NULL;
+      //sDefaultFluorescenceYieldMean = NULL;
+      sDefaultBetheEnergyLoss = NULL;
+      //sDefaultAngularDistribution = NULL;
+   }
 
-   //static  Strategy getGlobalStrategy() {
+   void applyGlobalOverride(StrategyT* strat)
+   {
+      if (strat != NULL) {
+         mGlobalOverride = strat;
+         //sDefaultTransitionEnergy = (TransitionEnergy)strat.getAlgorithm(TransitionEnergy.class);
+         //sDefaultEdgeEnergy = (EdgeEnergy)strat.getAlgorithm(EdgeEnergy.class);
+         //sDefaultMAC = (MassAbsorptionCoefficient)strat.getAlgorithm(MassAbsorptionCoefficient.class);
+         //sDefaultFluorescenceYield = (FluorescenceYield)strat.getAlgorithm(FluorescenceYield.class);
+         //sDefaultFluorescenceYieldMean = (FluorescenceYieldMean)strat.getAlgorithm(FluorescenceYieldMean.class);
+         sDefaultBetheEnergyLoss = (BetheElectronEnergyLossT*)strat->getAlgorithm("BetheElectronEnergyLoss");
+         //sDefaultAngularDistribution = (Bremsstrahlung.AngularDistribution) strat.getAlgorithm(Bremsstrahlung.AngularDistribution.class);
+         //sDefaultCorrectionAlgorithm = (CorrectionAlgorithm)strat.getAlgorithm(CorrectionAlgorithm.class);
+      }
+      else
+         clearGlobalOverride();
+   }
+
+   //static Strategy getGlobalStrategy() {
    //   Strategy res = new Strategy();
    //   res.addAll(mGlobalOverride);
    //   res.addAlgorithm(TransitionEnergy.class, getDefaultTransitionEnergy());
@@ -108,23 +133,11 @@ namespace AlgorithmUser
    //   return res;
    //}
 
-   //static  void clearGlobalOverride() {
-   //   mGlobalOverride = null;
-   //   sDefaultTransitionEnergy = null;
-   //   sDefaultEdgeEnergy = null;
-   //   sDefaultMAC = null;
-   //   sDefaultFluorescenceYield = null;
-   //   sDefaultFluorescenceYieldMean = null;
-   //   sDefaultBetheEnergyLoss = null;
-   //   sDefaultAngularDistribution = null;
-   //}
-
-   //protected void addDefaultAlgorithm(Class< ? > cls, AlgorithmClass ac) {
-   //   assert ac != null;
-   //   if (mLocalOverride == null)
-   //      mLocalOverride = new Strategy();
-   //   mLocalOverride.addAlgorithm(cls, ac);
-   //}
+   void AlgorithmUser::addDefaultAlgorithm(char cls[], AlgorithmClassT const * const ac)
+   {
+      if (ac == nullptr) printf("AlgorithmUser::addDefaultAlgorithm: NULL class");
+      mLocalOverride->addAlgorithm(cls, ac);
+   }
 
    // void documentStrategy(Writer wr)
    //   throws IOException{
@@ -136,7 +149,7 @@ namespace AlgorithmUser
 
    //   Strategy getEffectiveStrategyHelper() {
    //   final Strategy strat = new Strategy();
-   //   if (mLocalOverride != null) {
+   //   if (mLocalOverride != NULL) {
    //      strat.addAll(mLocalOverride);
    //      final Collection<AlgorithmClass> algs = mLocalOverride.getAlgorithms();
    //      for (final AlgorithmClass ac : algs)

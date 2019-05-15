@@ -256,11 +256,9 @@ namespace NormalIntersectionShape
 
    void NormalIntersectionShape::translate(const double distance[])
    {
-      //if (!(shapeA instanceof ITransform))
-      //   throw new EPQFatalException(shapeA.toString() + " does not support transformation.");
+      //if (!(shapeA instanceof ITransform)) printf(shapeA.toString() + " does not support transformation.");
       //((ITransform)shapeA).translate(distance);
-      //if (!(shapeB instanceof ITransform))
-      //   throw new EPQFatalException(shapeB.toString() + " does not support transformation.");
+      //if (!(shapeB instanceof ITransform)) throw new EPQFatalException(shapeB.toString() + " does not support transformation.");
       //((ITransform)shapeB).translate(distance);
    }
 

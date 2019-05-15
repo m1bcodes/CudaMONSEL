@@ -7,41 +7,6 @@
 
 namespace CylindricalShapeTest
 {
-   //class CylindricalShapeTest
-   //{
-   //   void setUp();
-
-   //public:
-   //   //CylindricalShapeTest();
-   //   void testOne();
-   //   void testTwo();
-   //   void testThree();
-   //   void testFour();
-   //   void testFive();
-   //   void testSix();
-   //   void testSeven();
-   //   void testEight();
-   //   void testNine();
-   //   void testTen();
-   //   void testEleven();
-   //   void testTwelve();
-
-   //private:
-   //   VectorXd transform(const double pts[]);
-
-   //   double closestPtOnAxis(double pt[]);
-   //   bool isOnCylinder(double pt[]);
-   //   bool isOnEndCap(double pt[]);
-
-   //   double mPhi, mTheta, mPsi;
-   //   
-   //   double mScale;
-   //   double mRadius;
-   //   CylindricalShapeT& mShape;
-
-   //   VectorXd mOffset; // not private
-   //};
-
    extern void testZero();
    extern void testOne();
    extern void testTwo();

@@ -1280,10 +1280,43 @@ namespace Math2
    double random()
    {
       return (double)rand() / RAND_MAX;
-   } 
+   }
+
+   int randomInt(int mod)
+   {
+      return rand() % mod;
+   }
+
+   double expRand()
+   {
+      return -::log(random());
+   }
 
    double toRadians(double deg)
    {
       return deg * PI / 180.0;
+   }
+
+   double generateGaussianNoise(const double mean, const double stdDev)
+   {
+      static bool hasSpare = false;
+      static double spare;
+
+      if (hasSpare) {
+         hasSpare = false;
+         return mean + stdDev * spare;
+      }
+
+      hasSpare = true;
+      static double u, v, s;
+      do {
+         u = (rand() / ((double)RAND_MAX)) * 2.0 - 1.0;
+         v = (rand() / ((double)RAND_MAX)) * 2.0 - 1.0;
+         s = u * u + v * v;
+      }
+      while ((s >= 1.0) || (s == 0.0));
+      s = sqrt(-2.0 * log(s) / s);
+      spare = v * s;
+      return mean + stdDev * u * s;
    }
 }

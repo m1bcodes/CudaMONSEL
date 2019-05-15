@@ -6,10 +6,17 @@
 
 namespace GaussianBeam
 {
-   GaussianBeam::GaussianBeam(double width)
+   GaussianBeam::GaussianBeam(double width) :
+      mCenter(Math2::multiply(0.99 * MonteCarloSS::ChamberRadius, PositionVecT(Math2::MINUS_Z_AXIS, Math2::MINUS_Z_AXIS + 3))),
+      mWidth(width)
+   {  
+   }
+
+   GaussianBeam::GaussianBeam(double width, double energy, const double center[]) :
+      mWidth(width),
+      mBeamEnergy(energy),
+      mCenter(center, center + 3)
    {
-      mCenter = Math2::multiply(0.99 * MonteCarloSS::ChamberRadius, PositionVecT(Math2::MINUS_Z_AXIS, Math2::MINUS_Z_AXIS + 3));
-      mWidth = width;
    }
 
    void GaussianBeam::setWidth(double width)

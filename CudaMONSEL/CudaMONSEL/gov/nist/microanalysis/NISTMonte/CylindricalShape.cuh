@@ -36,7 +36,6 @@ namespace CylindricalShape
       double mLen2; // Cache the length squared...
       double mDelta2;
    };
-
 }
 
 #endif

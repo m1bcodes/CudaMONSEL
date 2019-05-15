@@ -22,8 +22,8 @@ namespace Sphere
    {
       // Compute the intersection of the line between pos0 and pos1 and the
       // shell of the sphere.
-      const PositionVecT d = Math2::minus(PositionVecT(pos1, pos1 + 3), PositionVecT(pos0, pos0 + 3));
-      const PositionVecT m = Math2::minus(PositionVecT(pos0, pos0 + 3), mCenter);
+      const VectorXd d = Math2::minus(VectorXd(pos1, pos1 + 3), VectorXd(pos0, pos0 + 3));
+      const VectorXd m = Math2::minus(VectorXd(pos0, pos0 + 3), mCenter);
       const double ma2 = -2.0 * Math2::dot(d, d);
       const double b = 2.0 * Math2::dot(m, d);
       const double c2 = 2.0 * (Math2::dot(m, m) - mRadius * mRadius);
@@ -36,7 +36,7 @@ namespace Sphere
          if (un < 0.0)
             un = INT_MAX;
          const double res = ::fmin(up, un);
-         if (!((res == INT_MAX) || (Math2::magnitude(Math2::plus(m, Math2::multiply(res, d))) - mRadius < ::fmax(1.0e-12, Math2::distance(PositionVecT(pos0, pos0 + 3), PositionVecT(pos1, pos1 + 3)) * 1.0e-9)))) {
+         if (!((res == INT_MAX) || (Math2::magnitude(Math2::plus(m, Math2::multiply(res, d))) - mRadius < ::fmax(1.0e-12, Math2::distance(VectorXd(pos0, pos0 + 3), VectorXd(pos1, pos1 + 3)) * 1.0e-9)))) {
             printf("%s\n", std::to_string(Math2::magnitude(Math2::plus(m, Math2::multiply(res, d))) - mRadius).c_str());
          }
          return res;
@@ -44,18 +44,18 @@ namespace Sphere
       return INT_MAX;
    }
 
-   PositionVecT Sphere::getInitialPoint() const
+   VectorXd Sphere::getInitialPoint() const
    {
       double res[3];
       res[0] = mCenter[0];
       res[1] = mCenter[1];
       res[2] = mCenter[2] - 0.999 * mRadius; // just inside...
-      return PositionVecT(res, res+3);
+      return VectorXd(res, res+3);
    }
 
-   PositionVecT Sphere::getPointAt(double phi, double theta, double frac) const
+   VectorXd Sphere::getPointAt(double phi, double theta, double frac) const
    {
-      PositionVecT res(3, 0);
+      VectorXd res(3, 0);
       res[2] = mCenter[2] + mRadius * frac * ::cos(phi);
       res[1] = mCenter[1] + mRadius * frac * ::sin(phi) * ::sin(theta);
       res[0] = mCenter[0] + mRadius * frac * ::sin(phi) * ::cos(theta);
@@ -104,7 +104,7 @@ namespace Sphere
    //   wr.flush();
    //}
 
-   PositionVecT Sphere::getCenter() const
+   VectorXd Sphere::getCenter() const
    {
       return mCenter;
    }

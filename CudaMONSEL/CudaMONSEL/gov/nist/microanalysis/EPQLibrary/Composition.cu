@@ -1,7 +1,5 @@
-#include "Composition.cuh"
-
-//#include <time.h>
-//#include <stdlib.h>
+#include "gov\nist\microanalysis\EPQLibrary\Composition.cuh"
+#include "gov\nist\microanalysis\Utility\Math2.cuh"
 
 namespace Composition
 {
@@ -44,12 +42,12 @@ namespace Composition
       renormalize();
    }
 
-   Composition::Composition(const Composition& comp)
-   {
-      replicate(comp);
-   }
+   //Composition::Composition(const Composition& comp)
+   //{
+   //   replicate(comp);
+   //}
 
-   Composition::Composition(const Element::Element* elms[], int elmsLen, double massFracs[], int massFracsLen)
+   Composition::Composition(const Element::Element* elms[], int elmsLen, const double massFracs[], int massFracsLen)
    {
       if (elmsLen != massFracsLen) {
          printf("Composition::Composition: elmsLen != massFracsLen, (%d, %d)", elmsLen, massFracsLen);
@@ -68,7 +66,7 @@ namespace Composition
       renormalize();
    }
 
-   Composition::Composition(const Element::Element* elms[], int elmsLen, double massFracs[], int massFracsLen, char const* name)
+   Composition::Composition(const Element::Element* elms[], int elmsLen, const double massFracs[], int massFracsLen, char const* name)
    {
       if (elmsLen == massFracsLen - 1) {
          double* wf = new double[elmsLen];
@@ -1029,7 +1027,7 @@ namespace Composition
       auto elms = getElementSet();
       for (auto elm : elms) {
          double w = weightFraction(*elm, false);
-         double v = w + w * (double)rand() / RAND_MAX * proportional + offset * (double)rand() / RAND_MAX;
+         double v = w + w * Math2::generateGaussianNoise(0, 1) * proportional + offset * Math2::generateGaussianNoise(0, 1);
          v = v > 0.0 ? v : 0.0;
          v = v < 1.1 ? v : 1.1;
          res.addElement(*elm, v);

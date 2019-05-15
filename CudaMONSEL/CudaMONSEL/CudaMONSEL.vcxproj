@@ -29,6 +29,7 @@
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\AlgorithmClass.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\AlgorithmUser.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\AtomicShell.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\BetheElectronEnergyLoss.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\CaveatBase.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\Composition.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\Composition_GPU.cu" />
@@ -61,6 +62,7 @@
     <CudaCompile Include="gov\nist\microanalysis\EPQTests\MeanIonizationPotentialTest.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQTests\RegionBaseTest.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQTests\SphereTest.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\EPQTests\SumShapeTest.cu" />
     <CudaCompile Include="gov\nist\microanalysis\NISTMonte\BasicMaterialModel.cu" />
     <CudaCompile Include="gov\nist\microanalysis\NISTMonte\CylindricalShape.cu" />
     <CudaCompile Include="gov\nist\microanalysis\NISTMonte\GaussianBeam.cu" />
@@ -80,6 +82,7 @@
     <CudaCompile Include="gov\nist\microanalysis\NISTMonte\MonteCarloSS_GPU.cu" />
     <CudaCompile Include="gov\nist\microanalysis\NISTMonte\Sphere.cu" />
     <CudaCompile Include="Amphibian\Algorithm.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\NISTMonte\SumShape.cu" />
     <CudaCompile Include="gov\nist\microanalysis\Utility\Math2.cu" />
     <CudaCompile Include="gov\nist\microanalysis\Utility\Transform3D.cu" />
     <CudaCompile Include="gov\nist\microanalysis\Utility\UncertainValue2.cu" />
@@ -90,8 +93,10 @@
     <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSEL\GanachaudMokraniPolaronTrapSM.cu" />
     <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSEL\JoyLuoNieminenCSD.cu" />
     <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSEL\MONSEL_MaterialScatterModel.cu" />
+    <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSEL\NormalCylindricalShape.cu" />
     <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSEL\NormalIntersectionShape.cu" />
     <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSEL\NormalMultiPlaneShape.cu" />
+    <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSEL\NormalUnionShape.cu" />
     <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSEL\NShapes.cu" />
     <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSEL\NUTableInterpolation.cu" />
     <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSEL\SelectableElasticSM.cu" />
@@ -116,6 +121,7 @@
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\AlgorithmClass.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\AlgorithmUser.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\AtomicShell.cuh" />
+    <ClInclude Include="gov\nist\microanalysis\EPQLibrary\BetheElectronEnergyLoss.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\CaveatBase.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\Composition.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\Composition_GPU.cuh" />
@@ -149,6 +155,7 @@
     <ClInclude Include="gov\nist\microanalysis\EPQTests\MeanIonizationPotentialTest.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQTests\RegionBaseTest.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQTests\SphereTest.cuh" />
+    <ClInclude Include="gov\nist\microanalysis\EPQTests\SumShapeTest.cuh" />
     <ClInclude Include="gov\nist\microanalysis\NISTMonte\BasicMaterialModel.cuh" />
     <ClInclude Include="gov\nist\microanalysis\NISTMonte\CylindricalShape.cuh" />
     <ClInclude Include="gov\nist\microanalysis\NISTMonte\Declarations.cuh" />
@@ -172,6 +179,7 @@
     <ClInclude Include="gov\nist\microanalysis\NISTMonte\MonteCarloSS.cuh" />
     <ClInclude Include="gov\nist\microanalysis\NISTMonte\Sphere.cuh" />
     <ClInclude Include="Amphibian\Algorithm.cuh" />
+    <ClInclude Include="gov\nist\microanalysis\NISTMonte\SumShape.cuh" />
     <ClInclude Include="gov\nist\microanalysis\Utility\CSVReader.h" />
     <ClInclude Include="gov\nist\microanalysis\Utility\Math2.cuh" />
     <ClInclude Include="gov\nist\microanalysis\Utility\Transform3D.cuh" />
@@ -184,9 +192,11 @@
     <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\GanachaudMokraniPolaronTrapSM.cuh" />
     <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\JoyLuoNieminenCSD.cuh" />
     <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\MONSEL_MaterialScatterModel.cuh" />
+    <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\NormalCylindricalShape.cuh" />
     <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\NormalIntersectionShape.cuh" />
     <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\NormalMultiPlaneShape.cuh" />
     <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\NormalShape.cuh" />
+    <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\NormalUnionShape.cuh" />
     <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\NShapes.cuh" />
     <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\NUTableInterpolation.cuh" />
     <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\ScatterMechanism.cuh" />

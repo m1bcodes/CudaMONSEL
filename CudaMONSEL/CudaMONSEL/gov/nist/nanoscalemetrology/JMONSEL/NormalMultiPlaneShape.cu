@@ -253,15 +253,15 @@ namespace NormalMultiPlaneShape
 
    void NormalMultiPlaneShape::rotate(const double pivot[], double phi, double theta, double psi)
    {
-      //super.rotate(pivot, phi, theta, psi);
-      //updateCach();
+      MultiPlaneShapeT::rotate(pivot, phi, theta, psi);
+      updateCach();
    }
 
    // See ITransform for JavaDoc
    void NormalMultiPlaneShape::translate(const double distance[])
    {
-      //super.translate(distance);
-      //updateCach();
+      MultiPlaneShapeT::translate(distance);
+      updateCach();
    }
 
    StringT NormalMultiPlaneShape::toString() const

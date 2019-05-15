@@ -30,13 +30,13 @@ namespace MultiPlaneShape
       VectorXd mPoint;
    };
 
-
    class MultiPlaneShape : public ShapeT, public ITransformT//, TrajectoryVRML.IRender
    {
    public:
       typedef std::vector<Plane*> Planes;
 
       MultiPlaneShape();
+      MultiPlaneShape(Plane* const planes[], int len);
 
       bool contains(const double pos[]) const override;
       double getFirstIntersection(const double pos0[], const double pos1[]) override;

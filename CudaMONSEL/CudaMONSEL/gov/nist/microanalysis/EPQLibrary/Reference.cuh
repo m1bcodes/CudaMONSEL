@@ -215,6 +215,18 @@ namespace Reference
    extern const Journal PhysRevA;
    extern const Journal ApplPhysLett;
 
+   // book
+   extern const Book ElectronProbeQuant;
+   extern const Book GoldsteinBook;
+   extern const Book QuantitativeElectronProbeMicroanalysisBook;
+   extern const Book ElectronBeamXRayMicroanalysis;
+   extern const Book EnergyDispersiveXRaySpectrometery;
+   extern const Book CharacterizationOfParticles;
+   extern const Book FrameBook;
+   extern const Book ElectronMicroprobe;
+   extern const Book MicrobeamAnalysis;
+   extern const Book HandbookOfXRaySpectrometry;
+
    // default
    extern const CrudeReference NullReference;
 }

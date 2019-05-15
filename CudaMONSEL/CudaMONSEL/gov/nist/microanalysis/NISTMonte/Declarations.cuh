@@ -173,6 +173,13 @@ namespace ScreenedRutherfordScatteringAngle
 
 typedef ScreenedRutherfordScatteringAngle::ScreenedRutherfordScatteringAngle ScreenedRutherfordScatteringAngleT;
 
+namespace Strategy
+{
+   class Strategy;
+}
+
+typedef Strategy::Strategy StrategyT;
+
 namespace AtomicShell
 {
    class AtomicShell;
@@ -222,6 +229,13 @@ namespace SlowingDownAlg
 
 typedef SlowingDownAlg::SlowingDownAlg SlowingDownAlgT;
 
+namespace MeanIonizationPotential
+{
+   class MeanIonizationPotential;
+}
+
+typedef MeanIonizationPotential::MeanIonizationPotential MeanIonizationPotentialT;
+
 namespace NUTableInterpolation
 {
    class NUTableInterpolation;
@@ -270,5 +284,40 @@ namespace CylindricalShape
 }
 
 typedef CylindricalShape::CylindricalShape CylindricalShapeT;
+
+namespace NormalCylindricalShape
+{
+   class NormalCylindricalShape;
+}
+
+typedef NormalCylindricalShape::NormalCylindricalShape NormalCylindricalShapeT;
+
+namespace SumShape
+{
+   class SumShape;
+}
+
+typedef SumShape::SumShape SumShapeT;
+
+namespace NormalUnionShape
+{
+   class NormalUnionShape;
+}
+
+typedef NormalUnionShape::NormalUnionShape NormalUnionShapeT;
+
+namespace BetheElectronEnergyLoss
+{
+   class BetheElectronEnergyLoss;
+}
+
+typedef BetheElectronEnergyLoss::BetheElectronEnergyLoss BetheElectronEnergyLossT;
+
+namespace BasicMaterialModel
+{
+   class BasicMaterialModel;
+}
+
+typedef BasicMaterialModel::BasicMaterialModel BasicMaterialModelT;
 
 #endif

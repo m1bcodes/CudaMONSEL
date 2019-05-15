@@ -17,7 +17,7 @@ namespace MonteCarloSS
 
    public:
       MonteCarloSS(ElectronGunT const * gun, RegionT * mChamber, ElectronT * electron);
-      const RegionT* getChamber() const;
+      RegionT* getChamber();
       void initializeTrajectory();
 
       void takeStep();
@@ -29,7 +29,7 @@ namespace MonteCarloSS
       double getBeamEnergy();
       void setElectronGun(ElectronGunT& gun);
       //void setBeamEnergy(double beamEnergy);
-      PositionVecT computeDetectorPosition(double elevation, double theta);
+      VectorXd computeDetectorPosition(double elevation, double theta);
       Element::UnorderedSetT getElementSet() const;
       void rotate(double pivot[], double phi, double theta, double psi);
       void translate(double distance[]);

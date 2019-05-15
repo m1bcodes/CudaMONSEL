@@ -2,6 +2,7 @@
 
 #include "gov\nist\microanalysis\NISTMonte\CylindricalShape.cuh"
 #include "gov\nist\microanalysis\Utility\Math2.cuh"
+#include "gov\nist\microanalysis\Utility\Transform3D.cuh"
 
 /**
 * <p>
@@ -207,8 +208,8 @@ namespace CylindricalShape
    */
    void CylindricalShape::rotate(const double pivot[], double phi, double theta, double psi)
    {
-      //mEnd0 = Transform3D.rotate(mEnd0, pivot, phi, theta, psi);
-      //mDelta = Transform3D.rotate(mDelta, phi, theta, psi);
+      mEnd0 = Transform3D::rotate(mEnd0.data(), pivot, phi, theta, psi);
+      mDelta = Transform3D::rotate(mDelta.data(), phi, theta, psi);
    }
 
    /**
@@ -216,9 +217,9 @@ namespace CylindricalShape
    */
    void CylindricalShape::translate(const double distance[])
    {
-      //mEnd0[0] += distance[0];
-      //mEnd0[1] += distance[1];
-      //mEnd0[2] += distance[2];
+      mEnd0[0] += distance[0];
+      mEnd0[1] += distance[1];
+      mEnd0[2] += distance[2];
    }
 
    /**

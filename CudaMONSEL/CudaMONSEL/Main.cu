@@ -23,6 +23,7 @@
 #include "gov\nist\microanalysis\EPQTests\SphereTest.cuh"
 #include "gov\nist\microanalysis\EPQTests\Math2Test.cuh"
 #include "gov\nist\microanalysis\EPQTests\CylindricalShapeTest.cuh"
+#include "gov\nist\microanalysis\EPQTests\SumShapeTest.cuh"
 
 #include "ImageUtil.h"
 
@@ -83,6 +84,9 @@ int main()
    CylindricalShapeTest::testTen();
    CylindricalShapeTest::testEleven();
    CylindricalShapeTest::testTwelve();
+
+   SumShapeTest::testGetFirstIntersection();
+   SumShapeTest::testAll();
 
    return 0;
 }

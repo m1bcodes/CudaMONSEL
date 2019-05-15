@@ -44,7 +44,7 @@ namespace Strategy
       }
    }
 
-   void Strategy::addAlgorithm(StringT cls, const AlgorithmClassT* value)
+   void Strategy::addAlgorithm(StringT cls, AlgorithmClassT const * const value)
    {
       //if (!cls.isAssignableFrom(value.getClass()))
       //   throw new IllegalArgumentException(value.toString() + " is not derived from " + cls.toString());

@@ -1,6 +1,7 @@
 #ifndef _ALGORITHM_USER_CUH_
 #define _ALGORITHM_USER_CUH_
 
+#include "gov\nist\microanalysis\EPQLibrary\Strategy.cuh"
 #include "gov\nist\microanalysis\NISTMonte\Declarations.cuh"
 
 namespace AlgorithmUser
@@ -10,22 +11,27 @@ namespace AlgorithmUser
    protected:
       AlgorithmUser();
 
+      void addDefaultAlgorithm(char cls[], const AlgorithmClassT* ac);
+      const AlgorithmClassT* getAlgorithm(char clsName[]) const;
+
       virtual void initializeDefaultStrategy() = 0;
 
-   //private:
-      //Strategy mLocalOverride = null;
+   private:
+      StrategyT* mLocalOverride;
    };
 
-   // Strategy mGlobalOverride = null;
+   extern const BetheElectronEnergyLossT* getDefaultBetheEnergyLoss();
+
+   extern StrategyT* mGlobalOverride;
 
    extern const EdgeEnergyT& sDefaultEdgeEnergy;
-   //static TransitionEnergy sDefaultTransitionEnergy = null;
-   //static MassAbsorptionCoefficient sDefaultMAC = null;
-   //static FluorescenceYieldMean sDefaultFluorescenceYieldMean = null;
-   //static FluorescenceYield sDefaultFluorescenceYield = null;
-   //static BetheElectronEnergyLoss sDefaultBetheEnergyLoss = null;
-   //static Bremsstrahlung.AngularDistribution sDefaultAngularDistribution = null;
-   //static CorrectionAlgorithm sDefaultCorrectionAlgorithm = null;
+   //extern TransitionEnergy sDefaultTransitionEnergy = null;
+   //extern MassAbsorptionCoefficient sDefaultMAC = null;
+   //extern FluorescenceYieldMean sDefaultFluorescenceYieldMean = null;
+   //extern FluorescenceYield sDefaultFluorescenceYield = null;
+   extern BetheElectronEnergyLossT* sDefaultBetheEnergyLoss;
+   //extern Bremsstrahlung.AngularDistribution sDefaultAngularDistribution = null;
+   //extern CorrectionAlgorithm sDefaultCorrectionAlgorithm = null;
 
    const EdgeEnergyT& getDefaultEdgeEnergy();
 }

@@ -20,6 +20,9 @@ namespace Math2
    extern double magnitude(const VectorXd& p);
    extern VectorXd pointBetween(const VectorXd& a, const VectorXd& b, double f);
    extern double random();
+   extern int randomInt(int mod);
+   extern double expRand();
+   extern double generateGaussianNoise(const double mean, const double stdDev);
 
    extern double toRadians(double deg);
 

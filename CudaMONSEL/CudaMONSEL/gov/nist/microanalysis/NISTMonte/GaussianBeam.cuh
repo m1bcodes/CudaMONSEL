@@ -9,7 +9,9 @@ namespace GaussianBeam
    class GaussianBeam : public ElectronGunT
    {
    public:
-      GaussianBeam::GaussianBeam(double width);
+      GaussianBeam(double width);
+      GaussianBeam(double width, double energy, const double center[]);
+
       void setWidth(double width);
       double getWidth();
 

@@ -26,10 +26,10 @@ namespace Composition
 
       Composition();
       ~Composition();
-      Composition(const Composition& comp);
-      Composition(const Element::Element* elms[], int elmsLen, double massFracs[], int massFracsLen);
+      //Composition(const Composition& comp);
+      Composition(const Element::Element* elms[], int elmsLen, const double massFracs[], int massFracsLen);
       Composition(const Element::Element& elm);
-      Composition(const Element::Element* elms[], int elmsLen, double massFracs[], int massFracsLen, char const * name);
+      Composition(const Element::Element* elms[], int elmsLen, const double massFracs[], int massFracsLen, char const * name);
 
       bool operator==(const Composition&) const;
       void operator=(const Composition&);
