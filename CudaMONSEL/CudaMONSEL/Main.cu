@@ -17,7 +17,6 @@
 #include "gov\nist\microanalysis\EPQLibrary\CzyzewskiMottScatteringAngle.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\GasScatteringCrossSection.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\NISTMottScatteringAngle.cuh"
-//#include "gov\nist\microanalysis\EPQLibrary\ScreenedRutherfordScatteringAngle.cuh"
 #include "gov\nist\nanoscalemetrology\JMONSEL\NISTMottRS.cuh"
 
 #include "gov\nist\microanalysis\EPQTests\UncertainValue2Test.cuh"
@@ -95,10 +94,10 @@ int main()
    CylindricalShapeTest::testEleven();
    CylindricalShapeTest::testTwelve();
 
-   //BetheElectronEnergyLossTest::testOne();
+   BetheElectronEnergyLossTest::testOne();
 
-   //SumShapeTest::testGetFirstIntersection();
-   //SumShapeTest::testAll();
+   SumShapeTest::testGetFirstIntersection();
+   SumShapeTest::testAll();
 
    return 0;
 }
