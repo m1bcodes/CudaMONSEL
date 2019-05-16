@@ -4,22 +4,22 @@
 
 namespace Histogram
 {
-   BinName::BinName(int bin, const char format[]) : mBin(bin), mFormat(format)
+   BinName::BinName(int bin, const char format[], const Histogram& ec) : mBin(bin), mFormat(format), mEnclosingClass(ec)
    {
       if (!(bin >= -1)) printf("BinName::BinName: !(bin >= -1)\n");
-      if (!(bin < binCount() + 1)) printf("BinName::BinName: !(bin < binCount() + 1)\n");
+      if (!(bin < mEnclosingClass.binCount() + 1)) printf("BinName::BinName: !(bin < binCount() + 1)\n");
    }
 
    StringT BinName::toString() const
    {
-      StringT first = mBin < 0 ? "-inf" : mFormat + std::to_string(minValue(mBin));
-      StringT second = mBin >= binCount() ? "inf" : mFormat + std::to_string(maxValue(mBin));
+      StringT first = mBin < 0 ? "-inf" : mFormat + std::to_string(mEnclosingClass.minValue(mBin));
+      StringT second = mBin >= mEnclosingClass.binCount() ? "inf" : mFormat + std::to_string(mEnclosingClass.maxValue(mBin));
       return "[" + first + "-" + second  + ")";
    }
 
-   int BinName::compareTo(const BinName& o) const
+   bool BinName::operator<(const BinName& rhs) const
    {
-      return mBin < o.mBin ? -1 : (mBin > o.mBin ? 1 : 0);
+      return mBin < rhs.mBin;
    }
    
    Histogram::Histogram(double min, double max, int nBins) : mCounts(nBins + 2), mBinMin(nBins + 1)
@@ -107,7 +107,7 @@ namespace Histogram
 
    StringT Histogram::binName(int bin, StringT format) const
    {
-      return (BinName(bin, format.c_str())).toString();
+      return (BinName(bin, format.c_str(), *this)).toString();
    }
 
    int Histogram::counts(int bin) const
@@ -166,11 +166,11 @@ namespace Histogram
       mCounts = newCounts;
    }
 
-   //BinMap Histogram::getResultMap(const char format[])
-   //{
-   //   BinMap res;
-   //   for (int i = -1; i < binCount() + 1; ++i)
-   //      res[new BinName(i, format)] = counts(i); // TODO: fix
-   //   return res;
-   //}
+   BinMap Histogram::getResultMap(const char format[])
+   {
+      BinMap res;
+      for (int i = -1; i < binCount() + 1; ++i)
+         res[new BinName(i, format, *this)] = counts(i); // TODO: fix
+      return res;
+   }
 }

@@ -15,10 +15,6 @@ namespace GasScatteringCrossSection
    GasScatteringCrossSection::GasScatteringCrossSection(const ElementT& elm) : RandomizedScatterT("Edgerton gas cross-section", REFERENCE), mElement(elm), mElastic(ScreenedRutherfordScatteringAngle::getSRSA(elm.getAtomicNumber()))
    {
    }
-
-   GasScatteringCrossSection::GasScatteringCrossSection(const GasScatteringCrossSection& other) : RandomizedScatterT("Edgerton gas cross-section", REFERENCE), mElement(other.mElement), mElastic(other.mElastic)
-   {
-   }
    
    const RandomizedScatterT& GasScatteringCrossSection::getElasticModel()
    {
@@ -67,202 +63,204 @@ namespace GasScatteringCrossSection
       }
    }
 
-   const GasScatteringCrossSection GSCS1(Element::H);
-   const GasScatteringCrossSection GSCS2(Element::He);
-   const GasScatteringCrossSection GSCS3(Element::Li);
-   const GasScatteringCrossSection GSCS4(Element::Be);
-   const GasScatteringCrossSection GSCS5(Element::B);
-   const GasScatteringCrossSection GSCS6(Element::C);
-   const GasScatteringCrossSection GSCS7(Element::N);
-   const GasScatteringCrossSection GSCS8(Element::O);
-   const GasScatteringCrossSection GSCS9(Element::F);
-   const GasScatteringCrossSection GSCS10(Element::Ne);
-   const GasScatteringCrossSection GSCS11(Element::Na);
-   const GasScatteringCrossSection GSCS12(Element::Mg);
-   const GasScatteringCrossSection GSCS13(Element::Al);
-   const GasScatteringCrossSection GSCS14(Element::Si);
-   const GasScatteringCrossSection GSCS15(Element::P);
-   const GasScatteringCrossSection GSCS16(Element::S);
-   const GasScatteringCrossSection GSCS17(Element::Cl);
-   const GasScatteringCrossSection GSCS18(Element::Ar);
-   const GasScatteringCrossSection GSCS19(Element::K);
-   const GasScatteringCrossSection GSCS20(Element::Ca);
-   const GasScatteringCrossSection GSCS21(Element::Sc);
-   const GasScatteringCrossSection GSCS22(Element::Ti);
-   const GasScatteringCrossSection GSCS23(Element::V);
-   const GasScatteringCrossSection GSCS24(Element::Cr);
-   const GasScatteringCrossSection GSCS25(Element::Mn);
-   const GasScatteringCrossSection GSCS26(Element::Fe);
-   const GasScatteringCrossSection GSCS27(Element::Co);
-   const GasScatteringCrossSection GSCS28(Element::Ni);
-   const GasScatteringCrossSection GSCS29(Element::Cu);
-   const GasScatteringCrossSection GSCS30(Element::Zn);
-   const GasScatteringCrossSection GSCS31(Element::Ga);
-   const GasScatteringCrossSection GSCS32(Element::Ge);
-   const GasScatteringCrossSection GSCS33(Element::As);
-   const GasScatteringCrossSection GSCS34(Element::Se);
-   const GasScatteringCrossSection GSCS35(Element::Br);
-   const GasScatteringCrossSection GSCS36(Element::Kr);
-   const GasScatteringCrossSection GSCS37(Element::Rb);
-   const GasScatteringCrossSection GSCS38(Element::Sr);
-   const GasScatteringCrossSection GSCS39(Element::Y);
-   const GasScatteringCrossSection GSCS40(Element::Zr);
-   const GasScatteringCrossSection GSCS41(Element::Nb);
-   const GasScatteringCrossSection GSCS42(Element::Mo);
-   const GasScatteringCrossSection GSCS43(Element::Tc);
-   const GasScatteringCrossSection GSCS44(Element::Ru);
-   const GasScatteringCrossSection GSCS45(Element::Rh);
-   const GasScatteringCrossSection GSCS46(Element::Pd);
-   const GasScatteringCrossSection GSCS47(Element::Ag);
-   const GasScatteringCrossSection GSCS48(Element::Cd);
-   const GasScatteringCrossSection GSCS49(Element::In);
-   const GasScatteringCrossSection GSCS50(Element::Sn);
-   const GasScatteringCrossSection GSCS51(Element::Sb);
-   const GasScatteringCrossSection GSCS52(Element::Te);
-   const GasScatteringCrossSection GSCS53(Element::I);
-   const GasScatteringCrossSection GSCS54(Element::Xe);
-   const GasScatteringCrossSection GSCS55(Element::Cs);
-   const GasScatteringCrossSection GSCS56(Element::Ba);
-   const GasScatteringCrossSection GSCS57(Element::La);
-   const GasScatteringCrossSection GSCS58(Element::Ce);
-   const GasScatteringCrossSection GSCS59(Element::Pr);
-   const GasScatteringCrossSection GSCS60(Element::Nd);
-   const GasScatteringCrossSection GSCS61(Element::Pm);
-   const GasScatteringCrossSection GSCS62(Element::Sm);
-   const GasScatteringCrossSection GSCS63(Element::Eu);
-   const GasScatteringCrossSection GSCS64(Element::Gd);
-   const GasScatteringCrossSection GSCS65(Element::Tb);
-   const GasScatteringCrossSection GSCS66(Element::Dy);
-   const GasScatteringCrossSection GSCS67(Element::Ho);
-   const GasScatteringCrossSection GSCS68(Element::Er);
-   const GasScatteringCrossSection GSCS69(Element::Tm);
-   const GasScatteringCrossSection GSCS70(Element::Yb);
-   const GasScatteringCrossSection GSCS71(Element::Lu);
-   const GasScatteringCrossSection GSCS72(Element::Hf);
-   const GasScatteringCrossSection GSCS73(Element::Ta);
-   const GasScatteringCrossSection GSCS74(Element::W);
-   const GasScatteringCrossSection GSCS75(Element::Re);
-   const GasScatteringCrossSection GSCS76(Element::Os);
-   const GasScatteringCrossSection GSCS77(Element::Ir);
-   const GasScatteringCrossSection GSCS78(Element::Pt);
-   const GasScatteringCrossSection GSCS79(Element::Au);
-   const GasScatteringCrossSection GSCS80(Element::Hg);
-   const GasScatteringCrossSection GSCS81(Element::Tl);
-   const GasScatteringCrossSection GSCS82(Element::Pb);
-   const GasScatteringCrossSection GSCS83(Element::Bi);
-   const GasScatteringCrossSection GSCS84(Element::Po);
-   const GasScatteringCrossSection GSCS85(Element::At);
-   const GasScatteringCrossSection GSCS86(Element::Rn);
-   const GasScatteringCrossSection GSCS87(Element::Fr);
-   const GasScatteringCrossSection GSCS88(Element::Ra);
-   const GasScatteringCrossSection GSCS89(Element::Ac);
-   const GasScatteringCrossSection GSCS90(Element::Th);
-   const GasScatteringCrossSection GSCS91(Element::Pa);
-   const GasScatteringCrossSection GSCS92(Element::U);
-   const GasScatteringCrossSection GSCS93(Element::Np);
-   const GasScatteringCrossSection GSCS94(Element::Pu);
-   const GasScatteringCrossSection GSCS95(Element::Am);
-   const GasScatteringCrossSection GSCS96(Element::Cm);
+   //const GasScatteringCrossSection GSCS1(Element::H);
+   //const GasScatteringCrossSection GSCS2(Element::He);
+   //const GasScatteringCrossSection GSCS3(Element::Li);
+   //const GasScatteringCrossSection GSCS4(Element::Be);
+   //const GasScatteringCrossSection GSCS5(Element::B);
+   //const GasScatteringCrossSection GSCS6(Element::C);
+   //const GasScatteringCrossSection GSCS7(Element::N);
+   //const GasScatteringCrossSection GSCS8(Element::O);
+   //const GasScatteringCrossSection GSCS9(Element::F);
+   //const GasScatteringCrossSection GSCS10(Element::Ne);
+   //const GasScatteringCrossSection GSCS11(Element::Na);
+   //const GasScatteringCrossSection GSCS12(Element::Mg);
+   //const GasScatteringCrossSection GSCS13(Element::Al);
+   //const GasScatteringCrossSection GSCS14(Element::Si);
+   //const GasScatteringCrossSection GSCS15(Element::P);
+   //const GasScatteringCrossSection GSCS16(Element::S);
+   //const GasScatteringCrossSection GSCS17(Element::Cl);
+   //const GasScatteringCrossSection GSCS18(Element::Ar);
+   //const GasScatteringCrossSection GSCS19(Element::K);
+   //const GasScatteringCrossSection GSCS20(Element::Ca);
+   //const GasScatteringCrossSection GSCS21(Element::Sc);
+   //const GasScatteringCrossSection GSCS22(Element::Ti);
+   //const GasScatteringCrossSection GSCS23(Element::V);
+   //const GasScatteringCrossSection GSCS24(Element::Cr);
+   //const GasScatteringCrossSection GSCS25(Element::Mn);
+   //const GasScatteringCrossSection GSCS26(Element::Fe);
+   //const GasScatteringCrossSection GSCS27(Element::Co);
+   //const GasScatteringCrossSection GSCS28(Element::Ni);
+   //const GasScatteringCrossSection GSCS29(Element::Cu);
+   //const GasScatteringCrossSection GSCS30(Element::Zn);
+   //const GasScatteringCrossSection GSCS31(Element::Ga);
+   //const GasScatteringCrossSection GSCS32(Element::Ge);
+   //const GasScatteringCrossSection GSCS33(Element::As);
+   //const GasScatteringCrossSection GSCS34(Element::Se);
+   //const GasScatteringCrossSection GSCS35(Element::Br);
+   //const GasScatteringCrossSection GSCS36(Element::Kr);
+   //const GasScatteringCrossSection GSCS37(Element::Rb);
+   //const GasScatteringCrossSection GSCS38(Element::Sr);
+   //const GasScatteringCrossSection GSCS39(Element::Y);
+   //const GasScatteringCrossSection GSCS40(Element::Zr);
+   //const GasScatteringCrossSection GSCS41(Element::Nb);
+   //const GasScatteringCrossSection GSCS42(Element::Mo);
+   //const GasScatteringCrossSection GSCS43(Element::Tc);
+   //const GasScatteringCrossSection GSCS44(Element::Ru);
+   //const GasScatteringCrossSection GSCS45(Element::Rh);
+   //const GasScatteringCrossSection GSCS46(Element::Pd);
+   //const GasScatteringCrossSection GSCS47(Element::Ag);
+   //const GasScatteringCrossSection GSCS48(Element::Cd);
+   //const GasScatteringCrossSection GSCS49(Element::In);
+   //const GasScatteringCrossSection GSCS50(Element::Sn);
+   //const GasScatteringCrossSection GSCS51(Element::Sb);
+   //const GasScatteringCrossSection GSCS52(Element::Te);
+   //const GasScatteringCrossSection GSCS53(Element::I);
+   //const GasScatteringCrossSection GSCS54(Element::Xe);
+   //const GasScatteringCrossSection GSCS55(Element::Cs);
+   //const GasScatteringCrossSection GSCS56(Element::Ba);
+   //const GasScatteringCrossSection GSCS57(Element::La);
+   //const GasScatteringCrossSection GSCS58(Element::Ce);
+   //const GasScatteringCrossSection GSCS59(Element::Pr);
+   //const GasScatteringCrossSection GSCS60(Element::Nd);
+   //const GasScatteringCrossSection GSCS61(Element::Pm);
+   //const GasScatteringCrossSection GSCS62(Element::Sm);
+   //const GasScatteringCrossSection GSCS63(Element::Eu);
+   //const GasScatteringCrossSection GSCS64(Element::Gd);
+   //const GasScatteringCrossSection GSCS65(Element::Tb);
+   //const GasScatteringCrossSection GSCS66(Element::Dy);
+   //const GasScatteringCrossSection GSCS67(Element::Ho);
+   //const GasScatteringCrossSection GSCS68(Element::Er);
+   //const GasScatteringCrossSection GSCS69(Element::Tm);
+   //const GasScatteringCrossSection GSCS70(Element::Yb);
+   //const GasScatteringCrossSection GSCS71(Element::Lu);
+   //const GasScatteringCrossSection GSCS72(Element::Hf);
+   //const GasScatteringCrossSection GSCS73(Element::Ta);
+   //const GasScatteringCrossSection GSCS74(Element::W);
+   //const GasScatteringCrossSection GSCS75(Element::Re);
+   //const GasScatteringCrossSection GSCS76(Element::Os);
+   //const GasScatteringCrossSection GSCS77(Element::Ir);
+   //const GasScatteringCrossSection GSCS78(Element::Pt);
+   //const GasScatteringCrossSection GSCS79(Element::Au);
+   //const GasScatteringCrossSection GSCS80(Element::Hg);
+   //const GasScatteringCrossSection GSCS81(Element::Tl);
+   //const GasScatteringCrossSection GSCS82(Element::Pb);
+   //const GasScatteringCrossSection GSCS83(Element::Bi);
+   //const GasScatteringCrossSection GSCS84(Element::Po);
+   //const GasScatteringCrossSection GSCS85(Element::At);
+   //const GasScatteringCrossSection GSCS86(Element::Rn);
+   //const GasScatteringCrossSection GSCS87(Element::Fr);
+   //const GasScatteringCrossSection GSCS88(Element::Ra);
+   //const GasScatteringCrossSection GSCS89(Element::Ac);
+   //const GasScatteringCrossSection GSCS90(Element::Th);
+   //const GasScatteringCrossSection GSCS91(Element::Pa);
+   //const GasScatteringCrossSection GSCS92(Element::U);
+   //const GasScatteringCrossSection GSCS93(Element::Np);
+   //const GasScatteringCrossSection GSCS94(Element::Pu);
+   //const GasScatteringCrossSection GSCS95(Element::Am);
+   //const GasScatteringCrossSection GSCS96(Element::Cm);
 
-   GasScatteringCrossSection const * mScatter[113] = {
-      nullptr,
-      &GSCS1,
-      &GSCS2,
-      &GSCS3,
-      &GSCS4,
-      &GSCS5,
-      &GSCS6,
-      &GSCS7,
-      &GSCS8,
-      &GSCS9,
-      &GSCS10,
-      &GSCS11,
-      &GSCS12,
-      &GSCS13,
-      &GSCS14,
-      &GSCS15,
-      &GSCS16,
-      &GSCS17,
-      &GSCS18,
-      &GSCS19,
-      &GSCS20,
-      &GSCS21,
-      &GSCS22,
-      &GSCS23,
-      &GSCS24,
-      &GSCS25,
-      &GSCS26,
-      &GSCS27,
-      &GSCS28,
-      &GSCS29,
-      &GSCS30,
-      &GSCS31,
-      &GSCS32,
-      &GSCS33,
-      &GSCS34,
-      &GSCS35,
-      &GSCS36,
-      &GSCS37,
-      &GSCS38,
-      &GSCS39,
-      &GSCS40,
-      &GSCS41,
-      &GSCS42,
-      &GSCS43,
-      &GSCS44,
-      &GSCS45,
-      &GSCS46,
-      &GSCS47,
-      &GSCS48,
-      &GSCS49,
-      &GSCS50,
-      &GSCS51,
-      &GSCS52,
-      &GSCS53,
-      &GSCS54,
-      &GSCS55,
-      &GSCS56,
-      &GSCS57,
-      &GSCS58,
-      &GSCS59,
-      &GSCS60,
-      &GSCS61,
-      &GSCS62,
-      &GSCS63,
-      &GSCS64,
-      &GSCS65,
-      &GSCS66,
-      &GSCS67,
-      &GSCS68,
-      &GSCS69,
-      &GSCS70,
-      &GSCS71,
-      &GSCS72,
-      &GSCS73,
-      &GSCS74,
-      &GSCS75,
-      &GSCS76,
-      &GSCS77,
-      &GSCS78,
-      &GSCS79,
-      &GSCS80,
-      &GSCS81,
-      &GSCS82,
-      &GSCS83,
-      &GSCS84,
-      &GSCS85,
-      &GSCS86,
-      &GSCS87,
-      &GSCS88,
-      &GSCS89,
-      &GSCS90,
-      &GSCS91,
-      &GSCS92,
-      &GSCS93,
-      &GSCS94,
-      &GSCS95,
-      &GSCS96
-   };
+   GasScatteringCrossSection const * mScatter[113];
+
+   void init()
+   {
+      mScatter[1] = new GasScatteringCrossSection(Element::H);
+      mScatter[2] = new GasScatteringCrossSection(Element::He);
+      mScatter[3] = new GasScatteringCrossSection(Element::Li);
+      mScatter[4] = new GasScatteringCrossSection(Element::Be);
+      mScatter[5] = new GasScatteringCrossSection(Element::B);
+      mScatter[6] = new GasScatteringCrossSection(Element::C);
+      mScatter[7] = new GasScatteringCrossSection(Element::N);
+      mScatter[8] = new GasScatteringCrossSection(Element::O);
+      mScatter[9] = new GasScatteringCrossSection(Element::F);
+      mScatter[10] = new GasScatteringCrossSection(Element::Ne);
+      mScatter[11] = new GasScatteringCrossSection(Element::Na);
+      mScatter[12] = new GasScatteringCrossSection(Element::Mg);
+      mScatter[13] = new GasScatteringCrossSection(Element::Al);
+      mScatter[14] = new GasScatteringCrossSection(Element::Si);
+      mScatter[15] = new GasScatteringCrossSection(Element::P);
+      mScatter[16] = new GasScatteringCrossSection(Element::S);
+      mScatter[17] = new GasScatteringCrossSection(Element::Cl);
+      mScatter[18] = new GasScatteringCrossSection(Element::Ar);
+      mScatter[19] = new GasScatteringCrossSection(Element::K);
+      mScatter[20] = new GasScatteringCrossSection(Element::Ca);
+      mScatter[21] = new GasScatteringCrossSection(Element::Sc);
+      mScatter[22] = new GasScatteringCrossSection(Element::Ti);
+      mScatter[23] = new GasScatteringCrossSection(Element::V);
+      mScatter[24] = new GasScatteringCrossSection(Element::Cr);
+      mScatter[25] = new GasScatteringCrossSection(Element::Mn);
+      mScatter[26] = new GasScatteringCrossSection(Element::Fe);
+      mScatter[27] = new GasScatteringCrossSection(Element::Co);
+      mScatter[28] = new GasScatteringCrossSection(Element::Ni);
+      mScatter[29] = new GasScatteringCrossSection(Element::Cu);
+      mScatter[30] = new GasScatteringCrossSection(Element::Zn);
+      mScatter[31] = new GasScatteringCrossSection(Element::Ga);
+      mScatter[32] = new GasScatteringCrossSection(Element::Ge);
+      mScatter[33] = new GasScatteringCrossSection(Element::As);
+      mScatter[34] = new GasScatteringCrossSection(Element::Se);
+      mScatter[35] = new GasScatteringCrossSection(Element::Br);
+      mScatter[36] = new GasScatteringCrossSection(Element::Kr);
+      mScatter[37] = new GasScatteringCrossSection(Element::Rb);
+      mScatter[38] = new GasScatteringCrossSection(Element::Sr);
+      mScatter[39] = new GasScatteringCrossSection(Element::Y);
+      mScatter[40] = new GasScatteringCrossSection(Element::Zr);
+      mScatter[41] = new GasScatteringCrossSection(Element::Nb);
+      mScatter[42] = new GasScatteringCrossSection(Element::Mo);
+      mScatter[43] = new GasScatteringCrossSection(Element::Tc);
+      mScatter[44] = new GasScatteringCrossSection(Element::Ru);
+      mScatter[45] = new GasScatteringCrossSection(Element::Rh);
+      mScatter[46] = new GasScatteringCrossSection(Element::Pd);
+      mScatter[47] = new GasScatteringCrossSection(Element::Ag);
+      mScatter[48] = new GasScatteringCrossSection(Element::Cd);
+      mScatter[49] = new GasScatteringCrossSection(Element::In);
+      mScatter[50] = new GasScatteringCrossSection(Element::Sn);
+      mScatter[51] = new GasScatteringCrossSection(Element::Sb);
+      mScatter[52] = new GasScatteringCrossSection(Element::Te);
+      mScatter[53] = new GasScatteringCrossSection(Element::I);
+      mScatter[54] = new GasScatteringCrossSection(Element::Xe);
+      mScatter[55] = new GasScatteringCrossSection(Element::Cs);
+      mScatter[56] = new GasScatteringCrossSection(Element::Ba);
+      mScatter[57] = new GasScatteringCrossSection(Element::La);
+      mScatter[58] = new GasScatteringCrossSection(Element::Ce);
+      mScatter[59] = new GasScatteringCrossSection(Element::Pr);
+      mScatter[60] = new GasScatteringCrossSection(Element::Nd);
+      mScatter[61] = new GasScatteringCrossSection(Element::Pm);
+      mScatter[62] = new GasScatteringCrossSection(Element::Sm);
+      mScatter[63] = new GasScatteringCrossSection(Element::Eu);
+      mScatter[64] = new GasScatteringCrossSection(Element::Gd);
+      mScatter[65] = new GasScatteringCrossSection(Element::Tb);
+      mScatter[66] = new GasScatteringCrossSection(Element::Dy);
+      mScatter[67] = new GasScatteringCrossSection(Element::Ho);
+      mScatter[68] = new GasScatteringCrossSection(Element::Er);
+      mScatter[69] = new GasScatteringCrossSection(Element::Tm);
+      mScatter[70] = new GasScatteringCrossSection(Element::Yb);
+      mScatter[71] = new GasScatteringCrossSection(Element::Lu);
+      mScatter[72] = new GasScatteringCrossSection(Element::Hf);
+      mScatter[73] = new GasScatteringCrossSection(Element::Ta);
+      mScatter[74] = new GasScatteringCrossSection(Element::W);
+      mScatter[75] = new GasScatteringCrossSection(Element::Re);
+      mScatter[76] = new GasScatteringCrossSection(Element::Os);
+      mScatter[77] = new GasScatteringCrossSection(Element::Ir);
+      mScatter[78] = new GasScatteringCrossSection(Element::Pt);
+      mScatter[79] = new GasScatteringCrossSection(Element::Au);
+      mScatter[80] = new GasScatteringCrossSection(Element::Hg);
+      mScatter[81] = new GasScatteringCrossSection(Element::Tl);
+      mScatter[82] = new GasScatteringCrossSection(Element::Pb);
+      mScatter[83] = new GasScatteringCrossSection(Element::Bi);
+      mScatter[84] = new GasScatteringCrossSection(Element::Po);
+      mScatter[85] = new GasScatteringCrossSection(Element::At);
+      mScatter[86] = new GasScatteringCrossSection(Element::Rn);
+      mScatter[87] = new GasScatteringCrossSection(Element::Fr);
+      mScatter[88] = new GasScatteringCrossSection(Element::Ra);
+      mScatter[89] = new GasScatteringCrossSection(Element::Ac);
+      mScatter[90] = new GasScatteringCrossSection(Element::Th);
+      mScatter[91] = new GasScatteringCrossSection(Element::Pa);
+      mScatter[92] = new GasScatteringCrossSection(Element::U);
+      mScatter[93] = new GasScatteringCrossSection(Element::Np);
+      mScatter[94] = new GasScatteringCrossSection(Element::Pu);
+      mScatter[95] = new GasScatteringCrossSection(Element::Am);
+      mScatter[96] = new GasScatteringCrossSection(Element::Cm);
+   }
 
    const GasScatteringCrossSection& getGSCS(int an)
    {

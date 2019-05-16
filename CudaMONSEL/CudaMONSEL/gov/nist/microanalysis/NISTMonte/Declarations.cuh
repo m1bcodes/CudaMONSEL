@@ -319,6 +319,13 @@ namespace BasicMaterialModel
 
 typedef BasicMaterialModel::BasicMaterialModel BasicMaterialModelT;
 
+namespace Histogram
+{
+   class Histogram;
+}
+
+typedef Histogram::Histogram HistogramT;
+
 // nano
 
 namespace SEmaterial

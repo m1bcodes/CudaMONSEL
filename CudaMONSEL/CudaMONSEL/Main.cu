@@ -14,6 +14,12 @@
 #include "gov\nist\microanalysis\EPQLibrary\Element.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\Material.cuh"
 
+#include "gov\nist\microanalysis\EPQLibrary\CzyzewskiMottScatteringAngle.cuh"
+#include "gov\nist\microanalysis\EPQLibrary\GasScatteringCrossSection.cuh"
+#include "gov\nist\microanalysis\EPQLibrary\NISTMottScatteringAngle.cuh"
+//#include "gov\nist\microanalysis\EPQLibrary\ScreenedRutherfordScatteringAngle.cuh"
+#include "gov\nist\nanoscalemetrology\JMONSEL\NISTMottRS.cuh"
+
 #include "gov\nist\microanalysis\EPQTests\UncertainValue2Test.cuh"
 #include "gov\nist\microanalysis\EPQTests\ElementTest.cuh"
 #include "gov\nist\microanalysis\EPQTests\MaterialTest.cuh"
@@ -30,7 +36,10 @@
 
 int main()
 {
-   Element::InitializeElements();
+   CzyzewskiMottScatteringAngle::init();
+   NISTMottScatteringAngle::init();
+   GasScatteringCrossSection::init();
+   NISTMottRS::init();
 
    Math2Test::testRandom1();
    Math2Test::testRandom2();
@@ -86,10 +95,10 @@ int main()
    CylindricalShapeTest::testEleven();
    CylindricalShapeTest::testTwelve();
 
-   SumShapeTest::testGetFirstIntersection();
-   SumShapeTest::testAll();
+   //BetheElectronEnergyLossTest::testOne();
 
-   BetheElectronEnergyLossTest::testOne();
+   //SumShapeTest::testGetFirstIntersection();
+   //SumShapeTest::testAll();
 
    return 0;
 }

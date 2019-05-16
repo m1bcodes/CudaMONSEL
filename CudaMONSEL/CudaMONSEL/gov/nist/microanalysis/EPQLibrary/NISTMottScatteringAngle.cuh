@@ -18,7 +18,6 @@ namespace NISTMottScatteringAngle
    {
    public:
       NISTMottScatteringAngle(const ElementT& elm);
-      NISTMottScatteringAngle(const NISTMottScatteringAngle& other);
 
       void loadData(int an);
 
@@ -51,9 +50,13 @@ namespace NISTMottScatteringAngle
       void initializeDefaultStrategy() override;
    };
 
+   const NISTMottScatteringAngle* mScatter[];
+
    extern const RandomizedScatterFactoryT& Factory;
 
-   extern const NISTMottScatteringAngle getNISTMSA(int an);
+   extern const NISTMottScatteringAngle& getNISTMSA(int an);
+
+   extern void init();
 }
 
 #endif

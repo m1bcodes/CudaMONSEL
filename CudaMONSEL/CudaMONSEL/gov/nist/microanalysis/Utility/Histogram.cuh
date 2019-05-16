@@ -7,7 +7,23 @@
 
 namespace Histogram
 {
-   //typedef std::map<BinName*, int> BinMap;
+   class BinName
+   {
+   public:
+      BinName(int, const char[], const HistogramT&);
+
+      StringT toString() const;
+
+      bool operator<(const BinName& o) const;
+
+   private:
+      const int mBin;
+      const StringT mFormat;
+      const HistogramT& mEnclosingClass;
+   };
+
+   typedef std::map<BinName*, int> BinMap;
+
    class Histogram
    {
    public:
@@ -32,26 +48,11 @@ namespace Histogram
       bool isBinMin(double binMin) const;
       void removeBin(int binNum);
 
-      //BinMap getResultMap(const char format[]);
+      BinMap getResultMap(const char format[]);
 
    private:
       VectorXd mBinMin;
       VectorXi mCounts;
-   };
-
-   class BinName
-   {
-      friend class Histogram;
-
-   public:
-      BinName(int, const char[]);
-
-      StringT BinName::toString() const;
-      int compareTo(const BinName& o) const;
-
-   private:
-      const int mBin;
-      const StringT mFormat;
    };
 }
 

@@ -70,10 +70,6 @@ namespace NISTMottScatteringAngle
       loadData(elm.getAtomicNumber());
    }
 
-   NISTMottScatteringAngle::NISTMottScatteringAngle(const NISTMottScatteringAngle& other) : RandomizedScatterT("NIST Elastic cross-section", REFERENCE), mElement(other.mElement), mSpwem(other.mSpwem), mX1(other.mX1), mRutherford(other.mRutherford)
-   {
-   }
-
    StringT NISTMottScatteringAngle::toString() const
    {
       return "CrossSection[NIST-Mott," + StringT(mElement.toAbbrev()) + "]";
@@ -138,200 +134,204 @@ namespace NISTMottScatteringAngle
       return mX1;
    }
 
-   const NISTMottScatteringAngle NISTMSA1(Element::H);
-   const NISTMottScatteringAngle NISTMSA2(Element::He);
-   const NISTMottScatteringAngle NISTMSA3(Element::Li);
-   const NISTMottScatteringAngle NISTMSA4(Element::Be);
-   const NISTMottScatteringAngle NISTMSA5(Element::B);
-   const NISTMottScatteringAngle NISTMSA6(Element::C);
-   const NISTMottScatteringAngle NISTMSA7(Element::N);
-   const NISTMottScatteringAngle NISTMSA8(Element::O);
-   const NISTMottScatteringAngle NISTMSA9(Element::F);
-   const NISTMottScatteringAngle NISTMSA10(Element::Ne);
-   const NISTMottScatteringAngle NISTMSA11(Element::Na);
-   const NISTMottScatteringAngle NISTMSA12(Element::Mg);
-   const NISTMottScatteringAngle NISTMSA13(Element::Al);
-   const NISTMottScatteringAngle NISTMSA14(Element::Si);
-   const NISTMottScatteringAngle NISTMSA15(Element::P);
-   const NISTMottScatteringAngle NISTMSA16(Element::S);
-   const NISTMottScatteringAngle NISTMSA17(Element::Cl);
-   const NISTMottScatteringAngle NISTMSA18(Element::Ar);
-   const NISTMottScatteringAngle NISTMSA19(Element::K);
-   const NISTMottScatteringAngle NISTMSA20(Element::Ca);
-   const NISTMottScatteringAngle NISTMSA21(Element::Sc);
-   const NISTMottScatteringAngle NISTMSA22(Element::Ti);
-   const NISTMottScatteringAngle NISTMSA23(Element::V);
-   const NISTMottScatteringAngle NISTMSA24(Element::Cr);
-   const NISTMottScatteringAngle NISTMSA25(Element::Mn);
-   const NISTMottScatteringAngle NISTMSA26(Element::Fe);
-   const NISTMottScatteringAngle NISTMSA27(Element::Co);
-   const NISTMottScatteringAngle NISTMSA28(Element::Ni);
-   const NISTMottScatteringAngle NISTMSA29(Element::Cu);
-   const NISTMottScatteringAngle NISTMSA30(Element::Zn);
-   const NISTMottScatteringAngle NISTMSA31(Element::Ga);
-   const NISTMottScatteringAngle NISTMSA32(Element::Ge);
-   const NISTMottScatteringAngle NISTMSA33(Element::As);
-   const NISTMottScatteringAngle NISTMSA34(Element::Se);
-   const NISTMottScatteringAngle NISTMSA35(Element::Br);
-   const NISTMottScatteringAngle NISTMSA36(Element::Kr);
-   const NISTMottScatteringAngle NISTMSA37(Element::Rb);
-   const NISTMottScatteringAngle NISTMSA38(Element::Sr);
-   const NISTMottScatteringAngle NISTMSA39(Element::Y);
-   const NISTMottScatteringAngle NISTMSA40(Element::Zr);
-   const NISTMottScatteringAngle NISTMSA41(Element::Nb);
-   const NISTMottScatteringAngle NISTMSA42(Element::Mo);
-   const NISTMottScatteringAngle NISTMSA43(Element::Tc);
-   const NISTMottScatteringAngle NISTMSA44(Element::Ru);
-   const NISTMottScatteringAngle NISTMSA45(Element::Rh);
-   const NISTMottScatteringAngle NISTMSA46(Element::Pd);
-   const NISTMottScatteringAngle NISTMSA47(Element::Ag);
-   const NISTMottScatteringAngle NISTMSA48(Element::Cd);
-   const NISTMottScatteringAngle NISTMSA49(Element::In);
-   const NISTMottScatteringAngle NISTMSA50(Element::Sn);
-   const NISTMottScatteringAngle NISTMSA51(Element::Sb);
-   const NISTMottScatteringAngle NISTMSA52(Element::Te);
-   const NISTMottScatteringAngle NISTMSA53(Element::I);
-   const NISTMottScatteringAngle NISTMSA54(Element::Xe);
-   const NISTMottScatteringAngle NISTMSA55(Element::Cs);
-   const NISTMottScatteringAngle NISTMSA56(Element::Ba);
-   const NISTMottScatteringAngle NISTMSA57(Element::La);
-   const NISTMottScatteringAngle NISTMSA58(Element::Ce);
-   const NISTMottScatteringAngle NISTMSA59(Element::Pr);
-   const NISTMottScatteringAngle NISTMSA60(Element::Nd);
-   const NISTMottScatteringAngle NISTMSA61(Element::Pm);
-   const NISTMottScatteringAngle NISTMSA62(Element::Sm);
-   const NISTMottScatteringAngle NISTMSA63(Element::Eu);
-   const NISTMottScatteringAngle NISTMSA64(Element::Gd);
-   const NISTMottScatteringAngle NISTMSA65(Element::Tb);
-   const NISTMottScatteringAngle NISTMSA66(Element::Dy);
-   const NISTMottScatteringAngle NISTMSA67(Element::Ho);
-   const NISTMottScatteringAngle NISTMSA68(Element::Er);
-   const NISTMottScatteringAngle NISTMSA69(Element::Tm);
-   const NISTMottScatteringAngle NISTMSA70(Element::Yb);
-   const NISTMottScatteringAngle NISTMSA71(Element::Lu);
-   const NISTMottScatteringAngle NISTMSA72(Element::Hf);
-   const NISTMottScatteringAngle NISTMSA73(Element::Ta);
-   const NISTMottScatteringAngle NISTMSA74(Element::W);
-   const NISTMottScatteringAngle NISTMSA75(Element::Re);
-   const NISTMottScatteringAngle NISTMSA76(Element::Os);
-   const NISTMottScatteringAngle NISTMSA77(Element::Ir);
-   const NISTMottScatteringAngle NISTMSA78(Element::Pt);
-   const NISTMottScatteringAngle NISTMSA79(Element::Au);
-   const NISTMottScatteringAngle NISTMSA80(Element::Hg);
-   const NISTMottScatteringAngle NISTMSA81(Element::Tl);
-   const NISTMottScatteringAngle NISTMSA82(Element::Pb);
-   const NISTMottScatteringAngle NISTMSA83(Element::Bi);
-   const NISTMottScatteringAngle NISTMSA84(Element::Po);
-   const NISTMottScatteringAngle NISTMSA85(Element::At);
-   const NISTMottScatteringAngle NISTMSA86(Element::Rn);
-   const NISTMottScatteringAngle NISTMSA87(Element::Fr);
-   const NISTMottScatteringAngle NISTMSA88(Element::Ra);
-   const NISTMottScatteringAngle NISTMSA89(Element::Ac);
-   const NISTMottScatteringAngle NISTMSA90(Element::Th);
-   const NISTMottScatteringAngle NISTMSA91(Element::Pa);
-   const NISTMottScatteringAngle NISTMSA92(Element::U);
-   const NISTMottScatteringAngle NISTMSA93(Element::Np);
-   const NISTMottScatteringAngle NISTMSA94(Element::Pu);
+   //const NISTMottScatteringAngle NISTMSA1(Element::H);
+   //const NISTMottScatteringAngle NISTMSA2(Element::He);
+   //const NISTMottScatteringAngle NISTMSA3(Element::Li);
+   //const NISTMottScatteringAngle NISTMSA4(Element::Be);
+   //const NISTMottScatteringAngle NISTMSA5(Element::B);
+   //const NISTMottScatteringAngle NISTMSA6(Element::C);
+   //const NISTMottScatteringAngle NISTMSA7(Element::N);
+   //const NISTMottScatteringAngle NISTMSA8(Element::O);
+   //const NISTMottScatteringAngle NISTMSA9(Element::F);
+   //const NISTMottScatteringAngle NISTMSA10(Element::Ne);
+   //const NISTMottScatteringAngle NISTMSA11(Element::Na);
+   //const NISTMottScatteringAngle NISTMSA12(Element::Mg);
+   //const NISTMottScatteringAngle NISTMSA13(Element::Al);
+   //const NISTMottScatteringAngle NISTMSA14(Element::Si);
+   //const NISTMottScatteringAngle NISTMSA15(Element::P);
+   //const NISTMottScatteringAngle NISTMSA16(Element::S);
+   //const NISTMottScatteringAngle NISTMSA17(Element::Cl);
+   //const NISTMottScatteringAngle NISTMSA18(Element::Ar);
+   //const NISTMottScatteringAngle NISTMSA19(Element::K);
+   //const NISTMottScatteringAngle NISTMSA20(Element::Ca);
+   //const NISTMottScatteringAngle NISTMSA21(Element::Sc);
+   //const NISTMottScatteringAngle NISTMSA22(Element::Ti);
+   //const NISTMottScatteringAngle NISTMSA23(Element::V);
+   //const NISTMottScatteringAngle NISTMSA24(Element::Cr);
+   //const NISTMottScatteringAngle NISTMSA25(Element::Mn);
+   //const NISTMottScatteringAngle NISTMSA26(Element::Fe);
+   //const NISTMottScatteringAngle NISTMSA27(Element::Co);
+   //const NISTMottScatteringAngle NISTMSA28(Element::Ni);
+   //const NISTMottScatteringAngle NISTMSA29(Element::Cu);
+   //const NISTMottScatteringAngle NISTMSA30(Element::Zn);
+   //const NISTMottScatteringAngle NISTMSA31(Element::Ga);
+   //const NISTMottScatteringAngle NISTMSA32(Element::Ge);
+   //const NISTMottScatteringAngle NISTMSA33(Element::As);
+   //const NISTMottScatteringAngle NISTMSA34(Element::Se);
+   //const NISTMottScatteringAngle NISTMSA35(Element::Br);
+   //const NISTMottScatteringAngle NISTMSA36(Element::Kr);
+   //const NISTMottScatteringAngle NISTMSA37(Element::Rb);
+   //const NISTMottScatteringAngle NISTMSA38(Element::Sr);
+   //const NISTMottScatteringAngle NISTMSA39(Element::Y);
+   //const NISTMottScatteringAngle NISTMSA40(Element::Zr);
+   //const NISTMottScatteringAngle NISTMSA41(Element::Nb);
+   //const NISTMottScatteringAngle NISTMSA42(Element::Mo);
+   //const NISTMottScatteringAngle NISTMSA43(Element::Tc);
+   //const NISTMottScatteringAngle NISTMSA44(Element::Ru);
+   //const NISTMottScatteringAngle NISTMSA45(Element::Rh);
+   //const NISTMottScatteringAngle NISTMSA46(Element::Pd);
+   //const NISTMottScatteringAngle NISTMSA47(Element::Ag);
+   //const NISTMottScatteringAngle NISTMSA48(Element::Cd);
+   //const NISTMottScatteringAngle NISTMSA49(Element::In);
+   //const NISTMottScatteringAngle NISTMSA50(Element::Sn);
+   //const NISTMottScatteringAngle NISTMSA51(Element::Sb);
+   //const NISTMottScatteringAngle NISTMSA52(Element::Te);
+   //const NISTMottScatteringAngle NISTMSA53(Element::I);
+   //const NISTMottScatteringAngle NISTMSA54(Element::Xe);
+   //const NISTMottScatteringAngle NISTMSA55(Element::Cs);
+   //const NISTMottScatteringAngle NISTMSA56(Element::Ba);
+   //const NISTMottScatteringAngle NISTMSA57(Element::La);
+   //const NISTMottScatteringAngle NISTMSA58(Element::Ce);
+   //const NISTMottScatteringAngle NISTMSA59(Element::Pr);
+   //const NISTMottScatteringAngle NISTMSA60(Element::Nd);
+   //const NISTMottScatteringAngle NISTMSA61(Element::Pm);
+   //const NISTMottScatteringAngle NISTMSA62(Element::Sm);
+   //const NISTMottScatteringAngle NISTMSA63(Element::Eu);
+   //const NISTMottScatteringAngle NISTMSA64(Element::Gd);
+   //const NISTMottScatteringAngle NISTMSA65(Element::Tb);
+   //const NISTMottScatteringAngle NISTMSA66(Element::Dy);
+   //const NISTMottScatteringAngle NISTMSA67(Element::Ho);
+   //const NISTMottScatteringAngle NISTMSA68(Element::Er);
+   //const NISTMottScatteringAngle NISTMSA69(Element::Tm);
+   //const NISTMottScatteringAngle NISTMSA70(Element::Yb);
+   //const NISTMottScatteringAngle NISTMSA71(Element::Lu);
+   //const NISTMottScatteringAngle NISTMSA72(Element::Hf);
+   //const NISTMottScatteringAngle NISTMSA73(Element::Ta);
+   //const NISTMottScatteringAngle NISTMSA74(Element::W);
+   //const NISTMottScatteringAngle NISTMSA75(Element::Re);
+   //const NISTMottScatteringAngle NISTMSA76(Element::Os);
+   //const NISTMottScatteringAngle NISTMSA77(Element::Ir);
+   //const NISTMottScatteringAngle NISTMSA78(Element::Pt);
+   //const NISTMottScatteringAngle NISTMSA79(Element::Au);
+   //const NISTMottScatteringAngle NISTMSA80(Element::Hg);
+   //const NISTMottScatteringAngle NISTMSA81(Element::Tl);
+   //const NISTMottScatteringAngle NISTMSA82(Element::Pb);
+   //const NISTMottScatteringAngle NISTMSA83(Element::Bi);
+   //const NISTMottScatteringAngle NISTMSA84(Element::Po);
+   //const NISTMottScatteringAngle NISTMSA85(Element::At);
+   //const NISTMottScatteringAngle NISTMSA86(Element::Rn);
+   //const NISTMottScatteringAngle NISTMSA87(Element::Fr);
+   //const NISTMottScatteringAngle NISTMSA88(Element::Ra);
+   //const NISTMottScatteringAngle NISTMSA89(Element::Ac);
+   //const NISTMottScatteringAngle NISTMSA90(Element::Th);
+   //const NISTMottScatteringAngle NISTMSA91(Element::Pa);
+   //const NISTMottScatteringAngle NISTMSA92(Element::U);
+   //const NISTMottScatteringAngle NISTMSA93(Element::Np);
+   //const NISTMottScatteringAngle NISTMSA94(Element::Pu);
 
-   const NISTMottScatteringAngle* mScatter[113] = {
-      nullptr,
-      &NISTMSA1,
-      &NISTMSA2,
-      &NISTMSA3,
-      &NISTMSA4,
-      &NISTMSA5,
-      &NISTMSA6,
-      &NISTMSA7,
-      &NISTMSA8,
-      &NISTMSA9,
-      &NISTMSA10,
-      &NISTMSA11,
-      &NISTMSA12,
-      &NISTMSA13,
-      &NISTMSA14,
-      &NISTMSA15,
-      &NISTMSA16,
-      &NISTMSA17,
-      &NISTMSA18,
-      &NISTMSA19,
-      &NISTMSA20,
-      &NISTMSA21,
-      &NISTMSA22,
-      &NISTMSA23,
-      &NISTMSA24,
-      &NISTMSA25,
-      &NISTMSA26,
-      &NISTMSA27,
-      &NISTMSA28,
-      &NISTMSA29,
-      &NISTMSA30,
-      &NISTMSA31,
-      &NISTMSA32,
-      &NISTMSA33,
-      &NISTMSA34,
-      &NISTMSA35,
-      &NISTMSA36,
-      &NISTMSA37,
-      &NISTMSA38,
-      &NISTMSA39,
-      &NISTMSA40,
-      &NISTMSA41,
-      &NISTMSA42,
-      &NISTMSA43,
-      &NISTMSA44,
-      &NISTMSA45,
-      &NISTMSA46,
-      &NISTMSA47,
-      &NISTMSA48,
-      &NISTMSA49,
-      &NISTMSA50,
-      &NISTMSA51,
-      &NISTMSA52,
-      &NISTMSA53,
-      &NISTMSA54,
-      &NISTMSA55,
-      &NISTMSA56,
-      &NISTMSA57,
-      &NISTMSA58,
-      &NISTMSA59,
-      &NISTMSA60,
-      &NISTMSA61,
-      &NISTMSA62,
-      &NISTMSA63,
-      &NISTMSA64,
-      &NISTMSA65,
-      &NISTMSA66,
-      &NISTMSA67,
-      &NISTMSA68,
-      &NISTMSA69,
-      &NISTMSA70,
-      &NISTMSA71,
-      &NISTMSA72,
-      &NISTMSA73,
-      &NISTMSA74,
-      &NISTMSA75,
-      &NISTMSA76,
-      &NISTMSA77,
-      &NISTMSA78,
-      &NISTMSA79,
-      &NISTMSA80,
-      &NISTMSA81,
-      &NISTMSA82,
-      &NISTMSA83,
-      &NISTMSA84,
-      &NISTMSA85,
-      &NISTMSA86,
-      &NISTMSA87,
-      &NISTMSA88,
-      &NISTMSA89,
-      &NISTMSA90,
-      &NISTMSA91,
-      &NISTMSA92,
-      &NISTMSA93,
-      &NISTMSA94
-   };
+   const NISTMottScatteringAngle* mScatter[113];
 
-   const NISTMottScatteringAngle getNISTMSA(int an)
+   void init()
+   {
+      mScatter[1] = new NISTMottScatteringAngle(Element::H);
+      mScatter[2] = new NISTMottScatteringAngle(Element::He);
+      mScatter[3] = new NISTMottScatteringAngle(Element::Li);
+      mScatter[4] = new NISTMottScatteringAngle(Element::Be);
+      mScatter[5] = new NISTMottScatteringAngle(Element::B);
+      mScatter[6] = new NISTMottScatteringAngle(Element::C);
+      mScatter[7] = new NISTMottScatteringAngle(Element::N);
+      mScatter[8] = new NISTMottScatteringAngle(Element::O);
+      mScatter[9] = new NISTMottScatteringAngle(Element::F);
+      mScatter[10] = new NISTMottScatteringAngle(Element::Ne);
+      mScatter[11] = new NISTMottScatteringAngle(Element::Na);
+      mScatter[12] = new NISTMottScatteringAngle(Element::Mg);
+      mScatter[13] = new NISTMottScatteringAngle(Element::Al);
+      mScatter[14] = new NISTMottScatteringAngle(Element::Si);
+      mScatter[15] = new NISTMottScatteringAngle(Element::P);
+      mScatter[16] = new NISTMottScatteringAngle(Element::S);
+      mScatter[17] = new NISTMottScatteringAngle(Element::Cl);
+      mScatter[18] = new NISTMottScatteringAngle(Element::Ar);
+      mScatter[19] = new NISTMottScatteringAngle(Element::K);
+      mScatter[20] = new NISTMottScatteringAngle(Element::Ca);
+      mScatter[21] = new NISTMottScatteringAngle(Element::Sc);
+      mScatter[22] = new NISTMottScatteringAngle(Element::Ti);
+      mScatter[23] = new NISTMottScatteringAngle(Element::V);
+      mScatter[24] = new NISTMottScatteringAngle(Element::Cr);
+      mScatter[25] = new NISTMottScatteringAngle(Element::Mn);
+      mScatter[26] = new NISTMottScatteringAngle(Element::Fe);
+      mScatter[27] = new NISTMottScatteringAngle(Element::Co);
+      mScatter[28] = new NISTMottScatteringAngle(Element::Ni);
+      mScatter[29] = new NISTMottScatteringAngle(Element::Cu);
+      mScatter[30] = new NISTMottScatteringAngle(Element::Zn);
+      mScatter[31] = new NISTMottScatteringAngle(Element::Ga);
+      mScatter[32] = new NISTMottScatteringAngle(Element::Ge);
+      mScatter[33] = new NISTMottScatteringAngle(Element::As);
+      mScatter[34] = new NISTMottScatteringAngle(Element::Se);
+      mScatter[35] = new NISTMottScatteringAngle(Element::Br);
+      mScatter[36] = new NISTMottScatteringAngle(Element::Kr);
+      mScatter[37] = new NISTMottScatteringAngle(Element::Rb);
+      mScatter[38] = new NISTMottScatteringAngle(Element::Sr);
+      mScatter[39] = new NISTMottScatteringAngle(Element::Y);
+      mScatter[40] = new NISTMottScatteringAngle(Element::Zr);
+      mScatter[41] = new NISTMottScatteringAngle(Element::Nb);
+      mScatter[42] = new NISTMottScatteringAngle(Element::Mo);
+      mScatter[43] = new NISTMottScatteringAngle(Element::Tc);
+      mScatter[44] = new NISTMottScatteringAngle(Element::Ru);
+      mScatter[45] = new NISTMottScatteringAngle(Element::Rh);
+      mScatter[46] = new NISTMottScatteringAngle(Element::Pd);
+      mScatter[47] = new NISTMottScatteringAngle(Element::Ag);
+      mScatter[48] = new NISTMottScatteringAngle(Element::Cd);
+      mScatter[49] = new NISTMottScatteringAngle(Element::In);
+      mScatter[50] = new NISTMottScatteringAngle(Element::Sn);
+      mScatter[51] = new NISTMottScatteringAngle(Element::Sb);
+      mScatter[52] = new NISTMottScatteringAngle(Element::Te);
+      mScatter[53] = new NISTMottScatteringAngle(Element::I);
+      mScatter[54] = new NISTMottScatteringAngle(Element::Xe);
+      mScatter[55] = new NISTMottScatteringAngle(Element::Cs);
+      mScatter[56] = new NISTMottScatteringAngle(Element::Ba);
+      mScatter[57] = new NISTMottScatteringAngle(Element::La);
+      mScatter[58] = new NISTMottScatteringAngle(Element::Ce);
+      mScatter[59] = new NISTMottScatteringAngle(Element::Pr);
+      mScatter[60] = new NISTMottScatteringAngle(Element::Nd);
+      mScatter[61] = new NISTMottScatteringAngle(Element::Pm);
+      mScatter[62] = new NISTMottScatteringAngle(Element::Sm);
+      mScatter[63] = new NISTMottScatteringAngle(Element::Eu);
+      mScatter[64] = new NISTMottScatteringAngle(Element::Gd);
+      mScatter[65] = new NISTMottScatteringAngle(Element::Tb);
+      mScatter[66] = new NISTMottScatteringAngle(Element::Dy);
+      mScatter[67] = new NISTMottScatteringAngle(Element::Ho);
+      mScatter[68] = new NISTMottScatteringAngle(Element::Er);
+      mScatter[69] = new NISTMottScatteringAngle(Element::Tm);
+      mScatter[70] = new NISTMottScatteringAngle(Element::Yb);
+      mScatter[71] = new NISTMottScatteringAngle(Element::Lu);
+      mScatter[72] = new NISTMottScatteringAngle(Element::Hf);
+      mScatter[73] = new NISTMottScatteringAngle(Element::Ta);
+      mScatter[74] = new NISTMottScatteringAngle(Element::W);
+      mScatter[75] = new NISTMottScatteringAngle(Element::Re);
+      mScatter[76] = new NISTMottScatteringAngle(Element::Os);
+      mScatter[77] = new NISTMottScatteringAngle(Element::Ir);
+      mScatter[78] = new NISTMottScatteringAngle(Element::Pt);
+      mScatter[79] = new NISTMottScatteringAngle(Element::Au);
+      mScatter[80] = new NISTMottScatteringAngle(Element::Hg);
+      mScatter[81] = new NISTMottScatteringAngle(Element::Tl);
+      mScatter[82] = new NISTMottScatteringAngle(Element::Pb);
+      mScatter[83] = new NISTMottScatteringAngle(Element::Bi);
+      mScatter[84] = new NISTMottScatteringAngle(Element::Po);
+      mScatter[85] = new NISTMottScatteringAngle(Element::At);
+      mScatter[86] = new NISTMottScatteringAngle(Element::Rn);
+      mScatter[87] = new NISTMottScatteringAngle(Element::Fr);
+      mScatter[88] = new NISTMottScatteringAngle(Element::Ra);
+      mScatter[89] = new NISTMottScatteringAngle(Element::Ac);
+      mScatter[90] = new NISTMottScatteringAngle(Element::Th);
+      mScatter[91] = new NISTMottScatteringAngle(Element::Pa);
+      mScatter[92] = new NISTMottScatteringAngle(Element::U);
+      mScatter[93] = new NISTMottScatteringAngle(Element::Np);
+      mScatter[94] = new NISTMottScatteringAngle(Element::Pu);
+      mScatter[95] = new NISTMottScatteringAngle(Element::Am);
+      mScatter[96] = new NISTMottScatteringAngle(Element::Cm);
+   }
+
+   const NISTMottScatteringAngle& getNISTMSA(int an)
    {
       return *mScatter[an];
    }

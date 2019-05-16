@@ -53,15 +53,6 @@ namespace CzyzewskiMottScatteringAngle
       init(el.getAtomicNumber());
    }
 
-   CzyzewskiMottScatteringAngle::CzyzewskiMottScatteringAngle(int an) : RandomizedScatterT("Cyzewski", REFERENCE), mElement(Element::byAtomicNumber(an)), mRutherford(ScreenedRutherfordScatteringAngle::getSRSA(an))
-   {
-      init(an);
-   }
-
-   CzyzewskiMottScatteringAngle::CzyzewskiMottScatteringAngle(const CzyzewskiMottScatteringAngle& other) : RandomizedScatterT("Cyzewski", REFERENCE), mElement(other.mElement), mRutherford(other.mRutherford), mMeanFreePath(other.mMeanFreePath), mTotalCrossSection(other.mTotalCrossSection), mCummulativeDF(other.mCummulativeDF)
-   {
-   }
-
    StringT CzyzewskiMottScatteringAngle::toString() const
    {
       return "CrossSection[Czyzewski-Mott," + StringT(mElement.toAbbrev()) + "]";
@@ -76,7 +67,7 @@ namespace CzyzewskiMottScatteringAngle
    double CzyzewskiMottScatteringAngle::scatteringAngleForSpecialEnergy(int ei, double rand) const
    {
       VectorXd r = mCummulativeDF[ei];
-      int ai = Algorithm::binarySearch(r.data(), 0, r.size()-1, rand);
+      int ai = Algorithm::binarySearch(r.data(), 0, r.size() - 1, rand);
       if (ai >= 0)
          return CzyzewskiMottCrossSection::getSpecialAngle(ai);
       else { // Interpolate between angles
@@ -133,7 +124,7 @@ namespace CzyzewskiMottScatteringAngle
    }
 
    double CzyzewskiMottScatteringAngle::totalCrossSection(double energy) const
-      {
+   {
       if (energy < MAX_CZYZEWSKI) {
          int e = CzyzewskiMottCrossSection::getEnergyIndex(energy);
          if (e == 0)
@@ -244,198 +235,105 @@ namespace CzyzewskiMottScatteringAngle
    //const CzyzewskiMottScatteringAngle CMSA93(Element::Np);
    //const CzyzewskiMottScatteringAngle CMSA94(Element::Pu);
 
-   const CzyzewskiMottScatteringAngle CMSA1(1);
-   const CzyzewskiMottScatteringAngle CMSA2(2);
-   const CzyzewskiMottScatteringAngle CMSA3(3);
-   const CzyzewskiMottScatteringAngle CMSA4(4);
-   const CzyzewskiMottScatteringAngle CMSA5(5);
-   const CzyzewskiMottScatteringAngle CMSA6(6);
-   const CzyzewskiMottScatteringAngle CMSA7(7);
-   const CzyzewskiMottScatteringAngle CMSA8(8);
-   const CzyzewskiMottScatteringAngle CMSA9(9);
-   const CzyzewskiMottScatteringAngle CMSA10(10);
-   const CzyzewskiMottScatteringAngle CMSA11(11);
-   const CzyzewskiMottScatteringAngle CMSA12(12);
-   const CzyzewskiMottScatteringAngle CMSA13(13);
-   const CzyzewskiMottScatteringAngle CMSA14(14);
-   const CzyzewskiMottScatteringAngle CMSA15(15);
-   const CzyzewskiMottScatteringAngle CMSA16(16);
-   const CzyzewskiMottScatteringAngle CMSA17(17);
-   const CzyzewskiMottScatteringAngle CMSA18(18);
-   const CzyzewskiMottScatteringAngle CMSA19(19);
-   const CzyzewskiMottScatteringAngle CMSA20(20);
-   const CzyzewskiMottScatteringAngle CMSA21(21);
-   const CzyzewskiMottScatteringAngle CMSA22(22);
-   const CzyzewskiMottScatteringAngle CMSA23(23);
-   const CzyzewskiMottScatteringAngle CMSA24(24);
-   const CzyzewskiMottScatteringAngle CMSA25(25);
-   const CzyzewskiMottScatteringAngle CMSA26(26);
-   const CzyzewskiMottScatteringAngle CMSA27(27);
-   const CzyzewskiMottScatteringAngle CMSA28(28);
-   const CzyzewskiMottScatteringAngle CMSA29(29);
-   const CzyzewskiMottScatteringAngle CMSA30(30);
-   const CzyzewskiMottScatteringAngle CMSA31(31);
-   const CzyzewskiMottScatteringAngle CMSA32(32);
-   const CzyzewskiMottScatteringAngle CMSA33(33);
-   const CzyzewskiMottScatteringAngle CMSA34(34);
-   const CzyzewskiMottScatteringAngle CMSA35(35);
-   const CzyzewskiMottScatteringAngle CMSA36(36);
-   const CzyzewskiMottScatteringAngle CMSA37(37);
-   const CzyzewskiMottScatteringAngle CMSA38(38);
-   const CzyzewskiMottScatteringAngle CMSA39(39);
-   const CzyzewskiMottScatteringAngle CMSA40(40);
-   const CzyzewskiMottScatteringAngle CMSA41(41);
-   const CzyzewskiMottScatteringAngle CMSA42(42);
-   const CzyzewskiMottScatteringAngle CMSA43(43);
-   const CzyzewskiMottScatteringAngle CMSA44(44);
-   const CzyzewskiMottScatteringAngle CMSA45(45);
-   const CzyzewskiMottScatteringAngle CMSA46(46);
-   const CzyzewskiMottScatteringAngle CMSA47(47);
-   const CzyzewskiMottScatteringAngle CMSA48(48);
-   const CzyzewskiMottScatteringAngle CMSA49(49);
-   const CzyzewskiMottScatteringAngle CMSA50(50);
-   const CzyzewskiMottScatteringAngle CMSA51(51);
-   const CzyzewskiMottScatteringAngle CMSA52(52);
-   const CzyzewskiMottScatteringAngle CMSA53(53);
-   const CzyzewskiMottScatteringAngle CMSA54(54);
-   const CzyzewskiMottScatteringAngle CMSA55(55);
-   const CzyzewskiMottScatteringAngle CMSA56(56);
-   const CzyzewskiMottScatteringAngle CMSA57(57);
-   const CzyzewskiMottScatteringAngle CMSA58(58);
-   const CzyzewskiMottScatteringAngle CMSA59(59);
-   const CzyzewskiMottScatteringAngle CMSA60(60);
-   const CzyzewskiMottScatteringAngle CMSA61(61);
-   const CzyzewskiMottScatteringAngle CMSA62(62);
-   const CzyzewskiMottScatteringAngle CMSA63(63);
-   const CzyzewskiMottScatteringAngle CMSA64(64);
-   const CzyzewskiMottScatteringAngle CMSA65(65);
-   const CzyzewskiMottScatteringAngle CMSA66(66);
-   const CzyzewskiMottScatteringAngle CMSA67(67);
-   const CzyzewskiMottScatteringAngle CMSA68(68);
-   const CzyzewskiMottScatteringAngle CMSA69(69);
-   const CzyzewskiMottScatteringAngle CMSA70(70);
-   const CzyzewskiMottScatteringAngle CMSA71(71);
-   const CzyzewskiMottScatteringAngle CMSA72(72);
-   const CzyzewskiMottScatteringAngle CMSA73(73);
-   const CzyzewskiMottScatteringAngle CMSA74(74);
-   const CzyzewskiMottScatteringAngle CMSA75(75);
-   const CzyzewskiMottScatteringAngle CMSA76(76);
-   const CzyzewskiMottScatteringAngle CMSA77(77);
-   const CzyzewskiMottScatteringAngle CMSA78(78);
-   const CzyzewskiMottScatteringAngle CMSA79(79);
-   const CzyzewskiMottScatteringAngle CMSA80(80);
-   const CzyzewskiMottScatteringAngle CMSA81(81);
-   const CzyzewskiMottScatteringAngle CMSA82(82);
-   const CzyzewskiMottScatteringAngle CMSA83(83);
-   const CzyzewskiMottScatteringAngle CMSA84(84);
-   const CzyzewskiMottScatteringAngle CMSA85(85);
-   const CzyzewskiMottScatteringAngle CMSA86(86);
-   const CzyzewskiMottScatteringAngle CMSA87(87);
-   const CzyzewskiMottScatteringAngle CMSA88(88);
-   const CzyzewskiMottScatteringAngle CMSA89(89);
-   const CzyzewskiMottScatteringAngle CMSA90(90);
-   const CzyzewskiMottScatteringAngle CMSA91(91);
-   const CzyzewskiMottScatteringAngle CMSA92(92);
-   const CzyzewskiMottScatteringAngle CMSA93(93);
-   const CzyzewskiMottScatteringAngle CMSA94(94);
+   CzyzewskiMottScatteringAngle const * mScatter[113];
 
-   CzyzewskiMottScatteringAngle const * mScatter[113] = {
-      nullptr,
-      &CMSA1,
-      &CMSA2,
-      &CMSA3,
-      &CMSA4,
-      &CMSA5,
-      &CMSA6,
-      &CMSA7,
-      &CMSA8,
-      &CMSA9,
-      &CMSA10,
-      &CMSA11,
-      &CMSA12,
-      &CMSA13,
-      &CMSA14,
-      &CMSA15,
-      &CMSA16,
-      &CMSA17,
-      &CMSA18,
-      &CMSA19,
-      &CMSA20,
-      &CMSA21,
-      &CMSA22,
-      &CMSA23,
-      &CMSA24,
-      &CMSA25,
-      &CMSA26,
-      &CMSA27,
-      &CMSA28,
-      &CMSA29,
-      &CMSA30,
-      &CMSA31,
-      &CMSA32,
-      &CMSA33,
-      &CMSA34,
-      &CMSA35,
-      &CMSA36,
-      &CMSA37,
-      &CMSA38,
-      &CMSA39,
-      &CMSA40,
-      &CMSA41,
-      &CMSA42,
-      &CMSA43,
-      &CMSA44,
-      &CMSA45,
-      &CMSA46,
-      &CMSA47,
-      &CMSA48,
-      &CMSA49,
-      &CMSA50,
-      &CMSA51,
-      &CMSA52,
-      &CMSA53,
-      &CMSA54,
-      &CMSA55,
-      &CMSA56,
-      &CMSA57,
-      &CMSA58,
-      &CMSA59,
-      &CMSA60,
-      &CMSA61,
-      &CMSA62,
-      &CMSA63,
-      &CMSA64,
-      &CMSA65,
-      &CMSA66,
-      &CMSA67,
-      &CMSA68,
-      &CMSA69,
-      &CMSA70,
-      &CMSA71,
-      &CMSA72,
-      &CMSA73,
-      &CMSA74,
-      &CMSA75,
-      &CMSA76,
-      &CMSA77,
-      &CMSA78,
-      &CMSA79,
-      &CMSA80,
-      &CMSA81,
-      &CMSA82,
-      &CMSA83,
-      &CMSA84,
-      &CMSA85,
-      &CMSA86,
-      &CMSA87,
-      &CMSA88,
-      &CMSA89,
-      &CMSA90,
-      &CMSA91,
-      &CMSA92,
-      &CMSA93,
-      &CMSA94
-   };
+   void init()
+   {
+      mScatter[1] = new CzyzewskiMottScatteringAngle(Element::H);
+      mScatter[2] = new CzyzewskiMottScatteringAngle(Element::He);
+      mScatter[3] = new CzyzewskiMottScatteringAngle(Element::Li);
+      mScatter[4] = new CzyzewskiMottScatteringAngle(Element::Be);
+      mScatter[5] = new CzyzewskiMottScatteringAngle(Element::B);
+      mScatter[6] = new CzyzewskiMottScatteringAngle(Element::C);
+      mScatter[7] = new CzyzewskiMottScatteringAngle(Element::N);
+      mScatter[8] = new CzyzewskiMottScatteringAngle(Element::O);
+      mScatter[9] = new CzyzewskiMottScatteringAngle(Element::F);
+      mScatter[10] = new CzyzewskiMottScatteringAngle(Element::Ne);
+      mScatter[11] = new CzyzewskiMottScatteringAngle(Element::Na);
+      mScatter[12] = new CzyzewskiMottScatteringAngle(Element::Mg);
+      mScatter[13] = new CzyzewskiMottScatteringAngle(Element::Al);
+      mScatter[14] = new CzyzewskiMottScatteringAngle(Element::Si);
+      mScatter[15] = new CzyzewskiMottScatteringAngle(Element::P);
+      mScatter[16] = new CzyzewskiMottScatteringAngle(Element::S);
+      mScatter[17] = new CzyzewskiMottScatteringAngle(Element::Cl);
+      mScatter[18] = new CzyzewskiMottScatteringAngle(Element::Ar);
+      mScatter[19] = new CzyzewskiMottScatteringAngle(Element::K);
+      mScatter[20] = new CzyzewskiMottScatteringAngle(Element::Ca);
+      mScatter[21] = new CzyzewskiMottScatteringAngle(Element::Sc);
+      mScatter[22] = new CzyzewskiMottScatteringAngle(Element::Ti);
+      mScatter[23] = new CzyzewskiMottScatteringAngle(Element::V);
+      mScatter[24] = new CzyzewskiMottScatteringAngle(Element::Cr);
+      mScatter[25] = new CzyzewskiMottScatteringAngle(Element::Mn);
+      mScatter[26] = new CzyzewskiMottScatteringAngle(Element::Fe);
+      mScatter[27] = new CzyzewskiMottScatteringAngle(Element::Co);
+      mScatter[28] = new CzyzewskiMottScatteringAngle(Element::Ni);
+      mScatter[29] = new CzyzewskiMottScatteringAngle(Element::Cu);
+      mScatter[30] = new CzyzewskiMottScatteringAngle(Element::Zn);
+      mScatter[31] = new CzyzewskiMottScatteringAngle(Element::Ga);
+      mScatter[32] = new CzyzewskiMottScatteringAngle(Element::Ge);
+      mScatter[33] = new CzyzewskiMottScatteringAngle(Element::As);
+      mScatter[34] = new CzyzewskiMottScatteringAngle(Element::Se);
+      mScatter[35] = new CzyzewskiMottScatteringAngle(Element::Br);
+      mScatter[36] = new CzyzewskiMottScatteringAngle(Element::Kr);
+      mScatter[37] = new CzyzewskiMottScatteringAngle(Element::Rb);
+      mScatter[38] = new CzyzewskiMottScatteringAngle(Element::Sr);
+      mScatter[39] = new CzyzewskiMottScatteringAngle(Element::Y);
+      mScatter[40] = new CzyzewskiMottScatteringAngle(Element::Zr);
+      mScatter[41] = new CzyzewskiMottScatteringAngle(Element::Nb);
+      mScatter[42] = new CzyzewskiMottScatteringAngle(Element::Mo);
+      mScatter[43] = new CzyzewskiMottScatteringAngle(Element::Tc);
+      mScatter[44] = new CzyzewskiMottScatteringAngle(Element::Ru);
+      mScatter[45] = new CzyzewskiMottScatteringAngle(Element::Rh);
+      mScatter[46] = new CzyzewskiMottScatteringAngle(Element::Pd);
+      mScatter[47] = new CzyzewskiMottScatteringAngle(Element::Ag);
+      mScatter[48] = new CzyzewskiMottScatteringAngle(Element::Cd);
+      mScatter[49] = new CzyzewskiMottScatteringAngle(Element::In);
+      mScatter[50] = new CzyzewskiMottScatteringAngle(Element::Sn);
+      mScatter[51] = new CzyzewskiMottScatteringAngle(Element::Sb);
+      mScatter[52] = new CzyzewskiMottScatteringAngle(Element::Te);
+      mScatter[53] = new CzyzewskiMottScatteringAngle(Element::I);
+      mScatter[54] = new CzyzewskiMottScatteringAngle(Element::Xe);
+      mScatter[55] = new CzyzewskiMottScatteringAngle(Element::Cs);
+      mScatter[56] = new CzyzewskiMottScatteringAngle(Element::Ba);
+      mScatter[57] = new CzyzewskiMottScatteringAngle(Element::La);
+      mScatter[58] = new CzyzewskiMottScatteringAngle(Element::Ce);
+      mScatter[59] = new CzyzewskiMottScatteringAngle(Element::Pr);
+      mScatter[60] = new CzyzewskiMottScatteringAngle(Element::Nd);
+      mScatter[61] = new CzyzewskiMottScatteringAngle(Element::Pm);
+      mScatter[62] = new CzyzewskiMottScatteringAngle(Element::Sm);
+      mScatter[63] = new CzyzewskiMottScatteringAngle(Element::Eu);
+      mScatter[64] = new CzyzewskiMottScatteringAngle(Element::Gd);
+      mScatter[65] = new CzyzewskiMottScatteringAngle(Element::Tb);
+      mScatter[66] = new CzyzewskiMottScatteringAngle(Element::Dy);
+      mScatter[67] = new CzyzewskiMottScatteringAngle(Element::Ho);
+      mScatter[68] = new CzyzewskiMottScatteringAngle(Element::Er);
+      mScatter[69] = new CzyzewskiMottScatteringAngle(Element::Tm);
+      mScatter[70] = new CzyzewskiMottScatteringAngle(Element::Yb);
+      mScatter[71] = new CzyzewskiMottScatteringAngle(Element::Lu);
+      mScatter[72] = new CzyzewskiMottScatteringAngle(Element::Hf);
+      mScatter[73] = new CzyzewskiMottScatteringAngle(Element::Ta);
+      mScatter[74] = new CzyzewskiMottScatteringAngle(Element::W);
+      mScatter[75] = new CzyzewskiMottScatteringAngle(Element::Re);
+      mScatter[76] = new CzyzewskiMottScatteringAngle(Element::Os);
+      mScatter[77] = new CzyzewskiMottScatteringAngle(Element::Ir);
+      mScatter[78] = new CzyzewskiMottScatteringAngle(Element::Pt);
+      mScatter[79] = new CzyzewskiMottScatteringAngle(Element::Au);
+      mScatter[80] = new CzyzewskiMottScatteringAngle(Element::Hg);
+      mScatter[81] = new CzyzewskiMottScatteringAngle(Element::Tl);
+      mScatter[82] = new CzyzewskiMottScatteringAngle(Element::Pb);
+      mScatter[83] = new CzyzewskiMottScatteringAngle(Element::Bi);
+      mScatter[84] = new CzyzewskiMottScatteringAngle(Element::Po);
+      mScatter[85] = new CzyzewskiMottScatteringAngle(Element::At);
+      mScatter[86] = new CzyzewskiMottScatteringAngle(Element::Rn);
+      mScatter[87] = new CzyzewskiMottScatteringAngle(Element::Fr);
+      mScatter[88] = new CzyzewskiMottScatteringAngle(Element::Ra);
+      mScatter[89] = new CzyzewskiMottScatteringAngle(Element::Ac);
+      mScatter[90] = new CzyzewskiMottScatteringAngle(Element::Th);
+      mScatter[91] = new CzyzewskiMottScatteringAngle(Element::Pa);
+      mScatter[92] = new CzyzewskiMottScatteringAngle(Element::U);
+      mScatter[93] = new CzyzewskiMottScatteringAngle(Element::Np);
+      mScatter[94] = new CzyzewskiMottScatteringAngle(Element::Pu);
+   }
 
    const CzyzewskiMottScatteringAngle& getCMSA(int an)
    {

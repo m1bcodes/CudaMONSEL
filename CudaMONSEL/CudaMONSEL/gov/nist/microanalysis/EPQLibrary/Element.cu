@@ -592,7 +592,7 @@ namespace Element
 
    static void readAtomicWeights()
    {
-      if (mAtomicWeight.size()) return;
+      if (!mAtomicWeight.empty()) return;
       mAtomicWeight.resize(numAtomicWeight);
 
       //float hAtomicWeight[numAtomicWeight];
@@ -620,7 +620,7 @@ namespace Element
 
    static void readIonizationEnergy()
    {
-      if (mIonizationEnergy.size()) return;
+      if (!mIonizationEnergy.empty()) return;
       mIonizationEnergy.resize(numIonizationEnergy);
 
       char filepath[] = ".\\gov\\nist\\microanalysis\\EPQLibrary\\IonizationEnergies.csv";
@@ -650,126 +650,24 @@ namespace Element
       //memcpy(mIonizationEnergy, hIonizationEnergy, sizeof(hIonizationEnergy));
    }
 
+   struct Initializer
+   {
+      Initializer()
+      {
+         readAtomicWeights();
+         readIonizationEnergy();
+
+         printf("Element::Initializer() completed: %d bytes\n", sizeof(mAllElements));
+      }
+   };
+
+   Initializer init;
+
    void InitializeElements()
    {
       readAtomicWeights();
       readIonizationEnergy();
 
-      //Element tmpAllElements[] = {
-      //   H,
-      //   He,
-      //   Li,
-      //   Be,
-      //   B,
-      //   C,
-      //   N,
-      //   O,
-      //   F,
-      //   Ne,
-      //   Na,
-      //   Mg,
-      //   Al,
-      //   Si,
-      //   P,
-      //   S,
-      //   Cl,
-      //   Ar,
-      //   K,
-      //   Ca,
-      //   Sc,
-      //   Ti,
-      //   V,
-      //   Cr,
-      //   Mn,
-      //   Fe,
-      //   Co,
-      //   Ni,
-      //   Cu,
-      //   Zn,
-      //   Ga,
-      //   Ge,
-      //   As,
-      //   Se,
-      //   Br,
-      //   Kr,
-      //   Rb,
-      //   Sr,
-      //   Y,
-      //   Zr,
-      //   Nb,
-      //   Mo,
-      //   Tc,
-      //   Ru,
-      //   Rh,
-      //   Pd,
-      //   Ag,
-      //   Cd,
-      //   In,
-      //   Sn,
-      //   Sb,
-      //   Te,
-      //   I,
-      //   Xe,
-      //   Cs,
-      //   Ba,
-      //   La,
-      //   Ce,
-      //   Pr,
-      //   Nd,
-      //   Pm,
-      //   Sm,
-      //   Eu,
-      //   Gd,
-      //   Tb,
-      //   Dy,
-      //   Ho,
-      //   Er,
-      //   Tm,
-      //   Yb,
-      //   Lu,
-      //   Hf,
-      //   Ta,
-      //   W,
-      //   Re,
-      //   Os,
-      //   Ir,
-      //   Pt,
-      //   Au,
-      //   Hg,
-      //   Tl,
-      //   Pb,
-      //   Bi,
-      //   Po,
-      //   At,
-      //   Rn,
-      //   Fr,
-      //   Ra,
-      //   Ac,
-      //   Th,
-      //   Pa,
-      //   U,
-      //   Np,
-      //   Pu,
-      //   Am,
-      //   Cm,
-      //   Bk,
-      //   Cf,
-      //   Es,
-      //   Fm,
-      //   Md,
-      //   No,
-      //   Lr,
-      //   Rf,
-      //   Db,
-      //   Sg,
-      //   Bh,
-      //   Hs,
-      //   Mt,
-      //   Uun,
-      //   Uuu,
-      //   Uub
-      //};
-      //memcpy(mAllElements, tmpAllElements, sizeof(tmpAllElements));
       printf("InitializeElements() completed: %d bytes\n", sizeof(mAllElements));
    }
 

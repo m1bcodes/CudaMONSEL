@@ -11,7 +11,7 @@ namespace GasScatteringCrossSection
    {
    public:
       GasScatteringCrossSection(const ElementT& elm);
-      GasScatteringCrossSection(const GasScatteringCrossSection& gscs);
+      //GasScatteringCrossSection(const GasScatteringCrossSection& gscs);
 
       const RandomizedScatterT& getElasticModel();
       double ratioInelasticOverElastic() const;
@@ -37,6 +37,10 @@ namespace GasScatteringCrossSection
    };
 
    extern const RandomizedScatterFactoryT& Factory;
+
+   extern const GasScatteringCrossSection& getGSCS(int an);
+
+   extern void init();
 }
 
 #endif

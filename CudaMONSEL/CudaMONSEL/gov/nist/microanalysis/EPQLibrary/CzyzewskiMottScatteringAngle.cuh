@@ -12,8 +12,6 @@ namespace CzyzewskiMottScatteringAngle
    {
    public:
       CzyzewskiMottScatteringAngle(const ElementT& el);
-      CzyzewskiMottScatteringAngle(int atomicNumber);
-      CzyzewskiMottScatteringAngle(const CzyzewskiMottScatteringAngle& other);
 
       void init(int an);
 
@@ -51,6 +49,8 @@ namespace CzyzewskiMottScatteringAngle
    extern const RandomizedScatterFactoryT& Factory;
 
    extern const CzyzewskiMottScatteringAngle& getCMSA(int an);
+
+   extern void init();
 }
 
 #endif

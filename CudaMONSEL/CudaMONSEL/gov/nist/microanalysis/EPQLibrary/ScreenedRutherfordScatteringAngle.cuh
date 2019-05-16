@@ -13,7 +13,6 @@ namespace ScreenedRutherfordScatteringAngle
    {
    public:
       ScreenedRutherfordScatteringAngle(const ElementT& elm);
-      ScreenedRutherfordScatteringAngle(const ScreenedRutherfordScatteringAngle& other);
 
       StringT toString() const;
 
@@ -39,6 +38,8 @@ namespace ScreenedRutherfordScatteringAngle
    extern const RandomizedScatterFactoryT& Factory;
 
    extern const ScreenedRutherfordScatteringAngle& getSRSA(int an);
+
+   //extern void init();
 }
 
 #endif

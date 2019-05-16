@@ -23,16 +23,17 @@ namespace NISTMottRS
    private:
       //void loadData(int an); // same as NISTMottScatteringAngle
 
-      int method;
-      double extrapolateBelowEnergy;
-      double MottXSatMinEnergy;
-
       const ElementT& mElement;
       const VectorXd& mSpwem;
       const MatrixXd& mX1;
 
       const ScreenedRutherfordScatteringAngleT& mRutherford;
       const BrowningEmpiricalCrossSectionT& mBrowning;
+
+      int method;
+      double extrapolateBelowEnergy;
+
+      double MottXSatMinEnergy;
       double sfBrowning;
    };
 
@@ -58,6 +59,8 @@ namespace NISTMottRS
    extern const NISTMottRS& getNMRS1(int an);
    extern const NISTMottRS& getNMRS2(int an);
    extern const NISTMottRS& getNMRS3(int an);
+
+   extern void init();
 }
 
 #endif
