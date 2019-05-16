@@ -27,8 +27,8 @@ namespace MonteCarloSS
    static const int XAxis = 0;
    static const int YAxis = 1;
    static const int ZAxis = 2;
-   const float ChamberRadius = 0.1f;
-   const float SMALL_DISP = 1.0e-15f;
+   const double ChamberRadius = 0.1;
+   const double SMALL_DISP = 1.0e-15;
 
    double dist(const double pos0[], const double pos1[])
    {

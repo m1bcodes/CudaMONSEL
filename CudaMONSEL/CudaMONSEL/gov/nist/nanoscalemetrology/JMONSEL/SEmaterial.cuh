@@ -15,7 +15,7 @@ namespace SEmaterial
       SEmaterial();
       SEmaterial(const SEmaterial&);
       SEmaterial(const Composition& comp, double density);
-      SEmaterial(const Element::Element* elms[], int elemLen, double weightFracs[], int wfLen, double density, char* name);
+      SEmaterial(const Element::Element* elms[], int elemLen, const double weightFracs[], int wfLen, double density, char* name);
       SEmaterial(const Material& mat);
 
       SEmaterial& operator=(const SEmaterial&);
@@ -48,7 +48,7 @@ namespace SEmaterial
 
       void setBindingEnergy(int index, double energy);
       void setCoreEnergy();
-      void setCoreEnergy(const Setd& coreEnergy);
+      void setCoreEnergy(const double coreEnergy[], int len);
       void setElectronDensity(int index, double density);
       void setEnergyCBbottom(double energyCBbottom);
       void setBandgap(double bandgap);

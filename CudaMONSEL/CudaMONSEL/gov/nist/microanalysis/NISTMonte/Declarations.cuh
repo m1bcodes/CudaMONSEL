@@ -2,7 +2,7 @@
 #define _DECLARATIONS_CUH_
 
 #include <string>
-#include <unordered_set>
+#include <set>
 #include <map>
 #include <unordered_map>
 #include <stack>
@@ -17,7 +17,7 @@ typedef std::vector<MatrixXd> Matrix3DXd;
 typedef std::vector<Matrix3DXd> Matrix4DXd;
 typedef std::vector<int> VectorXi;
 typedef std::vector<VectorXi> MatrixXi;
-typedef std::unordered_set<double> Setd;
+typedef std::set<double> Setd;
 
 namespace Element
 {
@@ -201,12 +201,11 @@ namespace BarrierScatterMechanism
 
 typedef BarrierScatterMechanism::BarrierScatterMechanism BarrierScatterMechanismT;
 
-namespace SEmaterial
+namespace BrowningEmpiricalCrossSection
 {
-   class SEmaterial;
+   class BrowningEmpiricalCrossSection;
 }
-
-typedef SEmaterial::SEmaterial SEmaterialT;
+typedef BrowningEmpiricalCrossSection::BrowningEmpiricalCrossSection BrowningEmpiricalCrossSectionT;
 
 namespace NormalShape
 {
@@ -319,5 +318,70 @@ namespace BasicMaterialModel
 }
 
 typedef BasicMaterialModel::BasicMaterialModel BasicMaterialModelT;
+
+// nano
+
+namespace SEmaterial
+{
+   class SEmaterial;
+}
+
+typedef SEmaterial::SEmaterial SEmaterialT;
+
+namespace ExpQMBarrierSM
+{
+   class ExpQMBarrierSM;
+}
+
+typedef ExpQMBarrierSM::ExpQMBarrierSM ExpQMBarrierSMT;
+
+namespace MONSEL_MaterialScatterModel
+{
+   class MONSEL_MaterialScatterModel;
+}
+
+typedef MONSEL_MaterialScatterModel::MONSEL_MaterialScatterModel MONSEL_MaterialScatterModelT;
+
+namespace SelectableElasticSM
+{
+   class SelectableElasticSM;
+}
+
+typedef SelectableElasticSM::SelectableElasticSM SelectableElasticSMT;
+
+namespace JoyLuoNieminenCSD
+{
+   class JoyLuoNieminenCSD;
+}
+
+typedef JoyLuoNieminenCSD::JoyLuoNieminenCSD JoyLuoNieminenCSDT;
+
+namespace FittedInelSM
+{
+   class FittedInelSM;
+}
+
+typedef FittedInelSM::FittedInelSM FittedInelSMT;
+
+namespace GanachaudMokraniPolaronTrapSM
+{
+   class GanachaudMokraniPolaronTrapSM;
+}
+
+typedef GanachaudMokraniPolaronTrapSM::GanachaudMokraniPolaronTrapSM GanachaudMokraniPolaronTrapSMT;
+
+namespace TabulatedInelasticSM
+{
+   class TabulatedInelasticSM;
+}
+
+typedef TabulatedInelasticSM::TabulatedInelasticSM TabulatedInelasticSMT;
+
+namespace GanachaudMokraniPhononInelasticSM
+{
+   class GanachaudMokraniPhononInelasticSM;
+}
+
+typedef GanachaudMokraniPhononInelasticSM::GanachaudMokraniPhononInelasticSM GanachaudMokraniPhononInelasticSMT;
 
 #endif

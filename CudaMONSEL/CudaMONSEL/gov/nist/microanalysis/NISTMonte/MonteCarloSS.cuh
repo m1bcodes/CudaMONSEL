@@ -8,8 +8,8 @@
 
 namespace MonteCarloSS
 {
-   extern const float ChamberRadius;
-   extern const float SMALL_DISP;
+   extern const double ChamberRadius;
+   extern const double SMALL_DISP;
 
    class MonteCarloSS final
    {

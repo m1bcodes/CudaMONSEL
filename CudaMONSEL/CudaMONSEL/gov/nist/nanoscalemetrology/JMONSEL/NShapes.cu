@@ -50,7 +50,8 @@ static void addPlane(NormalMultiPlaneShapeT& shape, PlaneT& plane)
 //}
 
 // TODO: this is broken as-is: need to make objects dynamically, or globals/constants statically.
-NormalShapeT* createLine(double topz, // z of the top face
+NormalShapeT* createLine(
+   double topz, // z of the top face
    double width, // line width
    double length, // length of line
    double thetal, // angle of right sidewall
@@ -63,25 +64,6 @@ NormalShapeT* createLine(double topz, // z of the top face
       radr = 0.;
    if (radl < 0.)
       radl = 0.;
-
-   /*
-   * The line will be the intersection of 3 pieces, a right side, a left
-   * side, and an "enclosure". The right side is a multiplane shape with 2
-   * planes, one representing the sidewall and the other a plane that joins
-   * the top of the line to the place where the cylinder touches the
-   * sidewall. The left side does the same for the other side. The enclosure
-   * is a NormalMultiPlaneShape shape consisting of the top, bottom, and
-   * endcaps. I replaced the previous createLine algorithm with this one on
-   * 2/14/2013. The previous one formed the union of two cylinders,
-   * representing the corner rounding, with one multiplane shape (8 planes)
-   * to form the line. This worked fine for lines that were wide enough, but
-   * when the corner rounding becomes large enough (e.g., in the extreme
-   * when the cylinder diameter is greater than the linewidth) the cylinder
-   * that rounds the right corner can protrude through the left sidewall.
-   * This new algorithm eliminates that issue at the cost of being slightly
-   * (less than 5%) slower. This is a price worth paying now that narrow
-   * lines are much more frequently done.
-   */
 
    /* First, construct the enclosure */
    NormalMultiPlaneShapeT enclosure;
@@ -104,8 +86,6 @@ NormalShapeT* createLine(double topz, // z of the top face
    PlaneT pl3(n3, 3, p3, 3);
    enclosure.addPlane(pl3);
 
-   /* Now do the right side */
-
    NormalMultiPlaneShapeT rightNMPS;
    NormalShapeT* rightSide = NULL;
 
@@ -121,20 +101,20 @@ NormalShapeT* createLine(double topz, // z of the top face
    double absz = signz * topz;
    if (radr > 0) {
       double rad = ::sqrt(1 - sinthetar);
-      double n5[] = { rad / root2, 0., (signz * costhetar) / root2 / rad }, p5[] = { ((width / 2.) - (radr / costhetar)) + (((radr - absz) * sinthetar) / costhetar), 0., topz };
-      PlaneT pl5(n5, 3, p5, 3);
-      rightNMPS.addPlane(pl5);
+      double nr[] = { rad / root2, 0., (signz * costhetar) / root2 / rad }, pr[] = { ((width / 2.) - (radr / costhetar)) + (((radr - absz) * sinthetar) / costhetar), 0., topz };
+      PlaneT plr(nr, 3, pr, 3);
+      rightNMPS.addPlane(plr);
       // Construct cylinder for right corner
       double xc = ((width / 2.) - (radr / ::cos(thetar))) + ((radr - absz) * ::tan(thetar));
       double zc = topz - (signz * radr);
-      double end0[] = { xc, -length / 2., zc }, end1[] = { xc, length / 2., zc };
-      NormalCylindricalShapeT rcylinder(end0, end1, radr);
-      rightSide = new NormalUnionShapeT(rightNMPS, rcylinder);
+      double end0r[] = { xc, -length / 2., zc }, end1r[] = { xc, length / 2., zc };
+      NormalCylindricalShapeT rcylinder(end0r, end1r, radr);
+      NormalUnionShapeT nus0(rightNMPS, rcylinder);
+      rightSide = &nus0;
    }
    else
       rightSide = &rightNMPS;
 
-   /* Now do likewise for the left side */
    NormalMultiPlaneShapeT leftNMPS;
    NormalShapeT* leftSide;
 
@@ -148,19 +128,19 @@ NormalShapeT* createLine(double topz, // z of the top face
    if (radl > 0.) {
       double rad = ::sqrt(1 - sinthetal);
       double n8[] = { -rad / root2, 0., (signz * costhetal) / root2 / rad }, p8[] = { ((-width / 2.) + (radl / costhetal)) - (((radl - absz) * sinthetal) / costhetal), 0., topz };
-      PlaneT pl8(n8, 3, p8, 3);
-      leftNMPS.addPlane(pl8);
+      PlaneT pl(n8, 3, p8, 3);
+      leftNMPS.addPlane(pl);
       double xc = ((width / 2.) - (radl / ::cos(thetal))) + ((radl - absz) * ::tan(thetal));
       double zc = topz - (signz * radl);
       // Construct cylinder for left corner
       double end0[] = { -xc, -length / 2., zc }, end1[] = { -xc, length / 2., zc };
       NormalCylindricalShapeT lcylinder(end0, end1, radl);
-      leftSide = new NormalUnionShapeT(leftNMPS, lcylinder);
+      NormalUnionShapeT nus1(rightNMPS, lcylinder);
+      leftSide = &nus1;
    }
    else
       leftSide = &leftNMPS;
 
-   /* The shape is the intersection of the 3 shapes just constructed */
    NormalIntersectionShapeT nts(*leftSide, *rightSide);
    NormalIntersectionShapeT nis(nts, enclosure);
    return &nis;

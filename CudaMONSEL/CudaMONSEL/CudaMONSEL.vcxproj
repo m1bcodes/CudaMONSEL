@@ -30,6 +30,7 @@
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\AlgorithmUser.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\AtomicShell.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\BetheElectronEnergyLoss.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\BrowningEmpiricalCrossSection.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\CaveatBase.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\Composition.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\Composition_GPU.cu" />
@@ -56,6 +57,7 @@
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\ScreenedRutherfordScatteringAngle.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\Strategy.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQTests\AtomicShellTest.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\EPQTests\BetheElectronEnergyLossTest.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQTests\CylindricalShapeTest.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQTests\EdgeEnergyTest.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQTests\Math2Test.cu" />
@@ -86,13 +88,16 @@
     <CudaCompile Include="gov\nist\microanalysis\Utility\Math2.cu" />
     <CudaCompile Include="gov\nist\microanalysis\Utility\Transform3D.cu" />
     <CudaCompile Include="gov\nist\microanalysis\Utility\UncertainValue2.cu" />
+    <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSELTests\LinesOnLayers.cu" />
     <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSELutils\NULagrangeInterpolation.cu" />
+    <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSELutils\ULagrangeInterpolation.cu" />
     <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSEL\ExpQMBarrierSM.cu" />
     <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSEL\FittedInelSM.cu" />
     <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSEL\GanachaudMokraniPhononInelasticSM.cu" />
     <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSEL\GanachaudMokraniPolaronTrapSM.cu" />
     <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSEL\JoyLuoNieminenCSD.cu" />
     <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSEL\MONSEL_MaterialScatterModel.cu" />
+    <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSEL\NISTMottRS.cu" />
     <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSEL\NormalCylindricalShape.cu" />
     <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSEL\NormalIntersectionShape.cu" />
     <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSEL\NormalMultiPlaneShape.cu" />
@@ -122,6 +127,7 @@
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\AlgorithmUser.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\AtomicShell.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\BetheElectronEnergyLoss.cuh" />
+    <ClInclude Include="gov\nist\microanalysis\EPQLibrary\BrowningEmpiricalCrossSection.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\CaveatBase.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\Composition.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\Composition_GPU.cuh" />
@@ -149,6 +155,7 @@
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\ScreenedRutherfordScatteringAngle.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\Strategy.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQTests\AtomicShellTest.cuh" />
+    <ClInclude Include="gov\nist\microanalysis\EPQTests\BetheElectronEnergyLossTest.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQTests\CylindricalShapeTest.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQTests\EdgeEnergyTest.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQTests\Math2Test.cuh" />
@@ -184,7 +191,9 @@
     <ClInclude Include="gov\nist\microanalysis\Utility\Math2.cuh" />
     <ClInclude Include="gov\nist\microanalysis\Utility\Transform3D.cuh" />
     <ClInclude Include="gov\nist\microanalysis\Utility\UncertainValue2.cuh" />
+    <ClInclude Include="gov\nist\nanoscalemetrology\JMONSELTests\LinesOnLayers.cuh" />
     <ClInclude Include="gov\nist\nanoscalemetrology\JMONSELutils\NULagrangeInterpolation.cuh" />
+    <ClInclude Include="gov\nist\nanoscalemetrology\JMONSELutils\ULagrangeInterpolation.cuh" />
     <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\BarrierScatterMechanism.cuh" />
     <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\ExpQMBarrierSM.cuh" />
     <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\FittedInelSM.cuh" />
@@ -192,6 +201,7 @@
     <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\GanachaudMokraniPolaronTrapSM.cuh" />
     <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\JoyLuoNieminenCSD.cuh" />
     <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\MONSEL_MaterialScatterModel.cuh" />
+    <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\NISTMottRS.cuh" />
     <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\NormalCylindricalShape.cuh" />
     <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\NormalIntersectionShape.cuh" />
     <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\NormalMultiPlaneShape.cuh" />

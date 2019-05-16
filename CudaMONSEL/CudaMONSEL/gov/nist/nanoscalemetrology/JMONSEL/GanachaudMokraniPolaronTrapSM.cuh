@@ -1,5 +1,5 @@
-#ifndef _FITTED_INEL_SM_CUH_
-#define _FITTED_INEL_SM_CUH_
+#ifndef _GANACHAUD_MOKIRANI_POLARON_TRAP_SM_CUH_
+#define _GANACHAUD_MOKIRANI_POLARON_TRAP_SM_CUH_
 
 #include "gov\nist\microanalysis\NISTMonte\Declarations.cuh"
 #include "gov\nist\nanoscalemetrology\JMONSEL\ScatterMechanism.cuh"

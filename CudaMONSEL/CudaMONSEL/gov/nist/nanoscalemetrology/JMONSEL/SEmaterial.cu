@@ -7,40 +7,28 @@ static const long serialVersionUID = 0x42;
 
 namespace SEmaterial
 {
-   SEmaterial::SEmaterial() : Material(0)
+   // Material properties appropriate to vacuum
+   SEmaterial::SEmaterial() : Material(0), workfunction(0.), energyCBbottom(0.), eplasmon(0)
    {
-      // Material properties appropriate to vacuum
-      workfunction = 0.;
-      energyCBbottom = 0.;
-      eplasmon = 0.; // should correspond to infinite mean free path
    }
 
-   SEmaterial::SEmaterial(const SEmaterial& other) : Material(other)
+   SEmaterial::SEmaterial(const SEmaterial& other) : Material(other),
+      workfunction(other.workfunction),
+      energyCBbottom(other.energyCBbottom),
+      eplasmon(other.eplasmon)
    {
-      workfunction = other.workfunction;
-      energyCBbottom = other.energyCBbottom;
-      eplasmon = other.eplasmon;
    }
 
-   SEmaterial::SEmaterial(const Composition& comp, double density) : Material(comp, density)
+   SEmaterial::SEmaterial(const Composition& comp, double density) : Material(comp, density), workfunction(0.), energyCBbottom(0.), eplasmon(0)
    {
-      workfunction = 0.;
-      energyCBbottom = 0.;
-      eplasmon = 0.; // should correspond to infinite mean free path
    }
 
-   SEmaterial::SEmaterial(const Element::Element* elms[], int elemLen, double weightFracs[], int wfLen, double density, char* name) : Material(elms, elemLen, weightFracs, wfLen, density, name)
+   SEmaterial::SEmaterial(const Element::Element* elms[], int elemLen, const double weightFracs[], int wfLen, double density, char* name) : Material(elms, elemLen, weightFracs, wfLen, density, name), workfunction(0.), energyCBbottom(0.), eplasmon(0)
    {
-      workfunction = 0.;
-      energyCBbottom = 0.;
-      eplasmon = 0.; // should correspond to infinite mean free path
    }
 
-   SEmaterial::SEmaterial(const Material& mat) : Material(mat)
+   SEmaterial::SEmaterial(const Material& mat) : Material(mat), workfunction(0.), energyCBbottom(0.), eplasmon(0)
    {
-      workfunction = 0.;
-      energyCBbottom = 0.;
-      eplasmon = 0.; // should correspond to infinite mean free path
    }
 
    SEmaterial& SEmaterial::operator=(const SEmaterial& other)
@@ -56,11 +44,7 @@ namespace SEmaterial
 
    bool SEmaterial::operator==(const SEmaterial& other)
    {
-      //if (workfunction != other.workfunction) {
-      //   return false;
-      //}
-
-      return false;
+      return this == &other;
    }
 
    void SEmaterial::addBindingEnergy(double bindingEnergy, double density)
@@ -75,13 +59,6 @@ namespace SEmaterial
          return;
       }
       this->bindingEnergy.push_back(bindingEnergy);
-      /*
-      * Use default kinetic energy for this state. The default for the
-      * conduction band is to use the difference between the energy and the
-      * conduction band bottom. For other bands we use kinetic energy = binding
-      * energy, a choice based upon the virial theorem. -- Or should I use
-      * binding energy + CBbottom?
-      */
       if (-bindingEnergy > energyCBbottom) {
          this->kineticEnergy.push_back(-bindingEnergy - energyCBbottom);
       }
@@ -319,15 +296,18 @@ namespace SEmaterial
       this->coreEnergy.clear();
    }
 
-   void SEmaterial::setCoreEnergy(const Setd& coreEnergy)
+   void SEmaterial::setCoreEnergy(const double coreEnergy[], int len)
    {
       setCoreEnergy();
-      for (double cE : coreEnergy) {
-         if (cE < 0.0) {
-            printf("Core energies must be positive.");
+      for (int i = 0; i < len; ++i) {
+         if (coreEnergy[i] < 0.0) {
+            printf("Core energies must be positive %.10e\n", coreEnergy[i]);
          }
-         this->coreEnergy.insert(cE);
+         this->coreEnergy.insert(coreEnergy[i]);
       }
+
+      //this->coreEnergy.insert(coreEnergy, coreEnergy + len);
+      //if (*(this->coreEnergy.begin()) < 0) printf("Core energies must be positive.");
 
       version = (version == _UI32_MAX) ? 0L : version + 1L;
    }

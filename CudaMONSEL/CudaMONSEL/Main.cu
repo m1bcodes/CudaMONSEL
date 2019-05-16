@@ -24,6 +24,7 @@
 #include "gov\nist\microanalysis\EPQTests\Math2Test.cuh"
 #include "gov\nist\microanalysis\EPQTests\CylindricalShapeTest.cuh"
 #include "gov\nist\microanalysis\EPQTests\SumShapeTest.cuh"
+#include "gov\nist\microanalysis\EPQTests\BetheElectronEnergyLossTest.cuh"
 
 #include "ImageUtil.h"
 
@@ -87,6 +88,8 @@ int main()
 
    SumShapeTest::testGetFirstIntersection();
    SumShapeTest::testAll();
+
+   BetheElectronEnergyLossTest::testOne();
 
    return 0;
 }

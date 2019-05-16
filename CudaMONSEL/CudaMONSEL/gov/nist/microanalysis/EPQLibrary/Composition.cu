@@ -315,7 +315,7 @@ namespace Composition
       renormalize();
    }
 
-   void Composition::defineByMoleFraction(const Element::Element* elms[], int elmsLen, double moleFracs[], int moleFracsLen)
+   void Composition::defineByMoleFraction(const Element::Element* elms[], int elmsLen, const double moleFracs[], int moleFracsLen)
    {
       clear();
       if (elmsLen != moleFracsLen) {
@@ -325,13 +325,15 @@ namespace Composition
       for (int k = 0; k < moleFracsLen; ++k) {
          mfSum += moleFracs[k];
       }
-      for (int k = 0; k < moleFracsLen; ++k) {
-         moleFracs[k] /= mfSum;
-      }
       for (int i = 0; i < moleFracsLen; ++i) {
+         double tmp = moleFracs[i] / mfSum;
          auto elm = elms[i];
-         mConstituentsAtomic.insert(std::make_pair(elm, UncertainValue2::UncertainValue2(moleFracs[i])));
+         mConstituentsAtomic.insert(std::make_pair(elm, UncertainValue2::UncertainValue2(tmp)));
       }
+      //for (int i = 0; i < moleFracsLen; ++i) {
+      //   auto elm = elms[i];
+      //   mConstituentsAtomic.insert(std::make_pair(elm, UncertainValue2::UncertainValue2(moleFracs[i])));
+      //}
       recomputeWeightFractions();
       renormalize();
    }
@@ -407,7 +409,7 @@ namespace Composition
       return elms;
    }
 
-   void Composition::defineByMaterialFraction(const Composition* compositions[], int compLen, double matFracs[], int matFracsLen)
+   void Composition::defineByMaterialFraction(const Composition* compositions[], int compLen, const double matFracs[], int matFracsLen)
    {
       if (compLen != matFracsLen) {
          printf("Composition::defineByMaterialFraction: lengths are different (%d, %d)", compLen , matFracsLen);

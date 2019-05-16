@@ -100,9 +100,9 @@ namespace Composition
       //   renormalize();
       //}
 
-      void defineByMoleFraction(const Element::Element* elms[], int elmsLen, double moleFracs[], int moleFracsLen);
+      void defineByMoleFraction(const Element::Element* elms[], int elmsLen, const double moleFracs[], int moleFracsLen);
       void setOptimalRepresentation(const Representation opt);
-      void defineByMaterialFraction(const Composition* compositions[], int compLen, double matFracs[], int matFracsLen);
+      void defineByMaterialFraction(const Composition* compositions[], int compLen, const double matFracs[], int matFracsLen);
       void removeElement(const Element::Element&);
       bool containsElement(const Element::Element&) const;
       bool containsAll(const Element::UnorderedSetT& elms) const;

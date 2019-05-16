@@ -29,6 +29,9 @@ namespace NISTMottScatteringAngle
       double totalCrossSection(double energy) const override;
       double randomScatteringAngle(double energy) const override;
 
+      const VectorXd& getSpwem() const;
+      const MatrixXd& getX1() const;
+
    private:
       const ElementT& mElement;
       VectorXd mSpwem;

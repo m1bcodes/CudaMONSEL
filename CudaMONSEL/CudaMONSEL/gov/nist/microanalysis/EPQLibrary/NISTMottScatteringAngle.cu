@@ -60,7 +60,7 @@ namespace NISTMottScatteringAngle
          }
          t.close();
       }
-      catch (std::exception ex) {
+      catch (std::exception& ex) {
          printf("Unable to construct NISTMottScatteringAngle: %s\n", name.c_str());
       }
    }
@@ -131,6 +131,16 @@ namespace NISTMottScatteringAngle
       else {
          return mRutherford.randomScatteringAngle(energy);
       }
+   }
+
+   const VectorXd& NISTMottScatteringAngle::getSpwem() const
+   {
+      return mSpwem;
+   }
+
+   const MatrixXd& NISTMottScatteringAngle::getX1() const
+   {
+      return mX1;
    }
 
    //const NISTMottScatteringAngle NISTMSA1(Element::H);
