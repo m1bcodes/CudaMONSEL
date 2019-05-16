@@ -48,14 +48,14 @@ namespace CzyzewskiMottScatteringAngle
 
    }
 
-   CzyzewskiMottScatteringAngle::CzyzewskiMottScatteringAngle(const ElementT& el) : RandomizedScatterT("Cyzewski", REFERENCE), mElement(el), mRutherford(*ScreenedRutherfordScatteringAngle::mScatter[el.getAtomicNumber()])
+   CzyzewskiMottScatteringAngle::CzyzewskiMottScatteringAngle(const ElementT& el) : RandomizedScatterT("Cyzewski", REFERENCE), mElement(el), mRutherford(ScreenedRutherfordScatteringAngle::getSRSA(el.getAtomicNumber()))
    {
       init(el.getAtomicNumber());
    }
 
-   CzyzewskiMottScatteringAngle::CzyzewskiMottScatteringAngle(int atomicNumber) : RandomizedScatterT("Cyzewski", REFERENCE), mElement(Element::byAtomicNumber(atomicNumber)), mRutherford(*ScreenedRutherfordScatteringAngle::mScatter[atomicNumber-1])
+   CzyzewskiMottScatteringAngle::CzyzewskiMottScatteringAngle(int an) : RandomizedScatterT("Cyzewski", REFERENCE), mElement(Element::byAtomicNumber(an)), mRutherford(ScreenedRutherfordScatteringAngle::getSRSA(an))
    {
-      init(atomicNumber);
+      init(an);
    }
 
    CzyzewskiMottScatteringAngle::CzyzewskiMottScatteringAngle(const CzyzewskiMottScatteringAngle& other) : RandomizedScatterT("Cyzewski", REFERENCE), mElement(other.mElement), mRutherford(other.mRutherford), mMeanFreePath(other.mMeanFreePath), mTotalCrossSection(other.mTotalCrossSection), mCummulativeDF(other.mCummulativeDF)
@@ -339,7 +339,108 @@ namespace CzyzewskiMottScatteringAngle
    const CzyzewskiMottScatteringAngle CMSA93(93);
    const CzyzewskiMottScatteringAngle CMSA94(94);
 
-   CzyzewskiMottScatteringAngle const * mScatter[113] = { &CMSA1, &CMSA2, &CMSA3, &CMSA4, &CMSA5, &CMSA6, &CMSA7, &CMSA8, &CMSA9, &CMSA10, &CMSA11, &CMSA12, &CMSA13, &CMSA14, &CMSA15, &CMSA16, &CMSA17, &CMSA18, &CMSA19, &CMSA20, &CMSA21, &CMSA22, &CMSA23, &CMSA24, &CMSA25, &CMSA26, &CMSA27, &CMSA28, &CMSA29, &CMSA30, &CMSA31, &CMSA32, &CMSA33, &CMSA34, &CMSA35, &CMSA36, &CMSA37, &CMSA38, &CMSA39, &CMSA40, &CMSA41, &CMSA42, &CMSA43, &CMSA44, &CMSA45, &CMSA46, &CMSA47, &CMSA48, &CMSA49, &CMSA50, &CMSA51, &CMSA52, &CMSA53, &CMSA54, &CMSA55, &CMSA56, &CMSA57, &CMSA58, &CMSA59, &CMSA60, &CMSA61, &CMSA62, &CMSA63, &CMSA64, &CMSA65, &CMSA66, &CMSA67, &CMSA68, &CMSA69, &CMSA70, &CMSA71, &CMSA72, &CMSA73, &CMSA74, &CMSA75, &CMSA76, &CMSA77, &CMSA78, &CMSA79, &CMSA80, &CMSA81, &CMSA82, &CMSA83, &CMSA84, &CMSA85, &CMSA86, &CMSA87, &CMSA88, &CMSA89, &CMSA90, &CMSA91, &CMSA92, &CMSA93, &CMSA94 };
+   CzyzewskiMottScatteringAngle const * mScatter[113] = {
+      nullptr,
+      &CMSA1,
+      &CMSA2,
+      &CMSA3,
+      &CMSA4,
+      &CMSA5,
+      &CMSA6,
+      &CMSA7,
+      &CMSA8,
+      &CMSA9,
+      &CMSA10,
+      &CMSA11,
+      &CMSA12,
+      &CMSA13,
+      &CMSA14,
+      &CMSA15,
+      &CMSA16,
+      &CMSA17,
+      &CMSA18,
+      &CMSA19,
+      &CMSA20,
+      &CMSA21,
+      &CMSA22,
+      &CMSA23,
+      &CMSA24,
+      &CMSA25,
+      &CMSA26,
+      &CMSA27,
+      &CMSA28,
+      &CMSA29,
+      &CMSA30,
+      &CMSA31,
+      &CMSA32,
+      &CMSA33,
+      &CMSA34,
+      &CMSA35,
+      &CMSA36,
+      &CMSA37,
+      &CMSA38,
+      &CMSA39,
+      &CMSA40,
+      &CMSA41,
+      &CMSA42,
+      &CMSA43,
+      &CMSA44,
+      &CMSA45,
+      &CMSA46,
+      &CMSA47,
+      &CMSA48,
+      &CMSA49,
+      &CMSA50,
+      &CMSA51,
+      &CMSA52,
+      &CMSA53,
+      &CMSA54,
+      &CMSA55,
+      &CMSA56,
+      &CMSA57,
+      &CMSA58,
+      &CMSA59,
+      &CMSA60,
+      &CMSA61,
+      &CMSA62,
+      &CMSA63,
+      &CMSA64,
+      &CMSA65,
+      &CMSA66,
+      &CMSA67,
+      &CMSA68,
+      &CMSA69,
+      &CMSA70,
+      &CMSA71,
+      &CMSA72,
+      &CMSA73,
+      &CMSA74,
+      &CMSA75,
+      &CMSA76,
+      &CMSA77,
+      &CMSA78,
+      &CMSA79,
+      &CMSA80,
+      &CMSA81,
+      &CMSA82,
+      &CMSA83,
+      &CMSA84,
+      &CMSA85,
+      &CMSA86,
+      &CMSA87,
+      &CMSA88,
+      &CMSA89,
+      &CMSA90,
+      &CMSA91,
+      &CMSA92,
+      &CMSA93,
+      &CMSA94
+   };
+
+   const CzyzewskiMottScatteringAngle& getCMSA(int an)
+   {
+      return *mScatter[an];
+   }
 
    CzyzewskiMottRandomizedScatterFactory::CzyzewskiMottRandomizedScatterFactory() : RandomizedScatterFactoryT("Czyzewski Mott cross-section", REFERENCE)
    {
@@ -347,7 +448,7 @@ namespace CzyzewskiMottScatteringAngle
 
    const RandomizedScatterT& CzyzewskiMottRandomizedScatterFactory::get(const Element::Element& elm) const
    {
-      return *mScatter[elm.getAtomicNumber()];
+      return getCMSA(elm.getAtomicNumber());
    }
 
    void CzyzewskiMottRandomizedScatterFactory::initializeDefaultStrategy()

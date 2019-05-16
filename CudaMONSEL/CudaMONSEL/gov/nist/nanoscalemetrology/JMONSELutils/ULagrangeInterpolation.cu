@@ -47,6 +47,11 @@ namespace ULagrangeInterpolation
       return uNeville(f, index0, order, reducedx - index0);
    }
 
+   VectorXd d1(const VectorXd& f, double x0, double xinc, int order, double x)
+   {
+      return d1(f.data(), f.size(), x0, xinc, order, x);
+   }
+
    VectorXd d2(double const * const * const f, int flen0, int flen1, const double x0[], int x0len, const double xinc[], int xinclen, int order, const double x[], int xlen)
    {
       if ((x0len < 2) || (xinclen < 2) || (xlen < 2))

@@ -37,8 +37,6 @@ namespace CzyzewskiMottScatteringAngle
       MatrixXd mCummulativeDF;
       const ScreenedRutherfordScatteringAngleT& mRutherford;
    };
-
-   extern CzyzewskiMottScatteringAngle const * mScatter[113];
    
    class CzyzewskiMottRandomizedScatterFactory : public RandomizedScatterFactoryT
    {
@@ -51,6 +49,8 @@ namespace CzyzewskiMottScatteringAngle
    };
 
    extern const RandomizedScatterFactoryT& Factory;
+
+   extern const CzyzewskiMottScatteringAngle& getCMSA(int an);
 }
 
 #endif

@@ -43,10 +43,10 @@ namespace NISTMottRS
          std::string s = "Unable to format ";
          s += tmp;
          s += " as a number!";
-         throw (s);
+         throw s;
       }
 
-      return (d);
+      return d;
    }
 
    //void NISTMottRS::loadData(int an)
@@ -78,14 +78,13 @@ namespace NISTMottRS
       mReferenceWebsite),
       mElement(elm),
       method(method),
-      mSpwem(NISTMottScatteringAngle::mScatter[elm.getAtomicNumber()]->getSpwem()),
-      mX1(NISTMottScatteringAngle::mScatter[elm.getAtomicNumber()]->getX1()),
-      mRutherford(*ScreenedRutherfordScatteringAngle::mScatter[elm.getAtomicNumber()]),
-      mBrowning(*BrowningEmpiricalCrossSection::mScatter[elm.getAtomicNumber()]),
+      mSpwem(NISTMottScatteringAngle::getNISTMSA(elm.getAtomicNumber()).getSpwem()),
+      mX1(NISTMottScatteringAngle::getNISTMSA(elm.getAtomicNumber()).getX1()),
+      mRutherford(ScreenedRutherfordScatteringAngle::getSRSA(elm.getAtomicNumber())),
+      mBrowning(BrowningEmpiricalCrossSection::getBECS(elm.getAtomicNumber())),
       extrapolateBelowEnergy(method == 1 ? ToSI::eV(50.) : ToSI::eV(100.)),
       MottXSatMinEnergy(totalCrossSection(extrapolateBelowEnergy)),
       sfBrowning(MottXSatMinEnergy / mBrowning.totalCrossSection(extrapolateBelowEnergy))
-
    {
       //loadData(elm.getAtomicNumber());
       if (!(method >= 1 && method <= 3))
@@ -112,8 +111,9 @@ namespace NISTMottRS
             return sfBrowning * mBrowning.totalCrossSection(energy);
          }
       }
-      else if (energy < MAX_NISTMOTT)
-         return scale * ULagrangeInterpolation::d1(mSpwem.data(), SPWEM_LEN, DL50, PARAM, sigmaINTERPOLATIONORDER, ::log(energy))[0];
+      else if (energy < MAX_NISTMOTT) {
+         return scale * ULagrangeInterpolation::d1(mSpwem, DL50, PARAM, sigmaINTERPOLATIONORDER, ::log(energy))[0];
+      }
       else {
          return mRutherford.totalCrossSection(energy);
       }
@@ -133,8 +133,7 @@ namespace NISTMottRS
 
       }
       else if (energy < MAX_NISTMOTT) {
-         const double x0[] = 
-         {
+         const double x0[] =  {
             DL50,
                0.
          };
@@ -147,8 +146,8 @@ namespace NISTMottRS
             Math2::random()
          };
          const double q = ULagrangeInterpolation::d2(mX1, x0, 2, xinc, 2, qINTERPOLATIONORDER, x, 2)[0];
-                  const double com = 1.0 - (2.0 * q * q);
-                  return com > -1.0 ? (com < 1.0 ? ::acos(com) : 0.0) : Math2::PI;
+         const double com = 1.0 - (2.0 * q * q);
+         return com > -1.0 ? (com < 1.0 ? ::acos(com) : 0.0) : Math2::PI;
       }
       else {
          return mRutherford.randomScatteringAngle(energy);
@@ -268,7 +267,8 @@ namespace NISTMottRS
    const NISTMottRS NMRS95_1(Element::Am, 1);
    const NISTMottRS NMRS96_1(Element::Cm, 1);
 
-   const RandomizedScatterT* mScatter1[113] = {
+   const NISTMottRS* mScatter1[113] = {
+      nullptr,
       &NMRS1_1,
       &NMRS2_1,
       &NMRS3_1,
@@ -464,7 +464,8 @@ namespace NISTMottRS
    const NISTMottRS NMRS95_2(Element::Am, 2);
    const NISTMottRS NMRS96_2(Element::Cm, 2);
 
-   const RandomizedScatterT* mScatter2[113] = {
+   const NISTMottRS* mScatter2[113] = {
+      nullptr,
       &NMRS1_2,
       &NMRS2_2,
       &NMRS3_2,
@@ -660,7 +661,8 @@ namespace NISTMottRS
    const NISTMottRS NMRS95_3(Element::Am, 3);
    const NISTMottRS NMRS96_3(Element::Cm, 3);
 
-   const RandomizedScatterT* mScatter3[113] = {
+   const NISTMottRS* mScatter3[113] = {
+      nullptr,
       &NMRS1_3,
       &NMRS2_3,
       &NMRS3_3,
@@ -759,11 +761,22 @@ namespace NISTMottRS
       &NMRS96_3
    };
 
-   NISTMottRSFactory::NISTMottRSFactory(int method) : RandomizedScatterFactoryT("NIST Mott Inelastic Cross-Section", mReferenceWebsite), method(method >= 1 && method <= 3 ? method : 1)
+   const NISTMottRS& getNMRS1(int an)
    {
+      return *mScatter1[an];
    }
 
-   NISTMottRSFactory::NISTMottRSFactory() : RandomizedScatterFactoryT("NIST Mott Inelastic Cross-Section", mReferenceWebsite), method(1)
+   const NISTMottRS& getNMRS2(int an)
+   {
+      return *mScatter2[an];
+   }
+
+   const NISTMottRS& getNMRS3(int an)
+   {
+      return *mScatter3[an];
+   }
+
+   NISTMottRSFactory::NISTMottRSFactory(int method) : RandomizedScatterFactoryT("NIST Mott Inelastic Cross-Section", mReferenceWebsite), method(method >= 1 && method <= 3 ? method : 1)
    {
    }
 
@@ -771,13 +784,13 @@ namespace NISTMottRS
    {
       switch (method) {
       case 1:
-         return *mScatter1[elm.getAtomicNumber()];
+         return getNMRS1(elm.getAtomicNumber());
       case 2:
-         return *mScatter2[elm.getAtomicNumber()];
+         return getNMRS2(elm.getAtomicNumber());
       case 3:
-         return *mScatter3[elm.getAtomicNumber()];
+         return getNMRS3(elm.getAtomicNumber());
       default:
-         return *mScatter1[elm.getAtomicNumber()];
+         return getNMRS1(elm.getAtomicNumber());
       }
    }
 

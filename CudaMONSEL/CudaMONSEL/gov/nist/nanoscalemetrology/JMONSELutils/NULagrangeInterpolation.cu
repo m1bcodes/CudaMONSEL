@@ -166,7 +166,7 @@ namespace NULagrangeInterpolation
    *         estimate is based only upon the interpolation in the x1 direction,
    *         however.
    */
-   VectorXd d2(const MatrixXd f, const MatrixXd xsamp, int order, const double x[], int xlen)
+   VectorXd d2(const MatrixXd& f, const MatrixXd& xsamp, int order, const double x[], int xlen)
    {
       /*
       * N-dimensional interpolation is performed by calling the N-1 dimensional
@@ -212,7 +212,7 @@ namespace NULagrangeInterpolation
    *         estimate is based only upon the interpolation in the x1 direction,
    *         however.
    */
-   VectorXd d3(const Matrix3DXd f, const MatrixXd xsamp, int order, const double x[], int xlen)
+   VectorXd d3(const Matrix3DXd& f, const MatrixXd& xsamp, int order, const double x[], int xlen)
    {
       /*
       * N-dimensional interpolation is performed by calling the N-1 dimensional
@@ -260,7 +260,7 @@ namespace NULagrangeInterpolation
    *         estimate is based only upon the interpolation in the x1 direction,
    *         however.
    */
-   VectorXd d4(const Matrix4DXd f, const MatrixXd xsamp, int order, const double x[], int xlen)
+   VectorXd d4(const Matrix4DXd& f, const MatrixXd& xsamp, int order, const double x[], int xlen)
    {
       /*
       * N-dimensional interpolation is performed by calling the N-1 dimensional

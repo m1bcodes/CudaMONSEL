@@ -107,7 +107,7 @@ namespace RegionBase
                return res;
             base = base->mParent;
          }
-         return NULL; // new point is nowhere in the chamber
+         return NULL; // newly created point is nowhere in the chamber
       }
       return res;
    }

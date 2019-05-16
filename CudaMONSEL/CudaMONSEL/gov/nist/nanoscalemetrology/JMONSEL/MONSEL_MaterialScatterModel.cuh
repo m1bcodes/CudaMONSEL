@@ -30,8 +30,7 @@ namespace MONSEL_MaterialScatterModel
    private:
       void setCache(const ElectronT* pe);
 
-      const SEmaterialT* mat; // The material for which this is the scatter
-      // model
+      const SEmaterialT* mat; // The material for which this is the scatter model
 
       double minEforTracking;
 

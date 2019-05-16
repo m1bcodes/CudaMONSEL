@@ -24,7 +24,7 @@ namespace BrowningEmpiricalCrossSection
       const double mZp3;
    };
 
-   extern BrowningEmpiricalCrossSection const * mScatter[113];
+   extern const BrowningEmpiricalCrossSection& getBECS(int an);
 }
 
 #endif

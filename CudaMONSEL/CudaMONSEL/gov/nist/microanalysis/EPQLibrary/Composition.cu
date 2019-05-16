@@ -68,8 +68,8 @@ namespace Composition
 
    Composition::Composition(const Element::Element* elms[], int elmsLen, const double massFracs[], int massFracsLen, char const* name)
    {
+      double* wf = new double[elmsLen];
       if (elmsLen == massFracsLen - 1) {
-         double* wf = new double[elmsLen];
          double sum = 0.0;
          for (int i = 0; i < massFracsLen; ++i) {
             sum += massFracs[i];
@@ -79,8 +79,6 @@ namespace Composition
             printf("Composition::Composition: sum is greater than 1 (%lf)", sum);
          }
          wf[elmsLen - 1] = 1.0 - sum;
-         massFracs = wf;
-         delete[] wf;
          elmsLen = massFracsLen;
       }
       if (elmsLen != massFracsLen) {
@@ -92,6 +90,7 @@ namespace Composition
          }
          mConstituents.insert(std::make_pair(elms[i], UncertainValue2::UncertainValue2(massFracs[i])));
       }
+      delete[] wf;
       mName = name;
       recomputeStoiciometry();
       renormalize();

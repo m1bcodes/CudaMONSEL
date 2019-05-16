@@ -16,18 +16,18 @@ namespace Sphere
       double getRadius() const;
       double getFirstIntersection(const double pos0[], const double pos1[]) override;
 
-      PositionVecT getInitialPoint() const;
-      PositionVecT getPointAt(double phi, double theta, double frac) const;
+      VectorXd getInitialPoint() const;
+      VectorXd getPointAt(double phi, double theta, double frac) const;
 
       void rotate(const double pivot[], double phi, double theta, double psi) override;
       void translate(const double distance[]) override;
 
-      PositionVecT getCenter() const;
+      VectorXd getCenter() const;
       StringT toString() const override;
 
    private:
       const double mRadius; // meters
-      PositionVecT mCenter; // = new double[3]; x,y & z in meters
+      VectorXd mCenter; // x,y & z in meters
    };
 }
 

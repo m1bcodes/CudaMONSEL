@@ -10,6 +10,7 @@ namespace ULagrangeInterpolation
    extern VectorXd d3(double const * const * const * const f, int flen0, int flen1, int flen2, const double x0[], int x0len, const double xinc[], int xinclen, int order, const double x[], int xlen);
    extern VectorXd d4(double const * const * const * const * const f, int flen0, int flen1, int flen2, int flen3, double x0[], int x0len, double xinc[], int xinclen, int order, double x[], int xlen);
 
+   extern VectorXd d1(const VectorXd& f, double x0, double xinc, int order, double x);
    extern VectorXd d2(const MatrixXd& f, const double x0[], int x0len, const double xinc[], int xinclen, int order, const double x[], int xlen);
 }
 

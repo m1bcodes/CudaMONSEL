@@ -4,7 +4,7 @@
 namespace Algorithm
 {
    int binarySearch(const double a[], int l, int r, double t);
-   void quicksort(int a[], int l, int r);
+   void quicksort(double a[], int l, int r);
 }
 
 #endif

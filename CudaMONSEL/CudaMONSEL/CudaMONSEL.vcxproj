@@ -85,6 +85,7 @@
     <CudaCompile Include="gov\nist\microanalysis\NISTMonte\Sphere.cu" />
     <CudaCompile Include="Amphibian\Algorithm.cu" />
     <CudaCompile Include="gov\nist\microanalysis\NISTMonte\SumShape.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\Utility\Histogram.cu" />
     <CudaCompile Include="gov\nist\microanalysis\Utility\Math2.cu" />
     <CudaCompile Include="gov\nist\microanalysis\Utility\Transform3D.cu" />
     <CudaCompile Include="gov\nist\microanalysis\Utility\UncertainValue2.cu" />
@@ -188,6 +189,7 @@
     <ClInclude Include="Amphibian\Algorithm.cuh" />
     <ClInclude Include="gov\nist\microanalysis\NISTMonte\SumShape.cuh" />
     <ClInclude Include="gov\nist\microanalysis\Utility\CSVReader.h" />
+    <ClInclude Include="gov\nist\microanalysis\Utility\Histogram.cuh" />
     <ClInclude Include="gov\nist\microanalysis\Utility\Math2.cuh" />
     <ClInclude Include="gov\nist\microanalysis\Utility\Transform3D.cuh" />
     <ClInclude Include="gov\nist\microanalysis\Utility\UncertainValue2.cuh" />

@@ -101,7 +101,7 @@ namespace Transform3D
    */
    VectorXd translate(const double point[], const double distance[], bool negate)
    {
-      double res[] = { 0, 0, 0 };
+      VectorXd res(3);
       if (negate) {
          res[0] = point[0] - distance[0];
          res[1] = point[1] - distance[1];
@@ -112,7 +112,7 @@ namespace Transform3D
          res[1] = point[1] + distance[1];
          res[2] = point[2] + distance[2];
       }
-      return VectorXd(res, res + 3);
+      return res;
    }
 
    /**

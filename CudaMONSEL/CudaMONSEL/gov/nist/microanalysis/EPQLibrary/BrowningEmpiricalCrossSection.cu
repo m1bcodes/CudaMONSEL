@@ -142,6 +142,7 @@ namespace BrowningEmpiricalCrossSection
    const BrowningEmpiricalCrossSection BECS96(96);
 
    BrowningEmpiricalCrossSection const * mScatter[113] = {
+      nullptr,
       &BECS1,
       &BECS2,
       &BECS3,
@@ -239,4 +240,9 @@ namespace BrowningEmpiricalCrossSection
       &BECS95,
       &BECS96
    };
+
+   const BrowningEmpiricalCrossSection& getBECS(int an)
+   {
+      return *mScatter[an];
+   }
 }

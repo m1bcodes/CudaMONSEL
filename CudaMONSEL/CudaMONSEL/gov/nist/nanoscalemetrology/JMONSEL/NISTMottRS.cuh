@@ -40,7 +40,6 @@ namespace NISTMottRS
    {
    public:
       NISTMottRSFactory(int method);
-      NISTMottRSFactory();
 
       const RandomizedScatterT& get(const ElementT& elm) const override;
       void initializeDefaultStrategy() override;
@@ -55,6 +54,10 @@ namespace NISTMottRS
    extern const RandomizedScatterFactoryT& Factory;
    extern const RandomizedScatterFactoryT& Factory100;
    extern const RandomizedScatterFactoryT& Factory100Lin;
+
+   extern const NISTMottRS& getNMRS1(int an);
+   extern const NISTMottRS& getNMRS2(int an);
+   extern const NISTMottRS& getNMRS3(int an);
 }
 
 #endif
