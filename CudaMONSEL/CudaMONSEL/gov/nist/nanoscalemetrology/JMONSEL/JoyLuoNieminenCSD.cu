@@ -63,6 +63,7 @@ namespace JoyLuoNieminenCSD
          * resulting continuous energy loss in J/m.
          */
          coef[i] = 2.01507E-28 * mat.getDensity() * mat.weightFraction(*el, true) * el->getAtomicNumber() / el->getAtomicWeight();
+         ++i;
       }
       /*
       * In the original MONSEL, the CSD routine knows the minEforTracking and
@@ -142,7 +143,7 @@ namespace JoyLuoNieminenCSD
    *         of barrier height, possibly ascertained from the material
    *         property.
    */
-   StringT JoyLuoNieminenCSD::toString()
+   StringT JoyLuoNieminenCSD::toString() const
    {
       return "JoyLuoNieminenCSD(" + mat.toString() + "," + std::to_string(bh) + "," + std::to_string(breakE) + ")";
    }

@@ -28,6 +28,7 @@ namespace MonteCarloSS
    class MonteCarloSS final
    {
       typedef std::stack<ElectronT*> ElectronStack;
+      typedef std::vector<ActionListenerT*> ActionListeners;
 
    public:
       MonteCarloSS(ElectronGunT const * gun, RegionT * mChamber, ElectronT * electron);
@@ -39,6 +40,9 @@ namespace MonteCarloSS
       void trackSecondaryElectron(ElectronT* newElectron);
       bool allElectronsComplete();
       void runTrajectory();
+      int getElectronGeneration() const;
+      void addActionListener(ActionListenerT& sel);
+      void removeActionListener(ActionListenerT& sel);
       void runMultipleTrajectories(int n);
       double getBeamEnergy() const;
       void setElectronGun(ElectronGunT& gun);
@@ -51,17 +55,17 @@ namespace MonteCarloSS
       const RegionBaseT* findRegionContaining(double point[]) const;
 
    private:
+      void fireEvent(const int);
+      
       RegionT * mChamber;
       ElectronGunT const * mGun;
       ElectronT * mElectron;
       ElectronStack mElectronStack;
 
-      //virtual int GetId() = 0;
+      ActionListeners mEventListeners;
    };
 
    double dist(const double pos0[], const double pos1[]);
-
-   const NullMaterialScatterModelT NULL_MSM;
 }
 
 #endif

@@ -109,6 +109,7 @@
     <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSEL\SelectableElasticSM.cu" />
     <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSEL\SEmaterial.cu" />
     <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSEL\TabulatedInelasticSM.cu" />
+    <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSEL\ZeroCSD.cu" />
     <CudaCompile Include="Main.cu" />
     <CudaCompile Include="SimRunner.cu" />
   </ItemGroup>
@@ -190,6 +191,7 @@
     <ClInclude Include="gov\nist\microanalysis\NISTMonte\Sphere.cuh" />
     <ClInclude Include="Amphibian\Algorithm.cuh" />
     <ClInclude Include="gov\nist\microanalysis\NISTMonte\SumShape.cuh" />
+    <ClInclude Include="gov\nist\microanalysis\Utility\ActionListener.cuh" />
     <ClInclude Include="gov\nist\microanalysis\Utility\CSVReader.h" />
     <ClInclude Include="gov\nist\microanalysis\Utility\Histogram.cuh" />
     <ClInclude Include="gov\nist\microanalysis\Utility\Math2.cuh" />
@@ -218,6 +220,7 @@
     <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\SEmaterial.cuh" />
     <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\SlowingDownAlg.cuh" />
     <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\TabulatedInelasticSM.cuh" />
+    <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\ZeroCSD.cuh" />
     <ClInclude Include="ImageUtil.h" />
     <ClInclude Include="TimeUtil.h" />
   </ItemGroup>

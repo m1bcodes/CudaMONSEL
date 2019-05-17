@@ -31,6 +31,8 @@
 #include "gov\nist\microanalysis\EPQTests\SumShapeTest.cuh"
 #include "gov\nist\microanalysis\EPQTests\BetheElectronEnergyLossTest.cuh"
 
+#include "gov\nist\nanoscalemetrology\JMONSELTests\LinesOnLayers.cuh"
+
 #include "ImageUtil.h"
 
 int main()
@@ -97,7 +99,9 @@ int main()
    BetheElectronEnergyLossTest::testOne();
 
    SumShapeTest::testGetFirstIntersection();
-   SumShapeTest::testAll();
+   //SumShapeTest::testAll();
+
+   LinesOnLayers::run();
 
    return 0;
 }

@@ -3,6 +3,7 @@
 
 #include "gov\nist\microanalysis\NISTMonte\Declarations.cuh"
 #include "gov\nist\microanalysis\NISTMonte\IMaterialScatterModel.cuh"
+#include "gov\nist\nanoscalemetrology\JMONSEL\ZeroCSD.cuh"
 
 namespace MONSEL_MaterialScatterModel
 {

@@ -7,6 +7,7 @@
 #include "gov\nist\microanalysis\EPQLibrary\ToSI.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\Detector\ElectronProbe.cuh"
 
+#include "gov\nist\microanalysis\Utility\ActionListener.cuh"
 #include "gov\nist\microanalysis\Utility\Math2.cuh"
 
 namespace MonteCarloSS
@@ -81,13 +82,14 @@ namespace MonteCarloSS
    //   return traj;
    //}
 
-   //private void fireEvent(int event) {
-   //   if (!(mEventListeners.isEmpty() || mDisableEvents)) {
-   //      final ActionEvent ae = new ActionEvent(this, event, "MonteCarloSS event");
-   //      for (final ActionListener sel : mEventListeners)
-   //         sel.actionPerformed(ae);
-   //   }
-   //}
+   static bool mDisableEvents = false;
+   void MonteCarloSS::fireEvent(const int ae)
+   {
+      if (!(mEventListeners.empty() || mDisableEvents)) {
+         for (auto sel : mEventListeners)
+            sel->actionPerformed(ae);
+      }
+   }
 
    RegionT* MonteCarloSS::getChamber()
    {
@@ -130,9 +132,9 @@ namespace MonteCarloSS
             if (mChamber == nullptr) printf("MonteCarloSS::takeStep(): mChamber == nullptr");
             if (mElectron == nullptr) printf("MonteCarloSS::takeStep(): mElectron == nullptr");
             if (currentRegion == nullptr) printf("MonteCarloSS::takeStep(): currentRegion == nullptr");
-            //fireEvent(ScatterEvent);
+            fireEvent(ScatterEvent);
             auto secondary = msm->scatter(*mElectron);
-            //fireEvent(PostScatterEvent);
+            fireEvent(PostScatterEvent);
             mElectron->setTrajectoryComplete((mElectron->getEnergy() < msm->getMinEforTracking()) || mElectron->isTrajectoryComplete());
             if (secondary != nullptr) {
                trackSecondaryElectron(secondary);
@@ -141,21 +143,21 @@ namespace MonteCarloSS
             if (mElectron->getCurrentRegion() != currentRegion) printf("MonteCarloSS::takeStep()MonteCarloSS::takeStep(): mElectron->getCurrentRegion() != currentRegion\n");
          }
          else if (nextRegion != nullptr) {
-            //fireEvent(NonScatterEvent);
+            fireEvent(NonScatterEvent);
             auto secondary = msm->barrierScatter(mElectron, nextRegion);
             mElectron->setPosition(mElectron->candidatePoint(SMALL_DISP).data());
             if (!(mElectron->getCurrentRegion()->getShape()->contains(mElectron->getPosition().data())))
                mElectron->setCurrentRegion(mChamber->containingSubRegion(mElectron->getPosition().data()));
 
-            //if (mElectron->getCurrentRegion() != currentRegion)
-               //fireEvent(ExitMaterialEvent);
+            if (mElectron->getCurrentRegion() != currentRegion)
+               fireEvent(ExitMaterialEvent);
             if (secondary != nullptr) {
                secondary->setPosition(secondary->candidatePoint(SMALL_DISP).data());
                trackSecondaryElectron(secondary);
             }
          }
          else {
-            //fireEvent(BackscatterEvent);
+            fireEvent(BackscatterEvent);
             mElectron->setCurrentRegion(nullptr);
             mElectron->setTrajectoryComplete(true);
          }
@@ -166,10 +168,27 @@ namespace MonteCarloSS
    {
       double mMinEnergy = newElectron->getCurrentRegion()->getScatterModel()->getMinEforTracking();
       if (newElectron->getEnergy() > mMinEnergy) {
-         // fireEvent(StartSecondaryEvent);
+         fireEvent(StartSecondaryEvent);
          mElectronStack.push(mElectron);
          mElectron = newElectron;
-         //fireEvent(StartSecondaryEvent);
+         fireEvent(StartSecondaryEvent);
+      }
+   }
+
+   int MonteCarloSS::getElectronGeneration() const
+   {
+      return mElectronStack.size();
+   }
+
+   void MonteCarloSS::addActionListener(ActionListenerT& sel)
+   {
+      mEventListeners.push_back(&sel);
+   }
+
+   void MonteCarloSS::removeActionListener(ActionListenerT& sel)
+   {
+      for (auto itr = mEventListeners.begin(); itr != mEventListeners.end(); ++itr) {
+         if (*itr == &sel) mEventListeners.erase(itr);
       }
    }
 
@@ -177,8 +196,9 @@ namespace MonteCarloSS
    {
       bool tc = mElectron->isTrajectoryComplete();
       while (tc && (mElectronStack.size() > 0)) {
-         //fireEvent(EndSecondaryEvent);
+         fireEvent(EndSecondaryEvent);
          // TODO: delete mElectron;
+         delete mElectron;
          mElectron = mElectronStack.top();
          mElectronStack.pop();
 
@@ -190,7 +210,7 @@ namespace MonteCarloSS
    void MonteCarloSS::runTrajectory()
    {
       initializeTrajectory();
-      //fireEvent(TrajectoryStartEvent);
+      fireEvent(TrajectoryStartEvent);
       //int i = 0;
       while (!allElectronsComplete()) {
          //if (i == 239)
@@ -198,18 +218,18 @@ namespace MonteCarloSS
          //++i;
          takeStep();
       }
-      //fireEvent(TrajectoryEndEvent);
+      fireEvent(TrajectoryEndEvent);
    }
 
    void MonteCarloSS::runMultipleTrajectories(int n)
    {
-      //fireEvent(FirstTrajectoryEvent);
+      fireEvent(FirstTrajectoryEvent);
       for (int i = 0; i < n; ++i) {
          //if (i == 44)
             printf("%d\n", i);
          runTrajectory();
       }
-      //fireEvent(LastTrajectoryEvent);
+      fireEvent(LastTrajectoryEvent);
    }
 
    double MonteCarloSS::getBeamEnergy() const

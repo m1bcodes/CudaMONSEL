@@ -2,7 +2,7 @@
 #define _BACKSCATTER_STATS_CUH_
 
 #include "gov\nist\microanalysis\Utility\Math2.cuh"
-
+#include "gov\nist\microanalysis\Utility\ActionListener.cuh"
 
 namespace BackscatterStats
 {
@@ -31,19 +31,19 @@ namespace BackscatterStats
       const double mPhi;
    };
 
-   class BackscatterStats
+   class BackscatterStats : public ActionListenerT
    {
    public:
       BackscatterStats(const MonteCarloSST& mcss);
       BackscatterStats(const MonteCarloSST& mcss, int nEnergyBins);
       ~BackscatterStats();
 
-      void actionPerformed(const int ae);
+      void actionPerformed(const int ae) override;
 
-      const HistogramT* backscatterEnergyHistogram() const;
-      const HistogramT* forwardscatterEnergyHistogram() const;
-      const HistogramT* elevationHistogram() const;
-      const HistogramT* azimuthalHistogram() const;
+      const HistogramT& backscatterEnergyHistogram() const;
+      const HistogramT& forwardscatterEnergyHistogram() const;
+      const HistogramT& elevationHistogram() const;
+      const HistogramT& azimuthalHistogram() const;
 
       double backscatterFraction() const;
       int getEnergyBinCount() const;

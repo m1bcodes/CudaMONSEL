@@ -24,7 +24,7 @@ namespace JoyLuoNieminenCSD
       double getBreakE() const;
       void setBreakE(double breakE);
 
-      StringT toString();
+      StringT toString() const override;
 
    private:
       MaterialT& mat;

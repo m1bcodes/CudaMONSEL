@@ -340,6 +340,20 @@ namespace Histogram
 
 typedef Histogram::Histogram HistogramT;
 
+namespace ActionListener
+{
+   class ActionListener;
+}
+
+typedef ActionListener::ActionListener ActionListenerT;
+
+namespace BackscatterStats
+{
+   class BackscatterStats;
+}
+
+typedef BackscatterStats::BackscatterStats BackscatterStatsT;
+
 // nano
 
 namespace SEmaterial
@@ -404,5 +418,12 @@ namespace GanachaudMokraniPhononInelasticSM
 }
 
 typedef GanachaudMokraniPhononInelasticSM::GanachaudMokraniPhononInelasticSM GanachaudMokraniPhononInelasticSMT;
+
+namespace ZeroCSD
+{
+   class ZeroCSD;
+}
+
+typedef ZeroCSD::ZeroCSD ZeroCSDT;
 
 #endif

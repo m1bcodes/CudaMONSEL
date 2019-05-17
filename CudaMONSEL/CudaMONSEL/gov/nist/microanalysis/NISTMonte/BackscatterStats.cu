@@ -178,24 +178,24 @@ namespace BackscatterStats
       }
    }
 
-   const HistogramT* BackscatterStats::backscatterEnergyHistogram() const
+   const HistogramT& BackscatterStats::backscatterEnergyHistogram() const
    {
-      return mBackEnergyBins;
+      return *mBackEnergyBins;
    }
 
-   const HistogramT* BackscatterStats::forwardscatterEnergyHistogram() const
+   const HistogramT& BackscatterStats::forwardscatterEnergyHistogram() const
    {
-      return mFwdEnergyBins;
+      return *mFwdEnergyBins;
    }
 
-   const HistogramT* BackscatterStats::elevationHistogram() const
+   const HistogramT& BackscatterStats::elevationHistogram() const
    {
-      return mElevationBins;
+      return *mElevationBins;
    }
 
-   const HistogramT* BackscatterStats::azimuthalHistogram() const
+   const HistogramT& BackscatterStats::azimuthalHistogram() const
    {
-      return mAzimuthalBins;
+      return *mAzimuthalBins;
    }
 
    //void dump(final OutputStream os)

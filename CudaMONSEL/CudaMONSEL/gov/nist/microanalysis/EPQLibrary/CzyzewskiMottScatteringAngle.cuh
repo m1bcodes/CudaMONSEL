@@ -48,8 +48,6 @@ namespace CzyzewskiMottScatteringAngle
 
    extern const RandomizedScatterFactoryT& Factory;
 
-   extern const CzyzewskiMottScatteringAngle& getCMSA(int an);
-
    extern void init();
 }
 

@@ -56,10 +56,6 @@ namespace NISTMottRS
    extern const RandomizedScatterFactoryT& Factory100;
    extern const RandomizedScatterFactoryT& Factory100Lin;
 
-   extern const NISTMottRS& getNMRS1(int an);
-   extern const NISTMottRS& getNMRS2(int an);
-   extern const NISTMottRS& getNMRS3(int an);
-
    extern void init();
 }
 

@@ -17,7 +17,7 @@ namespace NUTableInterpolation
    */
    const NUTableInterpolation* getInstance(char const * tableFileName)
    {
-      printf("NUTableInterpolation* getInstance\n");
+      printf("NUTableInterpolation* getInstance: %s\n", tableFileName);
       const NUTableInterpolation* uniqueInstance = instanceMap[tableFileName];
       if (uniqueInstance == NULL) {
          uniqueInstance = new NUTableInterpolation(tableFileName); // TODO: fix
@@ -123,7 +123,6 @@ namespace NUTableInterpolation
          int a;
          while (myfile >> a) {
             dim = (int)a;
-            printf("%f ", a);
             if ((dim < 1) || (dim > 4))
                printf("NUTableInterpolation::ReadTable: Table dimensions must be 1<=dim<=4");
             /*
@@ -147,9 +146,7 @@ namespace NUTableInterpolation
                   * seems unique to Georg Frase's computer. After the problem is
                   * solved, I can remove it.
                   */
-                  double tmp;
-                  myfile >> tmp;
-                  x[i][j] = tmp;
+                  myfile >> x[i][j];
                }
 
                if (x[i][0] < x[i][nPoints[i] - 1]) {

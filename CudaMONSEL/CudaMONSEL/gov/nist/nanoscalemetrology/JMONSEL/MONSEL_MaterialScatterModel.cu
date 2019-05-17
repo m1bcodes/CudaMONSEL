@@ -8,7 +8,9 @@
 
 namespace MONSEL_MaterialScatterModel
 {
-   MONSEL_MaterialScatterModel::MONSEL_MaterialScatterModel(const SEmaterialT* mat, const BarrierScatterMechanismT* bsm) : mat(mat), barrierSM(bsm)
+   static ZeroCSDT sZeroCSD;
+
+   MONSEL_MaterialScatterModel::MONSEL_MaterialScatterModel(const SEmaterialT* mat, const BarrierScatterMechanismT* bsm) : mat(mat), barrierSM(bsm), csd(&sZeroCSD)
    {
       // TODO: take note of difference wrt original JMONSEL code
       //this->mat = mat.clone();
@@ -86,7 +88,6 @@ namespace MONSEL_MaterialScatterModel
       if (pe.getStepCount() > 1000000)
          pe.setTrajectoryComplete(true);
       return maxFreePath;
-
    }
 
    ElectronT* MONSEL_MaterialScatterModel::scatter(ElectronT& pe)

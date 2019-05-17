@@ -60,7 +60,7 @@ namespace NISTMottScatteringAngle
          }
          t.close();
       }
-      catch (std::exception& ex) {
+      catch (std::exception&) {
          printf("Unable to construct NISTMottScatteringAngle: %s\n", name.c_str());
       }
    }

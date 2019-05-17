@@ -4,35 +4,10 @@
 #include "gov\nist\microanalysis\Utility\Math2.cuh"
 #include "gov\nist\microanalysis\Utility\Transform3D.cuh"
 
-/**
-* <p>
-* A MonteCarloSS.Shape representing a cylindrical shape of arbitrary axis and
-* radius.
-* </p>
-* <p>
-* Copyright: Pursuant to title 17 Section 105 of the United States Code this
-* software is not subject to copyright protection and is in the public domain
-* </p>
-* <p>
-* Company: National Institute of Standards and Technology
-* </p>
-*
-* @author Nicholas W. M. Ritchie
-* @version 1.0
-*/
-
 namespace CylindricalShape
 {
    static const double EPSILON = 1.0e-40;
 
-   /**
-   * MCSS_CylindricalShape - Create a cylindrical shape from the end points
-   * specified with the specified radius.
-   *
-   * @param end0 double[]
-   * @param end1 double[]
-   * @param radius double
-   */
    CylindricalShape::CylindricalShape(const double end0[], const double end1[], double radius) : 
       mEnd0(end0, end0 + 3),
       mRadius2(radius * radius)
@@ -53,34 +28,16 @@ namespace CylindricalShape
    {
    }
 
-   /**
-   * closestPointOnAxis - Returns the parameterized coordinate of the closest
-   * point on the cylinder axis to the specified point.
-   *
-   * @param p double[]
-   * @return double
-   */
    double CylindricalShape::closestPointOnAxis(const double p[]) const
    {
       return (mDelta[0] * (p[0] - mEnd0[0]) + mDelta[1] * (p[1] - mEnd0[1]) + mDelta[2] * (p[2] - mEnd0[2])) / mLen2;
    }
 
-   /**
-   * distanceSqr - Distance (squared) from the parameterized point on the
-   * cylinder axis to the specified point.
-   *
-   * @param p double[] - The off axis point
-   * @param u double - The parameterized point
-   * @return double
-   */
    double CylindricalShape::distanceSqr(const double p[], double u) const
    {
       return Math2::sqr(p[0] - (mEnd0[0] + u * mDelta[0])) + Math2::sqr(p[1] - (mEnd0[1] + u * mDelta[1])) + Math2::sqr(p[2] - (mEnd0[2] + u * mDelta[2]));
    }
 
-   /**
-   * @see gov.nist.microanalysis.NISTMonte.MonteCarloSS.Shape#contains(double[])
-   */
    bool CylindricalShape::contains(const double pos[]) const
    {
       // project pos onto the line defined by end0 and end1.
@@ -90,21 +47,11 @@ namespace CylindricalShape
       return (u >= 0) && (u <= 1.0) && (distanceSqr(pos, u) <= mRadius2);
    }
 
-   /**
-   * getEnd0 - Get one end point of the cylinder axis.
-   *
-   * @return double[]
-   */
    VectorXd CylindricalShape::getEnd0() const
    {
       return mEnd0;
    }
 
-   /**
-   * getEnd1 - Get one the other end point of the cylinder axis.
-   *
-   * @return double[]
-   */
    VectorXd CylindricalShape::getEnd1() const
    {
       return VectorXd({ mEnd0[0] + mDelta[0], mEnd0[1] + mDelta[1], mEnd0[2] + mDelta[2] });
@@ -115,10 +62,6 @@ namespace CylindricalShape
       return t >= 0.0 ? t : INT_MAX;
    }
 
-   /**
-   * @see gov.nist.microanalysis.NISTMonte.MonteCarloSS.Shape#getFirstIntersection(double[],
-   *      double[])
-   */
    double CylindricalShape::getFirstIntersection(const double sa[], const double sb[])
    {
       VectorXd saVec(sa, sa + 3), sbVec(sb, sb + 3);
@@ -203,18 +146,12 @@ namespace CylindricalShape
       }
    }
 
-   /**
-   * @see gov.nist.microanalysis.EPQLibrary.ITransform#rotate(double[], double, double, double)
-   */
    void CylindricalShape::rotate(const double pivot[], double phi, double theta, double psi)
    {
       mEnd0 = Transform3D::rotate(mEnd0.data(), pivot, phi, theta, psi);
       mDelta = Transform3D::rotate(mDelta.data(), phi, theta, psi);
    }
 
-   /**
-   * @see gov.nist.microanalysis.EPQLibrary.ITransform#translate(double[])
-   */
    void CylindricalShape::translate(const double distance[])
    {
       mEnd0[0] += distance[0];
@@ -222,11 +159,6 @@ namespace CylindricalShape
       mEnd0[2] += distance[2];
    }
 
-   /**
-   * getRadius - Returns the radius of the cylinder.
-   *
-   * @return double
-   */
    double CylindricalShape::getRadius() const
    {
       return ::sqrt(mRadius2);
@@ -237,9 +169,6 @@ namespace CylindricalShape
       return ::sqrt(mDelta[0] * mDelta[0] + mDelta[1] * mDelta[1] + mDelta[2] * mDelta[2]);
    }
 
-   /**
-   * @see java.lang.Object#toString()
-   */
    StringT CylindricalShape::toString() const
    {
       StringT res = "Cylinder([";

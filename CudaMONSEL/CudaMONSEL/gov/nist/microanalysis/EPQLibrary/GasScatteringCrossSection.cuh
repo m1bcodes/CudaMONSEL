@@ -38,8 +38,6 @@ namespace GasScatteringCrossSection
 
    extern const RandomizedScatterFactoryT& Factory;
 
-   extern const GasScatteringCrossSection& getGSCS(int an);
-
    extern void init();
 }
 
