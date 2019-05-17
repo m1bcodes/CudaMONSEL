@@ -10,12 +10,12 @@
 
 namespace UncertainValue2
 {
-   typedef std::string UncertainValue2StringT;
+   typedef std::string StringT;
 
    class Key
    {
    public:
-      Key(const UncertainValue2StringT& src1, const UncertainValue2StringT& src2);
+      Key(const StringT& src1, const StringT& src2);
       bool operator==(const Key& k2) const;
       bool operator<(const Key& k2) const;
       size_t HashCode() const;
@@ -23,7 +23,7 @@ namespace UncertainValue2
       //static bool AreEqual(Key& k1, Key& k2);
 
    private:
-      UncertainValue2StringT mSource1, mSource2;
+      StringT mSource1, mSource2;
    };
 
    struct KeyCompareFcn
@@ -53,22 +53,22 @@ namespace UncertainValue2
    public:
       Correlations();
 
-      void add(const UncertainValue2StringT& src1, const UncertainValue2StringT& src2, double corr);
-      double get(const UncertainValue2StringT& src1, const UncertainValue2StringT& src2) const;
+      void add(const StringT& src1, const StringT& src2, double corr);
+      double get(const StringT& src1, const StringT& src2) const;
    };
 
    class UncertainValue2
    {
    public:
-      typedef std::unordered_map<UncertainValue2StringT, double> ComponentMapT;
-      typedef std::unordered_map<UncertainValue2StringT, double>::iterator ComponentMapTItr;
-      typedef std::unordered_set<UncertainValue2StringT> KeySetT;
-      typedef std::unordered_set<UncertainValue2StringT> KeySetTItr;
+      typedef std::unordered_map<StringT, double> ComponentMapT;
+      typedef std::unordered_map<StringT, double>::iterator ComponentMapTItr;
+      typedef std::unordered_set<StringT> KeySetT;
+      typedef std::unordered_set<StringT> KeySetTItr;
       typedef std::vector<UncertainValue2> ResultT;
 
       UncertainValue2();
       //~UncertainValue2();
-      UncertainValue2(double v, char source[], double dv);
+      UncertainValue2(double v, const char source[], double dv);
       UncertainValue2(double v);
       UncertainValue2(double v, double dv);
       UncertainValue2(double v, const ComponentMapT&);
@@ -79,14 +79,14 @@ namespace UncertainValue2
       bool operator==(const UncertainValue2&) const;
       bool equals(const UncertainValue2& uv) const;
 
-      void assignInitialValue(double);
-      void assignComponent(const UncertainValue2StringT name, double sigma);
-      double getComponent(const UncertainValue2StringT& src) const;
+      void assignComponent(const StringT&, double sigma);
+      double getComponent(const StringT&) const;
       ComponentMapT& getComponents();
+      const ComponentMapT& getComponentsConst() const;
       ComponentMapT::const_iterator getComponentsItrBegin() const;
       ComponentMapT::const_iterator getComponentsItrEnd() const;
-      bool hasComponent(const UncertainValue2StringT& src) const;
-      void renameComponent(const UncertainValue2StringT& oldName, const UncertainValue2StringT& newName);
+      bool hasComponent(const StringT&) const;
+      void renameComponent(const StringT& oldName, const StringT& newName);
 
       double doubleValue() const;
       bool isUncertain() const;

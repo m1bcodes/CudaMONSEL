@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <math.h>
+#include <algorithm>
 
 #include "Amphibian\Hasher.cuh"
 
@@ -32,20 +33,18 @@ namespace UncertainValue2
    {
    }
 
-   UncertainValue2::UncertainValue2(double v, char source[], double dv) : mValue(v)
+   UncertainValue2::UncertainValue2(double v, const char source[], double dv) : mValue(v)
    {
       assignComponent(source, dv);
    }
 
-   UncertainValue2::UncertainValue2(double v, const ComponentMapT& sigmas) : mValue(v)
+   UncertainValue2::UncertainValue2(double v, const ComponentMapT& sigmas) : mValue(v), mSigmas(sigmas)
    {
-      mSigmas = sigmas;
    }
 
-   UncertainValue2::UncertainValue2(const UncertainValue2& other) : mValue(other.doubleValue())
+   UncertainValue2::UncertainValue2(const UncertainValue2& other) : mValue(other.doubleValue()),  mSigmas(other.mSigmas)
    {
-      if (&other == this) return;
-      mSigmas = other.mSigmas;
+      //if (&other == this) return;
    }
 
    UncertainValue2 ONE()
@@ -94,12 +93,7 @@ namespace UncertainValue2
       return res;
    }
 
-   void UncertainValue2::assignInitialValue(double v)
-   {
-      mValue = v;
-   }
-
-   void UncertainValue2::assignComponent(const UncertainValue2StringT name, double sigma)
+   void UncertainValue2::assignComponent(const StringT& name, double sigma)
    {
       if (sigma != 0.0) {
          mSigmas.insert(std::make_pair(name, sigma));
@@ -109,16 +103,18 @@ namespace UncertainValue2
       }
    }
 
-   double UncertainValue2::getComponent(const UncertainValue2StringT& src) const
+   double UncertainValue2::getComponent(const StringT& src) const
    {
       auto itr = mSigmas.find(src);
-      if (itr == mSigmas.end()) {
-         return 0;
-      }
-      return itr->second;
+      return itr == mSigmas.end() ? 0 : itr->second;
    }
 
    UncertainValue2::ComponentMapT& UncertainValue2::getComponents()
+   {
+      return mSigmas;
+   }
+
+   const UncertainValue2::ComponentMapT& UncertainValue2::getComponentsConst() const
    {
       return mSigmas;
    }
@@ -133,12 +129,12 @@ namespace UncertainValue2
       return mSigmas.cend();
    }
 
-   bool UncertainValue2::hasComponent(const UncertainValue2StringT& src) const
+   bool UncertainValue2::hasComponent(const StringT& src) const
    {
       return getComponent(src) != 0.0;
    }
 
-   void UncertainValue2::renameComponent(const UncertainValue2StringT& oldName, const UncertainValue2StringT& newName)
+   void UncertainValue2::renameComponent(const StringT& oldName, const StringT& newName)
    {
       if (mSigmas.find(newName) != mSigmas.end()) {
          printf("A component named %s already exists.", newName.c_str());
@@ -156,10 +152,7 @@ namespace UncertainValue2
       double sum = 0.0;
       for (int k = 0; k < uvsLen; ++k) {
          sum += uvs[k].doubleValue();
-         //auto m = uvs[k].getComponents();
-         //for (auto itr = m.begin(); itr != m.end(); ++itr) {
-         //   keys.insert(itr->first);
-         //}
+
          for (auto itr = uvs[k].getComponentsItrBegin(); itr != uvs[k].getComponentsItrEnd(); ++itr) {
             keys.insert(itr->first);
          }
@@ -183,24 +176,17 @@ namespace UncertainValue2
    {
       UncertainValue2::KeySetT keys;
       UncertainValue2 res(a * uva.doubleValue() + b * uvb.doubleValue());
-      //auto akeys = uva.getComponents();
-      //for (auto itr = akeys.begin(); itr != akeys.end(); ++itr) {
-      //   keys.insert(itr->first);
-      //}
+
       for (auto itr = uva.getComponentsItrBegin(); itr != uva.getComponentsItrEnd(); ++itr) {
          keys.insert(itr->first);
       }
 
-      //auto bkeys = uvb.getComponents();
-      //for (auto itr = bkeys.begin(); itr != bkeys.end(); ++itr) {
-      //   keys.insert(itr->first);
-      //}
       for (auto itr = uvb.getComponentsItrBegin(); itr != uvb.getComponentsItrEnd(); ++itr) {
          keys.insert(itr->first);
       }
 
       for (auto itr = keys.begin(); itr != keys.end(); ++itr) {
-         UncertainValue2StringT src = *itr;
+         StringT src = *itr;
          res.assignComponent(src, a * copysign(1.0, uva.doubleValue()) * uva.getComponent(src) + b * copysign(1.0, uvb.doubleValue()) * uvb.getComponent(src));
       }
       return res;
@@ -286,14 +272,12 @@ namespace UncertainValue2
    {
       auto tmp = UncertainValue2(v2);
       return add(1.0, v1, 1.0, tmp);
-      //return UncertainValue2(v1.doubleValue() + v2, v1.getComponents());
    }
 
    UncertainValue2 add(double v1, const UncertainValue2& v2)
    {
       auto tmp = UncertainValue2(v1);
       return add(1.0, tmp, 1.0, v2);
-      //return UncertainValue2(v2.doubleValue() + v1, v2.getComponents());
    }
 
    UncertainValue2 add(const UncertainValue2& v1, const UncertainValue2& v2)
@@ -309,10 +293,6 @@ namespace UncertainValue2
       }
       UncertainValue2 res(v1 * v2.doubleValue());
 
-      //auto m = v2.getComponents();
-      //for (auto itr = m.begin(); itr != m.end(); ++itr) {
-      //   res.assignComponent(itr->first, v1 * itr->second);
-      //}
       for (auto itr = v2.getComponentsItrBegin(); itr != v2.getComponentsItrEnd(); ++itr) {
          res.assignComponent(itr->first, v1 * itr->second);
       }
@@ -322,17 +302,9 @@ namespace UncertainValue2
    UncertainValue2 multiply(const UncertainValue2& v1, const UncertainValue2& v2)
    {
       UncertainValue2::KeySetT keys;
-      //auto v1keys = v1.getComponents();
-      //for (auto itr = v1keys.begin(); itr != v1keys.end(); ++itr) {
-      //   keys.insert(itr->first);
-      //}
       for (auto itr = v1.getComponentsItrBegin(); itr != v1.getComponentsItrEnd(); ++itr) {
          keys.insert(itr->first);
       }
-      //auto v2keys = v2.getComponents();
-      //for (auto itr = v2keys.begin(); itr != v2keys.end(); ++itr) {
-      //   keys.insert(itr->first);
-      //}
       for (auto itr = v2.getComponentsItrBegin(); itr != v2.getComponentsItrEnd(); ++itr) {
          keys.insert(itr->first);
       }
@@ -355,28 +327,26 @@ namespace UncertainValue2
       UncertainValue2 res(v1.doubleValue() / v2.doubleValue());
       if (!(isnan(res.doubleValue()) || isinf(res.doubleValue()))) {
          UncertainValue2::KeySetT keys;
-         //auto v1keys = v1.getComponents();
-         //for (auto itr = v1keys.begin(); itr != v1keys.end(); ++itr) {
+
+         std::transform(v1.getComponentsItrBegin(), v1.getComponentsItrEnd(), std::inserter(keys, keys.end()), [](std::pair<StringT, double> pair){ return pair.first; });
+         std::transform(v2.getComponentsItrBegin(), v2.getComponentsItrEnd(), std::inserter(keys, keys.end()), [](std::pair<StringT, double> pair){ return pair.first; });
+
+         //for (auto itr = v1.getComponentsItrBegin(); itr != v1.getComponentsItrEnd(); ++itr) {
          //   keys.insert(itr->first);
          //}
-         for (auto itr = v1.getComponentsItrBegin(); itr != v1.getComponentsItrEnd(); ++itr) {
-            keys.insert(itr->first);
-         }
-         //auto v2keys = v2.getComponents();
-         //for (auto itr = v2keys.begin(); itr != v2keys.end(); ++itr) {
+         //for (auto itr = v2.getComponentsItrBegin(); itr != v2.getComponentsItrEnd(); ++itr) {
          //   keys.insert(itr->first);
          //}
-         for (auto itr = v2.getComponentsItrBegin(); itr != v2.getComponentsItrEnd(); ++itr) {
-            keys.insert(itr->first);
-         }
 
          const double ua = fabs(1.0 / v2.doubleValue());
          const double ub = fabs(v1.doubleValue() / (v2.doubleValue() * v2.doubleValue()));
 
-         for (auto itr = keys.begin(); itr != keys.end(); ++itr) {
-            auto src = *itr;
-            res.assignComponent(src, ua * v1.getComponent(src) + ub * v2.getComponent(src));
-         }
+         //for (auto itr = keys.begin(); itr != keys.end(); ++itr) {
+         //   auto src = *itr;
+         //   res.assignComponent(src, ua * v1.getComponent(src) + ub * v2.getComponent(src));
+         //}
+
+         std::transform(keys.begin(), keys.end(), std::inserter(res.getComponents(), res.getComponents().end()), [&](StringT name){ return std::make_pair(name, ua * v1.getComponent(name) + ub * v2.getComponent(name)); });
       }
       return res;
    }
@@ -387,10 +357,6 @@ namespace UncertainValue2
       if (!(isnan(res.doubleValue()) || isinf(res.doubleValue()))) {
          const double ub = fabs(a / (b.doubleValue() * b.doubleValue()));
 
-         //auto m = b.getComponents();
-         //for (auto itr = m.begin(); itr != m.end(); ++itr) {
-         //   res.assignComponent(itr->first, ub * itr->second);
-         //}
          for (auto itr = b.getComponentsItrBegin(); itr != b.getComponentsItrEnd(); ++itr) {
             res.assignComponent(itr->first, ub * itr->second);
          }
@@ -409,10 +375,6 @@ namespace UncertainValue2
       UncertainValue2 res(a.doubleValue() / b);
       const double ua = fabs(1.0 / b);
 
-      //auto m = a.getComponents();
-      //for (auto itr = m.begin(); itr != m.end(); ++itr) {
-      //   res.assignComponent(itr->first, ua * itr->second);
-      //}
       for (auto itr = a.getComponentsItrBegin(); itr != a.getComponentsItrEnd(); ++itr) {
          res.assignComponent(itr->first, ua * itr->second);
       }
@@ -429,10 +391,6 @@ namespace UncertainValue2
       double ex = ::exp(x.doubleValue());
       UncertainValue2 res(ex);
 
-      //auto m = x.getComponents();
-      //for (auto itr = m.begin(); itr != m.end(); ++itr) {
-      //   res.assignComponent(itr->first, ex * itr->second);
-      //}
       for (auto itr = x.getComponentsItrBegin(); itr != x.getComponentsItrEnd(); ++itr) {
          res.assignComponent(itr->first, ex * itr->second);
       }
@@ -451,10 +409,6 @@ namespace UncertainValue2
       }
       UncertainValue2 res(lv);
 
-      //auto m = v2.getComponents();
-      //for (auto itr = m.begin(); itr != m.end(); ++itr) {
-      //   res.assignComponent(itr->first, tmp * itr->second);
-      //}
       for (auto itr = v2.getComponentsItrBegin(); itr != v2.getComponentsItrEnd(); ++itr) {
          res.assignComponent(itr->first, tmp * itr->second);
       }
@@ -471,7 +425,6 @@ namespace UncertainValue2
       const double df = n * ::pow(v1.doubleValue(), n - 1.0);
       UncertainValue2 res(f);
 
-      //auto m = v1.getComponents();
       for (auto itr = v1.getComponentsItrBegin(); itr != v1.getComponentsItrEnd(); ++itr) {
          res.assignComponent(itr->first, df * itr->second);
       }
@@ -599,7 +552,6 @@ namespace UncertainValue2
 
    UncertainValue2 negate(const UncertainValue2& uv)
    {
-      //return UncertainValue2(-uv.doubleValue(), uv.getComponents());
       return add(-1.0, uv);
    }
 
@@ -616,10 +568,6 @@ namespace UncertainValue2
       }
       UncertainValue2 res(f);
 
-      //auto m = uv.getComponents();
-      //for (auto itr = m.begin(); itr != m.end(); ++itr) {
-      //   res.assignComponent(itr->first, df * itr->second);
-      //}
       for (auto itr = uv.getComponentsItrBegin(); itr != uv.getComponentsItrEnd(); ++itr) {
          res.assignComponent(itr->first, df * itr->second);
       }
@@ -649,13 +597,10 @@ namespace UncertainValue2
 
    UncertainValue2 positiveDefinite(const UncertainValue2& uv)
    {
-      UncertainValue2 ret(uv);
-      ret = add(ret, -uv.doubleValue());
-
-      return uv.doubleValue() >= 0.0 ? uv : ret;
+      return uv.doubleValue() >= 0.0 ? uv : UncertainValue2(0, uv.getComponentsConst());
    }
 
-   Key::Key(const UncertainValue2StringT& src1, const UncertainValue2StringT& src2)
+   Key::Key(const StringT& src1, const StringT& src2)
    {
       mSource1 = src1;
       mSource2 = src2;
@@ -690,7 +635,7 @@ namespace UncertainValue2
    {
    }
 
-   void Correlations::add(const UncertainValue2StringT& src1, const UncertainValue2StringT& src2, double corr)
+   void Correlations::add(const StringT& src1, const StringT& src2, double corr)
    {
       if (!(corr >= -1.0) && (corr <= 1.0)) {
          printf("%s\n", "Correlations::add: invalid bound");
@@ -702,7 +647,7 @@ namespace UncertainValue2
       mCorrelations.insert(std::pair<Key, double>(k, corr));
    }
 
-   double Correlations::get(const UncertainValue2StringT& src1, const UncertainValue2StringT& src2) const
+   double Correlations::get(const StringT& src1, const StringT& src2) const
    {
       auto k = Key(src1, src2);
       return mCorrelations.at(k);

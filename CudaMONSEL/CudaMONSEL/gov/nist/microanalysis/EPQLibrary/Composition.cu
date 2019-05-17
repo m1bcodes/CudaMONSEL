@@ -371,14 +371,13 @@ namespace Composition
 
    UncertainValue2::UncertainValue2 normalize(const UncertainValue2::UncertainValue2& val, const UncertainValue2::UncertainValue2& norm, bool positive)
    {
-      UncertainValue2::UncertainValue2 uv;
       if (norm.doubleValue() > 0.0) {
-         uv = UncertainValue2::divide(val, norm);
+         UncertainValue2::UncertainValue2& quotient = UncertainValue2::divide(val, norm);
+         return positive ? UncertainValue2::positiveDefinite(quotient) : quotient;
       }
       else {
-         uv = val;
+         return positive ? UncertainValue2::positiveDefinite(val) : val;
       }
-      return positive ? UncertainValue2::positiveDefinite(uv) : uv;
    }
 
    void Composition::setOptimalRepresentation(const Representation opt)
