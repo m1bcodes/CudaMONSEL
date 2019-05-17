@@ -8,6 +8,20 @@
 
 namespace MonteCarloSS
 {
+   extern const int ScatterEvent;
+   extern const int NonScatterEvent;
+   extern const int BackscatterEvent;
+   extern const int ExitMaterialEvent;
+   extern const int TrajectoryStartEvent;
+   extern const int TrajectoryEndEvent;
+   extern const int LastTrajectoryEvent;
+   extern const int FirstTrajectoryEvent;
+   extern const int StartSecondaryEvent;
+   extern const int EndSecondaryEvent;
+   extern const int PostScatterEvent;
+
+   extern const int BeamEnergyChanged;
+
    extern const double ChamberRadius;
    extern const double SMALL_DISP;
 
@@ -26,10 +40,11 @@ namespace MonteCarloSS
       bool allElectronsComplete();
       void runTrajectory();
       void runMultipleTrajectories(int n);
-      double getBeamEnergy();
+      double getBeamEnergy() const;
       void setElectronGun(ElectronGunT& gun);
       //void setBeamEnergy(double beamEnergy);
       VectorXd computeDetectorPosition(double elevation, double theta);
+      const ElectronT& getElectron() const;
       Element::UnorderedSetT getElementSet() const;
       void rotate(double pivot[], double phi, double theta, double psi);
       void translate(double distance[]);

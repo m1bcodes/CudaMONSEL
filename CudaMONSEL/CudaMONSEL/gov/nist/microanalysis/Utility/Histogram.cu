@@ -166,11 +166,11 @@ namespace Histogram
       mCounts = newCounts;
    }
 
-   BinMap Histogram::getResultMap(const char format[])
-   {
-      BinMap res;
-      for (int i = -1; i < binCount() + 1; ++i)
-         res[new BinName(i, format, *this)] = counts(i); // TODO: fix
-      return res;
-   }
+   //BinMap Histogram::getResultMap(const char format[])
+   //{
+   //   BinMap res;
+   //   for (int i = -1; i < binCount() + 1; ++i)
+   //      res[new BinName(i, format, *this)] = counts(i); // TODO: fix
+   //   return res;
+   //}
 }

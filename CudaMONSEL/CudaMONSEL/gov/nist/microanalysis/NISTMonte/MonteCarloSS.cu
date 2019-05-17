@@ -11,19 +11,20 @@
 
 namespace MonteCarloSS
 {
-   static const int ScatterEvent = 1;
-   static const int NonScatterEvent = ScatterEvent + 1;
-   static const int BackscatterEvent = ScatterEvent + 2;
-   static const int ExitMaterialEvent = ScatterEvent + 3;
-   static const int TrajectoryStartEvent = ScatterEvent + 4;
-   static const int TrajectoryEndEvent = ScatterEvent + 5;
-   static const int LastTrajectoryEvent = ScatterEvent + 6;
-   static const int FirstTrajectoryEvent = ScatterEvent + 7;
-   static const int StartSecondaryEvent = ScatterEvent + 8;
-   static const int EndSecondaryEvent = ScatterEvent + 9;
-   static const int PostScatterEvent = ScatterEvent + 10;
+   const int ScatterEvent = 1;
+   const int NonScatterEvent = ScatterEvent + 1;
+   const int BackscatterEvent = ScatterEvent + 2;
+   const int ExitMaterialEvent = ScatterEvent + 3;
+   const int TrajectoryStartEvent = ScatterEvent + 4;
+   const int TrajectoryEndEvent = ScatterEvent + 5;
+   const int LastTrajectoryEvent = ScatterEvent + 6;
+   const int FirstTrajectoryEvent = ScatterEvent + 7;
+   const int StartSecondaryEvent = ScatterEvent + 8;
+   const int EndSecondaryEvent = ScatterEvent + 9;
+   const int PostScatterEvent = ScatterEvent + 10;
 
-   static const int BeamEnergyChanged = 100;
+   const int BeamEnergyChanged = 100;
+
    static const int XAxis = 0;
    static const int YAxis = 1;
    static const int ZAxis = 2;
@@ -211,7 +212,7 @@ namespace MonteCarloSS
       //fireEvent(LastTrajectoryEvent);
    }
 
-   double MonteCarloSS::getBeamEnergy()
+   double MonteCarloSS::getBeamEnergy() const
    {
       return mGun->getBeamEnergy();
    }
@@ -235,6 +236,11 @@ namespace MonteCarloSS
       //if (mChamber->mShape instanceof Sphere)
       //   r = frac * ((Sphere)mChamber.mShape).getRadius();
       return ElectronProbe::computePosition(0.0, elevation, theta, r);
+   }
+
+   const ElectronT& MonteCarloSS::getElectron() const
+   {
+      return *mElectron;
    }
 
    //public Set<AtomicShell> getAtomicShellSet()

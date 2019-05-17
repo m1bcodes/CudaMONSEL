@@ -41,7 +41,7 @@ namespace CylindricalShape
       if (mRadius2 < 1.0e-30) printf("The cylinder radius is unrealistically small.");
       mLen2 = Math2::sqr(mDelta[0]) + Math2::sqr(mDelta[1]) + Math2::sqr(mDelta[2]);
       if (mLen2 < 1.0e-30) printf("The cylinder length is unrealistically small.");
-      mDelta2 = Math2::dot(mDelta, mDelta);
+      mDelta2 = Math2::dot3D(mDelta, mDelta);
    }
 
    CylindricalShape::CylindricalShape(const CylindricalShape& other) :
@@ -124,33 +124,33 @@ namespace CylindricalShape
       VectorXd saVec(sa, sa + 3), sbVec(sb, sb + 3);
       if (true) {
          double t0 = INT_MAX, t1 = INT_MAX, tc = INT_MAX;
-         auto n = Math2::minus(sbVec, saVec);
-         double nd = Math2::dot(n, mDelta);
+         auto n = Math2::minus3D(sbVec, saVec);
+         double nd = Math2::dot3D(n, mDelta);
          if (nd != 0.0) {
             // Check end cap 0
-            double t = Math2::dot(mDelta, Math2::minus(mEnd0, saVec)) / nd;
+            double t = Math2::dot3D(mDelta, Math2::minus3D(mEnd0, saVec)) / nd;
             if (t > 0.0) {
-               auto pt = Math2::minus(Math2::pointBetween(saVec, sbVec, t), mEnd0);
-               if (Math2::dot(pt, pt) < mRadius2)
+               auto pt = Math2::minus3D(Math2::pointBetween(saVec, sbVec, t), mEnd0);
+               if (Math2::dot3D(pt, pt) < mRadius2)
                   t0 = t;
             }
             // Check end cap 1
             auto end1 = Math2::plus(mEnd0, mDelta);
-            t = Math2::dot(mDelta, Math2::minus(end1, saVec)) / nd;
+            t = Math2::dot3D(mDelta, Math2::minus3D(end1, saVec)) / nd;
             if (t > 0.0) {
-               auto pt = Math2::minus(Math2::pointBetween(saVec, sbVec, t), end1);
-               if (Math2::dot(pt, pt) < mRadius2)
+               auto pt = Math2::minus3D(Math2::pointBetween(saVec, sbVec, t), end1);
+               if (Math2::dot3D(pt, pt) < mRadius2)
                   t1 = t;
             }
          }
-         double a = mDelta2 * Math2::dot(n, n) - nd * nd;
+         double a = mDelta2 * Math2::dot3D(n, n) - nd * nd;
          if (::abs(a) > EPSILON) {
-            auto m = Math2::minus(saVec, mEnd0);
-            double mn = Math2::dot(m, n);
-            double b = mDelta2 * mn - nd * Math2::dot(m, mDelta);
-            double md = Math2::dot(m, mDelta);
+            auto m = Math2::minus3D(saVec, mEnd0);
+            double mn = Math2::dot3D(m, n);
+            double b = mDelta2 * mn - nd * Math2::dot3D(m, mDelta);
+            double md = Math2::dot3D(m, mDelta);
             // Consider the side of the cylinder
-            double c = mDelta2 * (Math2::dot(m, m) - mRadius2) - md * md;
+            double c = mDelta2 * (Math2::dot3D(m, m) - mRadius2) - md * md;
             double discr = b * b - a * c;
             if (discr >= 0.0) {
                double tm = (-b - ::sqrt(discr)) / a;
@@ -163,16 +163,16 @@ namespace CylindricalShape
          return ::fmin(t0, ::fmin(t1, tc));
       }
       else {
-         auto m = Math2::minus(saVec, mEnd0), n = Math2::minus(sbVec, saVec);
-         double md = Math2::dot(m, mDelta), nd = Math2::dot(n, mDelta), dd = Math2::dot(mDelta, mDelta);
+         auto m = Math2::minus3D(saVec, mEnd0), n = Math2::minus3D(sbVec, saVec);
+         double md = Math2::dot3D(m, mDelta), nd = Math2::dot3D(n, mDelta), dd = Math2::dot3D(mDelta, mDelta);
          // Segment fully outside end caps...
          if ((md < 0.0) && (md + nd < 0.0))
             return INT_MAX;
          if ((md > dd) && (md + nd > dd))
             return INT_MAX;
-         double nn = Math2::dot(n, n), mn = Math2::dot(m, n);
+         double nn = Math2::dot3D(n, n), mn = Math2::dot3D(m, n);
          double a = dd * nn - nd * nd;
-         double k = Math2::dot(m, m) - mRadius2;
+         double k = Math2::dot3D(m, m) - mRadius2;
          double c = dd * k - md * md;
          if (::abs(a) < EPSILON) {
             if (md < 0.0)

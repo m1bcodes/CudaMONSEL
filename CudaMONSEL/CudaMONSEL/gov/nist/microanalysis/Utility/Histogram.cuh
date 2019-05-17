@@ -48,7 +48,7 @@ namespace Histogram
       bool isBinMin(double binMin) const;
       void removeBin(int binNum);
 
-      BinMap getResultMap(const char format[]);
+      //BinMap getResultMap(const char format[]);
 
    private:
       VectorXd mBinMin;

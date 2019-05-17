@@ -1,6 +1,8 @@
 #include "gov\nist\microanalysis\EPQLibrary\Composition.cuh"
 #include "gov\nist\microanalysis\Utility\Math2.cuh"
 
+#include <algorithm>
+
 namespace Composition
 {
    static const long long serialVersionUID = 0x42;
@@ -162,9 +164,10 @@ namespace Composition
    Element::UnorderedSetT Composition::getElementSet() const
    {
       Element::UnorderedSetT elmset;
-      for (auto c : mConstituents) {
-         elmset.insert(c.first);
-      }
+      //for (auto c : mConstituents) {
+      //   elmset.insert(c.first);
+      //}
+      std::transform(mConstituents.begin(), mConstituents.end(), std::inserter(elmset, elmset.end()), [](std::pair<const Element::Element*, UncertainValue2::UncertainValue2> p) { return p.first; });
       return elmset;
    }
 
@@ -372,7 +375,9 @@ namespace Composition
    UncertainValue2::UncertainValue2 normalize(const UncertainValue2::UncertainValue2& val, const UncertainValue2::UncertainValue2& norm, bool positive)
    {
       if (norm.doubleValue() > 0.0) {
-         UncertainValue2::UncertainValue2& quotient = UncertainValue2::divide(val, norm);
+         //UncertainValue2::UncertainValue2& quotient = UncertainValue2::divide(val, norm);
+         UncertainValue2::UncertainValue2 quotient(val.doubleValue() / norm.doubleValue());
+         UncertainValue2::divide(val, norm, quotient);
          return positive ? UncertainValue2::positiveDefinite(quotient) : quotient;
       }
       else {

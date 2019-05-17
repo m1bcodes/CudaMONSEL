@@ -65,6 +65,7 @@
     <CudaCompile Include="gov\nist\microanalysis\EPQTests\RegionBaseTest.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQTests\SphereTest.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQTests\SumShapeTest.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\NISTMonte\BackscatterStats.cu" />
     <CudaCompile Include="gov\nist\microanalysis\NISTMonte\BasicMaterialModel.cu" />
     <CudaCompile Include="gov\nist\microanalysis\NISTMonte\CylindricalShape.cu" />
     <CudaCompile Include="gov\nist\microanalysis\NISTMonte\GaussianBeam.cu" />
@@ -164,6 +165,7 @@
     <ClInclude Include="gov\nist\microanalysis\EPQTests\RegionBaseTest.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQTests\SphereTest.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQTests\SumShapeTest.cuh" />
+    <ClInclude Include="gov\nist\microanalysis\NISTMonte\BackscatterStats.cuh" />
     <ClInclude Include="gov\nist\microanalysis\NISTMonte\BasicMaterialModel.cuh" />
     <ClInclude Include="gov\nist\microanalysis\NISTMonte\CylindricalShape.cuh" />
     <ClInclude Include="gov\nist\microanalysis\NISTMonte\Declarations.cuh" />

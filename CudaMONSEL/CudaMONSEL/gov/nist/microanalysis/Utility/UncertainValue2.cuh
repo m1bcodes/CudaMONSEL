@@ -130,6 +130,7 @@ namespace UncertainValue2
    UncertainValue2 multiply(const UncertainValue2& v1, const UncertainValue2& v2);
    UncertainValue2 invert(const UncertainValue2& v);
    UncertainValue2 divide(const UncertainValue2& a, const UncertainValue2& b);
+   void divide(const UncertainValue2& a, const UncertainValue2& b, UncertainValue2&);
    UncertainValue2 divide(double a, const UncertainValue2& b);
    UncertainValue2 divide(const UncertainValue2& a, double b);
    UncertainValue2 exp(const UncertainValue2& x);

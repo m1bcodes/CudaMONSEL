@@ -77,8 +77,7 @@ namespace RegionBase
       const RegionBase* base = this;
    
       double t = mShape->getFirstIntersection(pos0.data(), pos1.data());
-      StringT str(StringT(mShape->toString()) + " " + std::to_string(t));
-      if (t < 0.0)  printf("%s\n", str.c_str());
+      if (t < 0.0)  printf("%s\n", StringT(StringT(mShape->toString()) + " " + std::to_string(t)).c_str());
       if ((t <= 1.0) && mParent != NULL)
          base = mParent;
       const RegionBase* res = this;

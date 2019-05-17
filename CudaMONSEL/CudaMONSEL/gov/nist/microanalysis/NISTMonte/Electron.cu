@@ -52,7 +52,7 @@ namespace Electron
       mPhi = phi;
    }
 
-   PositionVecT Electron::getPosition() const
+   VectorXd Electron::getPosition() const
    {
       return mPosition;
    }
@@ -62,7 +62,7 @@ namespace Electron
       mPosition.assign(newpos, newpos + 3);
    }
 
-   PositionVecT Electron::getPrevPosition() const
+   VectorXd Electron::getPrevPosition() const
    {
       return mPrevPosition;
    }
@@ -97,11 +97,11 @@ namespace Electron
       return MonteCarloSS::dist(mPrevPosition.data(), mPosition.data());
    }
 
-   PositionVecT Electron::candidatePoint(double dS) const
+   VectorXd Electron::candidatePoint(double dS) const
    {
       double st = ::sin(mTheta);
       // Calculate the new point as dS distance from mPosition
-      return PositionVecT ({
+      return VectorXd ({
          mPosition[0] + dS * ::cos(mPhi) * st,
             mPosition[1] + dS * ::sin(mPhi) * st,
             mPosition[2] + dS * ::cos(mTheta)

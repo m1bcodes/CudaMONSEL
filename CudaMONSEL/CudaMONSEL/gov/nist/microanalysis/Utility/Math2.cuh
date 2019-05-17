@@ -8,6 +8,7 @@
 namespace Math2
 {
    extern VectorXd minus(const VectorXd& a, const VectorXd& b);
+   extern VectorXd minus3D(const VectorXd& a, const VectorXd& b);
    extern VectorXd divide(const VectorXd& a, double b);
    extern VectorXd plus(const VectorXd& a, const VectorXd& b);
    extern VectorXd normalize(const VectorXd& p);
@@ -15,6 +16,7 @@ namespace Math2
    extern double distance(const VectorXd& p1, const VectorXd& p2);
    extern double distance3d(const VectorXd& p1, const VectorXd& p2);
    extern double dot(const VectorXd& a, const VectorXd& b);
+   extern double dot3D(const VectorXd& a, const VectorXd& b);
    extern VectorXd cross(const VectorXd& a, const VectorXd& b);
    extern double sqr(double x);
    extern double magnitude(const VectorXd& p);

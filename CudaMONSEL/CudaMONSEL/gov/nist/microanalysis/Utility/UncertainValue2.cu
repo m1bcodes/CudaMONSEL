@@ -324,31 +324,53 @@ namespace UncertainValue2
 
    UncertainValue2 divide(const UncertainValue2& v1, const UncertainValue2& v2)
    {
-      UncertainValue2 res(v1.doubleValue() / v2.doubleValue());
-      if (!(isnan(res.doubleValue()) || isinf(res.doubleValue()))) {
-         UncertainValue2::KeySetT keys;
-
-         std::transform(v1.getComponentsItrBegin(), v1.getComponentsItrEnd(), std::inserter(keys, keys.end()), [](std::pair<StringT, double> pair){ return pair.first; });
-         std::transform(v2.getComponentsItrBegin(), v2.getComponentsItrEnd(), std::inserter(keys, keys.end()), [](std::pair<StringT, double> pair){ return pair.first; });
-
-         //for (auto itr = v1.getComponentsItrBegin(); itr != v1.getComponentsItrEnd(); ++itr) {
-         //   keys.insert(itr->first);
-         //}
-         //for (auto itr = v2.getComponentsItrBegin(); itr != v2.getComponentsItrEnd(); ++itr) {
-         //   keys.insert(itr->first);
-         //}
-
-         const double ua = fabs(1.0 / v2.doubleValue());
-         const double ub = fabs(v1.doubleValue() / (v2.doubleValue() * v2.doubleValue()));
-
-         //for (auto itr = keys.begin(); itr != keys.end(); ++itr) {
-         //   auto src = *itr;
-         //   res.assignComponent(src, ua * v1.getComponent(src) + ub * v2.getComponent(src));
-         //}
-
-         std::transform(keys.begin(), keys.end(), std::inserter(res.getComponents(), res.getComponents().end()), [&](StringT name){ return std::make_pair(name, ua * v1.getComponent(name) + ub * v2.getComponent(name)); });
+      double v = v1.doubleValue() / v2.doubleValue();
+      if (isnan(v) || isinf(v)) {
+         printf("UncertainValue2::divide: isnan(v) || isinf(v) (%.10e)\n");
+         return v;
       }
+
+      UncertainValue2::KeySetT keys;
+
+      std::transform(v1.getComponentsItrBegin(), v1.getComponentsItrEnd(), std::inserter(keys, keys.end()), [](std::pair<StringT, double> pair){ return pair.first; });
+      std::transform(v2.getComponentsItrBegin(), v2.getComponentsItrEnd(), std::inserter(keys, keys.end()), [](std::pair<StringT, double> pair){ return pair.first; });
+
+      //for (auto itr = v1.getComponentsItrBegin(); itr != v1.getComponentsItrEnd(); ++itr) {
+      //   keys.insert(itr->first);
+      //}
+      //for (auto itr = v2.getComponentsItrBegin(); itr != v2.getComponentsItrEnd(); ++itr) {
+      //   keys.insert(itr->first);
+      //}
+
+      const double ua = fabs(1.0 / v2.doubleValue());
+      const double ub = fabs(v1.doubleValue() / (v2.doubleValue() * v2.doubleValue()));
+
+      //for (auto itr = keys.begin(); itr != keys.end(); ++itr) {
+      //   auto src = *itr;
+      //   res.assignComponent(src, ua * v1.getComponent(src) + ub * v2.getComponent(src));
+      //}
+
+      UncertainValue2 res(v);
+      std::transform(keys.begin(), keys.end(), std::inserter(res.getComponents(), res.getComponents().end()), [&](StringT name){ return std::make_pair(name, ua * v1.getComponent(name) + ub * v2.getComponent(name)); });
       return res;
+   }
+
+   void divide(const UncertainValue2& v1, const UncertainValue2& v2, UncertainValue2& res)
+   {
+      double v = res.doubleValue(); // v1.doubleValue() / v2.doubleValue();
+      if (isnan(v) || isinf(v)) {
+         printf("UncertainValue2::divide: isnan(v) || isinf(v) (%.10e)\n");
+      }
+
+      UncertainValue2::KeySetT keys;
+
+      std::transform(v1.getComponentsItrBegin(), v1.getComponentsItrEnd(), std::inserter(keys, keys.end()), [](std::pair<StringT, double> pair){ return pair.first; });
+      std::transform(v2.getComponentsItrBegin(), v2.getComponentsItrEnd(), std::inserter(keys, keys.end()), [](std::pair<StringT, double> pair){ return pair.first; });
+
+      const double ua = fabs(1.0 / v2.doubleValue());
+      const double ub = fabs(v1.doubleValue() / (v2.doubleValue() * v2.doubleValue()));
+
+      std::transform(keys.begin(), keys.end(), std::inserter(res.getComponents(), res.getComponents().end()), [&](StringT name){ return std::make_pair(name, ua * v1.getComponent(name) + ub * v2.getComponent(name)); });
    }
 
    UncertainValue2 divide(double a, const UncertainValue2& b)

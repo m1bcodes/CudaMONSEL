@@ -501,6 +501,16 @@ namespace Math2
          res[i] = a[i] - b[i];
       return res;
    }
+
+   VectorXd minus3D(const VectorXd& a, const VectorXd& b)
+   {
+      VectorXd res(a.size(), 0);
+      res[0] = a[0] - b[0];
+      res[1] = a[1] - b[1];
+      res[2] = a[2] - b[2];
+      return res;
+   }
+
    //
    //   /**
    //   * minus - Returns the vector sum a + b
@@ -532,7 +542,11 @@ namespace Math2
       }
       return res;
    }
-   
+
+   double dot3D(const VectorXd& a, const VectorXd& b)
+   {
+      return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+   }
    //   /**
    //   * Returns a vector in which each of the coordinates equals -1 times the
    //   * coordinates in a.
