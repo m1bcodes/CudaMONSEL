@@ -166,4 +166,6 @@ namespace Material
    {
       return false;
    }
+
+   const Material Default(0);
 }

@@ -30,6 +30,7 @@
 #include "gov\nist\microanalysis\EPQTests\CylindricalShapeTest.cuh"
 #include "gov\nist\microanalysis\EPQTests\SumShapeTest.cuh"
 #include "gov\nist\microanalysis\EPQTests\BetheElectronEnergyLossTest.cuh"
+#include "gov\nist\microanalysis\EPQTests\MonteCarloSSTest.cuh"
 
 #include "gov\nist\nanoscalemetrology\JMONSELTests\LinesOnLayers.cuh"
 
@@ -97,6 +98,8 @@ int main()
    CylindricalShapeTest::testTwelve();
 
    BetheElectronEnergyLossTest::testOne();
+
+   MonteCarloSSTest::testOne();
 
    SumShapeTest::testGetFirstIntersection();
    //SumShapeTest::testAll();

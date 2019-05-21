@@ -85,6 +85,7 @@ namespace RegionBase
          double candidate = subRegion->mShape->getFirstIntersection(pos0.data(), pos1.data());
          if (candidate <= 0.0) printf("%s\n", (std::string(subRegion->mShape->toString()) + " " + std::to_string(candidate)).c_str());
          if ((candidate <= 1.0) && (candidate < t)) {
+
             t = candidate;
             base = subRegion;
          }
@@ -112,6 +113,11 @@ namespace RegionBase
    }
    
    const ShapeT* RegionBase::getShape() const
+   {
+      return mShape;
+   }
+
+   ShapeT* RegionBase::getShape2()
    {
       return mShape;
    }

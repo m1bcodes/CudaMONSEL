@@ -207,12 +207,12 @@ namespace BrowningEmpiricalCrossSection
 }
 typedef BrowningEmpiricalCrossSection::BrowningEmpiricalCrossSection BrowningEmpiricalCrossSectionT;
 
-namespace NormalShape
+namespace SimpleBlock
 {
-   class NormalShape;
+   class SimpleBlock;
 }
 
-typedef NormalShape::NormalShape NormalShapeT;
+typedef SimpleBlock::SimpleBlock SimpleBlockT;
 
 namespace ScatterMechanism
 {
@@ -255,27 +255,6 @@ namespace MultiPlaneShape
 }
 
 typedef MultiPlaneShape::Plane PlaneT;
-
-namespace NormalShape
-{
-   class NormalShape;
-}
-
-typedef NormalShape::NormalShape NormalShapeT;
-
-namespace NormalMultiPlaneShape
-{
-   class NormalMultiPlaneShape;
-}
-
-typedef NormalMultiPlaneShape::NormalMultiPlaneShape NormalMultiPlaneShapeT;
-
-namespace NormalIntersectionShape
-{
-   class NormalIntersectionShape;
-}
-
-typedef NormalIntersectionShape::NormalIntersectionShape NormalIntersectionShapeT;
 
 namespace CylindricalShape
 {
@@ -425,5 +404,27 @@ namespace ZeroCSD
 }
 
 typedef ZeroCSD::ZeroCSD ZeroCSDT;
+
+
+namespace NormalShape
+{
+   class NormalShape;
+}
+
+typedef NormalShape::NormalShape NormalShapeT;
+
+namespace NormalMultiPlaneShape
+{
+   class NormalMultiPlaneShape;
+}
+
+typedef NormalMultiPlaneShape::NormalMultiPlaneShape NormalMultiPlaneShapeT;
+
+namespace NormalIntersectionShape
+{
+   class NormalIntersectionShape;
+}
+
+typedef NormalIntersectionShape::NormalIntersectionShape NormalIntersectionShapeT;
 
 #endif

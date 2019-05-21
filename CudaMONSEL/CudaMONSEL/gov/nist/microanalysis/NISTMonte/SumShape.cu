@@ -49,17 +49,17 @@ namespace SumShape
    */
    double SumShape::getFirstIntersection(const double pos0[], const double pos1[])
    {
-      double u = INT_MAX;
+      double u = INFINITY;
       if (contains(pos0)) {
          // Starting inside...
          VectorXd start(pos0, pos0 + 3);
          do {
-            double uInc = INT_MAX;
+            double uInc = INFINITY;
             VectorXd end;
             for (auto shape : mShapes)
                if (shape->contains(start.data())) {
                   const double ui = shape->getFirstIntersection(start.data(), pos1);
-                  if ((ui != INT_MAX) && ((uInc == INT_MAX) || (ui > uInc))) {
+                  if ((ui != INFINITY) && ((uInc == INFINITY) || (ui > uInc))) {
                      if (!shape->contains(Math2::pointBetween(start, VectorXd(pos1, pos1 + 3), 0.99 * ui).data())) printf("%s", (shape->toString() + ", "
                         + "(" + std::to_string(pos0[0]) + ", " + std::to_string(pos0[1]) + ", " + std::to_string(pos0[2]) + ")" + ", "
                         + "(" + std::to_string(start[0]) + ", " + std::to_string(start[1]) + ", " + std::to_string(start[2]) + ")" + ", "

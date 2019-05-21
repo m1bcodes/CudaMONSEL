@@ -39,7 +39,7 @@ namespace NUTableInterpolation
    * @param tableFileName - A String providing the name of the resource (data
    *           file) that stores the table to be interpolated.
    */
-   NUTableInterpolation::NUTableInterpolation(char const * tableFileName) : tableFileName(tableFileName), range({ INT_MAX, INT_MIN })
+   NUTableInterpolation::NUTableInterpolation(char const * tableFileName) : tableFileName(tableFileName), range({ INFINITY, -INFINITY })
    {
       ReadTable(tableFileName);
    }

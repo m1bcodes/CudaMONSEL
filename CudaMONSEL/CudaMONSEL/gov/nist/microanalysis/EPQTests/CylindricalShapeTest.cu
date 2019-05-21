@@ -230,10 +230,10 @@ namespace CylindricalShapeTest
       VectorXd parms1 = transform(parms1Vec, phi, theta, psi, offset);
 
       double t = shape.getFirstIntersection(parms0.data(), parms1.data());
-      assertEquals(t, INT_MAX, 1.0e-6);
+      assertEquals(t, INFINITY, 1.0e-6);
 
       double tp = shape.getFirstIntersection(parms1.data(), parms0.data());
-      assertEquals(tp, INT_MAX, 1.0e-6);
+      assertEquals(tp, INFINITY, 1.0e-6);
 
       printf("CylindricalShapeTest::testSix() completed.\n");
    }
@@ -252,7 +252,7 @@ namespace CylindricalShapeTest
       assertTrue(t > 1.0);
 
       double tp = shape.getFirstIntersection(parms1.data(), parms0.data());
-      assertTrue(tp == INT_MAX);
+      assertTrue(tp == INFINITY);
 
       printf("CylindricalShapeTest::testSeven() completed.\n");
    }
@@ -405,7 +405,7 @@ namespace CylindricalShapeTest
       };
       assertTrue(shape.contains(sb));
       double t = shape.getFirstIntersection(sa, sb);
-      assertTrue(t != INT_MAX);
+      assertTrue(t != INFINITY);
       assertTrue(t > 1.0);
       VectorXd saVec(sa, sa + 3);
       VectorXd sbVec(sb, sb + 3);

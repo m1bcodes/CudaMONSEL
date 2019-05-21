@@ -72,14 +72,14 @@ namespace NormalMultiPlaneShape
       * u>1 and undefined normal vector.
       */
 
-      double umin = INT_MIN; // Starting interval is the
+      double umin = -INFINITY; // Starting interval is the
       // whole real line
-      double umax = INT_MAX;
+      double umax = INFINITY;
       double u;
       int minindex = -1; // Stores index of plane responsible for umin
       int maxindex = -1; // Same for umax. Initial values are illegal
       // indices.
-      result = { 0., 0., 0., INT_MAX }; // Initial value
+      result = { 0., 0., 0., INFINITY }; // Initial value
       // designates
       // no intersection
 

@@ -48,6 +48,6 @@ namespace Material
       double mDensity;
    };
 
-   static Material Default(0);
+   extern const Material Default;
 }
 #endif

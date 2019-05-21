@@ -71,9 +71,6 @@ namespace Electron
    };
 
    extern long getlastIdent();
-
-   extern double DefaultPos[];
-   extern Electron Default;
 }
 
 #endif

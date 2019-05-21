@@ -90,9 +90,9 @@ namespace SumShapeTest
    };
    static const double beamEnergy = ToSI::keV(20.0);
    static const double beamDia = 1.0e-8;
-   static const GaussianBeamT beam(beamDia, beamEnergy, center);
+   static const GaussianBeamT beam(beamDia, beamEnergy, beamCenter);
 
-   static MonteCarloSS::MonteCarloSS mMonte(&beam, &mChamber, beam.createElectron());
+   static MonteCarloSST mMonte(&beam, &mChamber, beam.createElectron());
 
    static PlaneT pl(Math2::MINUS_Z_AXIS, 3, Math2::ORIGIN_3D, 3);
    static PlaneT* pls[] = { &pl };
@@ -203,7 +203,7 @@ namespace SumShapeTest
          assertTrue(!mPillOuter.contains(outside.data()));
          {
             const double t = mPillOuter.getFirstIntersection(inside1.data(), inside2.data());
-            assertTrue(t != INT_MAX);
+            assertTrue(t != INFINITY);
             assertTrue(t > 1.0);
          }
          {

@@ -62,6 +62,7 @@
     <CudaCompile Include="gov\nist\microanalysis\EPQTests\EdgeEnergyTest.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQTests\Math2Test.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQTests\MeanIonizationPotentialTest.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\EPQTests\MonteCarloSSTest.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQTests\RegionBaseTest.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQTests\SphereTest.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQTests\SumShapeTest.cu" />
@@ -83,6 +84,7 @@
     <CudaCompile Include="gov\nist\microanalysis\NISTMonte\Electron.cu" />
     <CudaCompile Include="gov\nist\microanalysis\NISTMonte\MonteCarloSS.cu" />
     <CudaCompile Include="gov\nist\microanalysis\NISTMonte\MonteCarloSS_GPU.cu" />
+    <CudaCompile Include="gov\nist\microanalysis\NISTMonte\SimpleBlock.cu" />
     <CudaCompile Include="gov\nist\microanalysis\NISTMonte\Sphere.cu" />
     <CudaCompile Include="Amphibian\Algorithm.cu" />
     <CudaCompile Include="gov\nist\microanalysis\NISTMonte\SumShape.cu" />
@@ -163,6 +165,7 @@
     <ClInclude Include="gov\nist\microanalysis\EPQTests\EdgeEnergyTest.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQTests\Math2Test.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQTests\MeanIonizationPotentialTest.cuh" />
+    <ClInclude Include="gov\nist\microanalysis\EPQTests\MonteCarloSSTest.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQTests\RegionBaseTest.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQTests\SphereTest.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQTests\SumShapeTest.cuh" />
@@ -188,6 +191,7 @@
     <ClInclude Include="gov\nist\microanalysis\NISTMonte\IMaterialScatterModel.cuh" />
     <ClInclude Include="gov\nist\microanalysis\NISTMonte\IMaterialScatterModel_GPU.h" />
     <ClInclude Include="gov\nist\microanalysis\NISTMonte\MonteCarloSS.cuh" />
+    <ClInclude Include="gov\nist\microanalysis\NISTMonte\SimpleBlock.cuh" />
     <ClInclude Include="gov\nist\microanalysis\NISTMonte\Sphere.cuh" />
     <ClInclude Include="Amphibian\Algorithm.cuh" />
     <ClInclude Include="gov\nist\microanalysis\NISTMonte\SumShape.cuh" />

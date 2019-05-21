@@ -59,14 +59,14 @@ namespace CylindricalShape
 
    static double checkT(double t)
    {
-      return t >= 0.0 ? t : INT_MAX;
+      return t >= 0.0 ? t : INFINITY;
    }
 
    double CylindricalShape::getFirstIntersection(const double sa[], const double sb[])
    {
       VectorXd saVec(sa, sa + 3), sbVec(sb, sb + 3);
       if (true) {
-         double t0 = INT_MAX, t1 = INT_MAX, tc = INT_MAX;
+         double t0 = INFINITY, t1 = INFINITY, tc = INFINITY;
          auto n = Math2::minus3D(sbVec, saVec);
          double nd = Math2::dot3D(n, mDelta);
          if (nd != 0.0) {
@@ -98,8 +98,8 @@ namespace CylindricalShape
             if (discr >= 0.0) {
                double tm = (-b - ::sqrt(discr)) / a;
                double tp = (-b + ::sqrt(discr)) / a;
-               double t = ::fmin(tm > 0.0 ? tm : INT_MAX, tp > 0.0 ? tp : INT_MAX);
-               if ((t != INT_MAX) && (md + t * nd >= 0.0) && (md + t * nd <= mDelta2))
+               double t = ::fmin(tm > 0.0 ? tm : INFINITY, tp > 0.0 ? tp : INFINITY);
+               if ((t != INFINITY) && (md + t * nd >= 0.0) && (md + t * nd <= mDelta2))
                   tc = t;
             }
          }
@@ -110,9 +110,9 @@ namespace CylindricalShape
          double md = Math2::dot3D(m, mDelta), nd = Math2::dot3D(n, mDelta), dd = Math2::dot3D(mDelta, mDelta);
          // Segment fully outside end caps...
          if ((md < 0.0) && (md + nd < 0.0))
-            return INT_MAX;
+            return INFINITY;
          if ((md > dd) && (md + nd > dd))
-            return INT_MAX;
+            return INFINITY;
          double nn = Math2::dot3D(n, n), mn = Math2::dot3D(m, n);
          double a = dd * nn - nd * nd;
          double k = Math2::dot3D(m, m) - mRadius2;
@@ -128,7 +128,7 @@ namespace CylindricalShape
          double b = dd * mn - nd * md;
          double disc = b * b - a * c;
          if (disc < 0.0)
-            return INT_MAX;
+            return INFINITY;
          double t = (-b - ::sqrt(disc)) / a; // Always a >= 0.0
          if (t < 0.0)
             t = (-b + ::sqrt(disc)) / a;
@@ -136,11 +136,11 @@ namespace CylindricalShape
          // Check end caps
          if (md + t * nd < 0.0) {
             t = -md / nd;
-            return k + 2.0 * t * (mn + t * nn) <= 0.0 ? checkT(t) : INT_MAX;
+            return k + 2.0 * t * (mn + t * nn) <= 0.0 ? checkT(t) : INFINITY;
          }
          else if (md + t * nd > dd) {
             t = (dd - md) / nd;
-            return k + dd - 2.0 * md + t * (2.0 * (mn - nd) + t * nn) <= 0.0 ? checkT(t) : INT_MAX;
+            return k + dd - 2.0 * md + t * (2.0 * (mn - nd) + t * nn) <= 0.0 ? checkT(t) : INFINITY;
          }
          return checkT(t);
       }

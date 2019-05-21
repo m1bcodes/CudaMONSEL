@@ -18,7 +18,7 @@ namespace NormalIntersectionShape
 
    VectorXd NormalIntersectionShape::getFirstNormal(const double pos0[], const double pos1[])
    {
-      VectorXd nointersection = { 0., 0., 0., INT_MAX };
+      VectorXd nointersection = { 0., 0., 0., INFINITY };
 
       int adepth, bdepth;
       double u;
@@ -115,7 +115,7 @@ namespace NormalIntersectionShape
             // after
             // that
 
-            if (nva[3] < INT_MAX)
+            if (nva[3] < INFINITY)
                nva[3] = (nva[3] * (1. - u)) + u;
             if (nva[3] > 1)
                if (cdepth == 0)
@@ -153,7 +153,7 @@ namespace NormalIntersectionShape
             // after
             // that
 
-            if (nvb[3] < INT_MAX)
+            if (nvb[3] < INFINITY)
                nvb[3] = (nvb[3] * (1. - u)) + u;
             if (nvb[3] > 1)
                if (cdepth == 0)
@@ -180,7 +180,7 @@ namespace NormalIntersectionShape
                   pos0[2] + (u * delta[2])
                };
                nva = shapeA.getFirstNormal(tmp1, pos1); // Find the next one after that
-               if (nva[3] < INT_MAX)
+               if (nva[3] < INFINITY)
                   nva[3] = (nva[3] * (1. - u)) + u;
 
                // Get the next intersection in B
@@ -192,7 +192,7 @@ namespace NormalIntersectionShape
                   pos0[2] + (u * delta[2])
                };
                nvb = shapeB.getFirstNormal(tmp2, pos1); // Find the next one after that
-               if (nvb[3] < INT_MAX)
+               if (nvb[3] < INFINITY)
                   nvb[3] = (nvb[3] * (1. - u)) + u;
 
                if (nva[3] > 1)

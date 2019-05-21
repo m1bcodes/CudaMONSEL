@@ -47,7 +47,7 @@ namespace NormalUnionShape
          0.,
          0.,
          0.,
-         INT_MAX
+         INFINITY
       };
       auto shapes = getShapes();
       NormalShape* shapeA = (NormalShape*)shapes.at(0);
@@ -163,7 +163,7 @@ namespace NormalUnionShape
             // after
             // that
 
-            if (nva[3] < INT_MAX)
+            if (nva[3] < INFINITY)
                nva[3] = (nva[3] * (1. - u)) + u;
             if (nva[3] > 1)
                if (cdepth == bdepth) {
@@ -200,7 +200,7 @@ namespace NormalUnionShape
             // after
             // that
 
-            if (nvb[3] < INT_MAX)
+            if (nvb[3] < INFINITY)
                nvb[3] = (nvb[3] * (1. - u)) + u;
             if (nvb[3] > 1)
                if (cdepth == adepth) {
@@ -227,7 +227,7 @@ namespace NormalUnionShape
                   pos0[2] + (u * delta[2])
                };
                nva = shapeA->getFirstNormal(tmp0, pos1); // Find the next one after that
-               if (nva[3] < INT_MAX)
+               if (nva[3] < INFINITY)
                   nva[3] = (nva[3] * (1. - u)) + u;
 
                // Get the next intersection in B
@@ -239,7 +239,7 @@ namespace NormalUnionShape
                   pos0[2] + (u * delta[2])
                };
                nvb = shapeB->getFirstNormal(tmp1, pos1); // Find the next one after that
-               if (nvb[3] < INT_MAX)
+               if (nvb[3] < INFINITY)
                   nvb[3] = (nvb[3] * (1. - u)) + u;
 
                if (nva[3] > 1)

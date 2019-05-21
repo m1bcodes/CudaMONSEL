@@ -16,7 +16,7 @@ namespace NullMaterialScatterModel
       //minEforTracking = ToSI::eV(0.1);
       pe->setCurrentRegion(nextRegion);
       pe->setScatteringElement(NULL);
-      return &Electron::Default;
+      return NULL;
    }
 
    double NullMaterialScatterModel::calculateEnergyLoss(double len, const ElectronT& pe) const
@@ -36,7 +36,7 @@ namespace NullMaterialScatterModel
 
    ElectronT* NullMaterialScatterModel::scatter(ElectronT& pe)
    {
-      return &Electron::Default;
+      return NULL;
    }
 
    double NullMaterialScatterModel::getMinEforTracking() const

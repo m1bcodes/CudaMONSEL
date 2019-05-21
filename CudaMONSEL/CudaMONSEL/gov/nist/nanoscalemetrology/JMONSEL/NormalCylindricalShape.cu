@@ -111,7 +111,7 @@ namespace NormalCylindricalShape
 
    VectorXd NormalCylindricalShape::getFirstNormal(const double pos0[], const double pos1[])
    {
-      nv = { 0., 0., 0., INT_MAX };
+      nv = { 0., 0., 0., INFINITY };
 
       // Various differences and dot products that we will need:
       /*

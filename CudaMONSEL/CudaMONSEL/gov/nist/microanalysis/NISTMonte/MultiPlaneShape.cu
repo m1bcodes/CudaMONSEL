@@ -44,10 +44,10 @@ namespace MultiPlaneShape
       double den = (p2[0] - p1[0]) * mNormal[0] + (p2[1] - p1[1]) * mNormal[1] + (p2[2] - p1[2]) * mNormal[2];
       if (den != 0.0) {
          double res = ((mPoint[0] - p1[0]) * mNormal[0] + (mPoint[1] - p1[1]) * mNormal[1] + (mPoint[2] - p1[2]) * mNormal[2]) / den;
-         return res < 0.0 ? INT_MAX : res;
+         return res < 0.0 ? INFINITY : res;
       }
       else
-         return INT_MAX;
+         return INFINITY;
    }
 
    void Plane::rotate(const double pivot[], double phi, double theta, double psi)
@@ -229,7 +229,7 @@ namespace MultiPlaneShape
       else {
          VectorXd pos0Vec(pos0, pos0 + 3);
 
-         double minU = INT_MAX;
+         double minU = INFINITY;
          if ((pos0Vec == (mInsidePos)) || contains(pos0)) { // Easy part...
             // If we start inside then any plane we strike will take us outside
             for (auto pl : mPlanes) {
@@ -242,7 +242,7 @@ namespace MultiPlaneShape
             // in all likelyhood during the next
             // call to MCSS_MultiPlaneShape.getFirstIntersection, pos0 will
             // equal the stored pos1.
-            if ((minU > 1.0) && (minU != INT_MAX)) {
+            if ((minU > 1.0) && (minU != INFINITY)) {
                if (mInsidePos.empty()) mInsidePos.resize(3);
                mInsidePos[0] = pos1[0];
                mInsidePos[1] = pos1[1];

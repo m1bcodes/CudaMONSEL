@@ -187,8 +187,9 @@ namespace MonteCarloSS
 
    void MonteCarloSS::removeActionListener(ActionListenerT& sel)
    {
-      for (auto itr = mEventListeners.begin(); itr != mEventListeners.end(); ++itr) {
-         if (*itr == &sel) mEventListeners.erase(itr);
+      auto itr = std::find(mEventListeners.begin(), mEventListeners.end(), &sel);
+      if (itr != mEventListeners.end()) {
+         mEventListeners.erase(itr);
       }
    }
 

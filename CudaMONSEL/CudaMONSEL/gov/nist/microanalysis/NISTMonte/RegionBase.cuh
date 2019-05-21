@@ -30,6 +30,7 @@ namespace RegionBase
       Element::UnorderedSetT getElements(bool recurse) const;
       const RegionBase* findEndOfStep(double p0[], double p1[]) const;
       const ShapeT* getShape() const;
+      ShapeT* getShape2();
 
    //protected:
       double getAtomsPerCubicMeter(const ElementT& el) const;

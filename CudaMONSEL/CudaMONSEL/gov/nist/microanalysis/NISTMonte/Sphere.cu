@@ -32,16 +32,16 @@ namespace Sphere
          double up = (b + ::sqrt(f)) / ma2;
          double un = (b - ::sqrt(f)) / ma2;
          if (up < 0.0)
-            up = INT_MAX;
+            up = INFINITY;
          if (un < 0.0)
-            un = INT_MAX;
+            un = INFINITY;
          const double res = ::fmin(up, un);
-         if (!((res == INT_MAX) || (Math2::magnitude(Math2::plus(m, Math2::multiply(res, d))) - mRadius < ::fmax(1.0e-12, Math2::distance(VectorXd(pos0, pos0 + 3), VectorXd(pos1, pos1 + 3)) * 1.0e-9)))) {
-            printf("%s\n", std::to_string(Math2::magnitude(Math2::plus(m, Math2::multiply(res, d))) - mRadius).c_str());
+         if (!((res == INFINITY) || (Math2::magnitude(Math2::plus(m, Math2::multiply(res, d))) - mRadius < ::fmax(1.0e-12, Math2::distance(VectorXd(pos0, pos0 + 3), VectorXd(pos1, pos1 + 3)) * 1.0e-9)))) {
+            printf("Sphere::getFirstIntersection: crashed (%s)\n", std::to_string(Math2::magnitude(Math2::plus(m, Math2::multiply(res, d))) - mRadius).c_str());
          }
          return res;
       }
-      return INT_MAX;
+      return INFINITY;
    }
 
    VectorXd Sphere::getInitialPoint() const
