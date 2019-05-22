@@ -67,33 +67,33 @@ namespace CylindricalShape
       VectorXd saVec(sa, sa + 3), sbVec(sb, sb + 3);
       if (true) {
          double t0 = INFINITY, t1 = INFINITY, tc = INFINITY;
-         auto n = Math2::minus3D(sbVec, saVec);
+         const VectorXd& n = Math2::minus3d(sb, sa);
          double nd = Math2::dot3D(n, mDelta);
          if (nd != 0.0) {
             // Check end cap 0
-            double t = Math2::dot3D(mDelta, Math2::minus3D(mEnd0, saVec)) / nd;
+            double t = Math2::dot3d(mDelta.data(), Math2::minus3d(mEnd0.data(), sa).data()) / nd;
             if (t > 0.0) {
-               auto pt = Math2::minus3D(Math2::pointBetween(saVec, sbVec, t), mEnd0);
-               if (Math2::dot3D(pt, pt) < mRadius2)
+               const VectorXd& pt = Math2::minus3d(Math2::pointBetween3d(sa, sb, t).data(), mEnd0.data());
+               if (Math2::dot3d(pt.data(), pt.data()) < mRadius2)
                   t0 = t;
             }
             // Check end cap 1
-            auto end1 = Math2::plus(mEnd0, mDelta);
-            t = Math2::dot3D(mDelta, Math2::minus3D(end1, saVec)) / nd;
+            const VectorXd& end1 = Math2::plus(mEnd0, mDelta);
+            t = Math2::dot3d(mDelta.data(), Math2::minus3d(end1.data(), sa).data()) / nd;
             if (t > 0.0) {
-               auto pt = Math2::minus3D(Math2::pointBetween(saVec, sbVec, t), end1);
-               if (Math2::dot3D(pt, pt) < mRadius2)
+               const VectorXd& pt = Math2::minus3d(Math2::pointBetween3d(sa, sb, t).data(), end1.data());
+               if (Math2::dot3d(pt.data(), pt.data()) < mRadius2)
                   t1 = t;
             }
          }
-         double a = mDelta2 * Math2::dot3D(n, n) - nd * nd;
+         double a = mDelta2 * Math2::dot3d(n.data(), n.data()) - nd * nd;
          if (::abs(a) > EPSILON) {
-            auto m = Math2::minus3D(saVec, mEnd0);
-            double mn = Math2::dot3D(m, n);
-            double b = mDelta2 * mn - nd * Math2::dot3D(m, mDelta);
-            double md = Math2::dot3D(m, mDelta);
+            const VectorXd& m = Math2::minus3d(sa, mEnd0.data());
+            double mn = Math2::dot3d(m.data(), n.data());
+            double b = mDelta2 * mn - nd * Math2::dot3d(m.data(), mDelta.data());
+            double md = Math2::dot3d(m.data(), mDelta.data());
             // Consider the side of the cylinder
-            double c = mDelta2 * (Math2::dot3D(m, m) - mRadius2) - md * md;
+            double c = mDelta2 * (Math2::dot3d(m.data(), m.data()) - mRadius2) - md * md;
             double discr = b * b - a * c;
             if (discr >= 0.0) {
                double tm = (-b - ::sqrt(discr)) / a;
@@ -106,16 +106,16 @@ namespace CylindricalShape
          return ::fmin(t0, ::fmin(t1, tc));
       }
       else {
-         auto m = Math2::minus3D(saVec, mEnd0), n = Math2::minus3D(sbVec, saVec);
-         double md = Math2::dot3D(m, mDelta), nd = Math2::dot3D(n, mDelta), dd = Math2::dot3D(mDelta, mDelta);
+         auto m = Math2::minus3d(sa, mEnd0.data()), n = Math2::minus3d(sb, sa);
+         double md = Math2::dot3d(m.data(), mDelta.data()), nd = Math2::dot3d(n.data(), mDelta.data()), dd = Math2::dot3d(mDelta.data(), mDelta.data());
          // Segment fully outside end caps...
          if ((md < 0.0) && (md + nd < 0.0))
             return INFINITY;
          if ((md > dd) && (md + nd > dd))
             return INFINITY;
-         double nn = Math2::dot3D(n, n), mn = Math2::dot3D(m, n);
+         double nn = Math2::dot3d(n.data(), n.data()), mn = Math2::dot3d(m.data(), n.data());
          double a = dd * nn - nd * nd;
-         double k = Math2::dot3D(m, m) - mRadius2;
+         double k = Math2::dot3d(m.data(), m.data()) - mRadius2;
          double c = dd * k - md * md;
          if (::abs(a) < EPSILON) {
             if (md < 0.0)
@@ -132,7 +132,7 @@ namespace CylindricalShape
          double t = (-b - ::sqrt(disc)) / a; // Always a >= 0.0
          if (t < 0.0)
             t = (-b + ::sqrt(disc)) / a;
-         if (!(::abs(distanceSqr(Math2::plus(saVec, Math2::multiply(t, n)).data(), closestPointOnAxis(Math2::plus(saVec, Math2::multiply(t, n)).data()) - mRadius2)) < 1.0e-10 * mRadius2)) printf("CylindricalShape::getFirstIntersection: < 1.0e-10 * mRadius2 (%.10e)\n", mRadius2);
+         if (!(::abs(distanceSqr(Math2::plus3d(sa, Math2::multiply3d(t, n.data()).data()).data(), closestPointOnAxis(Math2::plus3d(sa, Math2::multiply3d(t, n.data()).data()).data()) - mRadius2)) < 1.0e-10 * mRadius2)) printf("CylindricalShape::getFirstIntersection: < 1.0e-10 * mRadius2 (%.10e)\n", mRadius2);
          // Check end caps
          if (md + t * nd < 0.0) {
             t = -md / nd;

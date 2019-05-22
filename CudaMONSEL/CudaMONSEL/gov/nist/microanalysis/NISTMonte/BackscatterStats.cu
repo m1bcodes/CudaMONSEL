@@ -132,6 +132,8 @@ namespace BackscatterStats
       mAzimuthalBins->clear();
       mFwdEnergyBins->clear();
       mBackEnergyBins->clear();
+      //mFwdEnergyBins = new HistogramT(0.0, mBeamEnergy, mEnergyBinCount);
+      //mBackEnergyBins = new HistogramT(0.0, mBeamEnergy, mEnergyBinCount);
       mLog.clear();
    }
 
@@ -166,12 +168,12 @@ namespace BackscatterStats
          }
          //}
       }
-      else if (MonteCarloSS::TrajectoryEndEvent) {
+      else if (ae == MonteCarloSS::TrajectoryEndEvent) {
          //synchronized(this) {
          mEventCount++;
          //}
       }
-      else if (MonteCarloSS::BeamEnergyChanged) {
+      else if (ae == MonteCarloSS::BeamEnergyChanged) {
          //synchronized(this) {
          initialize();
          //}
@@ -255,14 +257,6 @@ namespace BackscatterStats
    int BackscatterStats::getEnergyBinCount() const
    {
       return mEnergyBinCount;
-   }
-
-   void BackscatterStats::setEnergyBinCount(int energyBinCount)
-   {
-      if (mEnergyBinCount != energyBinCount) {
-         mEnergyBinCount = energyBinCount;
-         initialize();
-      }
    }
 
    double BackscatterStats::forwardscatterFraction() const

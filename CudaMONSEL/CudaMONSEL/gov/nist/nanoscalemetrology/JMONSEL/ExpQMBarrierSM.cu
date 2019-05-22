@@ -11,7 +11,10 @@ namespace ExpQMBarrierSM
 {
    ExpQMBarrierSM::ExpQMBarrierSM(const MaterialT* mat) :
       u0(mat->isSEmaterial() ? ((SEmaterialT*)mat)->getEnergyCBbottom() : 0),
-      classical(true)
+      classical(true),
+      lambda(0),
+      lambdaFactor(0),
+      mat(NULL)
    {
    }
 
@@ -19,7 +22,8 @@ namespace ExpQMBarrierSM
       u0(mat->isSEmaterial() ? ((SEmaterialT*)mat)->getEnergyCBbottom() : 0),
       classical(false),
       lambda(lambda),
-      lambdaFactor((PhysicalConstants::PI * lambda * ::sqrt(PhysicalConstants::ElectronMass / 2.)) / PhysicalConstants::PlanckReduced)
+      lambdaFactor((PhysicalConstants::PI * lambda * ::sqrt(PhysicalConstants::ElectronMass / 2.)) / PhysicalConstants::PlanckReduced),
+      mat(mat)
    {
    }
 
@@ -49,23 +53,23 @@ namespace ExpQMBarrierSM
       const RegionBaseT* currentRegion = pe->getCurrentRegion();
 
       if (!(currentRegion != nextRegion)) {
-         printf("ExpQMBarrierSM::barrierScatter: currentRegion == nextRegion");
+         printf("ExpQMBarrierSM::barrierScatter: currentRegion == nextRegion\n");
          return NULL;
       }
 
       double deltaU;
       const MaterialT& currentMaterial = currentRegion->getMaterial();
       if (currentMaterial.isSEmaterial())
-         deltaU = -((SEmaterialT)currentMaterial).getEnergyCBbottom();
+         deltaU = -((SEmaterialT&)currentMaterial).getEnergyCBbottom();
       else
          deltaU = 0.;
 
       if (!(deltaU == -u0)) {
-         printf("ExpQMBarrierSM::barrierScatter: deltaU != -u0 (%.10e, %.10e)", deltaU, -u0);
+         printf("ExpQMBarrierSM::barrierScatter: deltaU != -u0 (%.10e, %.10e)\n", deltaU, -u0);
          return NULL;
       }
       if (nextmaterial.isSEmaterial())
-         deltaU += ((SEmaterialT)nextmaterial).getEnergyCBbottom();
+         deltaU += ((SEmaterialT&)nextmaterial).getEnergyCBbottom();
 
       /* FIND THE OUTWARD POINTING NORMAL AT THE BOUNDARY */
       PositionVecT nb; // We'll store it here

@@ -8,11 +8,11 @@ namespace NormalCylindricalShape
    NormalCylindricalShape::NormalCylindricalShape(const double end0[], const double end1[], double radius) :
       CylindricalShapeT(end0, end1, radius),
       end0(end0, end0 + 3),
-      axis(Math2::minus(VectorXd(end1, end1 + 3), VectorXd(end0, end0 + 3))),
+      axis(Math2::minus3d(end1, end0)),
       radius2(radius * radius),
-      mLen2(Math2::dot(axis, axis)),
+      mLen2(Math2::dot3d(axis.data(), axis.data())),
       mLen(::sqrt(mLen2)),
-      normalizedaxis(Math2::divide(axis, mLen))
+      normalizedaxis(Math2::divide3d(axis.data(), mLen))
    {
    }
 

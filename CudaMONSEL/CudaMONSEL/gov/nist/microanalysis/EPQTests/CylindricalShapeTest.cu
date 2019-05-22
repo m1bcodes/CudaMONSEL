@@ -19,32 +19,32 @@ namespace CylindricalShapeTest
    static const double end0[] = { -scale, 0.0, 0.0 };
    static const double end1[] = { scale, 0.0, 0.0 };
 
-   static const VectorXd end0Vec = transform(end0, phi, theta, psi, offset);
-   static const VectorXd end1Vec = transform(end1, phi, theta, psi, offset);
+   static const VectorXd end0Vec(transform(end0, phi, theta, psi, offset));
+   static const VectorXd end1Vec(transform(end1, phi, theta, psi, offset));
    static CylindricalShapeT shape(end0Vec.data(), end1Vec.data(), radius);
 
-   double closestPtOnAxis(double pt[])
+   double closestPtOnAxis(const double pt[])
    {
-      auto b = shape.getEnd0();
-      auto ab = Math2::minus(shape.getEnd1(), b);
+      const VectorXd& b = shape.getEnd0();
+      const VectorXd& ab = Math2::minus3d(shape.getEnd1().data(), b.data());
       VectorXd ptVec(pt, pt + 3);
-      double t = Math2::dot(Math2::minus(ptVec, b), ab) / Math2::dot(ab, ab);
+      double t = Math2::dot3d(Math2::minus3d(pt, b.data()).data(), ab.data()) / Math2::dot3d(ab.data(), ab.data());
       return t;
    }
 
-   bool isOnCylinder(double pt[])
+   bool isOnCylinder(const double pt[])
    {
       double t = closestPtOnAxis(pt);
       if ((t >= 0) && (t <= 1)) {
-         auto axisPt = Math2::plus(shape.getEnd0(), Math2::multiply(t, Math2::minus(shape.getEnd1(), shape.getEnd0())));
+         const VectorXd& axisPt = Math2::plus3d(shape.getEnd0().data(), Math2::multiply3d(t, Math2::minus3d(shape.getEnd1().data(), shape.getEnd0().data()).data()).data());
          VectorXd ptVec(pt, pt + 3);
-         return ::abs(Math2::distance(ptVec, axisPt) - radius) < radius * 1.0e-6;
+         return ::abs(Math2::distance3d(ptVec, axisPt) - radius) < radius * 1.0e-6;
       }
       else
          return false;
    }
 
-   bool isOnEndCap(double pt[])
+   bool isOnEndCap(const double pt[])
    {
       double t = closestPtOnAxis(pt);
       VectorXd axisPt;

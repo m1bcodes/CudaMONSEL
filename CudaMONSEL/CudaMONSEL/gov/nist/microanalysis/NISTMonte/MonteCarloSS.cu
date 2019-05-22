@@ -106,7 +106,7 @@ namespace MonteCarloSS
 
    void MonteCarloSS::takeStep()
    {
-      auto pos0 = mElectron->getPosition();
+      const VectorXd& pos0 = mElectron->getPosition();
 
       auto currentRegion = mElectron->getCurrentRegion();
       if ((currentRegion == nullptr) || !(currentRegion->getShape()->contains(pos0.data()))) {
@@ -121,7 +121,7 @@ namespace MonteCarloSS
       auto msm = currentRegion->getScatterModel();
       if (msm == nullptr) printf("MonteCarloSS::takeStep: msm is null\n");
 
-      auto pos1 = mElectron->candidatePoint(msm->randomMeanPathLength(*mElectron));
+      VectorXd& pos1 = mElectron->candidatePoint(msm->randomMeanPathLength(*mElectron));
 
       auto nextRegion = currentRegion->findEndOfStep(pos0.data(), pos1.data());
       mElectron->move(pos1.data(), msm->calculateEnergyLoss(dist(pos0.data(), pos1.data()), *mElectron));
@@ -217,6 +217,7 @@ namespace MonteCarloSS
          //if (i == 239)
          //   printf("%d\n", i);
          //++i;
+         //printf("%d\n", i++);
          takeStep();
       }
       fireEvent(TrajectoryEndEvent);

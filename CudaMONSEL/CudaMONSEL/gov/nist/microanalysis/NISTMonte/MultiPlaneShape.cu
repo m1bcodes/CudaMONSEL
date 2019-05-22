@@ -84,37 +84,55 @@ namespace MultiPlaneShape
       return mPoint;
    }
 
-   static VectorXd intersection(Plane planes[], int len)
+   const VectorXd& Plane::getNormalRef() const
+   {
+      return mNormal;
+   }
+
+   const VectorXd& Plane::getPointRef() const
+   {
+      return mPoint;
+   }
+
+   static VectorXd intersection(const Plane planes[], int len)
    {
       if (!(len == 3)) printf("MultiPlaneShape::intersection: len == 3 (%d)", len);
-      auto n0 = planes[0].getNormal(), n1 = planes[1].getNormal(), n2 = planes[2].getNormal();
+      const VectorXd& n0 = planes[0].getNormalRef();
+      const VectorXd& n1 = planes[1].getNormalRef();
+      const VectorXd& n2 = planes[2].getNormalRef();
       // The determinant of the matrix made from the vector normals
       double det = n0[0] * (n1[1] * n2[2] - n2[1] * n1[2]) // 
          - n1[0] * (n0[1] * n2[2] - n2[1] * n0[2]) // 
          + n2[0] * (n0[1] * n1[2] - n1[1] * n0[2]);
       if (::abs(det) > 1.0e-10)
-         return Math2::divide(Math2::plus(Math2::plus(Math2::multiply(Math2::dot(planes[0].getPoint(), n0), Math2::cross(n1, n2)), Math2::multiply(Math2::dot(planes[1].getPoint(), n1), Math2::cross(n2, n0))), Math2::multiply(Math2::dot(planes[2].getPoint(), n2), Math2::cross(n0, n1))), det);
+         return Math2::divide3d(
+         Math2::plus3d(
+         Math2::plus3d(
+         Math2::multiply3d(Math2::dot3d(planes[0].getPoint().data(), n0.data()), Math2::cross(n1, n2).data()).data(),
+         Math2::multiply3d(Math2::dot3d(planes[1].getPoint().data(), n1.data()), Math2::cross(n2, n0).data()).data()
+         ).data(), Math2::multiply(Math2::dot(planes[2].getPoint(), n2), Math2::cross(n0, n1)).data()
+         ).data(), det);
       else
          return VectorXd();
    }
 
    static VectorXd normalize(const double vec[])
    {
-      VectorXd res(3);
       double norm = ::sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
-      res[0] = vec[0] / norm;
-      res[1] = vec[1] / norm;
-      res[2] = vec[2] / norm;
-      return res;
+      return {
+         vec[0] / norm,
+         vec[1] / norm,
+         vec[2] / norm
+      };
    }
 
    VectorXd invert(const double v[])
    {
-      VectorXd res(3);
-      res[0] = -v[0];
-      res[1] = -v[1];
-      res[2] = -v[2];
-      return res;
+      return {
+         -v[0],
+         -v[1],
+         -v[2]
+      };
    }
 
    //void MultiPlaneShape::addOffsetPlane(const double normal[], const double pt[], double dist)
@@ -252,7 +270,7 @@ namespace MultiPlaneShape
          else { // A little more difficult...
             // If we start outside then we may intersect a plane and yet remain
             // outside
-            VectorXd testPt(3);
+            double testPt[3];
             for (auto pli : mPlanes) {
                double u = pli->getFirstIntersection(pos0, pos1);
                if (!(u >= 0.0)) printf("MultiPlaneShape::getFirstIntersection: u < 0.0 (%.10e)", u);
@@ -265,7 +283,7 @@ namespace MultiPlaneShape
                   bool inside = true;
                   for (auto plj : mPlanes)
                      if (plj != pli)
-                        if (!plj->contains(testPt.data())) {
+                        if (!plj->contains(testPt)) {
                            inside = false;
                            break;
                         }

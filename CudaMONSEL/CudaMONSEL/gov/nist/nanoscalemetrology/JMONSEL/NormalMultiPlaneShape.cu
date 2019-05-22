@@ -83,7 +83,7 @@ namespace NormalMultiPlaneShape
       // designates
       // no intersection
 
-      double delta[] = { pos1[0] - pos0[0], pos1[1] - pos0[1], pos1[2] - pos0[2] };
+      const double delta[] = { pos1[0] - pos0[0], pos1[1] - pos0[1], pos1[2] - pos0[2] };
       for (int i = 0; i < numPlanes; i++) {
          double pos0minusc[] = { pos0[0] - carray[i][0], pos0[1] - carray[i][1], pos0[2] - carray[i][2] };
          /*
@@ -241,7 +241,7 @@ namespace NormalMultiPlaneShape
       return numPlanes;
    }
 
-   VectorXd NormalMultiPlaneShape::getNormal(int index) const
+   const VectorXd& NormalMultiPlaneShape::getNormal(int index) const
    {
       return narray[index];
    }

@@ -22,8 +22,8 @@ namespace Sphere
    {
       // Compute the intersection of the line between pos0 and pos1 and the
       // shell of the sphere.
-      const VectorXd d = Math2::minus(VectorXd(pos1, pos1 + 3), VectorXd(pos0, pos0 + 3));
-      const VectorXd m = Math2::minus(VectorXd(pos0, pos0 + 3), mCenter);
+      const VectorXd& d = Math2::minus3d(pos1, pos0);
+      const VectorXd& m = Math2::minus3d(pos0, mCenter.data());
       const double ma2 = -2.0 * Math2::dot(d, d);
       const double b = 2.0 * Math2::dot(m, d);
       const double c2 = 2.0 * (Math2::dot(m, m) - mRadius * mRadius);
@@ -46,20 +46,20 @@ namespace Sphere
 
    VectorXd Sphere::getInitialPoint() const
    {
-      double res[3];
-      res[0] = mCenter[0];
-      res[1] = mCenter[1];
-      res[2] = mCenter[2] - 0.999 * mRadius; // just inside...
-      return VectorXd(res, res+3);
+      return {
+         mCenter[0],
+         mCenter[1],
+         mCenter[2] - 0.999 * mRadius // just inside...
+      };
    }
 
    VectorXd Sphere::getPointAt(double phi, double theta, double frac) const
    {
-      VectorXd res(3, 0);
-      res[2] = mCenter[2] + mRadius * frac * ::cos(phi);
-      res[1] = mCenter[1] + mRadius * frac * ::sin(phi) * ::sin(theta);
-      res[0] = mCenter[0] + mRadius * frac * ::sin(phi) * ::cos(theta);
-      return res;
+      return {
+         mCenter[2] + mRadius * frac * ::cos(phi),
+         mCenter[1] + mRadius * frac * ::sin(phi) * ::sin(theta),
+         mCenter[0] + mRadius * frac * ::sin(phi) * ::cos(theta)
+      };
    }
 
    // JavaDoc in ITransform

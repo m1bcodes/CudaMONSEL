@@ -326,10 +326,7 @@ namespace Math2
 
    double distance3d(const VectorXd& p1, const VectorXd& p2)
    {
-      double sum2 = 0.0;
-      for (int i = 0; i < 3; ++i)
-         sum2 += Math2::sqr(p2[i] - p1[i]);
-      return ::sqrt(sum2);
+      return ::sqrt(Math2::sqr(p2[0] - p1[0]) + Math2::sqr(p2[1] - p1[1]) + Math2::sqr(p2[2] - p1[2]));
    }
    
    //   /**
@@ -369,6 +366,11 @@ namespace Math2
       return ::sqrt(sum2);
    }
 
+   double magnitude3d(const double p[])
+   {
+      return ::sqrt(p[0] * p[0] + p[1] * p[1] + p[2] * p[2]);
+   }
+
    //   /**
    //   * normalize - Returns a copy of the input vector normalized to 1 length of
    //   * 1.0.
@@ -385,6 +387,11 @@ namespace Math2
       return Math2::divide(p, Math2::magnitude(p));
    }
    
+   VectorXd normalize3d(const double p[])
+   {
+      return Math2::divide3d(p, Math2::magnitude3d(p));
+   }
+
    //   /**
    //   * sum - Returns the sum of the specified array
    //   *
@@ -440,6 +447,11 @@ namespace Math2
       for (int i = 0; i < a.size(); ++i)
          res[i] = a[i] + b[i];
       return res;
+   }
+
+   VectorXd plus3d(const double a[], const double b[])
+   {
+      return { a[0] + b[0], a[1] + b[1], a[2] + b[2] };
    }
    //
    //   /**
@@ -502,13 +514,14 @@ namespace Math2
       return res;
    }
 
+   VectorXd minus3d(const double a[], const double b[])
+   {
+      return { a[0] - b[0], a[1] - b[1], a[2] - b[2] };
+   }
+
    VectorXd minus3D(const VectorXd& a, const VectorXd& b)
    {
-      VectorXd res(a.size(), 0);
-      res[0] = a[0] - b[0];
-      res[1] = a[1] - b[1];
-      res[2] = a[2] - b[2];
-      return res;
+      return { a[0] - b[0], a[1] - b[1], a[2] - b[2] };
    }
 
    //
@@ -533,6 +546,7 @@ namespace Math2
       * @param b
       * @return The dot product of a and b
       */
+
    double dot(const VectorXd& a, const VectorXd& b)
    {
       if (a.size() != b.size()) printf("Both arguments to the dot product must be the same length.");
@@ -544,6 +558,11 @@ namespace Math2
    }
 
    double dot3D(const VectorXd& a, const VectorXd& b)
+   {
+      return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+   }
+
+   double dot3d(const double a[], const double b[])
    {
       return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
    }
@@ -571,8 +590,8 @@ namespace Math2
       */
    VectorXd cross(const VectorXd& a, const VectorXd& b)
    {
-      if ((a.size() != 3) | (b.size()!= 3)) printf("Both arguments to the cross product must be the three-vectors.");
-      return VectorXd({ a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0] });
+      if ((a.size() != 3) || (b.size() != 3)) printf("Both arguments to the cross product must be the three-vectors.");
+      return { a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0] };
    }
    //
    //   /**
@@ -596,6 +615,11 @@ namespace Math2
       for (int i = 0; i < 3; ++i)
          res[i] = a * b[i];
       return res;
+   }
+
+   VectorXd multiply3d(double a, const double b[])
+   {
+      return { a * b[0], a * b[1], a * b[2], };
    }
    //
    //   /**
@@ -645,6 +669,11 @@ namespace Math2
          res[i] = a[i] + (b[i] - a[i]) * f;
       return res;
    }
+
+   VectorXd pointBetween3d(const double a[], const double b[], double f)
+   {
+      return{ a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f };
+   }
    //
    //   /**
    //   * Returns true if the argument vector has magnitude of 1.0.
@@ -688,6 +717,11 @@ namespace Math2
       for (int i = 0; i < 3; ++i)
          res[i] = a[i] / b;
       return res;
+   }
+
+   VectorXd divide3d(const double a[], double b)
+   {
+      return{ a[0] / b, a[1] / b, a[2] / b };
    }
    //
    //   final public double[] divideEquals(double[] a, double b) {

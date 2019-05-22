@@ -47,7 +47,7 @@ namespace RegionBase
       mSubRegions.insert(&reg);
    }
    
-   const RegionBase* RegionBase::containingSubRegion(double pos[]) const
+   const RegionBase* RegionBase::containingSubRegion(const double pos[]) const
    {
       if (mShape->contains(pos)) {
          for (auto reg : mSubRegions) {
@@ -71,21 +71,29 @@ namespace RegionBase
       return res;
    }
    
-   const RegionBase* RegionBase::findEndOfStep(double p0[], double p1[]) const
+   const RegionBase* RegionBase::findEndOfStep(const double p0[], double p1[]) const
    {
-      PositionVecT pos0(p0, p0 + 3), pos1(p1, p1 + 3);
       const RegionBase* base = this;
    
-      double t = mShape->getFirstIntersection(pos0.data(), pos1.data());
+      double t = mShape->getFirstIntersection(p0, p1);
       if (t < 0.0)  printf("%s\n", StringT(StringT(mShape->toString()) + " " + std::to_string(t)).c_str());
       if ((t <= 1.0) && mParent != NULL)
          base = mParent;
+
+      //if (t <= 1) {
+      //   if (mParent != NULL)
+      //      printf("%s, %s, %.10e\n", mParent->toString().c_str(), mParent->mShape->toString().c_str(), t);
+      //   else
+      //      printf("%.10e\n", t);
+      //}
+
+
       const RegionBase* res = this;
       for (auto subRegion : mSubRegions) {
-         double candidate = subRegion->mShape->getFirstIntersection(pos0.data(), pos1.data());
+         double candidate = subRegion->mShape->getFirstIntersection(p0, p1);
          if (candidate <= 0.0) printf("%s\n", (std::string(subRegion->mShape->toString()) + " " + std::to_string(candidate)).c_str());
          if ((candidate <= 1.0) && (candidate < t)) {
-
+            //printf("%s, %s, %.10e\n", subRegion->toString().c_str(), subRegion->mShape->toString().c_str(), candidate);
             t = candidate;
             base = subRegion;
          }
@@ -94,13 +102,13 @@ namespace RegionBase
          printf("findEndOfStep invalid t: %.10e\n", t);
       }
       if (t <= 1.0) {
-         PositionVecT delta = Math2::minus(pos1, pos0);
+         const VectorXd& delta = Math2::minus3d(p1, p0);
          // Put pos1 exactly on the boundary.
-         pos1[0] = pos0[0] + (t * delta[0]);
-         pos1[1] = pos0[1] + (t * delta[1]);
-         pos1[2] = pos0[2] + (t * delta[2]);
+         p1[0] = p0[0] + (t * delta[0]);
+         p1[1] = p0[1] + (t * delta[1]);
+         p1[2] = p0[2] + (t * delta[2]);
          // Find the region just over the boundary...
-         PositionVecT over = Math2::plus(pos1, Math2::multiply(SMALL_DISP, Math2::normalize(delta)));
+         const VectorXd& over = Math2::plus3d(p1, Math2::multiply(SMALL_DISP, Math2::normalize3d(delta.data())).data());
          while (base != NULL) {
             res = base->containingSubRegion(over.data());
             if (res != NULL)
@@ -140,10 +148,9 @@ namespace RegionBase
       return false;
    }
    
-   char const * RegionBase::toString() const
+   StringT RegionBase::toString() const
    {
-      std::string str(mShape->toString() + " of " + getMaterial().toString());
-      return str.c_str();
+      return mShape->toString() + " of " + getMaterial().toString();
    }
 
    void TransformableRegion::rotate(const double pivot[], double phi, double theta, double psi)

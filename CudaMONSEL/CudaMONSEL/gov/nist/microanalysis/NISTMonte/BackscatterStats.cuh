@@ -47,7 +47,6 @@ namespace BackscatterStats
 
       double backscatterFraction() const;
       int getEnergyBinCount() const;
-      void setEnergyBinCount(int energyBinCount);
       double BackscatterStats::forwardscatterFraction() const;
       double BackscatterStats::scatterFraction() const;
       bool BackscatterStats::getLogDetected() const;

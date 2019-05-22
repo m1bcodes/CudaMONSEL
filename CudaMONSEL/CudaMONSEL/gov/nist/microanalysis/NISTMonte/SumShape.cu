@@ -79,9 +79,9 @@ namespace SumShape
                }
             if (end.empty())
                break;
-            const VectorXd extra = Math2::multiply(1.0e-14, Math2::normalize(Math2::minus(VectorXd(pos1, pos1 + 3), VectorXd(pos0, pos0 + 3))));
+            const VectorXd& extra = Math2::multiply3d(1.0e-14, Math2::normalize3d(Math2::minus3d(pos1, pos0).data()).data());
             // Bump the start point into the next Shape...
-            start = Math2::plus(end, extra);
+            start = Math2::plus3d(end.data(), extra.data());
             // Repeat until we can take a full step or
             // the step can't be enlarged...
          } while (u < 1.0);

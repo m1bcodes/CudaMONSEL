@@ -26,9 +26,9 @@ namespace RegionBase
       IMaterialScatterModelT* getScatterModel() const;
       const RBListT& getSubRegions() const;
       void addRegion(RegionBase&); // protected member inaccessble via pointer
-      const RegionBase* containingSubRegion(double pos[]) const;
+      const RegionBase* containingSubRegion(const double pos[]) const;
       Element::UnorderedSetT getElements(bool recurse) const;
-      const RegionBase* findEndOfStep(double p0[], double p1[]) const;
+      const RegionBase* findEndOfStep(const double p0[], double p1[]) const; // p1 changes!!!
       const ShapeT* getShape() const;
       ShapeT* getShape2();
 
@@ -36,7 +36,7 @@ namespace RegionBase
       double getAtomsPerCubicMeter(const ElementT& el) const;
       const RegionBase* getParent() const;
       bool isContainingRegion(const RegionBase& searchTarget) const;
-      char const * toString() const;
+      StringT toString() const;
    };
 
    class TransformableRegion : public RegionBase, public ITransformT

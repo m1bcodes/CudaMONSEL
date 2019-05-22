@@ -101,11 +101,11 @@ namespace Electron
    {
       double st = ::sin(mTheta);
       // Calculate the new point as dS distance from mPosition
-      return VectorXd ({
+      return {
          mPosition[0] + dS * ::cos(mPhi) * st,
-            mPosition[1] + dS * ::sin(mPhi) * st,
-            mPosition[2] + dS * ::cos(mTheta)
-      });
+         mPosition[1] + dS * ::sin(mPhi) * st,
+         mPosition[2] + dS * ::cos(mTheta)
+      };
    }
 
    void Electron::updateDirection(double dTheta, double dPhi)

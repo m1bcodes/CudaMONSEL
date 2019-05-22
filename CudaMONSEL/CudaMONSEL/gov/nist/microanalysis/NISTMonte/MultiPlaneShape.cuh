@@ -25,6 +25,9 @@ namespace MultiPlaneShape
       VectorXd getNormal() const;
       VectorXd getPoint() const;
 
+      const VectorXd& getNormalRef() const;
+      const VectorXd& getPointRef() const;
+
    private:
       VectorXd mNormal;
       VectorXd mPoint;

@@ -22,7 +22,10 @@
 #include "gov\nist\nanoscalemetrology\JMONSEL\TabulatedInelasticSM.cuh"
 #include "gov\nist\nanoscalemetrology\JMONSEL\GanachaudMokraniPhononInelasticSM.cuh"
 #include "gov\nist\nanoscalemetrology\JMONSEL\NormalMultiPlaneShape.cuh"
+#include "gov\nist\nanoscalemetrology\JMONSEL\NormalIntersectionShape.cuh"
 #include "gov\nist\nanoscalemetrology\JMONSEL\NShapes.cuh"
+
+#include <fstream>
 
 namespace LinesOnLayers
 {
@@ -34,13 +37,13 @@ namespace LinesOnLayers
       //String dest = DefaultOutput;
       //new File(dest).mkdirs();
       //String filename = DefaultOutput + PathSep + "output.txt";
+
       StringT output = "Output will be to file: ";
 
-      srand(0);
-      //Math2.initializeRandom(seed);
-
-      //output += "\n Random number seed: ";
-      //output += std::to_string(seed);
+      int seed = rand();
+      srand(seed);
+      output += "\n Random number seed: ";
+      output += std::to_string(seed);
       for (int i = 0; i < 10; ++i) {
          double r = Math2::random();
          output += "\n " + std::to_string(r);
@@ -266,11 +269,17 @@ namespace LinesOnLayers
       double leftmostLineCenterx = -pitch*(nlines / 2);
       //for (int i = 0; i < nlines; ++i) {
       //   double xcenter = leftmostLineCenterx + i*pitch;
-      //   NormalIntersectionShapeT(NormalIntersectionShapeT*)line = NShapes::createLine(-h, w, linelength, thetal, thetar, radl, radr);
-      //   double newLinePos[] = { xcenter, 0., 0. };
-      //   line.translate(newLinePos);
-      //   RegionT lineRegion(&chamber, &PMMAMSM, &line);
+      //   NormalIntersectionShapeT* line = (NormalIntersectionShapeT*)NShapes::createLine(-h, w, linelength, thetal, thetar, radl, radr);
+      //   const double newLinePos[] = { xcenter, 0., 0. };
+      //   line->translate(newLinePos);
+      //   RegionT lineRegion(&chamber, &PMMAMSM, line);
       //}
+
+      double xcenter = leftmostLineCenterx + 0*pitch;
+      NormalIntersectionShapeT* line = (NormalIntersectionShapeT*)NShapes::createLine(-h, w, linelength, thetal, thetar, radl, radr);
+      //const double newLinePos[] = { xcenter, 0., 0. };
+      //line->translate(newLinePos);
+      RegionT lineRegion(&chamber, &PMMAMSM, line);
 
       double yvals[] = { 0. };
 
@@ -338,10 +347,9 @@ namespace LinesOnLayers
          double egCenter[] = { x, y, -h - 20.*meterspernm };
          eg.setCenter(egCenter);
 
-         BackscatterStatsT back(monte);
          int nbins = (int)(beamEeV / binSizeEV);
+         BackscatterStatsT back(monte, nbins);
          monte.addActionListener(back);
-         back.setEnergyBinCount(nbins);
 
          try {
             monte.runMultipleTrajectories(nTrajectories);
@@ -369,6 +377,11 @@ namespace LinesOnLayers
          }
       }
 
+      std::ofstream myfile;
+      myfile.open("output.txt");
+      myfile << output.c_str();
+      myfile.close();
+
       //BufferedWriter writer;
       //try {
       //   writer = new BufferedWriter(new FileWriter(filename));
@@ -381,5 +394,4 @@ namespace LinesOnLayers
       //}
       //System.out.println("End");
    }
-
 }

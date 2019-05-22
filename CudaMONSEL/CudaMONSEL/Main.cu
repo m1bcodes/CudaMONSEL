@@ -1,3 +1,8 @@
+/*
+* - without length, the array parameter (eg const double a[]) is always 3 dimensional
+* - use "auto" keyword for pointers ONLY
+*/
+
 #include <stdio.h>
 
 #include <cuda_runtime.h>

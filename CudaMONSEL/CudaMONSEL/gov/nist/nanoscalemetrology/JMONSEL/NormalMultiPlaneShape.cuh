@@ -27,7 +27,7 @@ namespace NormalMultiPlaneShape
       void addPlane(PlaneT&) override;
 
       int getNumPlanes() const;
-      VectorXd getNormal(int index) const;
+      const VectorXd& getNormal(int index) const;
       double getB(int index) const;
 
    private:
