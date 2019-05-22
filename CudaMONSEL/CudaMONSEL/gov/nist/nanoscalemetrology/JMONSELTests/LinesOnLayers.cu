@@ -23,7 +23,6 @@
 #include "gov\nist\nanoscalemetrology\JMONSEL\GanachaudMokraniPhononInelasticSM.cuh"
 #include "gov\nist\nanoscalemetrology\JMONSEL\NormalMultiPlaneShape.cuh"
 #include "gov\nist\nanoscalemetrology\JMONSEL\NShapes.cuh"
-//#include "gov\nist\nanoscalemetrology\JMONSEL\JoyLuoNieminenCSD.cuh"
 
 namespace LinesOnLayers
 {

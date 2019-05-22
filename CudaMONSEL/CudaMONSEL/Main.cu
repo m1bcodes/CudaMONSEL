@@ -2,14 +2,6 @@
 
 #include <cuda_runtime.h>
 
-//#include "gov/nist/microanalysis/NISTMonte/MonteCarloSS.cu"
-////#include "gov/nist/microanalysis/NISTMonte/Electron.cu"
-////#include "gov/nist/microanalysis/Utility/CSVReader.h"
-//#include "gov\nist\microanalysis\EPQLibrary\Material.cuh"
-//#include "gov\nist\microanalysis\EPQLibrary\Element.cuh"
-//#include "gov\nist\microanalysis\EPQLibrary\Composition.cuh"
-//#include "gov\nist\microanalysis\Utility\UncertainValue2.cuh"
-
 #include "gov\nist\microanalysis\Utility\UncertainValue2.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\Element.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\Material.cuh"
@@ -17,6 +9,7 @@
 #include "gov\nist\microanalysis\EPQLibrary\CzyzewskiMottScatteringAngle.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\GasScatteringCrossSection.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\NISTMottScatteringAngle.cuh"
+
 #include "gov\nist\nanoscalemetrology\JMONSEL\NISTMottRS.cuh"
 
 #include "gov\nist\microanalysis\EPQTests\UncertainValue2Test.cuh"
