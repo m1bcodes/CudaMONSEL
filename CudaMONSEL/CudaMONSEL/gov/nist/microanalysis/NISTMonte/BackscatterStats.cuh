@@ -47,10 +47,10 @@ namespace BackscatterStats
 
       double backscatterFraction() const;
       int getEnergyBinCount() const;
-      double BackscatterStats::forwardscatterFraction() const;
-      double BackscatterStats::scatterFraction() const;
-      bool BackscatterStats::getLogDetected() const;
-      void BackscatterStats::setLogDetected(bool logDetected);
+      double forwardscatterFraction() const;
+      double scatterFraction() const;
+      bool getLogDetected() const;
+      void setLogDetected(bool logDetected);
       std::vector<Datum> getLog() const;
 
    private:

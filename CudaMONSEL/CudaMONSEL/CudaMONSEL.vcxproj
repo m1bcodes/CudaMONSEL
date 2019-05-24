@@ -286,6 +286,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -369,6 +372,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     <CudaLink>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
+      <GPUDebugInfo>true</GPUDebugInfo>
     </CudaLink>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

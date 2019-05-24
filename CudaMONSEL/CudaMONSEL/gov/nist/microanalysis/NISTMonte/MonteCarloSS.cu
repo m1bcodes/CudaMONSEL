@@ -117,12 +117,10 @@ namespace MonteCarloSS
             return;
          }
       }
-
       auto msm = currentRegion->getScatterModel();
       if (msm == nullptr) printf("MonteCarloSS::takeStep: msm is null\n");
 
       VectorXd& pos1 = mElectron->candidatePoint(msm->randomMeanPathLength(*mElectron));
-
       auto nextRegion = currentRegion->findEndOfStep(pos0.data(), pos1.data());
       mElectron->move(pos1.data(), msm->calculateEnergyLoss(dist(pos0.data(), pos1.data()), *mElectron));
       bool tc = (mElectron->getEnergy() < msm->getMinEforTracking()) || mElectron->isTrajectoryComplete();
@@ -214,10 +212,8 @@ namespace MonteCarloSS
       fireEvent(TrajectoryStartEvent);
       //int i = 0;
       while (!allElectronsComplete()) {
-         //if (i == 239)
-         //   printf("%d\n", i);
-         //++i;
-         //printf("%d\n", i++);
+         //if (i == 19)
+         //   printf("%d\n", i++);
          takeStep();
       }
       fireEvent(TrajectoryEndEvent);
@@ -227,7 +223,7 @@ namespace MonteCarloSS
    {
       fireEvent(FirstTrajectoryEvent);
       for (int i = 0; i < n; ++i) {
-         //if (i == 44)
+         //if (i == 50)
             printf("%d\n", i);
          runTrajectory();
       }

@@ -74,7 +74,6 @@ namespace RegionBase
    const RegionBase* RegionBase::findEndOfStep(const double p0[], double p1[]) const
    {
       const RegionBase* base = this;
-   
       double t = mShape->getFirstIntersection(p0, p1);
       if (t < 0.0)  printf("%s\n", StringT(StringT(mShape->toString()) + " " + std::to_string(t)).c_str());
       if ((t <= 1.0) && mParent != NULL)
@@ -86,7 +85,6 @@ namespace RegionBase
       //   else
       //      printf("%.10e\n", t);
       //}
-
 
       const RegionBase* res = this;
       for (auto subRegion : mSubRegions) {
@@ -198,6 +196,7 @@ namespace RegionBase
       mScatterModel = msm;
       mShape = shape;
       if (mParent != NULL) mParent->addRegion(*this);
+      mSubRegions.clear();
    }
 
    void Region::removeSubRegion(RegionBase& subRegion)

@@ -7,12 +7,15 @@ namespace NormalMultiPlaneShape
    {
    }
 
+   //NormalMultiPlaneShape::~NormalMultiPlaneShape()
+   //{
+   //   printf("NormalMultiPlaneShape::~NormalMultiPlaneShape: %d\n", mPlanes.size());
+   //}
+
    void NormalMultiPlaneShape::updateCach()
    {
-      mPlanes = getPlanes();
-      numPlanes = mPlanes.size();
-      narray.resize(numPlanes, VectorXd(3));
-      carray.resize(numPlanes, VectorXd(3));
+      narray.resize(mPlanes.size(), VectorXd(3));
+      carray.resize(mPlanes.size(), VectorXd(3));
 
       for (int i = 0; i < mPlanes.size(); ++i) {
          narray[i] = mPlanes[i]->getNormal(); // This plane's normal vector
@@ -84,7 +87,7 @@ namespace NormalMultiPlaneShape
       // no intersection
 
       const double delta[] = { pos1[0] - pos0[0], pos1[1] - pos0[1], pos1[2] - pos0[2] };
-      for (int i = 0; i < numPlanes; i++) {
+      for (int i = 0; i < mPlanes.size(); i++) {
          double pos0minusc[] = { pos0[0] - carray[i][0], pos0[1] - carray[i][1], pos0[2] - carray[i][2] };
          /*
          * Note significance of the sign of the next two variables numerator<0
@@ -178,7 +181,7 @@ namespace NormalMultiPlaneShape
       double p0cdotn;
       double delta[3];
       // Loop over all planes in the shape
-      for (int i = 0; i < numPlanes; i++) {
+      for (int i = 0; i < mPlanes.size(); i++) {
          const double p0c[] = { pos0[0] - carray[i][0], pos0[1] - carray[i][1], pos0[2] - carray[i][2] };
          p0cdotn = (p0c[0] * narray[i][0]) + (p0c[1] * narray[i][1]) + (p0c[2] * narray[i][2]);
          if (p0cdotn > 0.)
@@ -238,7 +241,7 @@ namespace NormalMultiPlaneShape
 
    int NormalMultiPlaneShape::getNumPlanes() const
    {
-      return numPlanes;
+      return mPlanes.size();
    }
 
    const VectorXd& NormalMultiPlaneShape::getNormal(int index) const

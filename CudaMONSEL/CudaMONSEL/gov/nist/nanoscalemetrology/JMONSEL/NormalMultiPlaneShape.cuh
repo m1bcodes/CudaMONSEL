@@ -11,6 +11,7 @@ namespace NormalMultiPlaneShape
    {
    public:
       NormalMultiPlaneShape();
+      ~NormalMultiPlaneShape();
 
       bool contains(const double pos[]) const override;
       double getFirstIntersection(const double pos0[], const double pos1[]) override;
@@ -30,13 +31,15 @@ namespace NormalMultiPlaneShape
       const VectorXd& getNormal(int index) const;
       double getB(int index) const;
 
+   //protected:
+   //   MultiPlaneShape::Planes mPlanes;
+
    private:
       void updateCach();
 
       VectorXd result;
-      MultiPlaneShape::Planes mPlanes;
 
-      int numPlanes; // # of planes in this shape
+      //int numPlanes; // # of planes in this shape
 
       MatrixXd narray;
       MatrixXd carray;

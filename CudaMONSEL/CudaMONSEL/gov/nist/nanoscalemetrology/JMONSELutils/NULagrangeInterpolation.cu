@@ -228,10 +228,10 @@ namespace NULagrangeInterpolation
 
       /* Generate and populate an array of function values at x2,x3 */
       VectorXd y(order + 1);
-      VectorXd reducedx(x+1, x+2);
+      double reducedx[] = { x[1], x[2] };
       MatrixXd reducedxsamp({ xsamp[1], xsamp[2] });
       for (int i = 0; i <= order; i++)
-         y[i] = d2(f[index0 + i], reducedxsamp, order, reducedx.data(), reducedx.size())[0];
+         y[i] = d2(f[index0 + i], reducedxsamp, order, reducedx, 2)[0];
       /* Make corresponding x array */
       VectorXd xtemp(xsamp[0].data(), xsamp[0].data() + order + 1);
 
