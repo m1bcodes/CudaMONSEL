@@ -34,23 +34,13 @@ namespace NormalMultiPlaneShape
       void updateCach();
 
       VectorXd result;
-
       MultiPlaneShape::Planes mPlanes;
 
       int numPlanes; // # of planes in this shape
 
-      /*
-      * narray[i] is the normal vector of the ith plane
-      */
       MatrixXd narray;
-
-      /*
-      * carray[i] is the point contained in the ith plane
-      */
       MatrixXd carray;
    };
-
-   // extern void addPlane(const double p1[], const double p2[], const double p3[]);
 }
 
 #endif

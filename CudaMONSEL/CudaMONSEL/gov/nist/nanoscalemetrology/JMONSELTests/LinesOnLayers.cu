@@ -27,6 +27,8 @@
 
 #include <fstream>
 
+#include <chrono>
+
 namespace LinesOnLayers
 {
    static const char DefaultOutput[] = "results//LinesOnLayers";
@@ -277,8 +279,6 @@ namespace LinesOnLayers
 
       double xcenter = leftmostLineCenterx + 0*pitch;
       NormalIntersectionShapeT* line = (NormalIntersectionShapeT*)NShapes::createLine(-h, w, linelength, thetal, thetar, radl, radr);
-      //const double newLinePos[] = { xcenter, 0., 0. };
-      //line->translate(newLinePos);
       RegionT lineRegion(&chamber, &PMMAMSM, line);
 
       double yvals[] = { 0. };
@@ -331,6 +331,7 @@ namespace LinesOnLayers
       output += "\nLeft and right top corner radii (nm): " + std::to_string(radlnm) + " " + std::to_string(radrnm);
       output += "\nThicknesses of 1st and second layers (nm): " + std::to_string(layer1thicknessnm) + " " + std::to_string(layer2thicknessnm);
       output += "\nBeam landing energies (eV): ";
+
       for (int i = 0; i < beamEeVvalsLen; i++) {
          output += std::to_string(beamEeVvals[i]);
       }
@@ -342,6 +343,7 @@ namespace LinesOnLayers
       double ynm = yvals[0];
       double y = ynm*meterspernm;
 
+      auto start = std::chrono::system_clock::now();
       for (auto xnm : xvals) {
          x = xnm*meterspernm;
          double egCenter[] = { x, y, -h - 20.*meterspernm };
@@ -373,25 +375,17 @@ namespace LinesOnLayers
             monte.removeActionListener(back);
          }
          catch (std::exception&) {
-            printf("wtffff\n");
+            printf("wtfweewew\n");
          }
       }
+      auto end = std::chrono::system_clock::now();
+      std::chrono::duration<double> elapsed_seconds = end - start;
+      std::time_t end_time = std::chrono::system_clock::to_time_t(end);
+      std::cout << "finished computation at " << std::ctime(&end_time) << "elapsed time: " << elapsed_seconds.count() << "s\n";
 
       std::ofstream myfile;
       myfile.open("output.txt");
       myfile << output.c_str();
       myfile.close();
-
-      //BufferedWriter writer;
-      //try {
-      //   writer = new BufferedWriter(new FileWriter(filename));
-      //   writer.write(output);
-      //   writer.close();
-      //}
-      //catch (IOException e) {
-      //   // TODO Auto-generated catch block
-      //   e.printStackTrace();
-      //}
-      //System.out.println("End");
    }
 }

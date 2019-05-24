@@ -167,7 +167,6 @@ namespace MeanIonizationPotential
    Reference::CrudeReference Berger64CR("Berger MJ, Seltzer S. NASA Technical Publication SP-4012 (1964)");
    Berger64MeanIonizationPotential::Berger64MeanIonizationPotential() : MeanIonizationPotential("Berger & Seltzer 1964", Berger64CR)
    {
-      readTabulatedValues();
    }
 
    VectorXd Berger64MeanIonizationPotential::mMeasured; // nominal, in Joules
@@ -202,7 +201,6 @@ namespace MeanIonizationPotential
    Reference::CrudeReference Berger83CR("Berger MJ, Seltzer S. NBSIR 82-2550-A - US Dept of Commerce, Washington DC (1983)");
    Berger83MeanIonizationPotential::Berger83MeanIonizationPotential() : MeanIonizationPotential("Berger & Seltzer 1983", Berger83CR)
    {
-      readTabulatedValues();
    }
 
    VectorXd Berger83MeanIonizationPotential::mMeasured; // nominal, in Joules

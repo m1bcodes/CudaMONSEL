@@ -14,6 +14,7 @@
 #include "gov\nist\microanalysis\EPQLibrary\CzyzewskiMottScatteringAngle.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\GasScatteringCrossSection.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\NISTMottScatteringAngle.cuh"
+#include "gov\nist\microanalysis\EPQLibrary\MeanIonizationPotential.cuh"
 
 #include "gov\nist\nanoscalemetrology\JMONSEL\NISTMottRS.cuh"
 
@@ -40,6 +41,8 @@ int main()
    NISTMottScatteringAngle::init();
    GasScatteringCrossSection::init();
    NISTMottRS::init();
+   MeanIonizationPotential::Berger64MeanIonizationPotential::readTabulatedValues();
+   MeanIonizationPotential::Berger83MeanIonizationPotential::readTabulatedValues();
 
    Math2Test::testRandom1();
    Math2Test::testRandom2();

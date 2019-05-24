@@ -39,8 +39,7 @@ namespace NormalCylindricalShape
             pos1[2] - pos0[2]
          };
          // The normal vector on this endcap is -normalizedaxis
-         const double deltadotnormalizedaxis = (delta[0] * normalizedaxis[0]) + (delta[1] * normalizedaxis[1])
-            + (delta[2] * normalizedaxis[2]);
+         const double deltadotnormalizedaxis = (delta[0] * normalizedaxis[0]) + (delta[1] * normalizedaxis[1]) + (delta[2] * normalizedaxis[2]);
          if (deltadotnormalizedaxis == 0)
             // endcap
             /*

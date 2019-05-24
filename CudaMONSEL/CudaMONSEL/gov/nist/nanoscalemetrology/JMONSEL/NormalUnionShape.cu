@@ -5,12 +5,6 @@
 
 namespace NormalUnionShape
 {
-   /**
-   * Constructs the union, NormalUnionShape, of its two input shapes.
-   *
-   * @param a - (NormalShape) One of the two shapes.
-   * @param b - (NormalShape) The other shape.
-   */
    NormalUnionShape::NormalUnionShape(NormalShapeT& a, NormalShapeT& b) : SumShapeT(&a, &b)
    {  
    }
@@ -20,10 +14,6 @@ namespace NormalUnionShape
       return SumShapeT::contains(pos);
    }
 
-   /**
-   * @see gov.nist.nanoscalemetrology.JMONSEL.NormalShape#contains(double[],
-   *      double[])
-   */
    bool NormalUnionShape::contains(const double pos0[], const double pos1[]) const
    {
       for (auto shape : getShapes())
@@ -37,10 +27,6 @@ namespace NormalUnionShape
       return (getFirstNormal(pos0, pos1))[3];
    }
 
-   /**
-   * @see gov.nist.nanoscalemetrology.JMONSEL.NormalShape#getFirstNormal(double[],
-   *      double[])
-   */
    VectorXd NormalUnionShape::getFirstNormal(const double pos0[], const double pos1[])
    {
       VectorXd nointersection = {

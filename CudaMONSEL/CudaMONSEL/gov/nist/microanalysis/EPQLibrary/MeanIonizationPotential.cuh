@@ -80,9 +80,9 @@ namespace MeanIonizationPotential
    public:
       Berger64MeanIonizationPotential();
       double compute(const ElementT& el) const override;
+      static void readTabulatedValues();
 
    private:
-      void readTabulatedValues();
       static VectorXd mMeasured; // nominal, in Joules
    };
 
@@ -91,9 +91,9 @@ namespace MeanIonizationPotential
    public:
       Berger83MeanIonizationPotential();
       double compute(const ElementT& el) const override;
+      static void readTabulatedValues();
 
    private:
-      void readTabulatedValues();
       static VectorXd mMeasured; // nominal, in Joules
    };
 

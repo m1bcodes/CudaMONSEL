@@ -35,9 +35,9 @@ namespace ULagrangeInterpolation
    VectorXd d1(double const * const f, int len, double x0, double xinc, int order, double x)
    {
       if (xinc == 0.)
-         printf("ULagrangeInterpolation::d1: Interval spacing must be nonzero.");
+         printf("ULagrangeInterpolation::d1: Interval spacing must be nonzero.\n");
       if ((order < 1) || (len < order + 1))
-         printf("ULagrangeInterpolation::d1: 0 < order <= table.length-1 is required.");
+         printf("ULagrangeInterpolation::d1: 0 < order <= table.length-1 is required.\n");
       const double reducedx = (x - x0) / xinc;
       int index0 = (int)reducedx - order / 2;
       if (index0 < 0)
@@ -55,11 +55,11 @@ namespace ULagrangeInterpolation
    VectorXd d2(double const * const * const f, int flen0, int flen1, const double x0[], int x0len, const double xinc[], int xinclen, int order, const double x[], int xlen)
    {
       if ((x0len < 2) || (xinclen < 2) || (xlen < 2))
-         printf("ULagrangeInterpolation d2: Input array is too short.)");
+         printf("ULagrangeInterpolation d2: Input array is too short.\n");
       if (xinc[0] == 0.)
-         printf("ULagrangeInterpolation d2: Interval spacing must be nonzero.");
+         printf("ULagrangeInterpolation d2: Interval spacing must be nonzero.\n");
       if (flen0 < order + 1)
-         printf("ULagrangeInterpolation d2: 0 < order <= table.length-1 is required.");
+         printf("ULagrangeInterpolation d2: 0 < order <= table.length-1 is required.\n");
       const double reducedx1 = (x[0] - x0[0]) / xinc[0];
       int index0 = (int)reducedx1 - order / 2;
       if (index0 < 0)
@@ -80,11 +80,11 @@ namespace ULagrangeInterpolation
    VectorXd d2(const MatrixXd& f, const double x0[], int x0len, const double xinc[], int xinclen, int order, const double x[], int xlen)
    {
       if ((x0len < 2) || (xinclen < 2) || (xlen < 2))
-         printf("ULagrangeInterpolation d2: Input array is too short.)");
+         printf("ULagrangeInterpolation d2: Input array is too short: %d, %d, %d\n", x0len, xinclen, xlen);
       if (xinc[0] == 0.)
-         printf("ULagrangeInterpolation d2: Interval spacing must be nonzero.");
+         printf("ULagrangeInterpolation d2: Interval spacing must be nonzero.\n");
       if (f.size() < order + 1)
-         printf("ULagrangeInterpolation d2: 0 < order <= table.length-1 is required.");
+         printf("ULagrangeInterpolation d2: 0 < order <= table.length-1 is required.\n");
       const double reducedx1 = (x[0] - x0[0]) / xinc[0];
       int index0 = (int)reducedx1 - order / 2;
       if (index0 < 0)
@@ -105,11 +105,11 @@ namespace ULagrangeInterpolation
    VectorXd d3(double const * const * const * const f, int flen0, int flen1, int flen2, const double x0[], int x0len, const double xinc[], int xinclen, int order, const double x[], int xlen)
    {
       if ((x0len < 3) || (xinclen < 3) || (xlen < 3))
-         printf("ULagrangeInterpolation d3: Input array is too short.)");
+         printf("ULagrangeInterpolation d3: Input array is too short: %d, %d, %d\n", x0len, xinclen, xlen);
       if (xinc[0] == 0.)
-         printf("ULagrangeInterpolation d3: Interval spacing must be nonzero.");
+         printf("ULagrangeInterpolation d3: Interval spacing must be nonzero.\n");
       if (flen0 < order + 1)
-         printf("ULagrangeInterpolation d3: 0 < order <= table.length-1 is required.");
+         printf("ULagrangeInterpolation d3: 0 < order <= table.length-1 is required.\n");
 
       const double reducedx1 = (x[0] - x0[0]) / xinc[0];
       int index0 = (int)reducedx1 - order / 2;
@@ -134,11 +134,11 @@ namespace ULagrangeInterpolation
    VectorXd d4(double const * const * const * const * const f, int flen0, int flen1, int flen2, int flen3, double x0[], int x0len, double xinc[], int xinclen, int order, double x[], int xlen)
    {
       if ((x0len < 4) || (xinclen < 4) || (xlen < 4))
-         printf("ULagrangeInterpolation d4: Input array is too short.)");
+         printf("ULagrangeInterpolation d4: Input array is too short: %d, %d, %d\n", x0len, xinclen, xlen);
       if (xinc[0] == 0.)
-         printf("ULagrangeInterpolation d4: Interval spacing must be nonzero.");
+         printf("ULagrangeInterpolation d4: Interval spacing must be nonzero.\n");
       if (flen0 < order + 1)
-         printf("ULagrangeInterpolation d4: 0 < order <= table.length-1 is required.");
+         printf("ULagrangeInterpolation d4: 0 < order <= table.length-1 is required.\n");
 
       const double reducedx1 = (x[0] - x0[0]) / xinc[0];
       int index0 = (int)reducedx1 - order / 2;

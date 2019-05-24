@@ -99,7 +99,7 @@ namespace NULagrangeInterpolation
             w = c[i + 1] - d[i];
             den = ho - hp;
             if (den == 0.)
-               printf("neville: Identical x values (x = %lf in interpolation table at indices %d and %d.", xsamp[i + offset], i + offset, i + offset + m);
+               printf("NULagrangeInterpolation neville: Identical x values (x = %lf in interpolation table at indices %d and %d.\n", xsamp[i + offset], i + offset, i + offset + m);
             den = w / den;
             d[i] = hp * den;
             c[i] = ho * den;
@@ -134,7 +134,7 @@ namespace NULagrangeInterpolation
       * The interpolation is performed by a call to neville, a separate static
       * method.
       */
-      if ((order < 1) || (fsamplen < (order + 1))) printf("d1: 0 < order <= table.length-1 is required.");
+      if ((order < 1) || (fsamplen < (order + 1))) printf("NULagrangeInterpolation d1: 0 < order <= table.length-1 is required.\n");
 
       /*
       * index0 is the index of the 1st grid point we'll include in the
@@ -174,9 +174,9 @@ namespace NULagrangeInterpolation
       * dimension, which can then be interpolated via 1-d interpolation.
       */
       if (xlen < 2)
-         printf("d2: Input array is too short.)");
+         printf("NULagrangeInterpolation d2: Input array is too short.\n");
       if (f.size() < (order + 1))
-         printf("d2: 0 < order <= table.length-1 is required.");
+         printf("NULagrangeInterpolation d2: 0 < order <= table.length-1 is required.\n");
 
       int index0 = locate(x[0], xsamp[0].data(), xsamp[0].size(), order)[0];
 
@@ -220,9 +220,9 @@ namespace NULagrangeInterpolation
       * dimension, which can then be interpolated via 1-d interpolation.
       */
       if (xlen < 3)
-         printf("d3: Input array is too short.)");
+         printf("NULagrangeInterpolation d3: Input array is too short.\n");
       if (f.size() < (order + 1))
-         printf("d3: 0 < order <= table.length-1 is required.");
+         printf("NULagrangeInterpolation d3: 0 < order <= table.length-1 is required.\n");
 
       int index0 = locate(x[0], xsamp[0].data(), xsamp[0].size(), order)[0];
 
@@ -281,9 +281,9 @@ namespace NULagrangeInterpolation
       */
 
       if (xlen < 4)
-         printf("d4: Input array is too short.)");
+         printf("NULagrangeInterpolation d4: Input array is too short.\n");
       if (f.size() < (order + 1))
-         printf("d4: 0 < order <= table.length-1 is required.");
+         printf("NULagrangeInterpolation d4: 0 < order <= table.length-1 is required.\n");
 
       /*
       * The reduced coordinate is like an index into the array, but it can take
