@@ -260,7 +260,6 @@ namespace NormalMultiPlaneShape
       updateCach();
    }
 
-   // See ITransform for JavaDoc
    void NormalMultiPlaneShape::translate(const double distance[])
    {
       MultiPlaneShapeT::translate(distance);

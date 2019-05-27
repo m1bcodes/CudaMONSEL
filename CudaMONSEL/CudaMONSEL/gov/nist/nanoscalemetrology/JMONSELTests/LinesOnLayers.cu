@@ -281,11 +281,18 @@ namespace LinesOnLayers
       NormalIntersectionShapeT* line = (NormalIntersectionShapeT*)NShapes::createLine(-h, w, linelength, thetal, thetar, radl, radr);
       RegionT lineRegion(&chamber, &PMMAMSM, line);
 
-      double yvals[] = { 0. };
+//      VectorXd yvals = { 0. };
+      VectorXd yvals;
+      for (int i = -300; i < 100; ++i) {
+         yvals.push_back(i);
+      }
+      for (int i = 100; i < 200; ++i) {
+         yvals.push_back(100 + i*5);
+      }
 
       double xbottom = wnm / 2.;
       double xtop = wnm / 2. - hnm * ::tan(thetar);
-      double xstart = xbottom - 100.5;
+      double xstart = xbottom - 300.5;
       double xstop = xbottom + 100.5;
       double xfinestart = xtop - 20.5;
       double xfinestop;
@@ -340,48 +347,50 @@ namespace LinesOnLayers
       output += "\n";
       output += "\nbeamE (eV)	x(nm)	y (nm)	BSE yield	SE yield";
 
-      double ynm = yvals[0];
-      double y = ynm*meterspernm;
-
       auto start = std::chrono::system_clock::now();
-      for (auto xnm : xvals) {
-         x = xnm*meterspernm;
-         double egCenter[] = { x, y, -h - 20.*meterspernm };
-         eg.setCenter(egCenter);
+      for (auto ynm : yvals) {
+         //double ynm = yvals[0];
+         double y = ynm*meterspernm;
+         for (auto xnm : xvals) {
+            x = xnm*meterspernm;
+            double egCenter[] = { x, y, -h - 20.*meterspernm };
+            eg.setCenter(egCenter);
 
-         int nbins = (int)(beamEeV / binSizeEV);
-         BackscatterStatsT back(monte, nbins);
-         monte.addActionListener(back);
+            int nbins = (int)(beamEeV / binSizeEV);
+            BackscatterStatsT back(monte, nbins);
+            monte.addActionListener(back);
 
-         try {
-            monte.runMultipleTrajectories(nTrajectories);
+            try {
+               monte.runMultipleTrajectories(nTrajectories);
 
-            const HistogramT& hist = back.backscatterEnergyHistogram();
+               const HistogramT& hist = back.backscatterEnergyHistogram();
 
-            double energyperbineV = beamEeV / hist.binCount();
-            double maxSEbin = 50. / energyperbineV;
-            int totalSE = 0;
-            for (int j = 0; j < (int)maxSEbin; ++j) {
-               totalSE = totalSE + hist.counts(j);
+               double energyperbineV = beamEeV / hist.binCount();
+               double maxSEbin = 50. / energyperbineV;
+               int totalSE = 0;
+               for (int j = 0; j < (int)maxSEbin; ++j) {
+                  totalSE = totalSE + hist.counts(j);
+               }
+
+               double SEf = (float)totalSE / nTrajectories;
+               double bsf = back.backscatterFraction() - SEf;
+               output += "\n" + std::to_string(beamEeV) + " " + std::to_string(xnm) + " " + std::to_string(ynm) + " " + std::to_string(bsf) + " " + std::to_string(SEf);
+
+               StringT tmp("\n" + std::to_string(beamEeV) + " " + std::to_string(xnm) + " " + std::to_string(ynm) + " " + std::to_string(bsf) + " " + std::to_string(SEf));
+               printf("%s\n", tmp.c_str());
+
+               monte.removeActionListener(back);
             }
-
-            double SEf = (float)totalSE / nTrajectories;
-            double bsf = back.backscatterFraction() - SEf;
-            output += "\n" + std::to_string(beamEeV) + " " + std::to_string(xnm) + " " + std::to_string(ynm) + " " + std::to_string(bsf) + " " + std::to_string(SEf);
-
-            StringT tmp("\n" + std::to_string(beamEeV) + " " + std::to_string(xnm) + " " + std::to_string(ynm) + " " + std::to_string(bsf) + " " + std::to_string(SEf));
-            printf("%s\n", tmp.c_str());
-
-            monte.removeActionListener(back);
-         }
-         catch (std::exception&) {
-            printf("wtfweewew\n");
+            catch (std::exception&) {
+               printf("wtfweewew\n");
+            }
          }
       }
       auto end = std::chrono::system_clock::now();
       std::chrono::duration<double> elapsed_seconds = end - start;
       std::time_t end_time = std::chrono::system_clock::to_time_t(end);
       std::cout << "finished computation at " << std::ctime(&end_time) << "elapsed time: " << elapsed_seconds.count() << "s\n";
+      output += "\n" + std::to_string(elapsed_seconds.count());
 
       std::ofstream myfile;
       myfile.open("output.txt");

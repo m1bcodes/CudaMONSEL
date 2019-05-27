@@ -31,15 +31,10 @@ namespace NormalMultiPlaneShape
       const VectorXd& getNormal(int index) const;
       double getB(int index) const;
 
-   //protected:
-   //   MultiPlaneShape::Planes mPlanes;
-
    private:
       void updateCach();
 
       VectorXd result;
-
-      //int numPlanes; // # of planes in this shape
 
       MatrixXd narray;
       MatrixXd carray;
