@@ -11,7 +11,6 @@ namespace NormalMultiPlaneShape
    {
    public:
       NormalMultiPlaneShape();
-      ~NormalMultiPlaneShape();
 
       bool contains(const double pos[]) const override;
       double getFirstIntersection(const double pos0[], const double pos1[]) override;
