@@ -7,11 +7,6 @@ namespace NormalMultiPlaneShape
    {
    }
 
-   //NormalMultiPlaneShape::~NormalMultiPlaneShape()
-   //{
-   //   printf("NormalMultiPlaneShape::~NormalMultiPlaneShape: %d\n", mPlanes.size());
-   //}
-
    void NormalMultiPlaneShape::updateCach()
    {
       narray.resize(mPlanes.size(), VectorXd(3));

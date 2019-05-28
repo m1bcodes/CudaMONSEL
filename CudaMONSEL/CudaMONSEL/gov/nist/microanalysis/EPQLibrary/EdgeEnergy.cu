@@ -78,7 +78,6 @@ namespace EdgeEnergy
 
    DiracHartreeSlaterIonizationEnergies::DiracHartreeSlaterIonizationEnergies() : EdgeEnergy("Bote-Salvat 2008", ja)
    {
-      loadxionUis();
    }
 
    double DiracHartreeSlaterIonizationEnergies::compute(const AtomicShellT& shell) const
@@ -126,7 +125,6 @@ namespace EdgeEnergy
 
    NISTEdgeEnergy::NISTEdgeEnergy() : EdgeEnergy("NIST X-ray transition database", "http://physics.nist.gov/PhysRefData/XrayTrans/")
    {
-      loadNISTxrtdb();
    }
 
    double NISTEdgeEnergy::compute(const AtomicShellT& shell) const
@@ -178,7 +176,6 @@ namespace EdgeEnergy
 
    ChantlerEdgeEnergy::ChantlerEdgeEnergy() : EdgeEnergy("NIST-Chantler 2005", "http://physics.nist.gov/ffast")
    {
-      loadFFastEdgeDB();
    }
 
    static int index(int sh)
@@ -283,7 +280,6 @@ namespace EdgeEnergy
 
    DTSAEdgeEnergy::DTSAEdgeEnergy() : EdgeEnergy("DTSA", "From DTSA at http://www.cstl.nist.gov/div837/Division/outputs/DTSA/DTSA.htm")
    {
-      loadEdgeEnergies();
    }
 
    double DTSAEdgeEnergy::compute(const AtomicShellT& shell) const

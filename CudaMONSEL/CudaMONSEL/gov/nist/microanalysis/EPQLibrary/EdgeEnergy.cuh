@@ -25,7 +25,7 @@ namespace EdgeEnergy
       DiracHartreeSlaterIonizationEnergies();
       double compute(const AtomicShellT& shell) const override;
       bool isSupported(const AtomicShellT& shell) const override;
-      void loadxionUis();
+      static void loadxionUis();
 
    private:
       static MatrixXd Uis; // nominally [100][9]
@@ -37,7 +37,7 @@ namespace EdgeEnergy
       NISTEdgeEnergy();
       double compute(const AtomicShellT& shell) const override;
       bool isSupported(const AtomicShellT& shell) const override;
-      void loadNISTxrtdb();
+      static void loadNISTxrtdb();
 
    private:
       static MatrixXd NISTEdgeEnergies;
@@ -49,7 +49,7 @@ namespace EdgeEnergy
       ChantlerEdgeEnergy();
       double compute(const AtomicShellT& shell) const override;
       bool isSupported(const AtomicShellT& shell) const override;
-      void loadFFastEdgeDB();
+      static void loadFFastEdgeDB();
 
    private:
       static MatrixXd ChantlerEdgeEnergies;
@@ -69,7 +69,7 @@ namespace EdgeEnergy
       DTSAEdgeEnergy();
       double compute(const AtomicShellT& shell) const override;
       bool isSupported(const AtomicShellT& shell) const override;
-      void loadEdgeEnergies();
+      static void loadEdgeEnergies();
 
    private:
       static MatrixXd DTSAEdgeEnergies;

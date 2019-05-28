@@ -650,20 +650,20 @@ namespace Element
       //memcpy(mIonizationEnergy, hIonizationEnergy, sizeof(hIonizationEnergy));
    }
 
-   struct Initializer
-   {
-      Initializer()
-      {
-         readAtomicWeights();
-         readIonizationEnergy();
+   //struct Initializer
+   //{
+   //   Initializer()
+   //   {
+   //      readAtomicWeights();
+   //      readIonizationEnergy();
 
-         printf("Element::Initializer() completed: %d bytes\n", sizeof(mAllElements));
-      }
-   };
+   //      printf("Element::Initializer() completed: %d bytes\n", sizeof(mAllElements));
+   //   }
+   //};
 
-   Initializer init;
+   //Initializer init;
 
-   void InitializeElements()
+   void Init()
    {
       readAtomicWeights();
       readIonizationEnergy();

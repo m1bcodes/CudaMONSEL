@@ -331,16 +331,41 @@ namespace MaterialFactory
       return createCompound1(str);
    }
 
-   static const CompositionT compoundSiO2 = createCompound("SiO2");
-   static const CompositionT compoundAl2O3 = createCompound("Al2O3");
-   static const CompositionT compoundCaO = createCompound("CaO");
-   static const CompositionT compoundMgO = createCompound("MgO");
-   static const CompositionT compoundTiO2 = createCompound("TiO2");
-   static const CompositionT compoundFe2O3 = createCompound("Fe2O3");
-   static const CompositionT compoundPbO = createCompound("PbO");
-   static const CompositionT compoundBaO = createCompound("BaO");
-   static const CompositionT compoundFeO = createCompound("FeO");
-   static const CompositionT compoundV2O5 = createCompound("V2O5");
+   //static const CompositionT compoundSiO2 = createCompound("SiO2");
+   //static const CompositionT compoundAl2O3 = createCompound("Al2O3");
+   //static const CompositionT compoundCaO = createCompound("CaO");
+   //static const CompositionT compoundMgO = createCompound("MgO");
+   //static const CompositionT compoundTiO2 = createCompound("TiO2");
+   //static const CompositionT compoundFe2O3 = createCompound("Fe2O3");
+   //static const CompositionT compoundPbO = createCompound("PbO");
+   //static const CompositionT compoundBaO = createCompound("BaO");
+   //static const CompositionT compoundFeO = createCompound("FeO");
+   //static const CompositionT compoundV2O5 = createCompound("V2O5");
+
+   static CompositionT compoundSiO2;
+   static CompositionT compoundAl2O3;
+   static CompositionT compoundCaO;
+   static CompositionT compoundMgO;
+   static CompositionT compoundTiO2;
+   static CompositionT compoundFe2O3;
+   static CompositionT compoundPbO;
+   static CompositionT compoundBaO;
+   static CompositionT compoundFeO;
+   static CompositionT compoundV2O5;
+
+   void Init()
+   {
+      compoundSiO2 = createCompound("SiO2");
+      compoundAl2O3 = createCompound("Al2O3");
+      compoundCaO = createCompound("CaO");
+      compoundMgO = createCompound("MgO");
+      compoundTiO2 = createCompound("TiO2");
+      compoundFe2O3 = createCompound("Fe2O3");
+      compoundPbO = createCompound("PbO");
+      compoundBaO = createCompound("BaO");
+      compoundFeO = createCompound("FeO");
+      compoundV2O5 = createCompound("V2O5");
+   }
 
    CompositionT createMaterial(StringT name)
    {

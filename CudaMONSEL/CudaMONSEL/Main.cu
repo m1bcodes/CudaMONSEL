@@ -11,6 +11,8 @@
 #include "gov\nist\microanalysis\EPQLibrary\Element.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\Material.cuh"
 
+#include "gov\nist\microanalysis\EPQLibrary\EdgeEnergy.cuh"
+#include "gov\nist\microanalysis\EPQLibrary\MaterialFactory.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\CzyzewskiMottScatteringAngle.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\GasScatteringCrossSection.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\NISTMottScatteringAngle.cuh"
@@ -37,6 +39,14 @@
 
 int main()
 {
+   EdgeEnergy::DiracHartreeSlaterIonizationEnergies::loadxionUis();
+   EdgeEnergy::NISTEdgeEnergy::loadNISTxrtdb();
+   EdgeEnergy::ChantlerEdgeEnergy::loadFFastEdgeDB();
+   EdgeEnergy::DTSAEdgeEnergy::loadEdgeEnergies();
+
+   Element::Init();
+   MaterialFactory::Init();
+
    CzyzewskiMottScatteringAngle::init();
    NISTMottScatteringAngle::init();
    GasScatteringCrossSection::init();

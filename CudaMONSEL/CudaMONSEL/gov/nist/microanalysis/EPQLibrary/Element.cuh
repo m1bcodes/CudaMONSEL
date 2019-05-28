@@ -303,7 +303,7 @@ namespace Element
    ElementNameVecT getListOfAbbreviations(const Element& minEl, const Element& maxEl);
    ElementNameVecT getListOfElements(const Element& minEl, const Element& maxEl);
 
-   void InitializeElements();
+   void Init();
 
    typedef std::unordered_set<const Element*, HashFcn> UnorderedSetT;
    typedef std::unordered_set<const Element*, HashFcn> OrderedSetT;

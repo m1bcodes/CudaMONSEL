@@ -114,6 +114,7 @@
     <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSEL\ZeroCSD.cu" />
     <CudaCompile Include="Main.cu" />
     <CudaCompile Include="SimRunner.cu" />
+    <CudaCompile Include="t527.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Amphibian\Comparator.cuh" />
