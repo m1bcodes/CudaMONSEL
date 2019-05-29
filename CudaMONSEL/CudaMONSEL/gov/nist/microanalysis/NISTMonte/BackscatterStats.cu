@@ -146,7 +146,8 @@ namespace BackscatterStats
       }
       else if (ae == MonteCarloSS::BackscatterEvent) {
          const ElectronT& el = mMonte.getElectron();
-         auto pos = el.getPosition();
+         //auto pos = el.getPosition();
+         const double* pos = el.getPosition();
          const double elevation = (Math2::PI / 2) - ::atan2(pos[2], ::sqrt((pos[0] * pos[0]) + (pos[1] * pos[1])));
          if (!(elevation >= 0.0)) printf("BackscatterStats::actionPerformed: !(elevation >= 0.0) %.10e\n", elevation);
          if (!(elevation <= Math2::PI)) printf("BackscatterStats::actionPerformed: !(elevation <= Math2::PI) %.10e\n", elevation);
@@ -164,7 +165,7 @@ namespace BackscatterStats
          else
             mBackEnergyBins->add(kEeV);
          if (mLogDetected) {
-            mLog.push_back(Datum(el.getIdent(), el.getStepCount(), kEeV, pos.data(), el.getTheta(), el.getPhi()));
+            mLog.push_back(Datum(el.getIdent(), el.getStepCount(), kEeV, pos, el.getTheta(), el.getPhi()));
          }
          //}
       }

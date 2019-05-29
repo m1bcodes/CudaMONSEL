@@ -99,18 +99,18 @@ namespace MonteCarloSS
    void MonteCarloSS::initializeTrajectory()
    {
       mElectron = mGun->createElectron();
-      mElectron->setCurrentRegion(mChamber->containingSubRegion(mElectron->getPosition().data()));
+      mElectron->setCurrentRegion(mChamber->containingSubRegion(mElectron->getPosition()));
       // Stop when you can't generate any more x-rays
       mElectron->setScatteringElement(nullptr);
    }
 
    void MonteCarloSS::takeStep()
    {
-      const VectorXd& pos0 = mElectron->getPosition();
+      auto pos0 = mElectron->getPosition();
 
       auto currentRegion = mElectron->getCurrentRegion();
-      if ((currentRegion == nullptr) || !(currentRegion->getShape()->contains(pos0.data()))) {
-         currentRegion = mChamber->containingSubRegion(pos0.data());
+      if ((currentRegion == nullptr) || !(currentRegion->getShape()->contains(pos0))) {
+         currentRegion = mChamber->containingSubRegion(pos0);
          mElectron->setCurrentRegion(currentRegion);
          if (currentRegion == nullptr) {
             mElectron->setTrajectoryComplete(true);
@@ -120,9 +120,10 @@ namespace MonteCarloSS
       auto msm = currentRegion->getScatterModel();
       if (msm == nullptr) printf("MonteCarloSS::takeStep: msm is null\n");
 
-      VectorXd& pos1 = mElectron->candidatePoint(msm->randomMeanPathLength(*mElectron));
-      auto nextRegion = currentRegion->findEndOfStep(pos0.data(), pos1.data());
-      mElectron->move(pos1.data(), msm->calculateEnergyLoss(dist(pos0.data(), pos1.data()), *mElectron));
+      double pos1[3];
+      mElectron->candidatePoint(msm->randomMeanPathLength(*mElectron), pos1);
+      auto nextRegion = currentRegion->findEndOfStep(pos0, pos1);
+      mElectron->move(pos1, msm->calculateEnergyLoss(dist(pos0, pos1), *mElectron));
       bool tc = (mElectron->getEnergy() < msm->getMinEforTracking()) || mElectron->isTrajectoryComplete();
       mElectron->setTrajectoryComplete(tc);
       if (!tc) {
@@ -143,14 +144,18 @@ namespace MonteCarloSS
          else if (nextRegion != nullptr) {
             fireEvent(NonScatterEvent);
             auto secondary = msm->barrierScatter(mElectron, nextRegion);
-            mElectron->setPosition(mElectron->candidatePoint(SMALL_DISP).data());
-            if (!(mElectron->getCurrentRegion()->getShape()->contains(mElectron->getPosition().data())))
-               mElectron->setCurrentRegion(mChamber->containingSubRegion(mElectron->getPosition().data()));
+            double candpt[3];
+            mElectron->candidatePoint(SMALL_DISP, candpt);
+            mElectron->setPosition(candpt);
+            if (!(mElectron->getCurrentRegion()->getShape()->contains(mElectron->getPosition())))
+               mElectron->setCurrentRegion(mChamber->containingSubRegion(mElectron->getPosition()));
 
             if (mElectron->getCurrentRegion() != currentRegion)
                fireEvent(ExitMaterialEvent);
             if (secondary != nullptr) {
-               secondary->setPosition(secondary->candidatePoint(SMALL_DISP).data());
+               double secandpt[3];
+               secondary->candidatePoint(SMALL_DISP, secandpt);
+               secondary->setPosition(secandpt);
                trackSecondaryElectron(secondary);
             }
          }

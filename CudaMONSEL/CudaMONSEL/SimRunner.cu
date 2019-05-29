@@ -1,6 +1,9 @@
 //#include <stdio.h>
-//
 //#include <cuda_runtime.h>
+//#include <curand.h>
+//#include <curand_kernel.h>
+//#include <math.h>
+//#include <assert.h>
 //
 //#include "gov/nist/microanalysis/NISTMonte/MonteCarloSS.cu"
 ////#include "gov/nist/microanalysis/NISTMonte/Electron.cu"
@@ -56,92 +59,97 @@
 //   std::cout << std::endl;
 //}
 //
-////int main()
-////{
-////   checkCudaErrors(cudaSetDevice(0));
-////
-////   const size_t img_x = 256;
-////   const size_t img_y = 256;
-////   const dim3 blockSize(2, 2, 1);
-////   const size_t grid_x = (img_x / blockSize.x) + ((img_x % blockSize.x > 0) ? 1 : 0);
-////   const size_t grid_y = (img_y / blockSize.y) + ((img_y % blockSize.y > 0) ? 1 : 0);
-////   const dim3 gridSize(grid_x, grid_y, 1);
-////
-////   unsigned int *d_arr;
-////   checkCudaErrors(cudaMalloc((void **)&d_arr, sizeof(int) * img_x * img_y));
-////
-////   spawnElectrons << <gridSize, blockSize >> >(d_arr, img_x, img_y);
-////   checkCudaErrors(cudaDeviceSynchronize());
-////   checkCudaErrors(cudaGetLastError());
-////
-////   unsigned int *h_arr = new unsigned int[img_x * img_y];
-////   checkCudaErrors(cudaMemcpy(h_arr, d_arr, sizeof(int) * img_x * img_y, cudaMemcpyDeviceToHost));
-////   checkCudaErrors(cudaFree(d_arr));
-////
-////   saveResults("a.bmp", h_arr, img_x, img_y);
-////   delete[] h_arr;
-////
-////   return 0;
-////}
-//
-//__global__ void TestKernel()
+//__global__ void useClass(MaterialT* cudaClass)
 //{
-//   HasherTest::TestOne();
-//
-//   LinkedListTest::LinkedListTest lltest;
-//   lltest.TestAddAllAsSet();
-//
-//   SetTest::SetTest setTest;
-//   setTest.TestIntBasic();
-//   setTest.TestInt();
-//   setTest.TestInt2();
-//   setTest.TestString();
-//   setTest.TestSetOfSetOfString();
-//
-//   MapTest::MapTest mapTest;
-//   mapTest.TestInteger();
-//   mapTest.TestString();
-//   mapTest.TestMapOfMap();
-//
-//   UncertainValue2::UncertainValue2 v0(0, "abc", 5);
-//   UncertainValue2::UncertainValue2 v1(1);
-//   UncertainValue2::UncertainValue2 v2(2, 10);
-//   UncertainValue2::UncertainValue2 v3(2, 10);
-//   printf("%d\n", v1.equals(v2));
-//   printf("%d\n", v1.equals(v3));
-//   printf("%d\n", v2.equals(v3));
-//
-//   UncertainValue2Test::UncertainValue2Test uvTest;
-//   uvTest.testSpecialValues();
-//   uvTest.testA();
-//   uvTest.testB();
-//   uvTest.testC();
-//   uvTest.testAB();
-//   uvTest.testAdd1();
-//   uvTest.testAdd2();
-//   uvTest.testAdd3();
-//   uvTest.testMultiply();
-//   uvTest.testDivide();
-//   uvTest.testFunctions();
-//
-//   //ElementTest::ElementTest elementTest;
-//   //elementTest.testOne();
-//
-//   //MaterialTest::MaterialTest mat;
-//   //mat.testOne();
+//   printf("%.10e\n", cudaClass->getDensity());
 //}
 //
 //int main()
 //{
-//   Element::readAtomicWeights();
-//   Element::readIonizationEnergy();
-//   Element::InitializeElements();
+//   //checkCudaErrors(cudaSetDevice(0));
 //
-//   //Composition::createProjectors(2762689630628022905L);
+//   //const size_t img_x = 256;
+//   //const size_t img_y = 256;
+//   //const dim3 blockSize(2, 2, 1);
+//   //const size_t grid_x = (img_x / blockSize.x) + ((img_x % blockSize.x > 0) ? 1 : 0);
+//   //const size_t grid_y = (img_y / blockSize.y) + ((img_y % blockSize.y > 0) ? 1 : 0);
+//   //const dim3 gridSize(grid_x, grid_y, 1);
 //
-//   TestKernel<<<1, 1>>>();
-//   checkCudaErrors(cudaDeviceSynchronize());
-//   checkCudaErrors(cudaGetLastError());
+//   //unsigned int *d_arr;
+//   //checkCudaErrors(cudaMalloc((void **)&d_arr, sizeof(int) * img_x * img_y));
+//
+//   //spawnElectrons<<<gridSize, blockSize>>>(d_arr, img_x, img_y);
+//   //checkCudaErrors(cudaDeviceSynchronize());
+//   //checkCudaErrors(cudaGetLastError());
+//
+//   //unsigned int *h_arr = new unsigned int[img_x * img_y];
+//   //checkCudaErrors(cudaMemcpy(h_arr, d_arr, sizeof(int) * img_x * img_y, cudaMemcpyDeviceToHost));
+//   //checkCudaErrors(cudaFree(d_arr));
+//
+//   //saveResults("a.bmp", h_arr, img_x, img_y);
+//   //delete[] h_arr;
 //
 //   return 0;
 //}
+//
+////__global__ void TestKernel()
+////{
+////   HasherTest::TestOne();
+////
+////   LinkedListTest::LinkedListTest lltest;
+////   lltest.TestAddAllAsSet();
+////
+////   SetTest::SetTest setTest;
+////   setTest.TestIntBasic();
+////   setTest.TestInt();
+////   setTest.TestInt2();
+////   setTest.TestString();
+////   setTest.TestSetOfSetOfString();
+////
+////   MapTest::MapTest mapTest;
+////   mapTest.TestInteger();
+////   mapTest.TestString();
+////   mapTest.TestMapOfMap();
+////
+////   UncertainValue2::UncertainValue2 v0(0, "abc", 5);
+////   UncertainValue2::UncertainValue2 v1(1);
+////   UncertainValue2::UncertainValue2 v2(2, 10);
+////   UncertainValue2::UncertainValue2 v3(2, 10);
+////   printf("%d\n", v1.equals(v2));
+////   printf("%d\n", v1.equals(v3));
+////   printf("%d\n", v2.equals(v3));
+////
+////   UncertainValue2Test::UncertainValue2Test uvTest;
+////   uvTest.testSpecialValues();
+////   uvTest.testA();
+////   uvTest.testB();
+////   uvTest.testC();
+////   uvTest.testAB();
+////   uvTest.testAdd1();
+////   uvTest.testAdd2();
+////   uvTest.testAdd3();
+////   uvTest.testMultiply();
+////   uvTest.testDivide();
+////   uvTest.testFunctions();
+////
+////   //ElementTest::ElementTest elementTest;
+////   //elementTest.testOne();
+////
+////   //MaterialTest::MaterialTest mat;
+////   //mat.testOne();
+////}
+//
+////int main()
+////{
+////   Element::readAtomicWeights();
+////   Element::readIonizationEnergy();
+////   Element::InitializeElements();
+////
+////   //Composition::createProjectors(2762689630628022905L);
+////
+////   TestKernel<<<1, 1>>>();
+////   checkCudaErrors(cudaDeviceSynchronize());
+////   checkCudaErrors(cudaGetLastError());
+////
+////   return 0;
+////}

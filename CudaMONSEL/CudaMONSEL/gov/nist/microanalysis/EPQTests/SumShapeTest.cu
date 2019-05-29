@@ -20,21 +20,6 @@
 
 #include "gov\nist\microanalysis\Utility\Math2.cuh"
 
-/**
-* <p>
-* A test class for the SumShape class.
-* </p>
-* <p>
-* Copyright: Pursuant to title 17 Section 105 of the United States Code this
-* software is not subject to copyright protection and is in the public domain
-* </p>
-* <p>
-* Institution: National Institute of Standards and Technology
-* </p>
-*
-* @author Nicholas
-* @version 1.0
-*/
 namespace SumShapeTest
 {
    static const ElementT* mat1Elements[] = {
@@ -187,11 +172,6 @@ namespace SumShapeTest
       return res;
    }
 
-   /**
-   * Test method for
-   * {@link gov.nist.microanalysis.NISTMonte.SumShape#getFirstIntersection(double[], double[])}
-   * .
-   */
    void testGetFirstIntersection()
    {
       for (int i = 0; i < 1000; ++i) {

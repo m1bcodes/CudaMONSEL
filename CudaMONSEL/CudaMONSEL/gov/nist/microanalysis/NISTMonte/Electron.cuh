@@ -8,43 +8,46 @@ namespace Electron
    class Electron
    {
    public:
-      Electron(double initialPos[], double kE);
-      Electron(double initialPos[], double theta, double phi, double kE);
+      Electron(const double initialPos[], double kE);
+      Electron(const double initialPos[], double theta, double phi, double kE);
       Electron(const Electron& parent, double theta, double phi, double kE);
 
-      void Init(double initialPos[], double theta, double phi, double kE);
+      void Init(const double initialPos[], double theta, double phi, double kE);
 
       void setDirection(double theta, double phi);
-      VectorXd getPosition() const;
-      void setPosition(double newpos[]);
-      VectorXd getPrevPosition() const;
+      //VectorXd getPosition() const;
+      __host__ __device__ const double * getPosition() const;
+      void setPosition(const double newpos[]);
+      //VectorXd getPrevPosition() const;
+      __host__ __device__ const double * getPrevPosition() const;
       const RegionBaseT* getCurrentRegion() const;
       const RegionBaseT* getPreviousRegion() const;
       double getEnergy() const;
       double getPreviousEnergy() const;
       int getStepCount() const;
       double stepLength() const;
-      VectorXd candidatePoint(double dS) const;
+      //VectorXd candidatePoint(double dS) const;
+      __host__ __device__ void candidatePoint(double dS, double res[]) const;
       void updateDirection(double dTheta, double dPhi);
-      void move(double newPoint[], double dE);
+      void move(const double newPoint[], double dE);
       void setEnergy(double newEnergy);
       void setPreviousEnergy(double newPreviousEnergy);
-      void setCurrentRegion(const RegionBaseT* reg);
+      __host__ __device__ void setCurrentRegion(const RegionBaseT* reg);
       const ElementT* getScatteringElement() const;
       void setScatteringElement(const ElementT* scatteringElement);
       double getPhi() const;
       double getTheta() const;
       bool isTrajectoryComplete() const;
-      void setTrajectoryComplete(bool trajectoryComplete);
+      __host__ __device__ void setTrajectoryComplete(bool trajectoryComplete);
       long getIdent() const;
       long getParentID() const;
 
    private:
       // The x,y & z coordinates of the electron
-      VectorXd mPosition; // final transient
+      double mPosition[3];
 
       // The location of the electron before the last call to updatePosition
-      VectorXd mPrevPosition; // final transient
+      double mPrevPosition[3];
 
       // The direction of the current trajectory segment
       double mPhi, mTheta; // transient
@@ -67,7 +70,7 @@ namespace Electron
 
       long ident; // A unique identifying number to assist tracking, final
 
-      long parentID = 0; // 0 if from e-gun. Otherwise ID of parent.
+      long parentID; // 0 if from e-gun. Otherwise ID of parent.
    };
 
    extern long getlastIdent();

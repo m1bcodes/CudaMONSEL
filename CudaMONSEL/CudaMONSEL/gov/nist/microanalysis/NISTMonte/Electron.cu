@@ -12,10 +12,10 @@ namespace Electron
       return lastID;
    }
 
-   void Electron::Init(double initialPos[], double theta, double phi, double kE)
+   void Electron::Init(const double initialPos[], double theta, double phi, double kE)
    {
-      mPosition.assign(initialPos, initialPos + 3);
-      mPrevPosition.assign(initialPos, initialPos + 3);
+      memcpy(mPosition, initialPos, sizeof(double) * 3);
+      memcpy(mPrevPosition, initialPos, sizeof(double) * 3);
       mScatteringElement = (NULL);
       mCurrentRegion = (NULL);
       mPrevRegion = (NULL);
@@ -26,21 +26,23 @@ namespace Electron
       mStepCount = (0);
       mTrajectoryComplete = (false);
       ident = (++lastID);
+      parentID = 0;
    }
 
-   Electron::Electron(double initialPos[], double kE)
+   Electron::Electron(const double initialPos[], double kE)
    {
       Init(initialPos, 0., 0., kE);
    }
 
-   Electron::Electron(double initialPos[], double theta, double phi, double kE)
+   Electron::Electron(const double initialPos[], double theta, double phi, double kE)
    {
       Init(initialPos, theta, phi, kE);
    }
 
    Electron::Electron(const Electron& parent, double theta, double phi, double kE)
    {
-      Init(parent.getPosition().data(), theta, phi, kE);
+      const double* pos = parent.getPosition();
+      Init(pos, theta, phi, kE);
       mCurrentRegion = parent.getCurrentRegion();
       mPrevRegion = mCurrentRegion;
       parentID = parent.getIdent();
@@ -52,17 +54,32 @@ namespace Electron
       mPhi = phi;
    }
 
-   VectorXd Electron::getPosition() const
+   //VectorXd Electron::getPosition() const
+   //{
+   //   return mPosition;
+   //}
+
+   __host__ __device__ const double * Electron::getPosition() const
    {
       return mPosition;
    }
 
-   void Electron::setPosition(double newpos[])
+   //void Electron::setPosition(double newpos[])
+   //{
+   //   mPosition.assign(newpos, newpos + 3);
+   //}
+
+   void Electron::setPosition(const double newpos[])
    {
-      mPosition.assign(newpos, newpos + 3);
+      memcpy(mPosition, newpos, sizeof(double) * 3);
    }
 
-   VectorXd Electron::getPrevPosition() const
+   //VectorXd Electron::getPrevPosition() const
+   //{
+   //   return mPrevPosition;
+   //}
+
+   __host__ __device__ const double * Electron::getPrevPosition() const
    {
       return mPrevPosition;
    }
@@ -92,20 +109,34 @@ namespace Electron
       return mStepCount;
    }
 
+   //double Electron::stepLength() const
+   //{
+   //   return MonteCarloSS::dist(mPrevPosition.data(), mPosition.data());
+   //}
+
    double Electron::stepLength() const
    {
-      return MonteCarloSS::dist(mPrevPosition.data(), mPosition.data());
+      return MonteCarloSS::dist(mPrevPosition, mPosition);
    }
 
-   VectorXd Electron::candidatePoint(double dS) const
+   //VectorXd Electron::candidatePoint(double dS) const
+   //{
+   //   double st = ::sin(mTheta);
+   //   // Calculate the new point as dS distance from mPosition
+   //   return {
+   //      mPosition[0] + dS * ::cos(mPhi) * st,
+   //      mPosition[1] + dS * ::sin(mPhi) * st,
+   //      mPosition[2] + dS * ::cos(mTheta)
+   //   };
+   //}
+
+   __host__ __device__ void Electron::candidatePoint(double dS, double res[]) const
    {
       double st = ::sin(mTheta);
       // Calculate the new point as dS distance from mPosition
-      return {
-         mPosition[0] + dS * ::cos(mPhi) * st,
-         mPosition[1] + dS * ::sin(mPhi) * st,
-         mPosition[2] + dS * ::cos(mTheta)
-      };
+      res[0] = mPosition[0] + dS * ::cos(mPhi) * st;
+      res[1] = mPosition[1] + dS * ::sin(mPhi) * st;
+      res[2] = mPosition[2] + dS * ::cos(mTheta);
    }
 
    void Electron::updateDirection(double dTheta, double dPhi)
@@ -130,11 +161,13 @@ namespace Electron
       mPhi = ::atan2(dy, dx);
    }
 
-   void Electron::move(double newPoint[], double dE)
+   void Electron::move(const double newPoint[], double dE)
    {
       // Update mPrevPosition and then mPosition
-      mPrevPosition = mPosition;
-      mPosition.assign(newPoint, newPoint + mPosition.size());
+      //mPrevPosition = mPosition;
+      memcpy(mPrevPosition, mPosition, sizeof(double) * 3);
+      //mPosition.assign(newPoint, newPoint + 3);
+      memcpy(mPosition, newPoint, sizeof(double) * 3);
 
       // Update the energy
       previousEnergy = mEnergy;
@@ -152,7 +185,7 @@ namespace Electron
       previousEnergy = newPreviousEnergy;
    }
 
-   void Electron::setCurrentRegion(const RegionBaseT* reg)
+   __host__ __device__ void Electron::setCurrentRegion(const RegionBaseT* reg)
    {
       mPrevRegion = mCurrentRegion;
       mCurrentRegion = reg;
@@ -183,7 +216,7 @@ namespace Electron
       return mTrajectoryComplete;
    }
 
-   void Electron::setTrajectoryComplete(bool trajectoryComplete)
+   __host__ __device__ void Electron::setTrajectoryComplete(bool trajectoryComplete)
    {
       mTrajectoryComplete = trajectoryComplete;
    }
