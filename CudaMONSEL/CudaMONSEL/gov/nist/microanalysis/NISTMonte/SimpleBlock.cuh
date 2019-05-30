@@ -15,12 +15,12 @@ namespace SimpleBlock
       double getFirstIntersection(const double pos0[], const double pos1[]);
       StringT toString() const;
 
-      VectorXd getCorner0() const;
-      VectorXd getCorner1() const;
+      const double* getCorner0() const;
+      const double* getCorner1() const;
 
    private:
-      VectorXd mCorner0;
-      VectorXd mCorner1;
+      double mCorner0[3];
+      double mCorner1[3];
    };
 }
 

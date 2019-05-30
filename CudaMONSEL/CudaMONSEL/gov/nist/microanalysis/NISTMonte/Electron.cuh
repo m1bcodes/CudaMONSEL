@@ -15,10 +15,8 @@ namespace Electron
       void Init(const double initialPos[], double theta, double phi, double kE);
 
       void setDirection(double theta, double phi);
-      //VectorXd getPosition() const;
       __host__ __device__ const double * getPosition() const;
       void setPosition(const double newpos[]);
-      //VectorXd getPrevPosition() const;
       __host__ __device__ const double * getPrevPosition() const;
       const RegionBaseT* getCurrentRegion() const;
       const RegionBaseT* getPreviousRegion() const;
@@ -26,7 +24,6 @@ namespace Electron
       double getPreviousEnergy() const;
       int getStepCount() const;
       double stepLength() const;
-      //VectorXd candidatePoint(double dS) const;
       __host__ __device__ void candidatePoint(double dS, double res[]) const;
       void updateDirection(double dTheta, double dPhi);
       void move(const double newPoint[], double dE);

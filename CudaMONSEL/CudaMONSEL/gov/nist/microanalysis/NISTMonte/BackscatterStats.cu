@@ -22,7 +22,7 @@ namespace BackscatterStats
       return mkEeV;
    }
 
-   VectorXd Datum::getPosition() const
+   const double* Datum::getPosition() const
    {
       return mPosition;
    }
@@ -41,20 +41,20 @@ namespace BackscatterStats
       electronID(eID),
       trajStep(tStep),
       mkEeV(e0),
-      mPosition(pos, pos + 3),
       mTheta(theta),
       mPhi(phi)
    {
+      memcpy(mPosition, pos, sizeof(double) * 3);
    }
 
    Datum::Datum(const Datum& other) :
       electronID(other.electronID),
       trajStep(other.trajStep),
       mkEeV(other.mkEeV),
-      mPosition(other.mPosition),
       mTheta(other.mTheta),
       mPhi(other.mPhi)
    {
+      memcpy(mPosition, other.mPosition, sizeof(double) * 3);
    }
 
    StringT Datum::toString() const

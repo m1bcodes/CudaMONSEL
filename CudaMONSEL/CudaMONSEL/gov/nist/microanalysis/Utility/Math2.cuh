@@ -29,6 +29,7 @@ namespace Math2
    extern double dot(const VectorXd& a, const VectorXd& b);
    extern double dot3d(const double a[], const double b[]);
    extern double dot3D(const VectorXd& a, const VectorXd& b);
+   extern void cross3d(const double* a, const double* b, double res[]);
    extern VectorXd cross(const VectorXd& a, const VectorXd& b);
    extern double sqr(double x);
    extern double magnitude3d(const double p[]);

@@ -47,7 +47,7 @@ namespace MonteCarloSS
       double getBeamEnergy() const;
       void setElectronGun(ElectronGunT& gun);
       //void setBeamEnergy(double beamEnergy);
-      VectorXd computeDetectorPosition(double elevation, double theta);
+      void computeDetectorPosition(double elevation, double theta, double res[]);
       const ElectronT& getElectron() const;
       Element::UnorderedSetT getElementSet() const;
       void rotate(double pivot[], double phi, double theta, double psi);

@@ -7,24 +7,20 @@
 
 namespace NShapes
 {
-   static VectorXd normalize(double vec[])
+   static void normalize(double vec[], double res[])
    {
       double norm = ::sqrt((vec[0] * vec[0]) + (vec[1] * vec[1]) + (vec[2] * vec[2]));
-      return{
-         vec[0] / norm,
-         vec[1] / norm,
-         vec[2] / norm
-      };
+      res[0] = vec[0] / norm;
+      res[1] = vec[1] / norm;
+      res[2] = vec[2] / norm;
    }
 
    // returns a vector pointing in the opposite direction of v
-   static VectorXd invert(double v[])
+   static void invert(double v[], double res[])
    {
-      return{
-         -v[0],
-         -v[1],
-         -v[2]
-      };
+      res[0] = -v[0];
+      res[1] = -v[1];
+      res[2] = -v[2];
    }
 
    // Add a plane offset by dist*normal from pt

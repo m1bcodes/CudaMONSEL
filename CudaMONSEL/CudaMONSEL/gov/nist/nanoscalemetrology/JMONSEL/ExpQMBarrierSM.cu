@@ -99,7 +99,7 @@ namespace ExpQMBarrierSM
       double theta0 = pe->getTheta();
       double phi0 = pe->getPhi();
       double sintheta0 = ::sin(theta0);
-      VectorXd n0({ sintheta0 * ::cos(phi0), sintheta0 * ::sin(phi0), ::cos(theta0) });
+      double n0[] = { sintheta0 * ::cos(phi0), sintheta0 * ::sin(phi0), ::cos(theta0) };
 
       /*
       * If the intersected shape is not a NormalShape, we still haven't
@@ -109,7 +109,7 @@ namespace ExpQMBarrierSM
       * the electron's path.
       */
       if (!nb.empty())
-         nb = n0;
+         nb.assign(n0, n0 + 3);
 
       /*
       * Let the angle of incidence be called alpha. Cos(alpha) is given by the
@@ -185,7 +185,7 @@ namespace ExpQMBarrierSM
       * COMPUTE DIRECTION AND ENERGY FOR EACH OF THE CASES: TRANSMISSION
       * OR REFLECTION
       */
-      VectorXd nf(3, 0); // Direction vector after scattering
+      double nf[3]; // Direction vector after scattering
       if (transmits) { // Transmission
          double factor = cosalpha * ((rootDiff / rootPerpE) - 1.);
          for (int i = 0; i < 3; i++)

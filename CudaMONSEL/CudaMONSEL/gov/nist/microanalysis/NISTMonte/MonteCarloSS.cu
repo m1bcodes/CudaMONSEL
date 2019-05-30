@@ -252,13 +252,13 @@ namespace MonteCarloSS
    //   //fireEvent(BeamEnergyChanged);
    //}
 
-   PositionVecT MonteCarloSS::computeDetectorPosition(double elevation, double theta)
+   void MonteCarloSS::computeDetectorPosition(double elevation, double theta, double res[])
    {
       double frac = 0.999;
       double r = frac * ChamberRadius;
       //if (mChamber->mShape instanceof Sphere)
       //   r = frac * ((Sphere)mChamber.mShape).getRadius();
-      return ElectronProbe::computePosition(0.0, elevation, theta, r);
+      ElectronProbe::computePosition(0.0, elevation, theta, r, res);
    }
 
    const ElectronT& MonteCarloSS::getElectron() const

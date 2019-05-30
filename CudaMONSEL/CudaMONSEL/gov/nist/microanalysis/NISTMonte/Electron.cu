@@ -54,30 +54,15 @@ namespace Electron
       mPhi = phi;
    }
 
-   //VectorXd Electron::getPosition() const
-   //{
-   //   return mPosition;
-   //}
-
    __host__ __device__ const double * Electron::getPosition() const
    {
       return mPosition;
    }
 
-   //void Electron::setPosition(double newpos[])
-   //{
-   //   mPosition.assign(newpos, newpos + 3);
-   //}
-
    void Electron::setPosition(const double newpos[])
    {
       memcpy(mPosition, newpos, sizeof(double) * 3);
    }
-
-   //VectorXd Electron::getPrevPosition() const
-   //{
-   //   return mPrevPosition;
-   //}
 
    __host__ __device__ const double * Electron::getPrevPosition() const
    {
@@ -109,26 +94,10 @@ namespace Electron
       return mStepCount;
    }
 
-   //double Electron::stepLength() const
-   //{
-   //   return MonteCarloSS::dist(mPrevPosition.data(), mPosition.data());
-   //}
-
    double Electron::stepLength() const
    {
       return MonteCarloSS::dist(mPrevPosition, mPosition);
    }
-
-   //VectorXd Electron::candidatePoint(double dS) const
-   //{
-   //   double st = ::sin(mTheta);
-   //   // Calculate the new point as dS distance from mPosition
-   //   return {
-   //      mPosition[0] + dS * ::cos(mPhi) * st,
-   //      mPosition[1] + dS * ::sin(mPhi) * st,
-   //      mPosition[2] + dS * ::cos(mTheta)
-   //   };
-   //}
 
    __host__ __device__ void Electron::candidatePoint(double dS, double res[]) const
    {

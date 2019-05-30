@@ -47,111 +47,111 @@ namespace SEmaterial
       return this == &other;
    }
 
-   void SEmaterial::addBindingEnergy(double bindingEnergy, double density)
-   {
-      if (bindingEnergy < 0.0) {
-         printf("Binding energies must be positive.");
-         return;
-      }
+   //void SEmaterial::addBindingEnergy(double bindingEnergy, double density)
+   //{
+   //   if (bindingEnergy < 0.0) {
+   //      printf("Binding energies must be positive.");
+   //      return;
+   //   }
 
-      if (density < 0.0) {
-         printf("Electron density must be positive.");
-         return;
-      }
-      this->bindingEnergy.push_back(bindingEnergy);
-      if (-bindingEnergy > energyCBbottom) {
-         this->kineticEnergy.push_back(-bindingEnergy - energyCBbottom);
-      }
-      else {
-         this->kineticEnergy.push_back(bindingEnergy + energyCBbottom);
-      }
-      electronDensity.push_back(density);
-      version = (version == _UI32_MAX) ? 0L : version + 1L;
-   }
+   //   if (density < 0.0) {
+   //      printf("Electron density must be positive.");
+   //      return;
+   //   }
+   //   this->bindingEnergy.push_back(bindingEnergy);
+   //   if (-bindingEnergy > energyCBbottom) {
+   //      this->kineticEnergy.push_back(-bindingEnergy - energyCBbottom);
+   //   }
+   //   else {
+   //      this->kineticEnergy.push_back(bindingEnergy + energyCBbottom);
+   //   }
+   //   electronDensity.push_back(density);
+   //   version = (version == _UI32_MAX) ? 0L : version + 1L;
+   //}
 
-   void SEmaterial::addBindingEnergy(double bindingEnergy, double kineticEnergy, double density)
-   {
-      if (bindingEnergy < 0.0) {
-         printf("Binding energies must be positive.");
-         return;
-      }
-      if (kineticEnergy < 0.0) {
-         printf("Kinetic energies must be positive.");
-         return;
-      }
-      if (density < 0.0) {
-         printf("Electron density must be positive.");
-         return;
-      }
-      this->bindingEnergy.push_back(bindingEnergy);
-      this->kineticEnergy.push_back(kineticEnergy);
-      userSetKE = true;
-      electronDensity.push_back(density);
-      version = (version == _UI32_MAX) ? 0L : version + 1L;
-   }
+   //void SEmaterial::addBindingEnergy(double bindingEnergy, double kineticEnergy, double density)
+   //{
+   //   if (bindingEnergy < 0.0) {
+   //      printf("Binding energies must be positive.");
+   //      return;
+   //   }
+   //   if (kineticEnergy < 0.0) {
+   //      printf("Kinetic energies must be positive.");
+   //      return;
+   //   }
+   //   if (density < 0.0) {
+   //      printf("Electron density must be positive.");
+   //      return;
+   //   }
+   //   this->bindingEnergy.push_back(bindingEnergy);
+   //   this->kineticEnergy.push_back(kineticEnergy);
+   //   userSetKE = true;
+   //   electronDensity.push_back(density);
+   //   version = (version == _UI32_MAX) ? 0L : version + 1L;
+   //}
 
-   void SEmaterial::addBindingEnergy(const VectorXd& bindingEnergy, const VectorXd& density)
-   {
-      if (bindingEnergy.size() != density.size()) {
-         printf("Unequal # of binding energies and densities");
-      }
-      for (double b : bindingEnergy) {
-         if (b < 0.0) {
-            printf("Binding energies must be positive.");
-            return;
-         }
-      }
-      for (double d : density) {
-         if (d < 0.0) {
-            printf("Electron density must be positive.");
-            return;
-         }
-      }
-      this->bindingEnergy.insert(this->bindingEnergy.end(), bindingEnergy.begin(), bindingEnergy.end());
-      // Use default kinetic energy
-      for (double b : bindingEnergy) {
-         if (-b > energyCBbottom) {
-            this->kineticEnergy.push_back(-b - energyCBbottom);
-         }
-         else {
-            this->kineticEnergy.push_back(b + energyCBbottom);
-         }
-      }
-      electronDensity.insert(electronDensity.end(), density.begin(), density.end());
-      version = (version == _UI32_MAX) ? 0L : version + 1L;
-   }
+   //void SEmaterial::addBindingEnergy(const VectorXd& bindingEnergy, const VectorXd& density)
+   //{
+   //   if (bindingEnergy.size() != density.size()) {
+   //      printf("Unequal # of binding energies and densities");
+   //   }
+   //   for (double b : bindingEnergy) {
+   //      if (b < 0.0) {
+   //         printf("Binding energies must be positive.");
+   //         return;
+   //      }
+   //   }
+   //   for (double d : density) {
+   //      if (d < 0.0) {
+   //         printf("Electron density must be positive.");
+   //         return;
+   //      }
+   //   }
+   //   this->bindingEnergy.insert(this->bindingEnergy.end(), bindingEnergy.begin(), bindingEnergy.end());
+   //   // Use default kinetic energy
+   //   for (double b : bindingEnergy) {
+   //      if (-b > energyCBbottom) {
+   //         this->kineticEnergy.push_back(-b - energyCBbottom);
+   //      }
+   //      else {
+   //         this->kineticEnergy.push_back(b + energyCBbottom);
+   //      }
+   //   }
+   //   electronDensity.insert(electronDensity.end(), density.begin(), density.end());
+   //   version = (version == _UI32_MAX) ? 0L : version + 1L;
+   //}
 
-   void SEmaterial::addBindingEnergy(const VectorXd& bindingEnergy, const VectorXd& kineticEnergy, const VectorXd& density)
-   {
-      // Error checking
-      if ((bindingEnergy.size() != density.size()) || (kineticEnergy.size() != density.size())) {
-         printf("Lists of energies and densities must be equal length");
-         return;
-      }
-      for (double b : bindingEnergy) {
-         if (b < 0.0) {
-            printf("Binding energies must be positive.");
-            return;
-         }
-      }
-      for (double b : kineticEnergy) {
-         if (b < 0.0) {
-            printf("Kinetic energies must be positive.");
-            return;
-         }
-      }
-      for (double d : density) {
-         if (d < 0.0) {
-            printf("Electron density must be positive.");
-            return;
-         }
-      }
-      this->bindingEnergy.insert(this->bindingEnergy.end(), bindingEnergy.begin(), bindingEnergy.end());
-      this->kineticEnergy.insert(this->kineticEnergy.end(), kineticEnergy.begin(), kineticEnergy.end());
-      userSetKE = true;
-      this->electronDensity.insert(this->electronDensity.end(), density.begin(), density.end());
-      version = (version == _UI32_MAX) ? 0L : version + 1L;
-   }
+   //void SEmaterial::addBindingEnergy(const VectorXd& bindingEnergy, const VectorXd& kineticEnergy, const VectorXd& density)
+   //{
+   //   // Error checking
+   //   if ((bindingEnergy.size() != density.size()) || (kineticEnergy.size() != density.size())) {
+   //      printf("Lists of energies and densities must be equal length");
+   //      return;
+   //   }
+   //   for (double b : bindingEnergy) {
+   //      if (b < 0.0) {
+   //         printf("Binding energies must be positive.");
+   //         return;
+   //      }
+   //   }
+   //   for (double b : kineticEnergy) {
+   //      if (b < 0.0) {
+   //         printf("Kinetic energies must be positive.");
+   //         return;
+   //      }
+   //   }
+   //   for (double d : density) {
+   //      if (d < 0.0) {
+   //         printf("Electron density must be positive.");
+   //         return;
+   //      }
+   //   }
+   //   this->bindingEnergy.insert(this->bindingEnergy.end(), bindingEnergy.begin(), bindingEnergy.end());
+   //   this->kineticEnergy.insert(this->kineticEnergy.end(), kineticEnergy.begin(), kineticEnergy.end());
+   //   userSetKE = true;
+   //   this->electronDensity.insert(this->electronDensity.end(), density.begin(), density.end());
+   //   version = (version == _UI32_MAX) ? 0L : version + 1L;
+   //}
 
    void SEmaterial::addCoreEnergy(double coreEnergy)
    {
@@ -368,11 +368,11 @@ namespace SEmaterial
    void SEmaterial::setKEtoDefault()
    {
       for (int i = 0; i < kineticEnergy.size(); i++) {
-         if (-bindingEnergy.at(i) > energyCBbottom) {
-            kineticEnergy[i] = -bindingEnergy.at(i) - energyCBbottom;
+         if (-bindingEnergy[i] > energyCBbottom) {
+            kineticEnergy[i] = -bindingEnergy[i] - energyCBbottom;
          }
          else {
-            kineticEnergy[i] = bindingEnergy.at(i) + energyCBbottom;
+            kineticEnergy[i] = bindingEnergy[i] + energyCBbottom;
          }
       }
       userSetKE = false;

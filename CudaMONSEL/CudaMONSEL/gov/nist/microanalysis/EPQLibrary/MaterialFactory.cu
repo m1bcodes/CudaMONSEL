@@ -300,11 +300,12 @@ namespace MaterialFactory
             elms.insert(cres.begin(), cres.end());
 
             std::vector<const ElementT*> elmA(elms.begin(), elms.end());
-            VectorXd massFracs(elms.size());
+            double* massFracs = new double[elms.size()];
             for (int i = 0; i < elmA.size(); ++i)
                massFracs[i] = cl.weightFraction(*elmA[i], false) + cr.weightFraction(*elmA[i], false);
             
-            CompositionT ret(elmA.data(), elmA.size(), massFracs.data(), massFracs.size());
+            CompositionT ret(elmA.data(), elmA.size(), massFracs, elms.size());
+            delete[] massFracs;
             return ret;
          }
       }

@@ -4,8 +4,9 @@
 
 namespace Sphere
 {
-   Sphere::Sphere(const double center[], double radius) : mRadius(radius), mCenter(center, center+3)
+   Sphere::Sphere(const double center[], double radius) : mRadius(radius)
    {
+      memcpy(mCenter, center, sizeof(double) * 3);
    }
 
    bool Sphere::contains(const double pos[]) const
@@ -25,7 +26,7 @@ namespace Sphere
       double d[3];
       Math2::minus3d(pos1, pos0, d);
       double m[3];
-      Math2::minus3d(pos0, mCenter.data(), m);
+      Math2::minus3d(pos0, mCenter, m);
       const double ma2 = -2.0 * Math2::dot3d(d, d);
       const double b = 2.0 * Math2::dot3d(m, d);
       const double c2 = 2.0 * (Math2::dot3d(m, m) - mRadius * mRadius);
@@ -50,22 +51,18 @@ namespace Sphere
       return INFINITY;
    }
 
-   VectorXd Sphere::getInitialPoint() const
+   void Sphere::getInitialPoint(int res[]) const
    {
-      return {
-         mCenter[0],
-         mCenter[1],
-         mCenter[2] - 0.999 * mRadius // just inside...
-      };
+      res[0] = mCenter[0];
+      res[1] = mCenter[1];
+      res[2] = mCenter[2] - 0.999 * mRadius; // just inside...
    }
 
-   VectorXd Sphere::getPointAt(double phi, double theta, double frac) const
+   void Sphere::getPointAt(double phi, double theta, double frac, double res[]) const
    {
-      return {
-         mCenter[2] + mRadius * frac * ::cos(phi),
-         mCenter[1] + mRadius * frac * ::sin(phi) * ::sin(theta),
-         mCenter[0] + mRadius * frac * ::sin(phi) * ::cos(theta)
-      };
+      res[0] = mCenter[2] + mRadius * frac * ::cos(phi);
+      res[1] = mCenter[1] + mRadius * frac * ::sin(phi) * ::sin(theta);
+      res[2] = mCenter[0] + mRadius * frac * ::sin(phi) * ::cos(theta);
    }
 
    // JavaDoc in ITransform
@@ -110,7 +107,7 @@ namespace Sphere
    //   wr.flush();
    //}
 
-   VectorXd Sphere::getCenter() const
+   const double* Sphere::getCenter() const
    {
       return mCenter;
    }

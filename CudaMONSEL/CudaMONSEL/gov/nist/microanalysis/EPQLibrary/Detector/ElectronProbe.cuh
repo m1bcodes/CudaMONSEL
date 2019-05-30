@@ -17,7 +17,7 @@ namespace ElectronProbe
    //   double mMaxBeamEnergy = ToSI.keV(30.0);
    //};
 
-   PositionVecT computePosition(double optWD, double altitudeAngle, double azimuthAngle, double distance);
+   void computePosition(double optWD, double altitudeAngle, double azimuthAngle, double distance, double res[]);
 }
 
 #endif

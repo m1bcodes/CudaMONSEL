@@ -609,6 +609,13 @@ namespace Math2
       if ((a.size() != 3) || (b.size() != 3)) printf("Both arguments to the cross product must be the three-vectors.");
       return { a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0] };
    }
+
+   void cross3d(const double* a, const double* b, double res[])
+   {
+      res[0] = a[1] * b[2] - a[2] * b[1];
+      res[1] = a[2] * b[0] - a[0] * b[2];
+      res[2] = a[0] * b[1] - a[1] * b[0];
+   }
    //
    //   /**
    //   * multiply - Returns a vector containing the product of a, a scalar, times

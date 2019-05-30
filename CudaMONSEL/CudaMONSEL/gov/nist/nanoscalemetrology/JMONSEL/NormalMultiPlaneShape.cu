@@ -13,8 +13,8 @@ namespace NormalMultiPlaneShape
       carray.resize(mPlanes.size(), VectorXd(3));
 
       for (int i = 0; i < mPlanes.size(); ++i) {
-         narray[i] = mPlanes[i]->getNormal(); // This plane's normal vector
-         carray[i] = mPlanes[i]->getPoint(); // A point in this plane
+         narray[i].assign(mPlanes[i]->getNormal(), mPlanes[i]->getNormal() + 3); // This plane's normal vector
+         carray[i].assign(mPlanes[i]->getPoint(), mPlanes[i]->getPoint() + 3); // A point in this plane
       }
    }
 

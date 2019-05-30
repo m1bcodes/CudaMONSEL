@@ -21,10 +21,10 @@ namespace SEmaterial
       SEmaterial& operator=(const SEmaterial&);
       bool operator==(const SEmaterial&);
 
-      void addBindingEnergy(double bindingEnergy, double density);
-      void addBindingEnergy(double bindingEnergy, double kineticEnergy, double density);
-      void addBindingEnergy(const VectorXd& bindingEnergy, const VectorXd& density);
-      void addBindingEnergy(const VectorXd& bindingEnergy, const VectorXd& kineticEnergy, const VectorXd& density);
+      //void addBindingEnergy(double bindingEnergy, double density);
+      //void addBindingEnergy(double bindingEnergy, double kineticEnergy, double density);
+      //void addBindingEnergy(const VectorXd& bindingEnergy, const VectorXd& density);
+      //void addBindingEnergy(const VectorXd& bindingEnergy, const VectorXd& kineticEnergy, const VectorXd& density);
 
       void addCoreEnergy(double coreEnergy);
       void addCoreEnergy(const Setd& coreEnergy);

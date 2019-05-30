@@ -22,15 +22,12 @@ namespace MultiPlaneShape
       void rotate(const double pivot[], double phi, double theta, double psi) override;
       void translate(const double distance[]) override;
 
-      VectorXd getNormal() const;
-      VectorXd getPoint() const;
-
-      const VectorXd& getNormalRef() const;
-      const VectorXd& getPointRef() const;
+      const double* getNormal() const;
+      const double* getPoint() const;
 
    private:
-      VectorXd mNormal;
-      VectorXd mPoint;
+      double mNormal[3];
+      double mPoint[3];
    };
 
    class MultiPlaneShape : public ShapeT, public ITransformT//, TrajectoryVRML.IRender
@@ -56,7 +53,7 @@ namespace MultiPlaneShape
 
    protected:
       Planes mPlanes;
-      VectorXd mInsidePos;
+      double mInsidePos[3];
    };
 
    //extern MultiPlaneShape createFilm(const double normal[], const double pt1[], double thickness);

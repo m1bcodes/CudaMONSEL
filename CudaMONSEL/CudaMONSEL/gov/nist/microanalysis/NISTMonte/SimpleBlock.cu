@@ -8,13 +8,15 @@ namespace SimpleBlock
       return (x >= b0) && (x <= b1);
    }
 
-   SimpleBlock::SimpleBlock(const double corner0[], const double corner1[]) :
-      mCorner0(corner0, corner0 + 3),
-      mCorner1(corner1, corner1 + 3)
+   SimpleBlock::SimpleBlock(const double corner0[], const double corner1[])
    {
       //assert(corner0.length == 3);
       //assert(corner1.length == 3);
       // Normalize coordinates so that mCorner0[i]<=mCorner1[i]
+
+      memcpy(mCorner0, corner0, sizeof(double) * 3);
+      memcpy(mCorner1, corner1, sizeof(double) * 3);
+
       for (int i = 0; i < 3; ++i)
          if (mCorner0[i] > mCorner1[i]) {
             const double tmp = mCorner0[i];
@@ -82,12 +84,12 @@ namespace SimpleBlock
    //   wr.append("}");
    //}
 
-   VectorXd SimpleBlock::getCorner0() const
+   const double*  SimpleBlock::getCorner0() const
    {
       return mCorner0;
    }
 
-   VectorXd SimpleBlock::getCorner1() const
+   const double*  SimpleBlock::getCorner1() const
    {
       return mCorner1;
    }

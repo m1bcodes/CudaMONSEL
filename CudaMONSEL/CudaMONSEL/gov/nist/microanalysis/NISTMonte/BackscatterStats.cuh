@@ -15,7 +15,7 @@ namespace BackscatterStats
       long getElectronID() const;
       long getTrajStep() const;
       double getEnergyeV() const;
-      VectorXd getPosition() const;
+      const double* getPosition() const;
       double getTheta() const;
       double getPhi() const;
       StringT toString() const;
@@ -26,7 +26,7 @@ namespace BackscatterStats
       const long electronID;
       const long trajStep;
       const double mkEeV;
-      const VectorXd mPosition;
+      double mPosition[3];
       const double mTheta;
       const double mPhi;
    };

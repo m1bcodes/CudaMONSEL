@@ -124,9 +124,8 @@ namespace SumShapeTest
       if (::abs(a - b) >= err) printf("not equal: %.10e, %.10e\n", a, b);;
    }
 
-   static VectorXd pointInside()
+   static void pointInside(double res[])
    {
-      VectorXd res(3);
       switch (Math2::randomInt(3)) {
       case 0: {
          const double r = radius * Math2::random();
@@ -135,7 +134,7 @@ namespace SumShapeTest
          res[0] = -length + r * ::cos(phi) * ::sin(th);
          res[1] = r * ::sin(phi) * ::sin(th);
          res[2] = 2.0 * radius + r * ::cos(th);
-         assertTrue(mCap0Outer.contains(res.data()));
+         assertTrue(mCap0Outer.contains(res));
       }
               break;
       case 1: {
@@ -144,7 +143,7 @@ namespace SumShapeTest
          res[0] = 2.0 * length * (Math2::random() - 0.5);
          res[1] = r * ::cos(phi);
          res[2] = 2.0 * radius + ::sin(phi) * r;
-         assertTrue(mCylOuter.contains(res.data()));
+         assertTrue(mCylOuter.contains(res));
       }
               break;
       case 2: {
@@ -154,35 +153,35 @@ namespace SumShapeTest
          res[0] = length + r * ::cos(phi) * ::sin(th);
          res[1] = r * ::sin(phi) * ::sin(th);
          res[2] = 2.0 * radius + r * ::cos(th);
-         assertTrue(mCap1Outer.contains(res.data()));
+         assertTrue(mCap1Outer.contains(res));
       }
-              break;
+            break;
       }
-      return res;
    }
 
-   static VectorXd pointOutside()
+   static void pointOutside(double res[])
    {
-      VectorXd res(3);
       const double phi = 2.0 * Math2::random() * Math2::PI;
       const double r = radius * (1.00001 + 0.9 * Math2::random());
       res[0] = 3.0 * length * (Math2::random() - 0.5);
       res[1] = r * ::cos(phi);
       res[2] = 2.0 * radius + ::sin(phi) * r;
-      return res;
    }
 
    void testGetFirstIntersection()
    {
       for (int i = 0; i < 1000; ++i) {
-         auto inside1 = pointInside();
-         assertTrue(mPillOuter.contains(inside1.data()));
-         auto inside2 = pointInside();
-         assertTrue(mPillOuter.contains(inside2.data()));
-         auto outside = pointOutside();
-         assertTrue(!mPillOuter.contains(outside.data()));
+         double inside1[3];
+         pointInside(inside1);
+         assertTrue(mPillOuter.contains(inside1));
+         double inside2[3];
+         pointInside(inside2);
+         assertTrue(mPillOuter.contains(inside2));
+         double outside[3];
+         pointOutside(outside);
+         assertTrue(!mPillOuter.contains(outside));
          {
-            const double t = mPillOuter.getFirstIntersection(inside1.data(), inside2.data());
+            const double t = mPillOuter.getFirstIntersection(inside1, inside2);
             assertTrue(t != INFINITY);
             assertTrue(t > 1.0);
          }
@@ -200,31 +199,39 @@ namespace SumShapeTest
             //catch (const Exception e) {
             //   e.printStackTrace();
             //}
-            assertTrue(mPillOuter.contains(inside1.data()));
-            assertTrue(!mPillOuter.contains(outside.data()));
-            const double t = mPillOuter.getFirstIntersection(inside1.data(), outside.data());
+            assertTrue(mPillOuter.contains(inside1));
+            assertTrue(!mPillOuter.contains(outside));
+            const double t = mPillOuter.getFirstIntersection(inside1, outside);
             //if (vrml != null) {
             //   if (wr != null)
             //      wr.println("# inside to outside");
             //   vrml.drawLine(inside1, Math2::pointBetween(inside1, outside, t));
             //}
-            assertTrue(mPillOuter.contains(Math2::pointBetween(inside1, outside, 0.99 * t).data()));
-            assertTrue(!mPillOuter.contains(Math2::pointBetween(inside1, outside, 1.01 * t).data()));
-            const double tp = mPillOuter.getFirstIntersection(outside.data(), inside1.data());
+            double ptbtw0[3];
+            Math2::pointBetween3d(inside1, outside, 0.99 * t, ptbtw0);
+            assertTrue(mPillOuter.contains(ptbtw0));
+            double ptbtw1[3];
+            Math2::pointBetween3d(inside1, outside, 1.01 * t, ptbtw1);
+            assertTrue(!mPillOuter.contains(ptbtw1));
+            const double tp = mPillOuter.getFirstIntersection(outside, inside1);
             //if (vrml != null) {
             //   wr.println("# outside to inside");
             //   vrml.drawLine(outside, Math2::pointBetween(outside, inside1, tp));
             //   wr.flush();
             //}
-            assertTrue(!mPillOuter.contains(Math2::pointBetween(outside, inside1, 0.99 * tp).data()));
-            assertTrue(mPillOuter.contains(Math2::pointBetween(outside, inside1, 1.01 * tp).data()));
+            double ptbtw2[3];
+            Math2::pointBetween3d(outside, inside1, 0.99 * tp, ptbtw2);
+            assertTrue(!mPillOuter.contains(ptbtw2));
+            double ptbtw3[3];
+            Math2::pointBetween3d(outside, inside1, 1.01 * tp, ptbtw3);
+            assertTrue(mPillOuter.contains(ptbtw3));
             assertTrue(t < 1.0);
             assertTrue(tp < 1.0);
             assertEquals(1.0, t + tp, 1.0e-6);
          }
          {
-            const double t = mPillOuter.getFirstIntersection(inside2.data(), outside.data());
-            const double tp = mPillOuter.getFirstIntersection(outside.data(), inside2.data());
+            const double t = mPillOuter.getFirstIntersection(inside2, outside);
+            const double tp = mPillOuter.getFirstIntersection(outside, inside2);
             assertTrue(t < 1.0);
             assertTrue(tp < 1.0);
             assertEquals(1.0, t + tp, 1.0e-6);

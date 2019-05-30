@@ -63,13 +63,11 @@ namespace ElectronProbe
    //* @param distance
    //* @return double[3] with the detector position
    //*/
-   PositionVecT computePosition(double optWD, double altitudeAngle, double azimuthAngle, double distance)
+   void computePosition(double optWD, double altitudeAngle, double azimuthAngle, double distance, double res[])
    {
-      PositionVecT res(3, 0);
       res[0] = distance * ::cos(altitudeAngle) * ::cos(azimuthAngle);
       res[1] = distance * ::cos(altitudeAngle) * ::sin(azimuthAngle);
       res[2] = optWD - distance * ::sin(altitudeAngle);
-      return res;
    }
 
    ///**

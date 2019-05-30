@@ -146,9 +146,9 @@ int main()
    MonteCarloSSTest::testOne();
 
    SumShapeTest::testGetFirstIntersection();
-   //SumShapeTest::testAll();
+   SumShapeTest::testAll();
 
-   //LinesOnLayers::run();
+   LinesOnLayers::run();
 
    return 0;
 }

@@ -10,12 +10,14 @@ namespace MultiPlaneShape
    {
       if (!(normallen == 3)) printf("Plane::Plane: normallen != 3 (%d)", normallen);
       if (!(pointlen == 3)) printf("Plane::Plane: pointlen != 3 (%d)", pointlen);
-      mNormal.assign(normal, normal + normallen);
-      mPoint.assign(point, point + pointlen);
+      memcpy(mNormal, normal, sizeof(double) * 3);
+      memcpy(mPoint, point, sizeof(double) * 3);
    }
 
-   Plane::Plane(const Plane& other) : mNormal(other.mNormal.begin(), other.mNormal.end()), mPoint(other.mPoint.begin(), other.mPoint.end())
+   Plane::Plane(const Plane& other)
    {
+      memcpy(mNormal, other.mNormal, sizeof(double) * 3);
+      memcpy(mPoint, other.mPoint, sizeof(double) * 3);
    }
 
    // contains - Is the point p on the inside side of the plane? (Side
@@ -52,8 +54,8 @@ namespace MultiPlaneShape
 
    void Plane::rotate(const double pivot[], double phi, double theta, double psi)
    {
-      mNormal = Transform3D::rotate(mNormal.data(), phi, theta, psi);
-      mPoint = Transform3D::rotate(mPoint.data(), pivot, phi, theta, psi);
+      Transform3D::rotate3d(mNormal, phi, theta, psi, mNormal);
+      Transform3D::rotate3d(mPoint, pivot, phi, theta, psi, mPoint);
    }
 
    void Plane::translate(const double distance[])
@@ -63,76 +65,63 @@ namespace MultiPlaneShape
       mPoint[2] += distance[2];
    }
 
-   /**
-   * Gets the current value assigned to normal to the plane
-   *
-   * @return Returns the normal.
-   */
-   VectorXd Plane::getNormal() const
+   const double* Plane::getNormal() const
    {
       return mNormal;
    }
 
-   /**
-   * Gets the current value assigned to the reference point located on the
-   * plane.
-   *
-   * @return Returns the point.
-   */
-   VectorXd Plane::getPoint() const
+   const double* Plane::getPoint() const
    {
       return mPoint;
    }
 
-   const VectorXd& Plane::getNormalRef() const
-   {
-      return mNormal;
-   }
-
-   const VectorXd& Plane::getPointRef() const
-   {
-      return mPoint;
-   }
-
-   static VectorXd intersection(const Plane planes[], int len)
+   static void intersection(const Plane planes[], int len, double res[])
    {
       if (!(len == 3)) printf("MultiPlaneShape::intersection: len == 3 (%d)", len);
-      const VectorXd& n0 = planes[0].getNormalRef();
-      const VectorXd& n1 = planes[1].getNormalRef();
-      const VectorXd& n2 = planes[2].getNormalRef();
+      const double* n0 = planes[0].getNormal();
+      const double* n1 = planes[1].getNormal();
+      const double* n2 = planes[2].getNormal();
       // The determinant of the matrix made from the vector normals
       double det = n0[0] * (n1[1] * n2[2] - n2[1] * n1[2]) // 
          - n1[0] * (n0[1] * n2[2] - n2[1] * n0[2]) // 
          + n2[0] * (n0[1] * n1[2] - n1[1] * n0[2]);
-      if (::abs(det) > 1.0e-10)
-         return Math2::divide3d(
-         Math2::plus3d(
-         Math2::plus3d(
-         Math2::multiply3d(Math2::dot3d(planes[0].getPoint().data(), n0.data()), Math2::cross(n1, n2).data()).data(),
-         Math2::multiply3d(Math2::dot3d(planes[1].getPoint().data(), n1.data()), Math2::cross(n2, n0).data()).data()
-         ).data(), Math2::multiply(Math2::dot(planes[2].getPoint(), n2), Math2::cross(n0, n1)).data()
-         ).data(), det);
-      else
-         return VectorXd();
+      if (::abs(det) > 1.0e-10) {
+         double cross12[3];
+         Math2::cross3d(n1, n2, cross12);
+         double cross20[3];
+         Math2::cross3d(n2, n0, cross20);
+         double cross01[3];
+         Math2::cross3d(n0, n1, cross01);
+
+         double m0[3];
+         Math2::multiply3d(Math2::dot3d(planes[0].getPoint(), n0), cross12, m0);
+         double m1[3];
+         Math2::multiply3d(Math2::dot3d(planes[1].getPoint(), n1), cross20, m1);
+         double m2[3];
+         Math2::multiply3d(Math2::dot3d(planes[2].getPoint(), n2), cross01, m2);
+
+         double p0[3];
+         Math2::plus3d(m0, m1, p0);
+         double p1[3];
+         Math2::plus3d(p0, m2, p1);
+
+         Math2::divide3d(p1, det, res);
+      }
    }
 
-   static VectorXd normalize(const double vec[])
+   static void normalize(const double vec[], double res[])
    {
       double norm = ::sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
-      return {
-         vec[0] / norm,
-         vec[1] / norm,
-         vec[2] / norm
-      };
+      res[0] = vec[0] / norm;
+      res[1] = vec[1] / norm;
+      res[2] = vec[2] / norm;
    }
 
-   VectorXd invert(const double v[])
+   static void invert(const double v[], double res[])
    {
-      return {
-         -v[0],
-         -v[1],
-         -v[2]
-      };
+      res[0] = -v[0];
+      res[1] = -v[1];
+      res[2] = -v[2];
    }
 
    //void MultiPlaneShape::addOffsetPlane(const double normal[], const double pt[], double dist)
@@ -240,15 +229,19 @@ namespace MultiPlaneShape
       }
    }
 
+   static bool IsSamePosition(const double a[], const double b[])
+   {
+      return a[0] == b[0] && a[1] == b[1] && a[2] == b[2];
+   }
+
    double MultiPlaneShape::getFirstIntersection(const double pos0[], const double pos1[])
    {
       if (mPlanes.size() == 1)
          return (mPlanes.at(0))->getFirstIntersection(pos0, pos1);
       else {
-         VectorXd pos0Vec(pos0, pos0 + 3);
 
          double minU = INFINITY;
-         if ((pos0Vec == (mInsidePos)) || contains(pos0)) { // Easy part...
+         if (IsSamePosition(pos0, mInsidePos) || contains(pos0)) { // Easy part...
             // If we start inside then any plane we strike will take us outside
             for (auto pl : mPlanes) {
                double u = pl->getFirstIntersection(pos0, pos1);
@@ -261,7 +254,6 @@ namespace MultiPlaneShape
             // call to MCSS_MultiPlaneShape.getFirstIntersection, pos0 will
             // equal the stored pos1.
             if ((minU > 1.0) && (minU != INFINITY)) {
-               if (mInsidePos.empty()) mInsidePos.resize(3);
                mInsidePos[0] = pos1[0];
                mInsidePos[1] = pos1[1];
                mInsidePos[2] = pos1[2];
@@ -292,7 +284,6 @@ namespace MultiPlaneShape
                }
             }
             if (minU < 1.0) {
-               if (mInsidePos.empty()) mInsidePos.resize(3);
                mInsidePos[0] = pos1[0];
                mInsidePos[1] = pos1[1];
                mInsidePos[2] = pos1[2];
@@ -302,14 +293,12 @@ namespace MultiPlaneShape
       }
    }
 
-   // See ITransform for JavaDoc
    void MultiPlaneShape::rotate(const double pivot[], double phi, double theta, double psi)
    {
       for (auto t : mPlanes)
          t->rotate(pivot, phi, theta, psi);
    }
 
-   // See ITransform for JavaDoc
    void MultiPlaneShape::translate(const double distance[])
    {
       for (auto t : mPlanes)

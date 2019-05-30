@@ -12,4 +12,4 @@ SE = SE.reshape((r, c))
 plt.imshow(SE, cmap='gray')
 plt.show()
 
-mim.imsave("SE.png",  SE, cmap='gray')
+mim.imsave("SE4.png",  SE, cmap='gray')
