@@ -22,11 +22,13 @@ namespace Sphere
    {
       // Compute the intersection of the line between pos0 and pos1 and the
       // shell of the sphere.
-      const VectorXd& d = Math2::minus3d(pos1, pos0);
-      const VectorXd& m = Math2::minus3d(pos0, mCenter.data());
-      const double ma2 = -2.0 * Math2::dot(d, d);
-      const double b = 2.0 * Math2::dot(m, d);
-      const double c2 = 2.0 * (Math2::dot(m, m) - mRadius * mRadius);
+      double d[3];
+      Math2::minus3d(pos1, pos0, d);
+      double m[3];
+      Math2::minus3d(pos0, mCenter.data(), m);
+      const double ma2 = -2.0 * Math2::dot3d(d, d);
+      const double b = 2.0 * Math2::dot3d(m, d);
+      const double c2 = 2.0 * (Math2::dot3d(m, m) - mRadius * mRadius);
       const double f = b * b + ma2 * c2;
       if (f >= 0) {
          double up = (b + ::sqrt(f)) / ma2;
@@ -36,8 +38,12 @@ namespace Sphere
          if (un < 0.0)
             un = INFINITY;
          const double res = ::fmin(up, un);
-         if (!((res == INFINITY) || (Math2::magnitude(Math2::plus(m, Math2::multiply(res, d))) - mRadius < ::fmax(1.0e-12, Math2::distance(VectorXd(pos0, pos0 + 3), VectorXd(pos1, pos1 + 3)) * 1.0e-9)))) {
-            printf("Sphere::getFirstIntersection: crashed (%s)\n", std::to_string(Math2::magnitude(Math2::plus(m, Math2::multiply(res, d))) - mRadius).c_str());
+         double s0[3];
+         double prd0[3];
+         Math2::multiply3d(res, d, prd0);
+         Math2::plus3d(m, prd0, s0);
+         if (!((res == INFINITY) || (Math2::magnitude3d(s0) - mRadius < ::fmax(1.0e-12, Math2::distance3d(pos0, pos1) * 1.0e-9)))) {
+            printf("Sphere::getFirstIntersection wtf: crashed %.10e >= %10e\n", Math2::magnitude3d(s0) - mRadius, ::fmax(1.0e-12, Math2::distance3d(pos0, pos1) * 1.0e-9));
          }
          return res;
       }

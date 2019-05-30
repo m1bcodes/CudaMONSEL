@@ -1,5 +1,5 @@
-#include "LinkedListTest.cuh"
-#include "Amphibian\String.cuh"
+#include "Amphibian/Tests/LinkedListTest.cuh"
+#include "Amphibian/String.cuh"
 
 #include <stdio.h>
 
@@ -114,27 +114,14 @@ namespace LinkedListTest
       __syncthreads();
    #endif
 
-      //LinkedListKV::Node<String::String, float>* head1 = NULL;
-      //LinkedListKV::Node<String::String, float>* head2 = NULL;
-      //printf("A\n");
-      //BuildList1(&head1);
-      //BuildList2(&head2);
-      //printf("B\n");
-      //PrintListInOrder(head1);
-      //PrintListInOrder(head2);
-      //printf("C\n");
-      //printf("%d\n", LinkedListKV::IsSet<String::String, float>(head1, h_strCmpPointFunction, [](float a, float b) { return a == b; }));
-      //printf("%d\n", LinkedListKV::IsSet<String::String, float>(head2, h_strCmpPointFunction, [](float a, float b) { return a == b; }));
-      //printf("D\n");
-      //printf("%d\n", LinkedListKV::AreEquivalentSets<String::String, float>(head1, head2, h_strCmpPointFunction, [](float a, float b) { return a == b; }));
-      //LinkedListKV::RemoveRepeatedNodes<String::String, float>(&head2, h_strCmpPointFunction, [](float a, float b) { return a == b; });
-      //PrintListInOrder(head2);
-      //printf("E\n");
-      //LinkedListKV::Remove<String::String, float>(&head2, String::String("a"), h_strCmpPointFunction);
-      //PrintListInOrder(head2);
-      //printf("%d\n", LinkedListKV::AreEquivalentSets<String::String, float>(head1, head2, h_strCmpPointFunction, [](float a, float b) { return a == b; }));
-      //LinkedListKV::RemoveAll(&head1);
-      //LinkedListKV::RemoveAll(&head2);
+      LinkedListKV::Node<String::String, float>* head1 = NULL;
+      LinkedListKV::Node<String::String, float>* head2 = NULL;
+      printf("A\n");
+      BuildList1(&head1);
+      BuildList2(&head2);
+      printf("B\n");
+      PrintListInOrder(head1);
+      PrintListInOrder(head2);
    
    #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
       __syncthreads();

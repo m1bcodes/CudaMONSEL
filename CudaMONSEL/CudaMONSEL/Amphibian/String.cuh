@@ -5,7 +5,8 @@
 #define _STRING_CUH_
 
 #include <cuda_runtime.h>
-#include "LinkedList.cuh"
+
+#define NULL_CHAR '\0'
 
 namespace String
 {
@@ -19,15 +20,15 @@ namespace String
    {
    public:
       __host__ __device__ String();
-      __host__ __device__ String(String&);
+      __host__ __device__ String(const String&);
       __host__ __device__ String(char const *);
 
-      __host__ __device__ void operator=(String&);
+      __host__ __device__ void operator=(const String&);
       __host__ __device__ void operator=(char const *);
 
       __host__ __device__ bool operator==(const String&) const;
 
-      __host__ __device__ char* Get();
+      __host__ __device__ const char* Get();
       __host__ __device__ int Size();
 
       __host__ __device__ unsigned int HashCode();
@@ -38,12 +39,12 @@ namespace String
       char str[MAX_LEN];
    };
 
-   __host__ __device__ void IToA(char*, int, int maxArrayLen = 11 /* integer limit */);
-   __host__ __device__ int AToI(char*);
+   __host__ __device__ void IToA(char *, int, int maxArrayLen = 11 /* integer limit */);
+   __host__ __device__ int AToI(char const *);
    //__host__ __device__ float AToF(char*);
    //__host__ __device__ double AToD(char*);
    template<typename T>
-   __host__ __device__ T AToF(char* d)
+   __host__ __device__ T AToF(char const * d)
    {
       int mult = 1;
       int idx = 0;
@@ -71,7 +72,7 @@ namespace String
             }
          }
          ++idx;
-      } while (d[idx] != NULL);
+      } while (d[idx] != NULL_CHAR);
 
       return res*mult;
    }
@@ -83,7 +84,7 @@ namespace String
 
    struct CompareFcn
    {
-      __host__ __device__ inline bool operator() (const String& lhs, const String& rhs)
+      __host__ __device__ inline bool operator() (const String& lhs, const String& rhs) const
       {
          return lhs == rhs;
       }
@@ -91,7 +92,7 @@ namespace String
 
    struct HashFcn
    {
-      __host__ __device__ inline unsigned int operator() (String& s)
+      __host__ __device__ inline unsigned int operator() (String& s) const
       {
          return s.HashCode();
       }

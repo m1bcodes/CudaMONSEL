@@ -20,8 +20,6 @@ namespace UncertainValue2
       bool operator<(const Key& k2) const;
       size_t HashCode() const;
 
-      //static bool AreEqual(Key& k1, Key& k2);
-
    private:
       StringT mSource1, mSource2;
    };
@@ -45,7 +43,6 @@ namespace UncertainValue2
    class Correlations
    {
       typedef std::unordered_map<Key, double, KeyHashFcn> CorrelationMap;
-      typedef std::unordered_map<Key, double, KeyHashFcn>::iterator CorrelationMapItr;
 
    private:
       CorrelationMap mCorrelations;

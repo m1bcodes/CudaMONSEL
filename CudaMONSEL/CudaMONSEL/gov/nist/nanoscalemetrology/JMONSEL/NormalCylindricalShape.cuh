@@ -26,10 +26,10 @@ namespace NormalCylindricalShape
       void translate(const double distance[]) override;
 
    private:
-      VectorXd end0; // Vector position of the 1st end cap center
-      VectorXd axis; // Vector from c to center of 2nd end cap
+      double end0[3]; // Vector position of the 1st end cap center
+      double axis[3]; // Vector from c to center of 2nd end cap
       double radius2; // Square of radius
-      VectorXd normalizedaxis; // cache axis normalized to unit length
+      double normalizedaxis[3]; // cache axis normalized to unit length
       double mLen2; // Square of axis length
       double mLen; // axis length
       VectorXd nv; // Most recent normal vector

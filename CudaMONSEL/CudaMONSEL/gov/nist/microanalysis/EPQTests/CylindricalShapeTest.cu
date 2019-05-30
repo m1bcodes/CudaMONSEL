@@ -5,9 +5,11 @@
 
 namespace CylindricalShapeTest
 {
-   VectorXd transform(const double pts[], double phi, double theta, double psi, const double offset[])
+   void transform3d(const double pts[], double phi, double theta, double psi, const double offset[], double res[])
    {
-      return Transform3D::translate(Transform3D::rotate(pts, phi, theta, psi).data(), offset, false);
+      double rotated[3];
+      Transform3D::rotate3d(pts, phi, theta, psi, rotated);
+      Transform3D::translate3d(rotated, offset, false, res);
    }
 
    static const double scale = (Math2::random() + 1.0e-4) * 10.0e-6;
@@ -19,43 +21,44 @@ namespace CylindricalShapeTest
    static const double end0[] = { -scale, 0.0, 0.0 };
    static const double end1[] = { scale, 0.0, 0.0 };
 
-   static const VectorXd end0Vec(transform(end0, phi, theta, psi, offset));
-   static const VectorXd end1Vec(transform(end1, phi, theta, psi, offset));
-   static CylindricalShapeT shape(end0Vec.data(), end1Vec.data(), radius);
-
-   double closestPtOnAxis(const double pt[])
+   double CylindricalShapeTest::closestPtOnAxis(const double pt[])
    {
-      const VectorXd& b = shape.getEnd0();
-      const VectorXd& ab = Math2::minus3d(shape.getEnd1().data(), b.data());
-      VectorXd ptVec(pt, pt + 3);
-      double t = Math2::dot3d(Math2::minus3d(pt, b.data()).data(), ab.data()) / Math2::dot3d(ab.data(), ab.data());
-      return t;
+      const double* b = shape.getEnd0();
+      double ab[3];
+      Math2::minus3d(shape.getEnd1(), b, ab);
+      double m0[3];
+      Math2::minus3d(pt, b, m0);
+      return Math2::dot3d(m0, ab) / Math2::dot3d(ab, ab);
    }
 
-   bool isOnCylinder(const double pt[])
+   bool CylindricalShapeTest::isOnCylinder(const double pt[])
    {
       double t = closestPtOnAxis(pt);
       if ((t >= 0) && (t <= 1)) {
-         const VectorXd& axisPt = Math2::plus3d(shape.getEnd0().data(), Math2::multiply3d(t, Math2::minus3d(shape.getEnd1().data(), shape.getEnd0().data()).data()).data());
-         VectorXd ptVec(pt, pt + 3);
-         return ::abs(Math2::distance3d(ptVec, axisPt) - radius) < radius * 1.0e-6;
+         double m0[3];
+         Math2::minus3d(shape.getEnd1(), shape.getEnd0(), m0);
+         double prd0[3];
+         Math2::multiply3d(t, m0, prd0);
+         double axisPt[3];
+         Math2::plus3d(shape.getEnd0(), prd0, axisPt);
+         return ::abs(Math2::distance3d(pt, axisPt) - radius) < radius * 1.0e-6;
       }
       else
          return false;
    }
 
-   bool isOnEndCap(const double pt[])
+   bool CylindricalShapeTest::isOnEndCap(const double pt[])
    {
       double t = closestPtOnAxis(pt);
-      VectorXd axisPt;
+      const double* axisPt;
       if (::abs(t) < 1.0e-6)
          axisPt = shape.getEnd0();
       else if (::abs(t - 1.0) < 1.0e-6)
          axisPt = shape.getEnd1();
       else
          return false;
-      VectorXd ptVec(pt, pt + 3);
-      return axisPt.empty() ? false : Math2::distance(ptVec, axisPt) < radius;
+      //return axisPt.empty() ? false : Math2::distance(ptVec, axisPt) < radius;
+      return Math2::distance3d(pt, axisPt) < radius;
    }
 
    static void assertTrue(bool expr)
@@ -68,7 +71,28 @@ namespace CylindricalShapeTest
       if (::abs(a - b) >= err) printf("not equal: %.10e, %.10e\n", a, b);
    }
 
-   void testZero()
+   static double end0Transformed[3];
+   static double end1Transformed[3];
+
+   static double* transform3d2(const double pts[], double phi, double theta, double psi, const double offset[], int endidx)
+   {
+      if (endidx == 0) {
+         transform3d(end0, phi, theta, psi, offset, end0Transformed);
+         return end0Transformed;
+      }
+      else if (endidx == 1) {
+         transform3d(end1, phi, theta, psi, offset, end1Transformed);
+         return end1Transformed;
+      }
+      return nullptr;
+   }
+
+   CylindricalShapeTest::CylindricalShapeTest() :
+      shape(transform3d2(end1, phi, theta, psi, offset, 1), transform3d2(end0, phi, theta, psi, offset, 0), radius)
+   {
+   }
+
+   void CylindricalShapeTest::testZero()
    {
       double pts[] = { 0.5, 0.6, 0.7 };
       double pts2[] = { 1, 2, 3 };
@@ -103,17 +127,21 @@ namespace CylindricalShapeTest
    /**
    * Test going into and coming out of a side...
    */
-   void testOne()
+   void CylindricalShapeTest::testOne()
    {
       double parms0Vec[] = { -scale / 2.0, -radius / 2.0, 2.0 * radius };
-      VectorXd parms0 = transform(parms0Vec, phi, theta, psi, offset);
+      double parms0[3];
+      transform3d(parms0Vec, phi, theta, psi, offset, parms0);
       double parms1Vec[] = { -scale / 2.0, -radius / 2.0, 0.0 };
-      VectorXd parms1 = transform(parms1Vec, phi, theta, psi, offset);
+      double parms1[3];
+      transform3d(parms1Vec, phi, theta, psi, offset, parms1);
 
-      double t = shape.getFirstIntersection(parms0.data(), parms1.data());
-      assertTrue(isOnCylinder(Math2::pointBetween(parms0, parms1, t).data()));
+      double t = shape.getFirstIntersection(parms0, parms1);
+      double ptbtw[3];
+      Math2::pointBetween3d(parms0, parms1, t, ptbtw);
+      assertTrue(isOnCylinder(ptbtw));
 
-      double tp = shape.getFirstIntersection(parms1.data(), parms0.data());
+      double tp = shape.getFirstIntersection(parms1, parms0);
       assertEquals(1.0, tp + t, 1.0e-6);
 
       printf("CylindricalShapeTest::testOne() completed.\n");
@@ -122,24 +150,28 @@ namespace CylindricalShapeTest
    /**
    * Test going through from one side to the other
    */
-   void testTwo()
+   void CylindricalShapeTest::testTwo()
    {
       double parms0Vec[] = { -scale / 2.0, -radius / 2.0, 2.0 * radius };
-      VectorXd parms0 = transform(parms0Vec, phi, theta, psi, offset);
+      double parms0[3];
+      transform3d(parms0Vec, phi, theta, psi, offset, parms0);
       double parms1Vec[] = { -scale / 2.0, -radius / 2.0, -2.0 * radius };
-      VectorXd parms1 = transform(parms1Vec, phi, theta, psi, offset);
+      double parms1[3];
+      transform3d(parms1Vec, phi, theta, psi, offset, parms1);
 
-      double t = shape.getFirstIntersection(parms0.data(), parms1.data());
-      assertTrue(isOnCylinder(Math2::pointBetween(parms0, parms1, t).data()));
-      VectorXd pt = Math2::pointBetween(parms0, parms1, t);
+      double t = shape.getFirstIntersection(parms0, parms1);
+      double pt[3];
+      Math2::pointBetween3d(parms0, parms1, t, pt);
+      assertTrue(isOnCylinder(pt));
 
-      double tp = shape.getFirstIntersection(parms1.data(), parms0.data());
-      assertTrue(isOnCylinder(Math2::pointBetween(parms1, parms0, tp).data()));
-      VectorXd ptp = Math2::pointBetween(parms1, parms0, tp);
+      double tp = shape.getFirstIntersection(parms1, parms0);
+      double ptp[3];
+      Math2::pointBetween3d(parms1, parms0, tp, ptp);
+      assertTrue(isOnCylinder(ptp));
 
       assertEquals(t, tp, 1.0e-6);
 
-      assertEquals(Math2::distance(parms0, pt), Math2::distance(parms1, ptp), 1.0e-12);
+      assertEquals(Math2::distance3d(parms0, pt), Math2::distance3d(parms1, ptp), 1.0e-12);
 
       printf("CylindricalShapeTest::testTwo() completed.\n");
    }
@@ -147,24 +179,28 @@ namespace CylindricalShapeTest
    /**
    * Test going through the end caps
    */
-   void testThree()
+   void CylindricalShapeTest::testThree()
    {
       double parms0Vec[] = { -2.0 * scale, -radius, radius };
-      VectorXd parms0 = transform(parms0Vec, phi, theta, psi, offset);
+      double parms0[3];
+      transform3d(parms0Vec, phi, theta, psi, offset, parms0);
       double parms1Vec[] = { 0.0, 0.0, 0.0 };
-      VectorXd parms1 = transform(parms1Vec, phi, theta, psi, offset);
+      double parms1[3];
+      transform3d(parms1Vec, phi, theta, psi, offset, parms1);
 
-      double t = shape.getFirstIntersection(parms0.data(), parms1.data());
-      assertTrue(isOnEndCap(Math2::pointBetween(parms0, parms1, t).data()));
-      auto pt = Math2::pointBetween(parms0, parms1, t);
+      double t = shape.getFirstIntersection(parms0, parms1);
+      double pt[3];
+      Math2::pointBetween3d(parms0, parms1, t, pt);
+      assertTrue(isOnEndCap(pt));
 
-      double tp = shape.getFirstIntersection(parms1.data(), parms0.data());
-      assertTrue(isOnEndCap(Math2::pointBetween(parms1, parms0, tp).data()));
-      auto ptp = Math2::pointBetween(parms1, parms0, tp);
+      double tp = shape.getFirstIntersection(parms1, parms0);
+      double ptp[3];
+      Math2::pointBetween3d(parms1, parms0, tp, ptp);
+      assertTrue(isOnEndCap(ptp));
 
       assertEquals(1.0, t + tp, 1.0e-6);
 
-      assertEquals(Math2::distance(parms0, pt) + Math2::distance(parms1, ptp), Math2::distance(parms0, parms1), 1.0e-12);
+      assertEquals(Math2::distance3d(parms0, pt) + Math2::distance3d(parms1, ptp), Math2::distance3d(parms0, parms1), 1.0e-12);
 
       printf("CylindricalShapeTest::testThree() completed.\n");
    }
@@ -172,24 +208,28 @@ namespace CylindricalShapeTest
    /**
    * Test going through the end caps
    */
-   void testFour()
+   void CylindricalShapeTest::testFour()
    {
       double parms0Vec[] = { 2.0 * scale, radius / 2.0, 1.5 * radius };
-      VectorXd parms0 = transform(parms0Vec, phi, theta, psi, offset);
+      double parms0[3];
+      transform3d(parms0Vec, phi, theta, psi, offset, parms0);
       double parms1Vec[] = { scale / 2.0, 0.0, 0.0 };
-      VectorXd parms1 = transform(parms1Vec, phi, theta, psi, offset);
+      double parms1[3];
+      transform3d(parms1Vec, phi, theta, psi, offset, parms1);
 
-      double t = shape.getFirstIntersection(parms0.data(), parms1.data());
-      assertTrue(isOnEndCap(Math2::pointBetween(parms0, parms1, t).data()));
-      VectorXd pt = Math2::pointBetween(parms0, parms1, t);
+      double t = shape.getFirstIntersection(parms0, parms1);
+      double pt[3];
+      Math2::pointBetween3d(parms0, parms1, t, pt);
+      assertTrue(isOnEndCap(pt));
 
-      double tp = shape.getFirstIntersection(parms1.data(), parms0.data());
-      assertTrue(isOnEndCap(Math2::pointBetween(parms1, parms0, tp).data()));
-      VectorXd ptp = Math2::pointBetween(parms1, parms0, tp);
+      double tp = shape.getFirstIntersection(parms1, parms0);
+      double ptp[3];
+      Math2::pointBetween3d(parms1, parms0, tp, ptp);
+      assertTrue(isOnEndCap(ptp));
 
       assertEquals(1.0, t + tp, 1.0e-6);
 
-      assertEquals(Math2::distance(parms0, pt) + Math2::distance(parms1, ptp), Math2::distance(parms0, parms1), 1.0e-12);
+      assertEquals(Math2::distance3d(parms0, pt) + Math2::distance3d(parms1, ptp), Math2::distance3d(parms0, parms1), 1.0e-12);
 
       printf("CylindricalShapeTest::testFour() completed.\n");
    }
@@ -197,24 +237,28 @@ namespace CylindricalShapeTest
    /**
    * Test parallel to axes
    */
-   void testFive()
+   void CylindricalShapeTest::testFive()
    {
       double parms0Vec[] = { 2.0 * scale, radius / 2.0, radius / 2.0 };
-      VectorXd parms0 = transform(parms0Vec, phi, theta, psi, offset);
+      double parms0[3];
+      transform3d(parms0Vec, phi, theta, psi, offset, parms0);
       double parms1Vec[] = { scale / 2.0, radius / 2.0, radius / 2.0 };
-      VectorXd parms1 = transform(parms1Vec, phi, theta, psi, offset);
+      double parms1[3];
+      transform3d(parms1Vec, phi, theta, psi, offset, parms1);
 
-      double t = shape.getFirstIntersection(parms0.data(), parms1.data());
-      assertTrue(isOnEndCap(Math2::pointBetween(parms0, parms1, t).data()));
-      auto pt = Math2::pointBetween(parms0, parms1, t);
+      double t = shape.getFirstIntersection(parms0, parms1);
+      double pt[3];
+      Math2::pointBetween3d(parms0, parms1, t, pt);
+      assertTrue(isOnEndCap(pt));
 
-      double tp = shape.getFirstIntersection(parms1.data(), parms0.data());
-      assertTrue(isOnEndCap(Math2::pointBetween(parms1, parms0, tp).data()));
-      auto ptp = Math2::pointBetween(parms1, parms0, tp);
+      double tp = shape.getFirstIntersection(parms1, parms0);
+      double ptp[3];
+      Math2::pointBetween3d(parms1, parms0, tp, ptp);
+      assertTrue(isOnEndCap(ptp));
 
       assertEquals(1.0, t + tp, 1.0e-6);
 
-      assertEquals(Math2::distance(parms0, pt) + Math2::distance(parms1, ptp), Math2::distance(parms0, parms1), 1.0e-12);
+      assertEquals(Math2::distance3d(parms0, pt) + Math2::distance3d(parms1, ptp), Math2::distance3d(parms0, parms1), 1.0e-12);
 
       printf("CylindricalShapeTest::testFive() completed.\n");
    }
@@ -222,17 +266,19 @@ namespace CylindricalShapeTest
    /**
    * Test misses (parallel to axis)
    */
-   void testSix()
+   void CylindricalShapeTest::testSix()
    {
       double parms0Vec[] = { 2.0 * scale, 2.0 * radius, radius / 2.0 };
-      VectorXd parms0 = transform(parms0Vec, phi, theta, psi, offset);
+      double parms0[3];
+      transform3d(parms0Vec, phi, theta, psi, offset, parms0);
       double parms1Vec[] = { -2.0 * scale, 2.0 * radius, radius / 2.0 };
-      VectorXd parms1 = transform(parms1Vec, phi, theta, psi, offset);
+      double parms1[3];
+      transform3d(parms1Vec, phi, theta, psi, offset, parms1);
 
-      double t = shape.getFirstIntersection(parms0.data(), parms1.data());
+      double t = shape.getFirstIntersection(parms0, parms1);
       assertEquals(t, INFINITY, 1.0e-6);
 
-      double tp = shape.getFirstIntersection(parms1.data(), parms0.data());
+      double tp = shape.getFirstIntersection(parms1, parms0);
       assertEquals(tp, INFINITY, 1.0e-6);
 
       printf("CylindricalShapeTest::testSix() completed.\n");
@@ -241,17 +287,19 @@ namespace CylindricalShapeTest
    /**
    * Test misses (parallel to axis)
    */
-   void testSeven()
+   void CylindricalShapeTest::testSeven()
    {
       double parms0Vec[] = { 2.0 * scale, radius / 2.0, radius / 2.0 };
-      VectorXd parms0 = transform(parms0Vec, phi, theta, psi, offset);
+      double parms0[3];
+      transform3d(parms0Vec, phi, theta, psi, offset, parms0);
       double parms1Vec[] = { 1.1 * scale, radius / 2.0, radius / 2.0 };
-      VectorXd parms1 = transform(parms1Vec, phi, theta, psi, offset);
+      double parms1[3];
+      transform3d(parms1Vec, phi, theta, psi, offset, parms1);
 
-      double t = shape.getFirstIntersection(parms0.data(), parms1.data());
+      double t = shape.getFirstIntersection(parms0, parms1);
       assertTrue(t > 1.0);
 
-      double tp = shape.getFirstIntersection(parms1.data(), parms0.data());
+      double tp = shape.getFirstIntersection(parms1, parms0);
       assertTrue(tp == INFINITY);
 
       printf("CylindricalShapeTest::testSeven() completed.\n");
@@ -260,25 +308,30 @@ namespace CylindricalShapeTest
    /**
    * Test misses (not parallel to axis)
    */
-   void testEight()
+   void CylindricalShapeTest::testEight()
    {
       double parms0Vec[] = { -scale / 2.0, -radius / 2.0, 2.0 * radius };
-      VectorXd parms0 = transform(parms0Vec, phi, theta, psi, offset);
+      double parms0[3];
+      transform3d(parms0Vec, phi, theta, psi, offset, parms0);
       double parms1Vec[] = { scale / 2.0, radius / 2.0, 1.1 * radius };
-      VectorXd parms1 = transform(parms1Vec, phi, theta, psi, offset);
+      double parms1[3];
+      transform3d(parms1Vec, phi, theta, psi, offset, parms1);
       double parms2Vec[] = { scale / 2.0, radius / 2.0, radius / 2.0 };
-      VectorXd parm2 = transform(parms2Vec, phi, theta, psi, offset);
+      double parms2[3];
+      transform3d(parms2Vec, phi, theta, psi, offset, parms2);
 
-      double t = shape.getFirstIntersection(parms0.data(), parms1.data());
+      double t = shape.getFirstIntersection(parms0, parms1);
       assertTrue(t > 1.0);
 
-      double tp = shape.getFirstIntersection(parms1.data(), parms0.data());
+      double tp = shape.getFirstIntersection(parms1, parms0);
       assertTrue(tp > 1.0);
 
-      double t2 = shape.getFirstIntersection(parms0.data(), parm2.data());
-      assertTrue(isOnCylinder(Math2::pointBetween(parms0, parm2, t2).data()));
+      double t2 = shape.getFirstIntersection(parms0, parms2);
+      double ptbtw[3];
+      Math2::pointBetween3d(parms0, parms2, t2, ptbtw);
+      assertTrue(isOnCylinder(ptbtw));
 
-      double tp2 = shape.getFirstIntersection(parm2.data(), parms0.data());
+      double tp2 = shape.getFirstIntersection(parms2, parms0);
       assertEquals(1.0, tp2 + t2, 1.0e-6);
 
       printf("CylindricalShapeTest::testEight() completed.\n");
@@ -287,18 +340,24 @@ namespace CylindricalShapeTest
    /**
    * Test through both end cap and side (end0)
    */
-   void testNine()
+   void CylindricalShapeTest::testNine()
    {
       double parms0Vec[] = { -1.1 * scale, -radius / 10.0, 0.0 };
-      VectorXd parms0 = transform(parms0Vec, phi, theta, psi, offset);
+      double parms0[3];
+      transform3d(parms0Vec, phi, theta, psi, offset, parms0);
       double parms1Vec[] = { 0.0, 0.0, 1.1 * radius };
-      VectorXd parms1 = transform(parms1Vec, phi, theta, psi, offset);
+      double parms1[3];
+      transform3d(parms1Vec, phi, theta, psi, offset, parms1);
 
-      double tp = shape.getFirstIntersection(parms1.data(), parms0.data());
-      assertTrue(isOnCylinder(Math2::pointBetween(parms1, parms0, tp).data()));
+      double tp = shape.getFirstIntersection(parms1, parms0);
+      double ptbtw0[3];
+      Math2::pointBetween3d(parms1, parms0, tp, ptbtw0);
+      assertTrue(isOnCylinder(ptbtw0));
 
-      double t = shape.getFirstIntersection(parms0.data(), parms1.data());
-      assertTrue(isOnEndCap(Math2::pointBetween(parms0, parms1, t).data()));
+      double t = shape.getFirstIntersection(parms0, parms1);
+      double ptbtw1[3];
+      Math2::pointBetween3d(parms0, parms1, t, ptbtw1);
+      assertTrue(isOnEndCap(ptbtw1));
 
       assertTrue(1.0 + (tp + t) > 1.0e-6);
 
@@ -308,35 +367,43 @@ namespace CylindricalShapeTest
    /**
    * Test through both end cap and side (end1)
    */
-   void testTen()
+   void CylindricalShapeTest::testTen()
    {
       double parms0Vec[] = {
          1.1 * scale,
          -radius / 10.0,
          0.0
       };
-      VectorXd parms0 = transform(parms0Vec, phi, theta, psi, offset);
+      double parms0[3];
+      transform3d(parms0Vec, phi, theta, psi, offset, parms0);
       double parms1Vec[] = {
          0.0,
          0.0,
          1.1 * radius
       };
-      VectorXd parms1 = transform(parms1Vec, phi, theta, psi, offset);
+      double parms1[3];
+      transform3d(parms1Vec, phi, theta, psi, offset, parms1);
 
-      double t = shape.getFirstIntersection(parms0.data(), parms1.data());
-      assertTrue(!isOnCylinder(Math2::pointBetween(parms0, parms1, t).data()));
-      assertTrue(isOnEndCap(Math2::pointBetween(parms0, parms1, t).data()));
+      double t = shape.getFirstIntersection(parms0, parms1);
+      double ptbtw0[3];
+      Math2::pointBetween3d(parms0, parms1, t, ptbtw0);
+      assertTrue(!isOnCylinder(ptbtw0));
+      double ptbtw1[3];
+      Math2::pointBetween3d(parms0, parms1, t, ptbtw1);
+      assertTrue(isOnEndCap(ptbtw1));
 
-      double tp = shape.getFirstIntersection(parms1.data(), parms0.data());
-      assertTrue(!isOnEndCap(Math2::pointBetween(parms1, parms0, tp).data()));
-      assertTrue(isOnCylinder(Math2::pointBetween(parms1, parms0, tp).data()));
+      double tp = shape.getFirstIntersection(parms1, parms0);
+      double ptbtw2[3];
+      Math2::pointBetween3d(parms1, parms0, tp, ptbtw2);
+      assertTrue(!isOnEndCap(ptbtw2));
+      assertTrue(isOnCylinder(ptbtw2));
 
       assertTrue(1.0 - (tp + t) > 1.0e-6);
 
       printf("CylindricalShapeTest::testTen() completed.\n");
    }
 
-   void testEleven()
+   void CylindricalShapeTest::testEleven()
    {
       double SCALE = 1.0e-5;
       int ITERATIONS = 1000;
@@ -379,7 +446,7 @@ namespace CylindricalShapeTest
       printf("CylindricalShapeTest::testEleven() completed.\n");
    }
 
-   void testTwelve()
+   void CylindricalShapeTest::testTwelve()
    {
       double pt0[] = {
          1.0e-6,
@@ -407,9 +474,8 @@ namespace CylindricalShapeTest
       double t = shape.getFirstIntersection(sa, sb);
       assertTrue(t != INFINITY);
       assertTrue(t > 1.0);
-      VectorXd saVec(sa, sa + 3);
-      VectorXd sbVec(sb, sb + 3);
-      auto pt = Math2::pointBetween(saVec, sbVec, t);
+      double pt[3];
+      Math2::pointBetween3d(sa, sb, t, pt);
       assertEquals(::sqrt(Math2::sqr(pt[1]) + Math2::sqr(pt[2] - 1.0e-6)), 0.5e-6, 1.0e-12);
 
       printf("CylindricalShapeTest::testTwelve() completed.\n");

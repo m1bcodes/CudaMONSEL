@@ -13,9 +13,8 @@ namespace SetTest
       __device__ void TestInt();
       __device__ void TestInt2();
       __device__ void TestString();
-      __device__ void TestSetOfSetOfString();
+      //__device__ void TestSetOfSetOfString();
    };
-
 }
 
 #endif

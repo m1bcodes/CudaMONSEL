@@ -62,17 +62,24 @@ namespace Transform3D
       return rotation(ph, th, ps);
    }
 
-   /**
-   * rotate - Rotate the specified directional vector by the Euler angles phi,
-   * th, psi. Rotate the object by phi about the z-axis followed by theta round
-   * the y-axis followed by psi around the z-axis.
-   *
-   * @param vector double[]
-   * @param phi double
-   * @param th double
-   * @param psi double
-   * @return double[]
-   */
+   void rotate3d(const double v[], double phi, double th, double psi, double res[])
+   {
+      MatrixXd m(3, VectorXd(v, v + 3));
+      m[0][0] = v[0];
+      m[0][1] = v[0];
+      m[0][2] = v[0];
+      m[1][0] = v[1];
+      m[1][1] = v[1];
+      m[1][2] = v[1];
+      m[2][0] = v[2];
+      m[2][1] = v[2];
+      m[2][2] = v[2];
+      MatrixXd prod = times(rotation(phi, th, psi), m);
+      res[0] = prod[0][0];
+      res[1] = prod[1][0];
+      res[2] = prod[2][0];
+   }
+
    VectorXd rotate(const double v[], double phi, double th, double psi)
    {
       MatrixXd m(3, VectorXd(v, v + 3));
@@ -90,15 +97,6 @@ namespace Transform3D
       return ret;
    }
 
-   /**
-   * translate - Translate the specified point by the specified distance.
-   *
-   * @param point double[] - The original point
-   * @param distance double[] - The offset
-   * @param negate - true to translate -distance or false to translate
-   *           +distance
-   * @return double[] - A new point translated by the specified amount.
-   */
    VectorXd translate(const double point[], const double distance[], bool negate)
    {
       VectorXd res(3);
@@ -115,21 +113,31 @@ namespace Transform3D
       return res;
    }
 
-   /**
-   * rotate - Rotate the specified point about the center point by the Euler
-   * angles specified. Rotate the object around the specified point by phi
-   * about the z-axis followed by theta round the y-axis followed by psi around
-   * the z-axis.
-   *
-   * @param point double[] - The point to rotate
-   * @param pivot double[] - The pivot point
-   * @param phi double - Initial rotation about z
-   * @param theta double - Second rotation about y
-   * @param psi double - rotation about z
-   * @return double[] - The result
-   */
    VectorXd rotate(const double point[], const double pivot[], double phi, double theta, double psi)
    {
       return translate(rotate(translate(point, pivot, true).data(), phi, theta, psi).data(), pivot, false);
+   }
+
+   void translate3d(const double point[], const double distance[], bool negate, double res[])
+   {
+      if (negate) {
+         res[0] = point[0] - distance[0];
+         res[1] = point[1] - distance[1];
+         res[2] = point[2] - distance[2];
+      }
+      else {
+         res[0] = point[0] + distance[0];
+         res[1] = point[1] + distance[1];
+         res[2] = point[2] + distance[2];
+      }
+   }
+
+   void rotate3d(const double point[], const double pivot[], double phi, double theta, double psi, double res[])
+   {
+      double translated1[3];
+      translate3d(point, pivot, true, translated1);
+      double rotated[3];
+      rotate3d(translated1, phi, theta, psi, rotated);
+      translate3d(rotated, pivot, false, res);
    }
 }

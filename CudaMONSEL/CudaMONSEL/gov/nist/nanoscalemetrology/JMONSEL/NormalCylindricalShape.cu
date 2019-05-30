@@ -4,16 +4,15 @@
 
 namespace NormalCylindricalShape
 {
-
    NormalCylindricalShape::NormalCylindricalShape(const double end0[], const double end1[], double radius) :
       CylindricalShapeT(end0, end1, radius),
-      end0(end0, end0 + 3),
-      axis(Math2::minus3d(end1, end0)),
-      radius2(radius * radius),
-      mLen2(Math2::dot3d(axis.data(), axis.data())),
-      mLen(::sqrt(mLen2)),
-      normalizedaxis(Math2::divide3d(axis.data(), mLen))
+      radius2(radius * radius)
    {
+      memcpy(this->end0, end0, sizeof(double) * 3);
+      Math2::minus3d(end1, end0, axis);
+      mLen2 = Math2::dot3d(axis, axis);
+      mLen = ::sqrt(mLen2);
+      Math2::divide3d(axis, mLen, normalizedaxis);
    }
 
    bool NormalCylindricalShape::contains(const double pos[]) const
@@ -84,14 +83,14 @@ namespace NormalCylindricalShape
             pos1[2] - pos0[2]
          }; // Vector pointing in direction of
          // trajectory
-         const double nv[] = {
+         const double nvtmp[] = {
             p0c[0] - (p0cdotn * normalizedaxis[0]),
             p0c[1] - (p0cdotn * normalizedaxis[1]),
             p0c[2] - (p0cdotn * normalizedaxis[2])
          }; // An outward
          // pointing vector
          // at pos0
-         return ((nv[0] * delta[0]) + (nv[1] * delta[1]) + (nv[2] * delta[2])) < 0;
+         return ((nvtmp[0] * delta[0]) + (nvtmp[1] * delta[1]) + (nvtmp[2] * delta[2])) < 0;
       }
       // Here if pos0 is not on the boundary. This is the usual case.
       return (r2 < radius2) && (p0cdotn > 0) && (p0cdotn < mLen);
@@ -302,8 +301,7 @@ namespace NormalCylindricalShape
             (p0c[1] + (nv[3] * delta[1])) - (savedprojection * normalizedaxis[1]),
             (p0c[2] + (nv[3] * delta[2])) - (savedprojection * normalizedaxis[2])
          };
-         const double normalvmag = ::sqrt((normalv[0] * normalv[0]) + (normalv[1] * normalv[1])
-            + (normalv[2] * normalv[2]));
+         const double normalvmag = ::sqrt((normalv[0] * normalv[0]) + (normalv[1] * normalv[1]) + (normalv[2] * normalv[2]));
          nv[0] = normalv[0] / normalvmag;
          nv[1] = normalv[1] / normalvmag;
          nv[2] = normalv[2] / normalvmag;
@@ -323,9 +321,9 @@ namespace NormalCylindricalShape
 
    void NormalCylindricalShape::rotate(const double pivot[], double phi, double theta, double psi)
    {
-      end0 = Transform3D::rotate(end0.data(), pivot, phi, theta, psi);
-      axis = Transform3D::rotate(axis.data(), phi, theta, psi);
-      normalizedaxis = Math2::divide(axis, ::sqrt(mLen2));
+      Transform3D::rotate3d(end0, pivot, phi, theta, psi, end0);
+      Transform3D::rotate3d(axis, phi, theta, psi, axis);
+      Math2::divide3d(axis, ::sqrt(mLen2), normalizedaxis);
       CylindricalShapeT::rotate(pivot, phi, theta, psi);
    }
 

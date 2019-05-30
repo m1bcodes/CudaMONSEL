@@ -7,6 +7,14 @@
 
 #include <cuda_runtime.h>
 
+#include "Amphibian\Tests\HasherTest.cuh"
+#include "Amphibian\Tests\StringTest.cuh"
+#include "Amphibian\Tests\LinkedListTest.cuh"
+#include "Amphibian\Tests\SetTest.cuh"
+#include "Amphibian\Tests\MapTest.cuh"
+
+#include "CudaUtil.h"
+
 #include "gov\nist\microanalysis\Utility\UncertainValue2.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\Element.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\Material.cuh"
@@ -37,8 +45,32 @@
 
 #include "ImageUtil.h"
 
+__global__ void TestKernel()
+{
+   HasherTest::TestOne();
+
+   LinkedListTest::LinkedListTest lltest;
+   lltest.TestAddAllAsSet();
+
+   SetTest::SetTest setTest;
+   setTest.TestIntBasic();
+   setTest.TestInt();
+   setTest.TestInt2();
+   setTest.TestString();
+   //setTest.TestSetOfSetOfString();
+
+   MapTest::MapTest mapTest;
+   mapTest.TestInteger();
+   mapTest.TestString();
+   mapTest.TestMapOfMap();
+}
+
 int main()
 {
+   TestKernel<<<1, 1>>>();
+   checkCudaErrors(cudaDeviceSynchronize());
+   checkCudaErrors(cudaGetLastError());
+
    EdgeEnergy::DiracHartreeSlaterIonizationEnergies::loadxionUis();
    EdgeEnergy::NISTEdgeEnergy::loadNISTxrtdb();
    EdgeEnergy::ChantlerEdgeEnergy::loadFFastEdgeDB();
@@ -94,19 +126,20 @@ int main()
    SphereTest::testContains();
    SphereTest::testGetFirstIntersection();
 
-   CylindricalShapeTest::testZero();
-   CylindricalShapeTest::testOne();
-   CylindricalShapeTest::testTwo();
-   CylindricalShapeTest::testThree();
-   CylindricalShapeTest::testFour();
-   CylindricalShapeTest::testFive();
-   CylindricalShapeTest::testSix();
-   CylindricalShapeTest::testSeven();
-   CylindricalShapeTest::testEight();
-   CylindricalShapeTest::testNine();
-   CylindricalShapeTest::testTen();
-   CylindricalShapeTest::testEleven();
-   CylindricalShapeTest::testTwelve();
+   CylindricalShapeTest::CylindricalShapeTest cylindricalShapeTest;
+   cylindricalShapeTest.testZero();
+   cylindricalShapeTest.testOne();
+   cylindricalShapeTest.testTwo();
+   cylindricalShapeTest.testThree();
+   cylindricalShapeTest.testFour();
+   cylindricalShapeTest.testFive();
+   cylindricalShapeTest.testSix();
+   cylindricalShapeTest.testSeven();
+   cylindricalShapeTest.testEight();
+   cylindricalShapeTest.testNine();
+   cylindricalShapeTest.testTen();
+   cylindricalShapeTest.testEleven();
+   cylindricalShapeTest.testTwelve();
 
    BetheElectronEnergyLossTest::testOne();
 
@@ -115,7 +148,7 @@ int main()
    SumShapeTest::testGetFirstIntersection();
    //SumShapeTest::testAll();
 
-   LinesOnLayers::run();
+   //LinesOnLayers::run();
 
    return 0;
 }

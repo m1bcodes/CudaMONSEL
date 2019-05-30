@@ -15,7 +15,7 @@
 **************************************************************************
 */
 
-#include "Hasher.cuh"
+#include "Amphibian/Hasher.cuh"
 
 namespace Hasher
 {

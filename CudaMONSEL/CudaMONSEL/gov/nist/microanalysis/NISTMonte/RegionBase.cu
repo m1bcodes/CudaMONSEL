@@ -100,15 +100,21 @@ namespace RegionBase
          printf("findEndOfStep invalid t: %.10e\n", t);
       }
       if (t <= 1.0) {
-         const VectorXd& delta = Math2::minus3d(p1, p0);
+         double delta[3];
+         Math2::minus3d(p1, p0, delta);
          // Put pos1 exactly on the boundary.
          p1[0] = p0[0] + (t * delta[0]);
          p1[1] = p0[1] + (t * delta[1]);
          p1[2] = p0[2] + (t * delta[2]);
          // Find the region just over the boundary...
-         const VectorXd& over = Math2::plus3d(p1, Math2::multiply(SMALL_DISP, Math2::normalize3d(delta.data())).data());
+         double over[3];
+         double prd[3];
+         double norm[3];
+         Math2::normalize3d(delta, norm);
+         Math2::multiply3d(SMALL_DISP, norm, prd);
+         Math2::plus3d(p1, prd, over);
          while (base != NULL) {
-            res = base->containingSubRegion(over.data());
+            res = base->containingSubRegion(over);
             if (res != NULL)
                return res;
             base = base->mParent;

@@ -20,8 +20,8 @@ namespace CylindricalShape
       void rotate(const double pivot[], double phi, double theta, double psi) override;
       void translate(const double distance[]) override;
 
-      VectorXd getEnd0() const;
-      VectorXd getEnd1() const;
+      const double* getEnd0() const;
+      const double* getEnd1() const;
 
       double getRadius() const;
       double getLength() const;
@@ -30,8 +30,9 @@ namespace CylindricalShape
       double closestPointOnAxis(const double p[]) const;
       double distanceSqr(const double p[], double u) const;
 
-      VectorXd mEnd0; // The position of the center of one end cap
-      VectorXd mDelta; // The length and direction of the axis
+      double mEnd0[3]; // The position of the center of one end cap
+      double mEnd1[3]; // redundant...
+      double mDelta[3]; // The length and direction of the axis
       double mRadius2; // The sqr(radius) of the cylinder
       double mLen2; // Cache the length squared...
       double mDelta2;

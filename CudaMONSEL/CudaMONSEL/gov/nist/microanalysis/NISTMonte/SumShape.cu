@@ -6,21 +6,10 @@
 
 namespace SumShape
 {
-   /**
-   * Creates a sum shape that represents the sum of an array of Shapes.
-   *
-   * @param shapes Shape[]
-   */
    SumShape::SumShape(ShapeT* const shapes[], int len) : mShapes(shapes, shapes + len)
    {
    }
 
-   /**
-   * Create a sum shape that represents the sum of two shapes.
-   *
-   * @param a Shape
-   * @param b Shape
-   */
    SumShape::SumShape(ShapeT* const a, ShapeT* const b)
    {
       mShapes.push_back(a);
@@ -32,9 +21,6 @@ namespace SumShape
       return false;
    }
 
-   /**
-   * @see gov.nist.microanalysis.NISTMonte.MonteCarloSS.Shape#contains(double[])
-   */
    bool SumShape::contains(const double pos[]) const
    {
       for (auto shape : mShapes)
@@ -43,45 +29,43 @@ namespace SumShape
       return false;
    }
 
-   /**
-   * @see gov.nist.microanalysis.NISTMonte.MonteCarloSS.Shape#getFirstIntersection(double[],
-   *      double[])
-   */
    double SumShape::getFirstIntersection(const double pos0[], const double pos1[])
    {
       double u = INFINITY;
       if (contains(pos0)) {
          // Starting inside...
-         VectorXd start(pos0, pos0 + 3);
+         double start[3];
+         memcpy(start, pos0, sizeof(double) * 3);
          do {
             double uInc = INFINITY;
-            VectorXd end;
+            double end[3] = { INFINITY, INFINITY, INFINITY };
             for (auto shape : mShapes)
-               if (shape->contains(start.data())) {
-                  const double ui = shape->getFirstIntersection(start.data(), pos1);
+               if (shape->contains(start)) {
+                  const double ui = shape->getFirstIntersection(start, pos1);
                   if ((ui != INFINITY) && ((uInc == INFINITY) || (ui > uInc))) {
-                     if (!shape->contains(Math2::pointBetween(start, VectorXd(pos1, pos1 + 3), 0.99 * ui).data())) printf("%s", (shape->toString() + ", "
-                        + "(" + std::to_string(pos0[0]) + ", " + std::to_string(pos0[1]) + ", " + std::to_string(pos0[2]) + ")" + ", "
-                        + "(" + std::to_string(start[0]) + ", " + std::to_string(start[1]) + ", " + std::to_string(start[2]) + ")" + ", "
-                        + "(" + std::to_string(pos1[0]) + ", " + std::to_string(pos1[1]) + ", " + std::to_string(pos1[2]) + ")" + ", "
-                        + std::to_string(ui)).c_str());
-                     if (shape->contains(Math2::pointBetween(start, VectorXd(pos1, pos1 + 3), 1.01 * (ui + 1.0e-3)).data())) printf("%s\n", (shape->toString() + ", "
-                        + "(" + std::to_string(pos0[0]) + ", " + std::to_string(pos0[1]) + ", " + std::to_string(pos0[2]) + ")" + ", "
-                        + "(" + std::to_string(start[0]) + ", " + std::to_string(start[1]) + ", " + std::to_string(start[2]) + ")" + ", "
-                        + "(" + std::to_string(pos1[0]) + ", " + std::to_string(pos1[1]) + ", " + std::to_string(pos1[2]) + ")" + ", "
-                        + std::to_string(ui)).c_str());
-                     end = Math2::pointBetween(start, VectorXd(pos1, pos1+3), ui);
+                     double ptbtw0[3];
+                     Math2::pointBetween3d(start, pos1, 0.99 * ui, ptbtw0);
+                     if (!shape->contains(ptbtw0)) printf("SumShape::getFirstIntersection1 %s", (shape->toString() + ", " + "(" + std::to_string(pos0[0]) + ", " + std::to_string(start[1]) + ", " + std::to_string(pos1[2]) + ")" + ", " + std::to_string(ui)).c_str());
+                     double ptbtw1[3];
+                     Math2::pointBetween3d(start, pos1, 1.01 * (ui + 1.0e-3), ptbtw1);
+                     if (shape->contains(ptbtw1)) printf("SumShape::getFirstIntersection2: %s\n", (shape->toString() + ", " + "(" + std::to_string(pos0[0]) + ", " + std::to_string(start[1]) + ", " + std::to_string(pos1[2]) + ")" + ", " + std::to_string(ui)).c_str());
+                     Math2::pointBetween3d(start, pos1, ui, end);
                      uInc = ui;
-                     u = Math2::distance(end, VectorXd(pos0, pos0 + 3)) / Math2::distance(VectorXd(pos1, pos1 + 3), VectorXd(pos0, pos0+3));
+                     u = Math2::distance3d(end, pos0) / Math2::distance3d(pos1, pos0);
                      if (u > 1.0)
                         break;
                   }
                }
-            if (end.empty())
+            if (end[0] == INFINITY && end[1] == INFINITY && end[2] == INFINITY)
                break;
-            const VectorXd& extra = Math2::multiply3d(1.0e-14, Math2::normalize3d(Math2::minus3d(pos1, pos0).data()).data());
+            double m0[3];
+            Math2::minus3d(pos1, pos0, m0);
+            double norm[3];
+            Math2::normalize3d(m0, norm);
+            double extra[3];
+            Math2::multiply3d(1.0e-14, norm, extra);
             // Bump the start point into the next Shape...
-            start = Math2::plus3d(end.data(), extra.data());
+            Math2::plus3d(end, extra, start);
             // Repeat until we can take a full step or
             // the step can't be enlarged...
          } while (u < 1.0);
@@ -96,10 +80,6 @@ namespace SumShape
       return u;
    }
 
-   /**
-   * @see gov.nist.microanalysis.EPQLibrary.ITransform#rotate(double[], double,
-   *      double, double)
-   */
    void SumShape::rotate(const double pivot[], double phi, double theta, double psi)
    {
       for (auto shape : mShapes) {
@@ -109,9 +89,6 @@ namespace SumShape
       }
    }
 
-   /**
-   * @see gov.nist.microanalysis.EPQLibrary.ITransform#translate(double[])
-   */
    void SumShape::translate(const double distance[])
    {
       for (auto shape : mShapes) {
@@ -121,17 +98,6 @@ namespace SumShape
       }
    }
 
-   /**
-   * Render the SumShape by rendering each of the sub-Shapes. If a sub-Shape
-   * does not implement the interface TrajectoryVRML.IRender then it will be
-   * missing from the rendered VRML world.
-   *
-   * @param rc
-   * @param wr
-   * @throws IOException
-   * @see gov.nist.microanalysis.NISTMonte.TrajectoryVRML.IRender#render(gov.nist.microanalysis.NISTMonte.TrajectoryVRML.RenderContext,
-   *      java.io.Writer)
-   */
    // void render(TrajectoryVRML.RenderContext rc, Writer wr)
    //   throws IOException{
    //   for (const MonteCarloSS.Shape shape : mShapes)
@@ -139,11 +105,6 @@ namespace SumShape
    //      ((TrajectoryVRML.IRender) shape).render(rc, wr);
    //}
 
-   /**
-   * Returns an immutable list of the Shapes which define this SumShape object.
-   *
-   * @return Returns the shapes.
-   */
    std::vector<ShapeT*> SumShape::getShapes() const
    {
       return mShapes;

@@ -1,6 +1,6 @@
-#include "HasherTest.cuh"
+#include "Amphibian/Tests/HasherTest.cuh"
 
-#include "Amphibian\Hasher.cuh"
+#include "Amphibian/Hasher.cuh"
 
 #include <stdio.h>
 

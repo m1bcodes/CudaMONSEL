@@ -1,7 +1,9 @@
-#include "String.cuh"
+#include "Amphibian/String.cuh"
 
 #include <stdio.h>
 #include <string.h>
+
+#include "Amphibian/Hasher.cuh"
 
 namespace String
 {
@@ -9,10 +11,10 @@ namespace String
    {
       int k = 0;
       while (true) {
-         if (a[k] == NULL && b[k] == NULL) {
-            return true;
+         if (a[k] == NULL_CHAR && b[k] == NULL_CHAR) {
+            break;
          }
-         if (b[k] == NULL || a[k] == NULL) {
+         if (b[k] == NULL_CHAR || a[k] == NULL_CHAR) {
             return false;
          }
          if (a[k] != b[k]) {
@@ -28,9 +30,9 @@ namespace String
       Copy("");
    }
 
-   __host__ __device__ String::String(String& s)
+   __host__ __device__ String::String(const String& s)
    {
-      Copy(s.Get());
+      Copy(s.str);
    }
 
    __host__ __device__ String::String(char const * s)
@@ -38,10 +40,10 @@ namespace String
       Copy(s);
    }
 
-   __host__ __device__ void String::operator=(String& s)
+   __host__ __device__ void String::operator=(const String& s)
    {
       if (&s == this) return;
-      Copy(s.Get());
+      Copy(s.str);
    }
 
    __host__ __device__ void String::operator=(char const * s)
@@ -54,7 +56,7 @@ namespace String
       return AreEqual(str, a.str);
    }
 
-   __host__ __device__ char* String::Get()
+   __host__ __device__ const char* String::Get()
    {
       return str;
    }
@@ -62,22 +64,22 @@ namespace String
    __host__ __device__ int String::Size()
    {
       int c = 0;
-      while (str[c++] != NULL);
+      while (str[c++] != NULL_CHAR);
       return c;
    }
 
    __host__ __device__ void String::Copy(char const * s)
    {
-      memset(str, NULL, MAX_LEN);
+      memset(str, NULL_CHAR, MAX_LEN);
       int k;
-      for (k = 0; s[k] != NULL; ++k) {
+      for (k = 0; s[k] != NULL_CHAR; ++k) {
          if (k == MAX_LEN - 1) {
             printf("Length of string exceeded %d.", MAX_LEN);
             break;
          }
          str[k] = s[k];
       }
-      str[k] = NULL;
+      str[k] = NULL_CHAR;
    }
 
    __host__ __device__ unsigned int String::HashCode()
@@ -85,7 +87,7 @@ namespace String
       return Hasher::Hash(str, Size());
    }
 
-   __host__ __device__ void IToA(char* d, int n, int maxArrayLen)
+   __host__ __device__ void IToA(char * d, int n, int maxArrayLen)
    {
       if (maxArrayLen < 1) {
          return;
@@ -133,7 +135,7 @@ namespace String
       d[idx] = '\0';
    }
 
-   __host__ __device__ int AToI(char* str)
+   __host__ __device__ int AToI(char const * str)
    {
       int res = 0;
       int mult = 1;
@@ -155,7 +157,7 @@ namespace String
          return 0;
       }
 
-      while (str[idx] != NULL) {
+      while (str[idx] != NULL_CHAR) {
          if (!(str[idx] >= '0' && str[idx] <= '9')) {
             return res;
          }

@@ -12,11 +12,7 @@ namespace UncertainValue2
    int sDefIndex = 0;
 
    const long long serialVersionUID = 119495064970078787L;
-   const int MAX_LEN = 11;
-   bool doubleCmp(double& a, double& b)
-   {
-      return a == b;
-   }
+   const int MAX_LEN = 32;
 
    UncertainValue2::UncertainValue2()
    {
@@ -25,7 +21,8 @@ namespace UncertainValue2
    UncertainValue2::UncertainValue2(double v, double dv) : mValue(v)
    {
       char tmpName[MAX_LEN];
-      itoa(sDefIndex + 1, tmpName, MAX_LEN);
+      memcpy(tmpName, DEFAULT, sizeof(DEFAULT));
+      itoa(sDefIndex++, tmpName + sizeof(DEFAULT), MAX_LEN - sizeof(DEFAULT));
       assignComponent(tmpName, dv);
    }
 
