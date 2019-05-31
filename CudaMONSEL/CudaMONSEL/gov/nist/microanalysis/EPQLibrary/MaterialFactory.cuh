@@ -41,7 +41,7 @@ namespace MaterialFactory
    extern CompositionT createCompound(StringT str);
    extern CompositionT createMaterial(StringT name);
 
-   void Init();
+   void init();
 }
 
 #endif

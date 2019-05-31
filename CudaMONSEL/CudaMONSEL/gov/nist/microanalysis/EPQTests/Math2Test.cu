@@ -26,4 +26,36 @@ namespace Math2Test
 
       printf("Math2Test::testRandom2() completed.\n");
    }
+
+   __device__ void testRandom1CUDA(curandState& state)
+   {
+      printf("%.10e\n", Math2::random(state));
+      printf("%.10e\n", Math2::random(state));
+      printf("%.10e\n", Math2::random(state));
+      printf("%.10e\n", Math2::random(state));
+      printf("%.10e\n", Math2::random(state));
+      printf("%.10e\n", Math2::random(state));
+      printf("%.10e\n", Math2::random(state));
+      printf("%.10e\n", Math2::random(state));
+      printf("%.10e\n", Math2::random(state));
+      printf("%.10e\n", Math2::random(state));
+
+      printf("Math2Test::testRandom1CUDA() completed.\n");
+   }
+
+   __device__ void testRandom2CUDA(curandState& state)
+   {
+      printf("%.10e\n", Math2::random(state));
+      printf("%.10e\n", Math2::random(state));
+      printf("%.10e\n", Math2::random(state));
+      printf("%.10e\n", Math2::random(state));
+      printf("%.10e\n", Math2::random(state));
+      printf("%.10e\n", Math2::random(state));
+      printf("%.10e\n", Math2::random(state));
+      printf("%.10e\n", Math2::random(state));
+      printf("%.10e\n", Math2::random(state));
+      printf("%.10e\n", Math2::random(state));
+
+      printf("Math2Test::testRandom2CUDA() completed.\n");
+   }
 }

@@ -5,6 +5,8 @@
 #include <cstdlib> 
 #include <ctime>
 #include <cuda_runtime.h>
+#include <curand.h>
+#include <curand_kernel.h>
 
 namespace Math2
 {
@@ -38,12 +40,16 @@ namespace Math2
    extern VectorXd pointBetween(const VectorXd& a, const VectorXd& b, double f);
    __host__ __device__ extern void pointBetween3d(const double a[], const double b[], double f, double res[]);
    extern VectorXd pointBetween3d(const double a[], const double b[], double f);
-   extern double random();
-   extern int randomInt(int mod);
-   extern double expRand();
-   extern double generateGaussianNoise(const double mean, const double stdDev);
+   __host__ extern double random();
+   __device__ extern double random(curandState&);
+   __host__ extern int randomInt(int mod);
+   __device__ extern int randomInt(int mod, curandState&);
+   __host__ extern double expRand();
+   __device__ extern double expRand(curandState&);
+   __host__ extern double generateGaussianNoise(const double mean, const double stdDev);
+   __device__ extern double generateGaussianNoise(const double mean, const double stdDev, curandState&);
 
-   extern double toRadians(double deg);
+   __host__ __device__ extern double toRadians(double deg);
 
    extern const double PI;
    extern const double ORIGIN_3D[];

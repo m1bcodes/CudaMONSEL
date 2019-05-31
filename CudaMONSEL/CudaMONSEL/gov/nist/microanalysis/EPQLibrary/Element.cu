@@ -663,7 +663,7 @@ namespace Element
 
    //Initializer init;
 
-   void Init()
+   void init()
    {
       readAtomicWeights();
       readIonizationEnergy();

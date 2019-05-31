@@ -4,7 +4,11 @@
 
 namespace Math2
 {
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+   __constant__ const double PI = 3.14159265358979323846;
+#else
    const double PI = 3.14159265358979323846;
+#endif
 
    const double ORIGIN_3D[] = {
       0.0,
@@ -1369,29 +1373,43 @@ namespace Math2
    //      throw new EPQException("Maximum iteration count exceeded in Math2.rootFind");
    //   }
 
-   double random()
+__host__ double random()
    {
       return (double)rand() / RAND_MAX;
    }
 
-   int randomInt(int mod)
+   __device__ double random(curandState& state)
+   {
+      return curand_uniform_double(&state); // excludes 0.0 but includes 1.0.
+   }
+
+   __host__ int randomInt(int mod)
    {
       return rand() % mod;
    }
 
-   double expRand()
+   __device__ int randomInt(int mod, curandState& state)
+   {
+      return (int)truncf((1 - curand_uniform_double(&state)) * mod);
+   }
+
+   __host__ double expRand()
    {
       double r = (double)rand() / RAND_MAX;
       while (r <= 0 || r >= 1) r = (double)rand() / RAND_MAX;
       return -::log(r);
    }
 
-   double toRadians(double deg)
+   __device__ double expRand(curandState& state)
    {
-      return deg * PI / 180.0;
+      double r = 0;
+      do {
+         r = curand_uniform_double(&state); // excludes 0.0 but includes 1.0.
+      } while (r <= 0 || r >= 1);
+      return -::log(r);
    }
 
-   double generateGaussianNoise(const double mean, const double stdDev)
+   __host__ double generateGaussianNoise(const double mean, const double stdDev)
    {
       static bool hasSpare = false;
       static double spare;
@@ -1412,5 +1430,15 @@ namespace Math2
       s = sqrt(-2.0 * log(s) / s);
       spare = v * s;
       return mean + stdDev * u * s;
+   }
+
+   __device__ double generateGaussianNoise(const double mean, const double stdDev, curandState& state)
+   {
+      return curand_normal_double(&state) * stdDev + mean;
+   }
+
+   __host__ __device__ double toRadians(double deg)
+   {
+      return deg * PI / 180.0;
    }
 }

@@ -44,8 +44,10 @@
 #include "gov\nist\nanoscalemetrology\JMONSELTests\LinesOnLayers.cuh"
 
 #include "ImageUtil.h"
+#include <curand.h>
+#include <curand_kernel.h>
 
-__global__ void TestKernel()
+__global__ void testKernel()
 {
    HasherTest::TestOne();
 
@@ -63,11 +65,17 @@ __global__ void TestKernel()
    mapTest.TestInteger();
    mapTest.TestString();
    mapTest.TestMapOfMap();
+
+   curandState state;
+   int i = threadIdx.x + blockDim.x * blockIdx.x;
+   curand_init(1234, i, 0, &state);
+   Math2Test::testRandom1CUDA(state);
+   Math2Test::testRandom2CUDA(state);
 }
 
 int main()
 {
-   TestKernel<<<1, 1>>>();
+   testKernel<<<1, 1>>>();
    checkCudaErrors(cudaDeviceSynchronize());
    checkCudaErrors(cudaGetLastError());
 
@@ -76,8 +84,8 @@ int main()
    EdgeEnergy::ChantlerEdgeEnergy::loadFFastEdgeDB();
    EdgeEnergy::DTSAEdgeEnergy::loadEdgeEnergies();
 
-   Element::Init();
-   MaterialFactory::Init();
+   Element::init();
+   MaterialFactory::init();
 
    CzyzewskiMottScatteringAngle::init();
    NISTMottScatteringAngle::init();

@@ -354,7 +354,7 @@ namespace MaterialFactory
    static CompositionT compoundFeO;
    static CompositionT compoundV2O5;
 
-   void Init()
+   void init()
    {
       compoundSiO2 = createCompound("SiO2");
       compoundAl2O3 = createCompound("Al2O3");
