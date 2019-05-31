@@ -324,7 +324,7 @@ namespace Math2
       return ::sqrt(sum2);
    }
 
-   double distance3d(const double* p1, const double* p2)
+   __host__ __device__ double distance3d(const double* p1, const double* p2)
    {
       return ::sqrt(Math2::sqr(p2[0] - p1[0]) + Math2::sqr(p2[1] - p1[1]) + Math2::sqr(p2[2] - p1[2]));
    }
@@ -371,7 +371,7 @@ namespace Math2
       return ::sqrt(sum2);
    }
 
-   double magnitude3d(const double p[])
+   __host__ __device__ double magnitude3d(const double p[])
    {
       return ::sqrt(p[0] * p[0] + p[1] * p[1] + p[2] * p[2]);
    }
@@ -392,7 +392,7 @@ namespace Math2
       return Math2::divide(p, Math2::magnitude(p));
    }
    
-   void normalize3d(const double p[], double res[])
+   __host__ __device__ void normalize3d(const double p[], double res[])
    {
       Math2::divide3d(p, Math2::magnitude3d(p), res);
    }
@@ -459,7 +459,7 @@ namespace Math2
       return res;
    }
 
-   void plus3d(const double a[], const double b[], double res[])
+   __host__ __device__ void plus3d(const double a[], const double b[], double res[])
    {
       res[0] = a[0] + b[0];
       res[1] = a[1] + b[1];
@@ -531,7 +531,7 @@ namespace Math2
       return res;
    }
 
-   void minus3d(const double a[], const double b[], double res[])
+   __host__ __device__ void minus3d(const double a[], const double b[], double res[])
    {
       res[0] = a[0] - b[0];
       res[1] = a[1] - b[1];
@@ -578,7 +578,7 @@ namespace Math2
       return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
    }
 
-   double dot3d(const double a[], const double b[])
+   __host__ __device__ double dot3d(const double a[], const double b[])
    {
       return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
    }
@@ -610,7 +610,7 @@ namespace Math2
       return { a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0] };
    }
 
-   void cross3d(const double* a, const double* b, double res[])
+   __host__ __device__ void cross3d(const double* a, const double* b, double res[])
    {
       res[0] = a[1] * b[2] - a[2] * b[1];
       res[1] = a[2] * b[0] - a[0] * b[2];
@@ -640,7 +640,7 @@ namespace Math2
       return res;
    }
 
-   void multiply3d(double a, const double b[], double res[])
+   __host__ __device__ void multiply3d(double a, const double b[], double res[])
    {
       res[0] = a * b[0];
       res[1] = a * b[1];
@@ -700,7 +700,7 @@ namespace Math2
       return res;
    }
 
-   void pointBetween3d(const double a[], const double b[], double f, double res[])
+   __host__ __device__ void pointBetween3d(const double a[], const double b[], double f, double res[])
    {
       res[0] = a[0] + (b[0] - a[0]) * f;
       res[1] = a[1] + (b[1] - a[1]) * f;
@@ -756,7 +756,7 @@ namespace Math2
       return res;
    }
 
-   void divide3d(const double a[], double b, double res[])
+   __host__ __device__ void divide3d(const double a[], double b, double res[])
    {
       res[0] = a[0] / b;
       res[1] = a[1] / b;

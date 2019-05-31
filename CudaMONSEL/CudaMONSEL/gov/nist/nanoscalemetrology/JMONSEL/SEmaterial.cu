@@ -188,10 +188,10 @@ namespace SEmaterial
       return version;
    }
 
-   VectorXd SEmaterial::getBindingEnergyArray() const
-   {
-      return bindingEnergy;
-   }
+   //VectorXd SEmaterial::getBindingEnergyArray() const
+   //{
+   //   return bindingEnergy;
+   //}
 
    Setd SEmaterial::getCoreEnergyArray() const
    {
@@ -203,10 +203,10 @@ namespace SEmaterial
       return -energyCBbottom - workfunction;
    }
 
-   VectorXd SEmaterial::getElectronDensityArray() const
-   {
-      return electronDensity;
-   }
+   //VectorXd SEmaterial::getElectronDensityArray() const
+   //{
+   //   return electronDensity;
+   //}
 
    double SEmaterial::getEnergyCBbottom() const
    {
@@ -218,10 +218,10 @@ namespace SEmaterial
       return eplasmon;
    }
 
-   VectorXd SEmaterial::getKineticEnergyArray() const
-   {
-      return kineticEnergy;
-   }
+   //VectorXd SEmaterial::getKineticEnergyArray() const
+   //{
+   //   return kineticEnergy;
+   //}
 
    double SEmaterial::getWorkfunction() const
    {

@@ -31,13 +31,13 @@ namespace SEmaterial
 
       //SEmaterial clone();
       long get_version() const;
-      VectorXd getBindingEnergyArray() const;
+      //VectorXd getBindingEnergyArray() const;
       Setd getCoreEnergyArray() const;
       double getEFermi() const;
-      VectorXd getElectronDensityArray() const;
+      //VectorXd getElectronDensityArray() const;
       double getEnergyCBbottom() const;
       double getEplasmon() const;
-      VectorXd getKineticEnergyArray() const;
+      //VectorXd getKineticEnergyArray() const;
       double getWorkfunction() const;
       double getBandgap() const;
       double getEpsr() const;
