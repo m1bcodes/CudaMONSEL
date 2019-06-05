@@ -20,20 +20,20 @@ namespace NormalMultiPlaneShape
       void translate(const double distance[]) override;
 
       bool contains(const double pos0[], const double pos1[]) const  override;
-      VectorXd getFirstNormal(const double pos0[], const double pos1[]) override;
-      VectorXd getPreviousNormal() const override;
+      const double* getFirstNormal(const double pos0[], const double pos1[]) override;
+      const double* getPreviousNormal() const override;
 
       //void addPlane(const double normal[], const double point[]);
       void addPlane(PlaneT&) override;
 
       int getNumPlanes() const;
-      const VectorXd& getNormal(int index) const;
+      //const VectorXd& getNormal(int index) const;
       double getB(int index) const;
 
    private:
       void updateCach();
 
-      VectorXd result;
+      double result[4];
 
       MatrixXd narray;
       MatrixXd carray;

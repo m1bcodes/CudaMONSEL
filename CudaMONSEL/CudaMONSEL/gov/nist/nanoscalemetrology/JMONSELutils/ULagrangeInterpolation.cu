@@ -11,8 +11,8 @@ namespace ULagrangeInterpolation
          ns = order;
       double* c = new double[order + 1];
       double* d = new double[order + 1];
-      memcpy(c, f + offset, (order + 1)*sizeof(double));
-      memcpy(d, f + offset, (order + 1)*sizeof(double));
+      memcpy(c, f + offset, sizeof(double) * (order + 1));
+      memcpy(d, f + offset, sizeof(double) * (order + 1));
 
       double y = c[ns--];
       double ho, hp, w, dy = 0;

@@ -6,10 +6,8 @@ namespace MultiPlaneShape
 {
    // construct a Plane object with the specified normal containing the
       // specified point
-   Plane::Plane(const double normal[], int normallen, const double point[], int pointlen)
+   Plane::Plane(const double normal[], const double point[])
    {
-      if (!(normallen == 3)) printf("Plane::Plane: normallen != 3 (%d)", normallen);
-      if (!(pointlen == 3)) printf("Plane::Plane: pointlen != 3 (%d)", pointlen);
       memcpy(mNormal, normal, sizeof(double) * 3);
       memcpy(mPoint, point, sizeof(double) * 3);
    }
@@ -29,7 +27,7 @@ namespace MultiPlaneShape
    }
 
    // Is the point close to being contained by this plane?
-   bool Plane::almostContains(double p[])
+   bool Plane::almostContains(const double p[])
    {
       //assert(p.length == 3);
       double tmp = ((p[0] - mPoint[0]) * mNormal[0] + (p[1] - mPoint[1]) * mNormal[1] + (p[2] - mPoint[2]) * mNormal[2]);

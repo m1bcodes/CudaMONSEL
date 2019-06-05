@@ -45,7 +45,6 @@ namespace CzyzewskiMottScatteringAngle
          for (int c = 0; c < CzyzewskiMottCrossSection::SpecialAngleCount; ++c)
             mCummulativeDF[r][c] = mCummulativeDF[r][c] / mCummulativeDF[r][CzyzewskiMottCrossSection::SpecialAngleCount - 1];
       }
-
    }
 
    CzyzewskiMottScatteringAngle::CzyzewskiMottScatteringAngle(const ElementT& el) : RandomizedScatterT("Cyzewski", REFERENCE), mElement(el), mRutherford(ScreenedRutherfordScatteringAngle::getSRSA(el.getAtomicNumber()))

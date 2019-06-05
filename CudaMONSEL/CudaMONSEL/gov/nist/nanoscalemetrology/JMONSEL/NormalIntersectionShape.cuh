@@ -20,13 +20,13 @@ namespace NormalIntersectionShape
       void translate(const double distance[]) override;
 
       bool contains(const double pos0[], const double pos1[]) const  override;
-      VectorXd getFirstNormal(const double pos0[], const double pos1[]) override;
-      VectorXd getPreviousNormal() const override;
+      const double* getFirstNormal(const double pos0[], const double pos1[]) override;
+      const double* getPreviousNormal() const override;
 
    private:
       NormalShapeT& shapeA;
       NormalShapeT& shapeB;
-      VectorXd result;
+      double result[4];
    };
 }
 

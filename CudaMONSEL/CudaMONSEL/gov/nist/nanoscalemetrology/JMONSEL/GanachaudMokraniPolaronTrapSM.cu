@@ -5,7 +5,10 @@
 
 namespace GanachaudMokraniPolaronTrapSM
 {
-   GanachaudMokraniPolaronTrapSM::GanachaudMokraniPolaronTrapSM(double prefactor, double extinction) : prefactor(prefactor), extinction(extinction), CUTOFF(-::log(10. / prefactor) / extinction)
+   GanachaudMokraniPolaronTrapSM::GanachaudMokraniPolaronTrapSM(double prefactor, double extinction) :
+      prefactor(prefactor),
+      extinction(extinction),
+      CUTOFF(-::log(10. / prefactor) / extinction)
    {
       if (prefactor < 0.) printf("ERROR: Nonpositive prefactor in GanachaudMokraniPolaronTrapSM constructor.");
       if (extinction < 0.) printf("ERROR: Nonpositive extinction in GanachaudMokraniPolaronTrapSM constructor.");
@@ -20,9 +23,9 @@ namespace GanachaudMokraniPolaronTrapSM
 
    double GanachaudMokraniPolaronTrapSM::scatterRate(const ElectronT* pe)
    {
-      double kE0 = pe->getEnergy();
+      const double kE0 = pe->getEnergy();
       if (kE0 > CUTOFF) return 0.;
-      double result = prefactor * ::exp(-extinction * kE0);
+      const double result = prefactor * ::exp(-extinction * kE0);
       return result;
    }
 

@@ -15,7 +15,7 @@ namespace GanachaudMokraniPhononInelasticSM
       ElectronT* scatter(ElectronT* pe) override;
       void setMaterial(const MaterialT* mat) override;
 
-      StringT toString() const;
+      const char* toString();
 
    private:
       const double ratemultiplier;
@@ -26,6 +26,8 @@ namespace GanachaudMokraniPhononInelasticSM
       const double temperature;
       const double eps0;
       const double epsInfinity;
+
+      char buff[100]; // work around for toString
    };
 }
 

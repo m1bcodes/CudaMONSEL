@@ -24,17 +24,16 @@ namespace NormalUnionShape
 
    double NormalUnionShape::getFirstIntersection(const double pos0[], const double pos1[])
    {
-      return (getFirstNormal(pos0, pos1))[3];
+      return getFirstNormal(pos0, pos1)[3];
    }
 
-   VectorXd NormalUnionShape::getFirstNormal(const double pos0[], const double pos1[])
+   const double* NormalUnionShape::getFirstNormal(const double pos0[], const double pos1[])
    {
-      VectorXd nointersection = {
-         0.,
-         0.,
-         0.,
-         INFINITY
-      };
+      result[0] = 0.;
+      result[1] = 0.;
+      result[2] = 0.;
+      result[3] = INFINITY;
+
       auto shapes = getShapes();
       NormalShape* shapeA = (NormalShape*)shapes.at(0);
       NormalShape* shapeB = (NormalShape*)shapes.at(1);
@@ -76,27 +75,32 @@ namespace NormalUnionShape
          pos1[1] - pos0[1],
          pos1[2] - pos0[2]
       };
-      auto nva = shapeA->getFirstNormal(pos0, pos1);
+      double nva[4];
+      memcpy(nva, shapeA->getFirstNormal(pos0, pos1), sizeof(double) * 4);
+
       if (nva[3] <= 1.)
          adepth = ((delta[0] * nva[0]) + (delta[1] * nva[1]) + (delta[2] * nva[2])) > 0 ? 1 : 0;
       else { // If the crossing is inside-out, then at p0 we are inside.
          // To come back to: What about delta.nva==0?
          if (shapeA->contains(pos0, pos1))
-            return nointersection; // If we were inside at p0 and u>1 there
+            return result; // If we were inside at p0 and u>1 there
          // can be no inside-out crossing
          adepth = 0;
       }
 
-      VectorXd nvb = shapeB->getFirstNormal(pos0, pos1);
+      double nvb[4];
+      memcpy(nvb, shapeB->getFirstNormal(pos0, pos1), sizeof(double) * 4);
+
+
       if (nvb[3] <= 1.)
          bdepth = ((delta[0] * nvb[0]) + (delta[1] * nvb[1]) + (delta[2] * nvb[2])) > 0 ? 1 : 0;
       else { // If the crossing is inside-out, then at p0 we are inside.
          // To come back to: What about ?.nvb==0?
          if (shapeB->contains(pos0, pos1))
-            return nointersection; // If we were inside at p0 and u>1 there
+            return result; // If we were inside at p0 and u>1 there
          // can be no inside-out crossing
-         result = nva;
-         return nva; // Otherwise there can, and it is at the first A
+         memcpy(result, nva, sizeof(double) * 4);
+         return result; // Otherwise there can, and it is at the first A
          // crossing
       }
       int cdepth = adepth + bdepth;
@@ -109,8 +113,8 @@ namespace NormalUnionShape
       for (;;)
          if (nva[3] < nvb[3]) { // shape A provides the first intersection
             if (adepth == cdepth) {
-               result = nva;
-               return nva; // c toggles from 0 to 1 or vice versa, like A,
+               memcpy(result, nva, sizeof(double) * 4);
+               return result; // c toggles from 0 to 1 or vice versa, like A,
                // so this is a boundary
             }
 
@@ -142,7 +146,7 @@ namespace NormalUnionShape
                pos0[1] + (u * delta[1]),
                pos0[2] + (u * delta[2])
             };
-            nva = shapeA->getFirstNormal(tmp, pos1); // Find
+            memcpy(nva, shapeA->getFirstNormal(tmp, pos1), sizeof(double) * 4); // Find
             // the
             // next
             // one
@@ -153,18 +157,18 @@ namespace NormalUnionShape
                nva[3] = (nva[3] * (1. - u)) + u;
             if (nva[3] > 1)
                if (cdepth == bdepth) {
-                  result = nvb;
-                  return nvb;
+                  memcpy(result, nvb, sizeof(double) * 4);
+                  return result;
                }
                else
-                  return nointersection;
+                  return result;
             adepth = adepth ^ 1; // Toggle depth in A
          }
          else if (nva[3] > nvb[3]) { // Same as above, with A and B roles
             // reversed
             if (bdepth == cdepth) {
-               result = nvb;
-               return nvb; // c toggles from 0 to 1
+               memcpy(result, nvb, sizeof(double) * 4);
+               return result; // c toggles from 0 to 1
                // or vice versa, like
                // B, so this is a
                // boundary
@@ -179,7 +183,8 @@ namespace NormalUnionShape
                pos0[1] + (u * delta[1]),
                pos0[2] + (u * delta[2])
             };
-            nvb = shapeB->getFirstNormal(tmp, pos1); // Find
+            memcpy(nvb, shapeB->getFirstNormal(tmp, pos1), sizeof(double) * 4);
+            // Find
             // the
             // next
             // one
@@ -190,11 +195,11 @@ namespace NormalUnionShape
                nvb[3] = (nvb[3] * (1. - u)) + u;
             if (nvb[3] > 1)
                if (cdepth == adepth) {
-                  result = nva;
-                  return nva;
+                  memcpy(result, nva, sizeof(double) * 4);
+                  return result;
                }
                else
-                  return nointersection;
+                  return result;
             bdepth = bdepth ^ 1; // Toggle depth in B
          }
          else { // Arrive here only in the unlikely event that we
@@ -212,7 +217,8 @@ namespace NormalUnionShape
                   pos0[1] + (u * delta[1]),
                   pos0[2] + (u * delta[2])
                };
-               nva = shapeA->getFirstNormal(tmp0, pos1); // Find the next one after that
+               memcpy(nva, shapeB->getFirstNormal(tmp0, pos1), sizeof(double) * 4);
+
                if (nva[3] < INFINITY)
                   nva[3] = (nva[3] * (1. - u)) + u;
 
@@ -224,7 +230,7 @@ namespace NormalUnionShape
                   pos0[1] + (u * delta[1]),
                   pos0[2] + (u * delta[2])
                };
-               nvb = shapeB->getFirstNormal(tmp1, pos1); // Find the next one after that
+               memcpy(nvb, shapeB->getFirstNormal(tmp1, pos1), sizeof(double) * 4); // Find the next one after that
                if (nvb[3] < INFINITY)
                   nvb[3] = (nvb[3] * (1. - u)) + u;
 
@@ -234,22 +240,22 @@ namespace NormalUnionShape
                      // we've not
                      // yet updated it. This really means cdepth ==
                      // bdepth
-                     result = nvb;
-                     return nvb;
+                     memcpy(result, nvb, sizeof(double) * 4);
+                     return result;
                   }
                   else
-                     return nointersection;
+                     return result;
                if (nvb[3] > 1)
                   // in A
                   if (cdepth != adepth) {// remember adepth changed but
                      // we've not
                      // yet updated it. This really means cdepth ==
                      // adepth
-                     result = nva;
-                     return nva;
+                     memcpy(result, nva, sizeof(double) * 4);
+                     return result;
                   }
                   else
-                     return nointersection;
+                     return result;
                adepth = adepth ^ 1; // Toggle depth in A
                bdepth = bdepth ^ 1; // Toggle depth in B
             }
@@ -259,18 +265,16 @@ namespace NormalUnionShape
                * boundary. Return average of the two normal vectors. (nva[3]
                * and nvb[3] are the same, so either will do.)
                */
-               result = {
-                  (nva[0] + nvb[0]) / 2.,
-                     (nva[1] + nvb[1]) / 2.,
-                     (nva[2] + nvb[2]) / 2.,
-                     nva[3]
-               };
+               result[0] = (nva[0] + nvb[0]) / 2.;
+               result[0] = (nva[1] + nvb[1]) / 2.,
+               result[0] = (nva[2] + nvb[2]) / 2.,
+               result[0] = nva[3];
                return result;
             }
          } // End simultaneous boundaries block
    } // End getFirstNormal()
 
-   VectorXd NormalUnionShape::getPreviousNormal() const
+   const double* NormalUnionShape::getPreviousNormal() const
    {
       return result;
    }

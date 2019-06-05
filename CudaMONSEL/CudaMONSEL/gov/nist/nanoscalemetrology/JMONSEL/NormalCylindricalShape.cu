@@ -98,8 +98,7 @@ namespace NormalCylindricalShape
 
    double NormalCylindricalShape::getFirstIntersection(const double pos0[], const double pos1[])
    {
-      nv = getFirstNormal(pos0, pos1);
-      return nv[3];
+      return getFirstNormal(pos0, pos1)[3];
    }
 
    bool NormalCylindricalShape::isNormalShape() const
@@ -107,9 +106,12 @@ namespace NormalCylindricalShape
       return true;
    }
 
-   VectorXd NormalCylindricalShape::getFirstNormal(const double pos0[], const double pos1[])
+   const double* NormalCylindricalShape::getFirstNormal(const double pos0[], const double pos1[])
    {
-      nv = { 0., 0., 0., INFINITY };
+      nv[0] = 0.;
+      nv[1] = 0.;
+      nv[2] = 0.;
+      nv[3] = INFINITY;
 
       // Various differences and dot products that we will need:
       /*
@@ -335,7 +337,7 @@ namespace NormalCylindricalShape
       CylindricalShapeT::translate(distance);
    }
 
-   VectorXd NormalCylindricalShape::getPreviousNormal() const
+   const double* NormalCylindricalShape::getPreviousNormal() const
    {
       return nv;
    }

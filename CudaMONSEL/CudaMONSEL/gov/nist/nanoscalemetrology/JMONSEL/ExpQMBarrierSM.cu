@@ -35,15 +35,15 @@ namespace ExpQMBarrierSM
 
    double ExpQMBarrierSM::generalBarrierT(double rootPerpE, double rootDiff) const
    {
-      double k1 = lambdaFactor * rootPerpE;
+      const double k1 = lambdaFactor * rootPerpE;
       if (k1 > 50.)
          return 1.;
-      double k2 = lambdaFactor * rootDiff;
-      double kplus = k1 + k2;
-      double kminus = k1 - k2;
-      double sinhPlus = ::sinh(kplus);
-      double sinhMinus = ::sinh(kminus);
-      double ratio = sinhMinus / sinhPlus;
+      const double k2 = lambdaFactor * rootDiff;
+      const double kplus = k1 + k2;
+      const double kminus = k1 - k2;
+      const double sinhPlus = ::sinh(kplus);
+      const double sinhMinus = ::sinh(kminus);
+      const double ratio = sinhMinus / sinhPlus;
       return 1. - (ratio * ratio);
    }
 
@@ -72,7 +72,8 @@ namespace ExpQMBarrierSM
          deltaU += ((SEmaterialT&)nextmaterial).getEnergyCBbottom();
 
       /* FIND THE OUTWARD POINTING NORMAL AT THE BOUNDARY */
-      VectorXd nb; // We'll store it here
+      double nb[4]; // We'll store it here
+      memset(nb, INFINITY, sizeof(double) * 4);
 
       if (currentRegion->isContainingRegion(*nextRegion)) {
          const RegionBaseT* struckRegion = nextRegion; // usually this is true
@@ -84,7 +85,7 @@ namespace ExpQMBarrierSM
             struckRegion = struckRegion->getParent();
          const ShapeT* intersectedshape = struckRegion->getShape();
          if (intersectedshape->isNormalShape()) {
-            nb = ((NormalShapeT*)intersectedshape)->getPreviousNormal();
+            memcpy(nb, ((NormalShapeT*)intersectedshape)->getPreviousNormal(), sizeof(double) * 4);
             for (int i = 0; i < 3; i++)
                nb[i] *= -1;
          }
@@ -92,14 +93,14 @@ namespace ExpQMBarrierSM
       else {
          const ShapeT* intersectedshape = currentRegion->getShape();
          if (intersectedshape->isNormalShape())
-            nb = ((NormalShapeT*)intersectedshape)->getPreviousNormal();
+            memcpy(nb, ((NormalShapeT*)intersectedshape)->getPreviousNormal(), sizeof(double) * 4);
       }
 
       // GET THE VECTOR IN THE ELECTRON'S DIRECTION OF MOTION
-      double theta0 = pe->getTheta();
-      double phi0 = pe->getPhi();
-      double sintheta0 = ::sin(theta0);
-      double n0[] = { sintheta0 * ::cos(phi0), sintheta0 * ::sin(phi0), ::cos(theta0) };
+      const double theta0 = pe->getTheta();
+      const double phi0 = pe->getPhi();
+      const double sintheta0 = ::sin(theta0);
+      const double n0[] = { sintheta0 * ::cos(phi0), sintheta0 * ::sin(phi0), ::cos(theta0), INFINITY };
 
       /*
       * If the intersected shape is not a NormalShape, we still haven't
@@ -108,14 +109,16 @@ namespace ExpQMBarrierSM
       * This choice gives maximum transmission probability and no deflection of
       * the electron's path.
       */
-      if (!nb.empty())
-         nb.assign(n0, n0 + 3);
+      //if (!nb.empty())
+         //nb.assign(n0, n0 + 3);
+      if (nb[0] == INFINITY && nb[1] == INFINITY && nb[2] == INFINITY && nb[3] == INFINITY)
+         memcpy(nb, n0, sizeof(double) * 4);
 
       /*
       * Let the angle of incidence be called alpha. Cos(alpha) is given by the
       * dot product
       */
-      double cosalpha = (n0[0] * nb[0]) + (n0[1] * nb[1]) + (n0[2] * nb[2]);
+      const double cosalpha = (n0[0] * nb[0]) + (n0[1] * nb[1]) + (n0[2] * nb[2]);
 
       if (cosalpha <= 0.) {
          /*
@@ -125,8 +128,8 @@ namespace ExpQMBarrierSM
          * of motion. We give it a nudge away from the barrier towards the
          * inside
          */
-         auto pos0 = pe->getPosition();
-         double tmppos[] = { pos0[0] - (MonteCarloSS::SMALL_DISP * nb[0]), pos0[1] - (MonteCarloSS::SMALL_DISP * nb[1]), pos0[2] - (MonteCarloSS::SMALL_DISP * nb[2]) };
+         const double* pos0 = pe->getPosition();
+         const double tmppos[] = { pos0[0] - (MonteCarloSS::SMALL_DISP * nb[0]), pos0[1] - (MonteCarloSS::SMALL_DISP * nb[1]), pos0[2] - (MonteCarloSS::SMALL_DISP * nb[2]) };
          pe->setPosition(tmppos);
 
          return NULL;
@@ -139,20 +142,16 @@ namespace ExpQMBarrierSM
          * transmits, so we give it a nudge off of the barrier toward the
          * outside, update the electron's region, and return.
          */
-         auto pos0 = pe->getPosition();
-         double tmppos[] = { pos0[0] + (MonteCarloSS::SMALL_DISP * nb[0]), pos0[1] + (MonteCarloSS::SMALL_DISP * nb[1]), pos0[2] + (MonteCarloSS::SMALL_DISP * nb[2]) };
+         const double* pos0 = pe->getPosition();
+         const double tmppos[] = { pos0[0] + (MonteCarloSS::SMALL_DISP * nb[0]), pos0[1] + (MonteCarloSS::SMALL_DISP * nb[1]), pos0[2] + (MonteCarloSS::SMALL_DISP * nb[2]) };
          pe->setPosition(tmppos);
          pe->setCurrentRegion(nextRegion);
 
          return NULL;
       }
 
-      double kE0 = pe->getEnergy();
-      double perpE;
-      if (kE0 <= 0.)
-         perpE = 0.;
-      else
-         perpE = cosalpha * cosalpha * kE0;
+      const double kE0 = pe->getEnergy();
+      const double perpE = (kE0 <= 0.) ? 0. : cosalpha * cosalpha * kE0;
       double rootPerpE = 0.;
       double rootDiff = 0.;
 
@@ -170,13 +169,8 @@ namespace ExpQMBarrierSM
          if (classical)
             transmits = true; // Since we already know perpE>deltaU
          else {
-            double transmissionProb;
-            if (lambda == 0.)
-               transmissionProb = sharpBarrierT(rootPerpE, rootDiff);
-            else
-               transmissionProb = generalBarrierT(rootPerpE, rootDiff);
-
-            double r = Math2::random();
+            double transmissionProb = (lambda == 0.) ? sharpBarrierT(rootPerpE, rootDiff) : generalBarrierT(rootPerpE, rootDiff);
+            const double r = Math2::random();
             transmits = r < transmissionProb;
          }
       }
@@ -187,7 +181,7 @@ namespace ExpQMBarrierSM
       */
       double nf[3]; // Direction vector after scattering
       if (transmits) { // Transmission
-         double factor = cosalpha * ((rootDiff / rootPerpE) - 1.);
+         const double factor = cosalpha * ((rootDiff / rootPerpE) - 1.);
          for (int i = 0; i < 3; i++)
             nf[i] = n0[i] + (factor * nb[i]);
          /* Normalize the z component to use later computing theta. */
@@ -196,9 +190,9 @@ namespace ExpQMBarrierSM
 
          pe->setEnergy(kE0 - deltaU);
          pe->setCurrentRegion(nextRegion);
-         auto pos0 = pe->getPosition();
+         const double* pos0 = pe->getPosition();
 
-         double tmppos[] = { pos0[0] + (MonteCarloSS::SMALL_DISP * nb[0]), pos0[1] + (MonteCarloSS::SMALL_DISP * nb[1]), pos0[2] + (MonteCarloSS::SMALL_DISP * nb[2]) };
+         const double tmppos[] = { pos0[0] + (MonteCarloSS::SMALL_DISP * nb[0]), pos0[1] + (MonteCarloSS::SMALL_DISP * nb[1]), pos0[2] + (MonteCarloSS::SMALL_DISP * nb[2]) };
          pe->setPosition(tmppos);
       }
       else { // Total internal reflection
@@ -206,13 +200,13 @@ namespace ExpQMBarrierSM
          for (int i = 0; i < 3; i++)
             nf[i] = n0[i] - (nb[i] * twocosalpha);
 
-         auto pos0 = pe->getPosition();
-         double tmppos[] = { pos0[0] - (MonteCarloSS::SMALL_DISP * nb[0]), pos0[1] - (MonteCarloSS::SMALL_DISP * nb[1]), pos0[2] - (MonteCarloSS::SMALL_DISP * nb[2]) };
+         const double* pos0 = pe->getPosition();
+         const double tmppos[] = { pos0[0] - (MonteCarloSS::SMALL_DISP * nb[0]), pos0[1] - (MonteCarloSS::SMALL_DISP * nb[1]), pos0[2] - (MonteCarloSS::SMALL_DISP * nb[2]) };
          pe->setPosition(tmppos);
       }
 
-      double thetaf = ::acos(nf[2]);
-      double phif = ::atan2(nf[1], nf[0]);
+      const double thetaf = ::acos(nf[2]);
+      const double phif = ::atan2(nf[1], nf[0]);
 
       pe->setDirection(thetaf, phif);
       return NULL;

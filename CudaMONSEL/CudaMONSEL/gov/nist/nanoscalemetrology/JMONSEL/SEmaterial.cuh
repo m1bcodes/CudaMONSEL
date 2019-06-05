@@ -9,7 +9,7 @@ namespace SEmaterial
    class SEmaterial : public Material::Material
    {
    protected:
-      void replicate(const SEmaterial& mat);
+      //void replicate(const SEmaterial& mat);
 
    public:
       SEmaterial();
@@ -43,20 +43,20 @@ namespace SEmaterial
       double getEpsr() const;
       double getDielectricBreakdownField() const;
 
-      void removeBindingEnergy(int index);
-      void removeCoreEnergy(double index);
+      //void removeBindingEnergy(int index);
+      //void removeCoreEnergy(double index);
 
-      void setBindingEnergy(int index, double energy);
+      //void setBindingEnergy(int index, double energy);
       void setCoreEnergy();
       void setCoreEnergy(const double coreEnergy[], int len);
-      void setElectronDensity(int index, double density);
+      //void setElectronDensity(int index, double density);
       void setEnergyCBbottom(double energyCBbottom);
       void setBandgap(double bandgap);
       void setEplasmon(double eplasmon);
       void setEstimatedCoreEnergy();
       void setEstimatedCoreEnergy(double cutoff);
       void setKEtoDefault();
-      void setKineticEnergy(int index, double energy);
+      //void setKineticEnergy(int index, double energy);
       void setWorkfunction(double workfunction);
       void setEpsr(double epsr);
       void setDielectricBreakdownField(double breakdownField);
@@ -72,9 +72,9 @@ namespace SEmaterial
       double bandgap = 0.; // width of the bandgap
       long version = 0L; // Updates each time the data change
 
-      VectorXd bindingEnergy;
-      VectorXd electronDensity;
-      VectorXd kineticEnergy;
+      //VectorXd bindingEnergy;
+      //VectorXd electronDensity;
+      //VectorXd kineticEnergy;
       bool userSetKE = false; // Flag = true when user sets a kinetic
 
       Setd coreEnergy;

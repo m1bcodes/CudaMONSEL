@@ -126,7 +126,7 @@ namespace LinesOnLayers
       PMMAMSMDeep.setCSD(&PMMACSD);
       PMMAMSMDeep.setMinEforTracking(ToSI::eV(50.));
 
-      MONSEL_MaterialScatterModelT ARCMSM = PMMAMSM;
+      MONSEL_MaterialScatterModelT& ARCMSM = PMMAMSM;
 
       density = 1800.;
       workfun = 5.0;
@@ -144,11 +144,15 @@ namespace LinesOnLayers
       glC.setCoreEnergy(glCCoreEnergy, 1);
 
       StringT tablePath = "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\glassyCTables\\";
-      StringT glCTables[] = {
-         tablePath + "IIMFPPennInterpglassyCSI.csv",
-         tablePath + "interpNUSimReducedDeltaEglassyCSI.csv",
-         tablePath + "interpsimTableThetaNUglassyCSI.csv",
-         tablePath + "interpSimESE0NUglassyCSI.csv"
+      const StringT IIMFPPennInterpglassy = tablePath + "IIMFPPennInterpglassyCSI.csv";
+      const StringT SimReducedDeltaEglassy = tablePath + "interpNUSimReducedDeltaEglassyCSI.csv";
+      const StringT simTableThetaNUglassy = tablePath + "interpsimTableThetaNUglassyCSI.csv";
+      const StringT SimESE0NUglassy = tablePath + "interpSimESE0NUglassyCSI.csv";
+      const char* glCTables[] = {
+         IIMFPPennInterpglassy.c_str(),
+         SimReducedDeltaEglassy.c_str(),
+         simTableThetaNUglassy.c_str(),
+         SimESE0NUglassy.c_str()
       };
 
       SelectableElasticSMT glCNISTMott(glC, NISTMottRS::Factory);
@@ -166,8 +170,8 @@ namespace LinesOnLayers
 
       glCMSMDeep.setMinEforTracking(ToSI::eV(50.));
 
-      double phononE = 0.063;
-      double phononStrength = 3.;
+      const double phononE = 0.063;
+      const double phononStrength = 3.;
 
       density = 2330.;
       workfun = 4.85;
@@ -185,11 +189,15 @@ namespace LinesOnLayers
       Si.setCoreEnergy(SiCoreEnergy, 4);
 
       tablePath = "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\SiTables\\";
-      StringT SiTables[] = {
-         tablePath + "IIMFPFullPennInterpSiSI.csv",
-         tablePath + "interpNUSimReducedDeltaEFullPennSiSI.csv",
-         tablePath + "interpNUThetaFullPennSiBGSI.csv",
-         tablePath + "interpSimESE0NUSiBGSI.csv"
+      const StringT IIMFPFullPennInterpSiSI = tablePath + "IIMFPFullPennInterpSiSI.csv";
+      const StringT interpNUSimReducedDeltaEFullPennSiSI = tablePath + "interpNUSimReducedDeltaEFullPennSiSI.csv";
+      const StringT interpNUThetaFullPennSiBGSI = tablePath + "interpNUThetaFullPennSiBGSI.csv";
+      const StringT interpSimESE0NUSiBGSI = tablePath + "interpSimESE0NUSiBGSI.csv";
+      const char* SiTables[] = {
+         IIMFPFullPennInterpSiSI.c_str(),
+         interpNUSimReducedDeltaEFullPennSiSI.c_str(),
+         interpNUThetaFullPennSiBGSI.c_str(),
+         interpSimESE0NUSiBGSI.c_str()
       };
 
       SelectableElasticSMT SiNISTMott(Si, NISTMottRS::Factory);
@@ -245,25 +253,25 @@ namespace LinesOnLayers
       const double normalvector[] = { 0., 0., -1. };
       const double layer1Pos[] = { 0., 0., 0. };
       NormalMultiPlaneShapeT layer1;
-      PlaneT pl1(normalvector, 3, layer1Pos, 3);
+      PlaneT pl1(normalvector, layer1Pos);
       layer1.addPlane(pl1);
       RegionT layer1Region(&chamber, &ARCMSM, (NormalShapeT*)&layer1);
 
       double layer2Pos[] = { 0., 0., layer1thickness };
       NormalMultiPlaneShapeT layer2;
-      PlaneT pl2(normalvector, 3, layer2Pos, 3);
+      PlaneT pl2(normalvector, layer2Pos);
       layer2.addPlane(pl2);
       RegionT layer2Region(&layer1Region, &glCMSM, (NormalShapeT*)&layer2);
 
       double layer3Pos[] = { 0., 0., layer1thickness + layer2thickness };
       NormalMultiPlaneShapeT layer3;
-      PlaneT pl3(normalvector, 3, layer2Pos, 3);
+      PlaneT pl3(normalvector, layer2Pos);
       layer3.addPlane(pl3);
       RegionT layer3Region(&layer2Region, &SiMSM, (NormalShapeT*)&layer3);
 
       double layer4Pos[] = { 0., 0., layer1thickness + layer2thickness + deep };
       NormalMultiPlaneShapeT layer4;
-      PlaneT pl4(normalvector, 3, layer4Pos, 3);
+      PlaneT pl4(normalvector, layer4Pos);
       RegionT layer4Region(&layer3Region, &SiMSM, (NormalShapeT*)&layer4);
 
       RegionT deepRegion(&layer3Region, &SiMSMDeep, (NormalShapeT*)&layer4);
@@ -283,16 +291,16 @@ namespace LinesOnLayers
 
 //      VectorXd yvals = { 0. };
       VectorXd yvals;
-      for (int i = -300; i < 100; ++i) {
+      //for (int i = -100; i < 100; ++i) {
+      //   yvals.push_back(i);
+      //}
+      for (int i = -200; i < 200; i += 5) {
          yvals.push_back(i);
-      }
-      for (int i = 100; i < 200; ++i) {
-         yvals.push_back(100 + i*5);
       }
 
       double xbottom = wnm / 2.;
       double xtop = wnm / 2. - hnm * ::tan(thetar);
-      double xstart = xbottom - 300.5;
+      double xstart = xbottom - 100.5;
       double xstop = xbottom + 100.5;
       double xfinestart = xtop - 20.5;
       double xfinestop;
@@ -377,7 +385,7 @@ namespace LinesOnLayers
                output += "\n" + std::to_string(beamEeV) + " " + std::to_string(xnm) + " " + std::to_string(ynm) + " " + std::to_string(bsf) + " " + std::to_string(SEf);
 
                StringT tmp("\n" + std::to_string(beamEeV) + " " + std::to_string(xnm) + " " + std::to_string(ynm) + " " + std::to_string(bsf) + " " + std::to_string(SEf));
-               printf("%s\n", tmp.c_str());
+               printf("%s", tmp.c_str());
 
                monte.removeActionListener(back);
             }
@@ -389,7 +397,7 @@ namespace LinesOnLayers
       auto end = std::chrono::system_clock::now();
       std::chrono::duration<double> elapsed_seconds = end - start;
       std::time_t end_time = std::chrono::system_clock::to_time_t(end);
-      std::cout << "finished computation at " << std::ctime(&end_time) << "elapsed time: " << elapsed_seconds.count() << "s\n";
+      std::cout << std::endl << "finished computation at " << std::ctime(&end_time) << "elapsed time: " << elapsed_seconds.count() << "s" << std::endl;
       output += "\n" + std::to_string(elapsed_seconds.count());
 
       std::ofstream myfile;

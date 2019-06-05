@@ -8,26 +8,43 @@ static const long serialVersionUID = 0x42;
 namespace SEmaterial
 {
    // Material properties appropriate to vacuum
-   SEmaterial::SEmaterial() : Material(0), workfunction(0.), energyCBbottom(0.), eplasmon(0)
+   SEmaterial::SEmaterial() :
+      Material(0),
+      workfunction(0.),
+      energyCBbottom(0.),
+      eplasmon(0)
    {
    }
 
-   SEmaterial::SEmaterial(const SEmaterial& other) : Material(other),
+   SEmaterial::SEmaterial(const SEmaterial& other) :
+      Material(other),
       workfunction(other.workfunction),
       energyCBbottom(other.energyCBbottom),
       eplasmon(other.eplasmon)
    {
    }
 
-   SEmaterial::SEmaterial(const Composition& comp, double density) : Material(comp, density), workfunction(0.), energyCBbottom(0.), eplasmon(0)
+   SEmaterial::SEmaterial(const Composition& comp, double density) :
+      Material(comp, density),
+      workfunction(0.),
+      energyCBbottom(0.),
+      eplasmon(0)
    {
    }
 
-   SEmaterial::SEmaterial(const Element::Element* elms[], int elemLen, const double weightFracs[], int wfLen, double density, char* name) : Material(elms, elemLen, weightFracs, wfLen, density, name), workfunction(0.), energyCBbottom(0.), eplasmon(0)
+   SEmaterial::SEmaterial(const Element::Element* elms[], int elemLen, const double weightFracs[], int wfLen, double density, char* name) :
+      Material(elms, elemLen, weightFracs, wfLen, density, name),
+      workfunction(0.),
+      energyCBbottom(0.),
+      eplasmon(0)
    {
    }
 
-   SEmaterial::SEmaterial(const Material& mat) : Material(mat), workfunction(0.), energyCBbottom(0.), eplasmon(0)
+   SEmaterial::SEmaterial(const Material& mat) :
+      Material(mat),
+      workfunction(0.),
+      energyCBbottom(0.),
+      eplasmon(0)
    {
    }
 
@@ -243,53 +260,53 @@ namespace SEmaterial
       return dielectricBreakdownField;
    }
 
-   void SEmaterial::removeBindingEnergy(int index)
-   {
-      bindingEnergy.erase(bindingEnergy.begin() + index);
-      kineticEnergy.erase(kineticEnergy.begin() + index);
-      electronDensity.erase(kineticEnergy.begin() + index);
-      version = (version == _UI32_MAX) ? 0L : version + 1L;
-   }
+   //void SEmaterial::removeBindingEnergy(int index)
+   //{
+   //   bindingEnergy.erase(bindingEnergy.begin() + index);
+   //   kineticEnergy.erase(kineticEnergy.begin() + index);
+   //   electronDensity.erase(kineticEnergy.begin() + index);
+   //   version = (version == _UI32_MAX) ? 0L : version + 1L;
+   //}
 
-   void SEmaterial::removeCoreEnergy(double index)
-   {
-      coreEnergy.erase(index);
-      version = (version == _UI32_MAX) ? 0L : version + 1L;
-   }
+   //void SEmaterial::removeCoreEnergy(double index)
+   //{
+   //   coreEnergy.erase(index);
+   //   version = (version == _UI32_MAX) ? 0L : version + 1L;
+   //}
 
-   void SEmaterial::replicate(const SEmaterial& mat)
-   {
-      Material::replicate(mat);
-      workfunction = mat.getWorkfunction();
-      energyCBbottom = mat.getEnergyCBbottom();
-      eplasmon = mat.getEplasmon();
-      bindingEnergy.insert(bindingEnergy.end(), mat.bindingEnergy.begin(), mat.bindingEnergy.end());
-      electronDensity.insert(electronDensity.end(), mat.electronDensity.begin(), mat.electronDensity.end());
-      kineticEnergy.insert(kineticEnergy.end(), mat.kineticEnergy.begin(), mat.kineticEnergy.end());
-      userSetKE = mat.userSetKE;
-      coreEnergy.insert(mat.coreEnergy.begin(), mat.coreEnergy.end());
-      bandgap = mat.getBandgap();
-      epsr = mat.getEpsr();
-      dielectricBreakdownField = mat.getDielectricBreakdownField();
-   }
+   //void SEmaterial::replicate(const SEmaterial& mat)
+   //{
+   //   Material::replicate(mat);
+   //   workfunction = mat.getWorkfunction();
+   //   energyCBbottom = mat.getEnergyCBbottom();
+   //   eplasmon = mat.getEplasmon();
+   //   bindingEnergy.insert(bindingEnergy.end(), mat.bindingEnergy.begin(), mat.bindingEnergy.end());
+   //   electronDensity.insert(electronDensity.end(), mat.electronDensity.begin(), mat.electronDensity.end());
+   //   kineticEnergy.insert(kineticEnergy.end(), mat.kineticEnergy.begin(), mat.kineticEnergy.end());
+   //   userSetKE = mat.userSetKE;
+   //   coreEnergy.insert(mat.coreEnergy.begin(), mat.coreEnergy.end());
+   //   bandgap = mat.getBandgap();
+   //   epsr = mat.getEpsr();
+   //   dielectricBreakdownField = mat.getDielectricBreakdownField();
+   //}
 
-   void SEmaterial::setBindingEnergy(int index, double energy)
-   {
-      if (energy < 0.) {
-         printf("Binding energies must be positive.");
-         return;
-      }
-      bindingEnergy[index] = energy;
-      if (!userSetKE) {
-         if (-energy > energyCBbottom) {
-            this->kineticEnergy[index] = -energy - energyCBbottom;
-         }
-         else {
-            this->kineticEnergy[index] = energy + energyCBbottom;
-         }
-      }
-      version = (version == _UI32_MAX) ? 0L : version + 1L;
-   }
+   //void SEmaterial::setBindingEnergy(int index, double energy)
+   //{
+   //   if (energy < 0.) {
+   //      printf("Binding energies must be positive.");
+   //      return;
+   //   }
+   //   bindingEnergy[index] = energy;
+   //   if (!userSetKE) {
+   //      if (-energy > energyCBbottom) {
+   //         this->kineticEnergy[index] = -energy - energyCBbottom;
+   //      }
+   //      else {
+   //         this->kineticEnergy[index] = energy + energyCBbottom;
+   //      }
+   //   }
+   //   version = (version == _UI32_MAX) ? 0L : version + 1L;
+   //}
 
    void SEmaterial::setCoreEnergy()
    {
@@ -312,14 +329,14 @@ namespace SEmaterial
       version = (version == _UI32_MAX) ? 0L : version + 1L;
    }
 
-   void SEmaterial::setElectronDensity(int index, double density)
-   {
-      if (density < 0.) {
-         printf("Electron density must be positive.");
-      }
-      electronDensity[index] = density;
-      version = (version == _UI32_MAX) ? 0L : version + 1L;
-   }
+   //void SEmaterial::setElectronDensity(int index, double density)
+   //{
+   //   if (density < 0.) {
+   //      printf("Electron density must be positive.");
+   //   }
+   //   electronDensity[index] = density;
+   //   version = (version == _UI32_MAX) ? 0L : version + 1L;
+   //}
 
    void SEmaterial::setEnergyCBbottom(double energyCBbottom)
    {
@@ -367,27 +384,27 @@ namespace SEmaterial
 
    void SEmaterial::setKEtoDefault()
    {
-      for (int i = 0; i < kineticEnergy.size(); i++) {
-         if (-bindingEnergy[i] > energyCBbottom) {
-            kineticEnergy[i] = -bindingEnergy[i] - energyCBbottom;
-         }
-         else {
-            kineticEnergy[i] = bindingEnergy[i] + energyCBbottom;
-         }
-      }
+      //for (int i = 0; i < kineticEnergy.size(); i++) {
+      //   if (-bindingEnergy[i] > energyCBbottom) {
+      //      kineticEnergy[i] = -bindingEnergy[i] - energyCBbottom;
+      //   }
+      //   else {
+      //      kineticEnergy[i] = bindingEnergy[i] + energyCBbottom;
+      //   }
+      //}
       userSetKE = false;
       version = (version == _UI32_MAX) ? 0L : version + 1L;
    }
 
-   void SEmaterial::setKineticEnergy(int index, double energy)
-   {
-      if (energy < 0.) {
-         printf("Kinetic energies must be positive.");
-         return;
-      }
-      kineticEnergy[index] = energy;
-      version = (version == _UI32_MAX) ? 0L : version + 1L;
-   }
+   //void SEmaterial::setKineticEnergy(int index, double energy)
+   //{
+   //   if (energy < 0.) {
+   //      printf("Kinetic energies must be positive.");
+   //      return;
+   //   }
+   //   kineticEnergy[index] = energy;
+   //   version = (version == _UI32_MAX) ? 0L : version + 1L;
+   //}
 
    void SEmaterial::setWorkfunction(double workfunction)
    {

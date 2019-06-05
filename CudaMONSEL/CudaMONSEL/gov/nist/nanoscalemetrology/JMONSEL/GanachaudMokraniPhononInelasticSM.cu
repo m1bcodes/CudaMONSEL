@@ -6,7 +6,11 @@
 namespace GanachaudMokraniPhononInelasticSM
 {
    GanachaudMokraniPhononInelasticSM::GanachaudMokraniPhononInelasticSM(double ratemultiplier, double phononE, double temperature, double eps0, double epsInfinity) : 
-      ratemultiplier(ratemultiplier), phononE(phononE), temperature(temperature), eps0(eps0), epsInfinity(epsInfinity),
+      ratemultiplier(ratemultiplier),
+      phononE(phononE),
+      temperature(temperature),
+      eps0(eps0),
+      epsInfinity(epsInfinity),
       occupationFactor(0.5 * (1. + (1. / (::exp(phononE / (PhysicalConstants::BoltzmannConstant * temperature)) - 1.)))),
       epsRatio((eps0 - epsInfinity) / eps0 / epsInfinity),
       prefactor((ratemultiplier * occupationFactor * epsRatio) / PhysicalConstants::BohrRadius)
@@ -18,23 +22,23 @@ namespace GanachaudMokraniPhononInelasticSM
 
    ElectronT* GanachaudMokraniPhononInelasticSM::scatter(ElectronT* pe)
    {
-      double kE0 = pe->getEnergy();
+      const double kE0 = pe->getEnergy();
       if (kE0 < phononE)
          return NULL;
 
-      double x = phononE / kE0; // Energy ratio
+      const double x = phononE / kE0; // Energy ratio
 
-      double randoms[] = { Math2::random(), Math2::random() };
+      const double randoms[] = { Math2::random(), Math2::random() };
 
       double costheta; // scattering angle
       if (x < 0.1)
          costheta = 1 + (((x * x) - (::pow(16., randoms[0]) * ::pow(x, 2. - (2. * randoms[0])))) / 8.);
       else { // Using general formula
-         double root = ::sqrt(1. - x);
-         double temp = ::pow(((-2. * (1 + root)) + x) / ((-2. * (1 - root)) + x), randoms[0]);
+         const double root = ::sqrt(1. - x);
+         const double temp = ::pow(((-2. * (1 + root)) + x) / ((-2. * (1 - root)) + x), randoms[0]);
          costheta = temp + (((x - 2.) * (temp - 1)) / 2. / root);
       }
-      double phi = 2. * Math2::PI * randoms[1];
+      const double phi = 2. * Math2::PI * randoms[1];
 
       pe->updateDirection(::acos(costheta), phi);
       pe->setEnergy(kE0 - phononE);
@@ -45,10 +49,10 @@ namespace GanachaudMokraniPhononInelasticSM
 
    double GanachaudMokraniPhononInelasticSM::scatterRate(const ElectronT* pe)
    {
-      double kE = pe->getEnergy();
+      const double kE = pe->getEnergy();
       if (kE < phononE)
          return 0.;
-      double x = phononE / kE; // Energy ratio
+      const double x = phononE / kE; // Energy ratio
       /*
       * In the usual case the PE has energy of a few eV. Phonons typically have
       * energies ~0.1 eV or lower, so the above ratio is usually ~1/50 or so.
@@ -80,11 +84,10 @@ namespace GanachaudMokraniPhononInelasticSM
       */
    }
 
-   StringT GanachaudMokraniPhononInelasticSM::toString() const
+   const char* GanachaudMokraniPhononInelasticSM::toString()
    {
-      char buff[100];
       sprintf(buff, "GanachaudMokraniPhononInelasticSM(%.10e, %.10e, %.10e, %.10e, %.10e)", ratemultiplier, phononE, temperature, eps0, epsInfinity);
-      return StringT(buff);
+      return buff;
    }
 
 }

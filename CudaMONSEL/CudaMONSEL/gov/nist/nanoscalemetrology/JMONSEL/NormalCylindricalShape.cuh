@@ -19,8 +19,8 @@ namespace NormalCylindricalShape
       bool isNormalShape() const override;
 
       bool contains(const double pos0[], const double pos1[]) const override;
-      VectorXd getFirstNormal(const double pos0[], const double pos1[]) override;
-      VectorXd getPreviousNormal() const override;
+      const double* getFirstNormal(const double pos0[], const double pos1[]) override;
+      const double* getPreviousNormal() const override;
 
       void rotate(const double pivot[], double phi, double theta, double psi) override;
       void translate(const double distance[]) override;
@@ -32,7 +32,7 @@ namespace NormalCylindricalShape
       double normalizedaxis[3]; // cache axis normalized to unit length
       double mLen2; // Square of axis length
       double mLen; // axis length
-      VectorXd nv; // Most recent normal vector
+      double nv[4]; // Most recent normal vector
    };
 }
 

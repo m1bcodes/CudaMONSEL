@@ -311,13 +311,6 @@ namespace Math2
    //      };
    //   }
    
-   /**
-   * distance - What is the Euclidean distance between p1 and p2.
-   *
-   * @param p1
-   * @param p2
-   * @return double
-   */
    double distance(const VectorXd& p1, const VectorXd& p2)
    {
       if (p1.size() != p2.size()) return -1;
@@ -338,14 +331,6 @@ namespace Math2
       return ::sqrt(Math2::sqr(p2[0] - p1[0]) + Math2::sqr(p2[1] - p1[1]) + Math2::sqr(p2[2] - p1[2]));
    }
    
-   //   /**
-   //   * distanceSqr - What is the square of the Euclidean distance between p1 and
-   //   * p2.
-   //   *
-   //   * @param p1
-   //   * @param p2
-   //   * @return double
-   //   */
    //   final public double distanceSqr(double[] p1, double[] p2) {
    //      assert(p1.length == p2.length);
    //      double sum2 = 0.0;
@@ -1373,7 +1358,7 @@ namespace Math2
    //      throw new EPQException("Maximum iteration count exceeded in Math2.rootFind");
    //   }
 
-__host__ double random()
+   __host__ double random()
    {
       return (double)rand() / RAND_MAX;
    }

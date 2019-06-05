@@ -47,7 +47,7 @@ namespace NShapes
    //   return mp;
    //}
 
-   // TODO: this is broken as-is: need to make objects dynamically, or globals/constants statically.
+   // TODO: write a destructor
    NormalShapeT* createLine(
       double topz, // z of the top face
       double width, // line width
@@ -67,48 +67,46 @@ namespace NShapes
       NormalMultiPlaneShapeT* enclosure = new NormalMultiPlaneShapeT();
       // Add top plane
       double signz = !topz ? 0 : (topz > 0 ? 1 : -1);
-      if (signz == 0.)
-         signz = 1.; // For rare case of 0-height specification
-      double n0[] = { 0., 0., signz }, p0[] = { 0., 0., topz };
-      PlaneT* pl0 = new PlaneT(n0, 3, p0, 3);
+      if (signz == 0.) signz = 1.; // For rare case of 0-height specification
+      const double n0[] = { 0., 0., signz }, p0[] = { 0., 0., topz };
+      PlaneT* pl0 = new PlaneT(n0, p0);
       enclosure->addPlane(*pl0);
       // Add bottom plane
       double n1[] = { 0., 0., -signz }, p1[] = { 0., 0., 0. };
-      PlaneT* pl1 = new PlaneT(n1, 3, p1, 3);
+      PlaneT* pl1 = new PlaneT(n1, p1);
       enclosure->addPlane(*pl1);
       // Add end caps
-      double n2[] = { 0., 1., 0. }, p2[] = { 0., length / 2., 0. }; // Right end 
-      PlaneT* pl2 = new PlaneT(n2, 3, p2, 3);
+      const double n2[] = { 0., 1., 0. }, p2[] = { 0., length / 2., 0. }; // Right end 
+      PlaneT* pl2 = new PlaneT(n2, p2);
       enclosure->addPlane(*pl2);
-      double n3[] = { 0., -1., 0. }, p3[] = { 0., -length / 2., 0. }; // Left end
-      PlaneT* pl3 = new PlaneT(n3, 3, p3, 3);
+      const double n3[] = { 0., -1., 0. }, p3[] = { 0., -length / 2., 0. }; // Left end
+      PlaneT* pl3 = new PlaneT(n3, p3);
       enclosure->addPlane(*pl3);
 
       NormalMultiPlaneShapeT* rightNMPS = new NormalMultiPlaneShapeT();
       NormalShapeT* rightSide = NULL;
 
       // Add right sidewall
-      double costhetar = ::cos(thetar);
-      double sinthetar = ::sin(thetar);
+      const double costhetar = ::cos(thetar);
+      const double sinthetar = ::sin(thetar);
 
-      double n4[] = { costhetar, 0., signz * sinthetar }, p4[] = { width / 2, 0., 0. };
-      PlaneT* pl4 = new PlaneT(n4, 3, p4, 3);
+      const double n4[] = { costhetar, 0., signz * sinthetar }, p4[] = { width / 2, 0., 0. };
+      PlaneT* pl4 = new PlaneT(n4, p4);
       rightNMPS->addPlane(*pl4);
       // If radr>0 add a clipping plane and the cylinder
       double root2 = ::sqrt(2.);
       double absz = signz * topz;
       if (radr > 0) {
-         double rad = ::sqrt(1 - sinthetar);
-         double nr[] = { rad / root2, 0., (signz * costhetar) / root2 / rad }, pr[] = { ((width / 2.) - (radr / costhetar)) + (((radr - absz) * sinthetar) / costhetar), 0., topz };
-         PlaneT* plr = new PlaneT(nr, 3, pr, 3);
+         const double rad = ::sqrt(1 - sinthetar);
+         const double nr[] = { rad / root2, 0., (signz * costhetar) / root2 / rad }, pr[] = { ((width / 2.) - (radr / costhetar)) + (((radr - absz) * sinthetar) / costhetar), 0., topz };
+         PlaneT* plr = new PlaneT(nr, pr);
          rightNMPS->addPlane(*plr);
          // Construct cylinder for right corner
-         double xc = ((width / 2.) - (radr / ::cos(thetar))) + ((radr - absz) * ::tan(thetar));
-         double zc = topz - (signz * radr);
-         double end0r[] = { xc, -length / 2., zc }, end1r[] = { xc, length / 2., zc };
+         const double xc = ((width / 2.) - (radr / ::cos(thetar))) + ((radr - absz) * ::tan(thetar));
+         const double zc = topz - (signz * radr);
+         const double end0r[] = { xc, -length / 2., zc }, end1r[] = { xc, length / 2., zc };
          NormalCylindricalShapeT* rcylinder = new NormalCylindricalShapeT(end0r, end1r, radr);
-         NormalUnionShapeT* nus0 = new NormalUnionShapeT(*rightNMPS, *rcylinder);
-         rightSide = nus0;
+         rightSide = new NormalUnionShapeT(*rightNMPS, *rcylinder);
       }
       else
          rightSide = rightNMPS;
@@ -117,24 +115,23 @@ namespace NShapes
       NormalShapeT* leftSide = NULL;
 
       // Add left sidewall
-      double costhetal = ::cos(thetal);
-      double sinthetal = ::sin(thetal);
-      double n6[] = { -costhetal, 0., signz * sinthetal }, p6[] = { -width / 2, 0., 0. };
-      PlaneT* pl6 = new PlaneT(n6, 3, p6, 3);
+      const double costhetal = ::cos(thetal);
+      const double sinthetal = ::sin(thetal);
+      const double n6[] = { -costhetal, 0., signz * sinthetal }, p6[] = { -width / 2, 0., 0. };
+      PlaneT* pl6 = new PlaneT(n6, p6);
       leftNMPS->addPlane(*pl6);
       // If radl>0 add a clipping plane and the cylinder
       if (radl > 0.) {
-         double rad = ::sqrt(1 - sinthetal);
-         double n8[] = { -rad / root2, 0., (signz * costhetal) / root2 / rad }, p8[] = { ((-width / 2.) + (radl / costhetal)) - (((radl - absz) * sinthetal) / costhetal), 0., topz };
-         PlaneT* pl = new PlaneT(n8, 3, p8, 3);
+         const double rad = ::sqrt(1 - sinthetal);
+         const double n8[] = { -rad / root2, 0., (signz * costhetal) / root2 / rad }, p8[] = { ((-width / 2.) + (radl / costhetal)) - (((radl - absz) * sinthetal) / costhetal), 0., topz };
+         PlaneT* pl = new PlaneT(n8, p8);
          leftNMPS->addPlane(*pl);
-         double xc = ((width / 2.) - (radl / ::cos(thetal))) + ((radl - absz) * ::tan(thetal));
-         double zc = topz - (signz * radl);
+         const double xc = ((width / 2.) - (radl / ::cos(thetal))) + ((radl - absz) * ::tan(thetal));
+         const double zc = topz - (signz * radl);
          // Construct cylinder for left corner
-         double end0[] = { -xc, -length / 2., zc }, end1[] = { -xc, length / 2., zc };
+         const double end0[] = { -xc, -length / 2., zc }, end1[] = { -xc, length / 2., zc };
          NormalCylindricalShapeT* lcylinder = new NormalCylindricalShapeT(end0, end1, radl);
-         NormalUnionShapeT* nus1 = new NormalUnionShapeT(*rightNMPS, *lcylinder);
-         leftSide = nus1;
+         leftSide = new NormalUnionShapeT(*leftNMPS, *lcylinder);
       }
       else
          leftSide = leftNMPS;

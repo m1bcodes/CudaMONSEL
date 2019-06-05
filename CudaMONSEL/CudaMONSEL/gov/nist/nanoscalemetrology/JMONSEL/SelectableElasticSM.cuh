@@ -34,7 +34,7 @@ namespace SelectableElasticSM
 
       double densityNa; // Avagadro's # * density for this material
 
-      double cached_kE = -1.; // Initialize to impossible value
+      double cached_kE; // Initialize to impossible value
    };
 }
 

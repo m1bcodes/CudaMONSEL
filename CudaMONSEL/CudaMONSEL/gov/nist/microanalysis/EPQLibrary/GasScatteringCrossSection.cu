@@ -262,7 +262,7 @@ namespace GasScatteringCrossSection
       mScatter[96] = new GasScatteringCrossSection(Element::Cm);
    }
 
-   const GasScatteringCrossSection& getGSCS(int an)
+   static const GasScatteringCrossSection& getGSCS(int an)
    {
       return *mScatter[an];
    }

@@ -19,14 +19,14 @@ namespace NormalUnionShape
       StringT toString() const override;
 
       bool contains(const double pos0[], const double pos1[]) const override;
-      VectorXd getFirstNormal(const double pos0[], const double pos1[]) override;
-      VectorXd getPreviousNormal() const override;
+      const double* getFirstNormal(const double pos0[], const double pos1[]) override;
+      const double* getPreviousNormal() const override;
 
       void rotate(const double pivot[], double phi, double theta, double psi) override;
       void translate(const double distance[]) override;
       
    private:
-      VectorXd result;
+      double result[4];
    };
 }
 

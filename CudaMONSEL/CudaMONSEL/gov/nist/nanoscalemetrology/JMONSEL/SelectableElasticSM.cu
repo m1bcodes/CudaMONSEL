@@ -7,12 +7,12 @@
 
 namespace SelectableElasticSM
 {
-   SelectableElasticSM::SelectableElasticSM(const MaterialT& mat, const RandomizedScatterFactoryT& rsf) : rsf(rsf)
+   SelectableElasticSM::SelectableElasticSM(const MaterialT& mat, const RandomizedScatterFactoryT& rsf) : rsf(rsf), cached_kE(-1.)
    {
       setMaterial(&mat);
    }
 
-   SelectableElasticSM::SelectableElasticSM(const MaterialT& mat) : rsf(NISTMottScatteringAngle::Factory)
+   SelectableElasticSM::SelectableElasticSM(const MaterialT& mat) : rsf(NISTMottScatteringAngle::Factory), cached_kE(-1.)
    {
       setMaterial(&mat);
    }
@@ -48,19 +48,19 @@ namespace SelectableElasticSM
 
    ElectronT* SelectableElasticSM::scatter(ElectronT* pe)
    {
-      double kE = pe->getPreviousEnergy();
+      const double kE = pe->getPreviousEnergy();
       if (kE != cached_kE)
          setCache(kE);
       // Decide which element we scatter from
-      double r = Math2::random() * totalScaledCrossSection;
+      const double r = Math2::random() * totalScaledCrossSection;
       int index = 0; // Index is first index
 
       // Increment index and mechanism until cumulative scatter rate exceeds r
       while (cumulativeScaledCrossSection[index] < r)
          index++;
 
-      double alpha = rse[index]->randomScatteringAngle(kE);
-      double beta = 2 * Math2::PI * Math2::random();
+      const double alpha = rse[index]->randomScatteringAngle(kE);
+      const double beta = 2 * Math2::PI * Math2::random();
       pe->updateDirection(alpha, beta);
       pe->setScatteringElement(&(rse[index]->getElement()));
       return NULL; // This mechanism is elastic. No SE.

@@ -10,14 +10,14 @@ namespace MultiPlaneShape
    class Plane : public ShapeT, public ITransformT
    {
    public:
-      Plane(const double normal[], int normallen, const double point[], int pointlen);
+      Plane(const double normal[], const double point[]);
       Plane(const Plane&);
 
       bool contains(const double pos[]) const override;
       double getFirstIntersection(const double pos0[], const double pos1[]) override;
       StringT toString() const override;
 
-      bool almostContains(double p[]);
+      bool almostContains(const double p[]);
 
       void rotate(const double pivot[], double phi, double theta, double psi) override;
       void translate(const double distance[]) override;

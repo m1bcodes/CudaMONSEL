@@ -9,8 +9,8 @@ namespace TabulatedInelasticSM
    class TabulatedInelasticSM : public ScatterMechanismT
    {
    public:
-      TabulatedInelasticSM(const SEmaterialT& mat, int methodSE, StringT tables[], double energyOffset);
-      TabulatedInelasticSM(const SEmaterialT& mat, int methodSE, StringT tables[]);
+      TabulatedInelasticSM(const SEmaterialT& mat, int methodSE, const char* tables[], double energyOffset);
+      TabulatedInelasticSM(const SEmaterialT& mat, int methodSE, const char* tables[]);
 
       double scatterRate(const ElectronT* pe) override;
       ElectronT* scatter(ElectronT* pe) override;
@@ -42,7 +42,7 @@ namespace TabulatedInelasticSM
 
       double offsetFermiEnergy;
       double energyCBbottom;
-      double minEgenSE = 0.;
+      double minEgenSE;
       double workfunction;
       double bandgap;
       double energyGap;

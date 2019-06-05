@@ -79,7 +79,7 @@ namespace SumShapeTest
 
    static MonteCarloSST mMonte(&beam, &mChamber, beam.createElectron());
 
-   static PlaneT pl(Math2::MINUS_Z_AXIS, 3, Math2::ORIGIN_3D, 3);
+   static PlaneT pl(Math2::MINUS_Z_AXIS, Math2::ORIGIN_3D);
    static PlaneT* pls[] = { &pl };
    static MultiPlaneShape::MultiPlaneShape blk(pls, 1);
 

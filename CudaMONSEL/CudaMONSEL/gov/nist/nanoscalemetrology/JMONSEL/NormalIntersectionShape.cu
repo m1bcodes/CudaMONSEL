@@ -16,9 +16,12 @@ namespace NormalIntersectionShape
       return shapeA.contains(pos0, pos1) && shapeB.contains(pos0, pos1);
    }
 
-   VectorXd NormalIntersectionShape::getFirstNormal(const double pos0[], const double pos1[])
+   const double* NormalIntersectionShape::getFirstNormal(const double pos0[], const double pos1[])
    {
-      VectorXd nointersection = { 0., 0., 0., INFINITY };
+      result[0] = 0.;
+      result[1] = 0.;
+      result[2] = 0.;
+      result[3] = INFINITY;
 
       int adepth, bdepth;
       double u;
@@ -34,7 +37,9 @@ namespace NormalIntersectionShape
 
       // Get 1st A and B intersections and whether we are inside or outside
       double delta[] = { pos1[0] - pos0[0], pos1[1] - pos0[1], pos1[2] - pos0[2] };
-      auto nva = shapeA.getFirstNormal(pos0, pos1);
+      double nva[4];
+      memcpy(nva, shapeA.getFirstNormal(pos0, pos1), sizeof(double) * 4);
+
       if (nva[3] <= 1.)
          adepth = ((delta[0] * nva[0]) + (delta[1] * nva[1]) + (delta[2] * nva[2])) > 0 ? 1 : 0;
       else { // If the crossing is inside-out, then at p0 we are inside.
@@ -44,11 +49,12 @@ namespace NormalIntersectionShape
             // intersection, and can never enter
             // because there are no A boundary
             // crossings
-            return nointersection;
+            return result;
          adepth = 1;
       }
 
-      auto nvb = shapeB.getFirstNormal(pos0, pos1);
+      double nvb[4];
+      memcpy(nvb, shapeB.getFirstNormal(pos0, pos1), sizeof(double) * 4);
       if (nvb[3] <= 1.)
          bdepth = ((delta[0] * nvb[0]) + (delta[1] * nvb[1]) + (delta[2] * nvb[2])) > 0 ? 1 : 0;
       else { // If the crossing is inside-out, then at p0 we are inside.
@@ -58,10 +64,10 @@ namespace NormalIntersectionShape
             // intersection, and can never enter
             // because there are no B boundary
             // crossings
-            return nointersection;
+            return result;
          if (adepth == 1) {
-            result = nva;
-            return nva; // We're inside B. If also inside A then next A
+            memcpy(result, nva, sizeof(double) * 4);
+            return result; // We're inside B. If also inside A then next A
             // crossing is our boundary.
          }
          bdepth = 1;
@@ -76,8 +82,8 @@ namespace NormalIntersectionShape
       for (;;)
          if (nva[3] < nvb[3]) { // shape A provides the first intersection
             if (bdepth == 1) { //
-               result = nva;
-               return nva; // c toggles from 1 to 2
+               memcpy(result, nva, sizeof(double) * 4);
+               return result; // c toggles from 1 to 2
                // or vice versa so this is a boundary
             }
             cdepth = cdepth ^ 1; // bdepth is 0 so cdepth was either 0 or
@@ -108,7 +114,7 @@ namespace NormalIntersectionShape
                pos0[1] + (u * delta[1]),
                pos0[2] + (u * delta[2])
             };
-            nva = shapeA.getFirstNormal(tmp, pos1); // Find
+            memcpy(nva, shapeA.getFirstNormal(tmp, pos1), sizeof(double) * 4); // Find
             // the
             // next
             // one
@@ -119,18 +125,18 @@ namespace NormalIntersectionShape
                nva[3] = (nva[3] * (1. - u)) + u;
             if (nva[3] > 1)
                if (cdepth == 0)
-                  return nointersection;
+                  return result;
                else {
-                  result = nvb;
-                  return nvb;
+                  memcpy(result, nvb, sizeof(double) * 4);
+                  return result;
                }
                adepth = adepth ^ 1; // Toggle depth in A
          }
          else if (nva[3] > nvb[3]) { // Same as above, with A and B roles
             // reversed
             if (adepth == 1) {//
-               result = nvb;
-               return nvb; // c toggles from 1 to 2 or vice versa so this
+               memcpy(result, nvb, sizeof(double) * 4);
+               return result; // c toggles from 1 to 2 or vice versa so this
                // is a
                // boundary
             }
@@ -146,7 +152,7 @@ namespace NormalIntersectionShape
                pos0[1] + (u * delta[1]),
                pos0[2] + (u * delta[2])
             };
-            nvb = shapeB.getFirstNormal(tmp, pos1); // Find
+            memcpy(nvb, shapeB.getFirstNormal(tmp, pos1), sizeof(double) * 4); // Find
             // the
             // next
             // one
@@ -157,10 +163,10 @@ namespace NormalIntersectionShape
                nvb[3] = (nvb[3] * (1. - u)) + u;
             if (nvb[3] > 1)
                if (cdepth == 0)
-                  return nointersection;
+                  return result;
                else {
-                  result = nva;
-                  return nva;
+                  memcpy(result, nva, sizeof(double) * 4);
+                  return result;
                }
                bdepth = bdepth ^ 1; // Toggle depth in B
          }
@@ -179,7 +185,7 @@ namespace NormalIntersectionShape
                   pos0[1] + (u * delta[1]),
                   pos0[2] + (u * delta[2])
                };
-               nva = shapeA.getFirstNormal(tmp1, pos1); // Find the next one after that
+               memcpy(nva, shapeA.getFirstNormal(tmp1, pos1), sizeof(double) * 4); // Find the next one after that
                if (nva[3] < INFINITY)
                   nva[3] = (nva[3] * (1. - u)) + u;
 
@@ -191,7 +197,7 @@ namespace NormalIntersectionShape
                   pos0[1] + (u * delta[1]),
                   pos0[2] + (u * delta[2])
                };
-               nvb = shapeB.getFirstNormal(tmp2, pos1); // Find the next one after that
+               memcpy(nvb, shapeB.getFirstNormal(tmp2, pos1), sizeof(double) * 4); // Find the next one after that
                if (nvb[3] < INFINITY)
                   nvb[3] = (nvb[3] * (1. - u)) + u;
 
@@ -204,11 +210,11 @@ namespace NormalIntersectionShape
                      // is actually 1 and bdepth now actually 0, so next
                      // B
                      // transition is the one we want.
-                     result = nvb;
-                     return nvb;
+                     memcpy(result, nvb, sizeof(double) * 4);
+                     return result;
                   }
                   else
-                     return nointersection;
+                     return result;
                if (nvb[3] > 1)
                   // in A
                   if (bdepth == 0) {// Remember, we've just had a depth
@@ -218,11 +224,11 @@ namespace NormalIntersectionShape
                      // is actually 1 and adepth now actually 0, so next
                      // A
                      // transition is the one we want.
-                     result = nva;
-                     return nva;
+                     memcpy(result, nva, sizeof(double) * 4);
+                     return result;
                   }
                   else
-                     return nointersection;
+                     return result;
                adepth = adepth ^ 1; // Toggle depth in A
                bdepth = bdepth ^ 1; // Toggle depth in B
             }
@@ -232,7 +238,10 @@ namespace NormalIntersectionShape
                * boundary. Return average of the two normal vectors. (nva[3]
                * and nvb[3] are the same, so either will do.)
                */
-               result = { (nva[0] + nvb[0]) / 2., (nva[1] + nvb[1]) / 2., (nva[2] + nvb[2]) / 2., nva[3] };
+               result[0] = (nva[0] + nvb[0]) / 2.;
+               result[1] = (nva[1] + nvb[1]) / 2.;
+               result[2] = (nva[2] + nvb[2]) / 2.;
+               result[3] = nva[3];
                return result;
             }
          } // End simultaneous boundaries block
@@ -240,8 +249,7 @@ namespace NormalIntersectionShape
 
    double NormalIntersectionShape::getFirstIntersection(const double pos0[], const double pos1[])
    {
-      result = getFirstNormal(pos0, pos1);
-      return result[3];
+      return getFirstNormal(pos0, pos1)[3];
    }
 
    void NormalIntersectionShape::rotate(const double pivot[], double phi, double theta, double psi)
@@ -262,11 +270,10 @@ namespace NormalIntersectionShape
       ((ITransform&)shapeB).translate(distance);
    }
 
-   VectorXd NormalIntersectionShape::getPreviousNormal() const
+   const double* NormalIntersectionShape::getPreviousNormal() const
    {
       return result;
    }
-
 
    StringT NormalIntersectionShape::toString() const
    {

@@ -8,31 +8,36 @@
 
 namespace TabulatedInelasticSM
 {
-   TabulatedInelasticSM::TabulatedInelasticSM(const SEmaterialT& mat, int methodSE, StringT tables[]) : 
+   TabulatedInelasticSM::TabulatedInelasticSM(const SEmaterialT& mat, int methodSE, const char* tables[]) :
       methodSE((methodSE != 2) && (methodSE != 3) ? 1 : methodSE),
       energyOffset(0.),
       minEgenSE(0.),
-      tableIIMFP(NUTableInterpolation::getInstance(tables[0].c_str())),
-      tableReducedDeltaE(NUTableInterpolation::getInstance(tables[1].c_str())),
-      tableTheta(NUTableInterpolation::getInstance(tables[2].c_str())),
-      tableSEE0((methodSE == 2) || (methodSE == 3) ? NUTableInterpolation::getInstance(tables[3].c_str()) : NULL)
+      tableIIMFP(NUTableInterpolation::getInstance(tables[0])),
+      tableReducedDeltaE(NUTableInterpolation::getInstance(tables[1])),
+      tableTheta(NUTableInterpolation::getInstance(tables[2])),
+      tableSEE0((methodSE == 2) || (methodSE == 3) ? NUTableInterpolation::getInstance(tables[3]) : NULL),
+      rateMult(1.),
+      E0fromDispersion(false),
+      kEa(VectorXd(1)),
+      interpInput(VectorXd(3)),
+      defaultRatios(true)
    {
       setMaterial(&mat);
    }
 
-   TabulatedInelasticSM::TabulatedInelasticSM(const SEmaterialT& mat, int methodSE, StringT tables[], double energyOffset) :
+   TabulatedInelasticSM::TabulatedInelasticSM(const SEmaterialT& mat, int methodSE, const char* tables[], double energyOffset) :
       methodSE((methodSE != 2) && (methodSE != 3) ? 1 : methodSE),
       energyOffset(energyOffset),
       minEgenSE(0.),
-      tableIIMFP(NUTableInterpolation::getInstance(tables[0].c_str())),
-      tableReducedDeltaE(NUTableInterpolation::getInstance(tables[1].c_str())),
-      tableTheta(NUTableInterpolation::getInstance(tables[2].c_str())),
-      tableSEE0((methodSE == 2) || (methodSE == 3) ? NUTableInterpolation::getInstance(tables[3].c_str()) : NULL),
+      tableIIMFP(NUTableInterpolation::getInstance(tables[0])),
+      tableReducedDeltaE(NUTableInterpolation::getInstance(tables[1])),
+      tableTheta(NUTableInterpolation::getInstance(tables[2])),
+      tableSEE0((methodSE == 2) || (methodSE == 3) ? NUTableInterpolation::getInstance(tables[3]) : NULL),
       energyRangeSE0((methodSE == 2) || (methodSE == 3) ? tableSEE0->getRange() : VectorXd()),
       rateMult(1.), 
-      E0fromDispersion(false), 
+      E0fromDispersion(false),
       kEa(VectorXd(1)), 
-      interpInput(VectorXd(3)), 
+      interpInput(VectorXd(3)),
       defaultRatios(true)
    {
       ///* Read interpolation tables into memory */
@@ -67,7 +72,6 @@ namespace TabulatedInelasticSM
 
    VectorXd updateDirection(double theta, double phi, double dTheta, double dPhi)
    {
-
       double ct = ::cos(theta), st = ::sin(theta);
       double cp = ::cos(phi), sp = ::sin(phi);
       double ca = ::cos(dTheta), sa = ::sin(dTheta);
@@ -627,5 +631,4 @@ namespace TabulatedInelasticSM
    {
       E0fromDispersion = e0fromDispersion;
    }
-
 }

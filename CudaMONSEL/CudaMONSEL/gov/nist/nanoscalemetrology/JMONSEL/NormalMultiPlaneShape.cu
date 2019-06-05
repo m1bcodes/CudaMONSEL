@@ -32,7 +32,7 @@ namespace NormalMultiPlaneShape
       return true;
    }
 
-   VectorXd NormalMultiPlaneShape::getFirstNormal(const double pos0[], const double pos1[])
+   const double* NormalMultiPlaneShape::getFirstNormal(const double pos0[], const double pos1[])
    {
       /*
       * Explanation of the algorithm: Consider the line described by
@@ -77,7 +77,11 @@ namespace NormalMultiPlaneShape
       int minindex = -1; // Stores index of plane responsible for umin
       int maxindex = -1; // Same for umax. Initial values are illegal
       // indices.
-      result = { 0., 0., 0., INFINITY }; // Initial value
+      result[0] = 0.;
+      result[1] = 0.;
+      result[2] = 0.;
+      result[3] = INFINITY;
+      // Initial value
       // designates
       // no intersection
 
@@ -198,7 +202,7 @@ namespace NormalMultiPlaneShape
       return true;
    }
 
-   VectorXd NormalMultiPlaneShape::getPreviousNormal() const
+   const double* NormalMultiPlaneShape::getPreviousNormal() const
    {
       return result;
    }
@@ -239,10 +243,10 @@ namespace NormalMultiPlaneShape
       return mPlanes.size();
    }
 
-   const VectorXd& NormalMultiPlaneShape::getNormal(int index) const
-   {
-      return narray[index];
-   }
+   //const VectorXd& NormalMultiPlaneShape::getNormal(int index) const
+   //{
+   //   return narray[index];
+   //}
 
    double NormalMultiPlaneShape::getB(int index) const
    {

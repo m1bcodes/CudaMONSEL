@@ -20,7 +20,7 @@ namespace FittedInelSM
 
    private:
       const SlowingDownAlgT& sdAlg;
-      double energySEgen; // Average energy for SE generation
+      const double energySEgen; // Average energy for SE generation
       double eFermi;
    };
 }
