@@ -18,13 +18,13 @@ namespace GaussianBeam
       void setBeamEnergy(double beamEnergy) override;
       double getBeamEnergy() const override;
       void setCenter(const double center[]) override;
-      PositionVecT getCenter() const override;
+      const double* getCenter() const override;
       ElectronT* createElectron() const override;
 
    private:
       // transient private Random mRandom = new Random();
 
-      PositionVecT mCenter;
+      double mCenter[3];
       double mBeamEnergy;
       double mWidth = 1.0e-9;
    };

@@ -81,7 +81,9 @@ namespace CylindricalShape
             double t = Math2::dot3d(mDelta, m1) / nd;
             if (t > 0.0) {
                double pt[3];
-               Math2::minus3d(Math2::pointBetween3d(sa, sb, t).data(), mEnd0, pt);
+               double ptbtw[3];
+               Math2::pointBetween3d(sa, sb, t, ptbtw);
+               Math2::minus3d(ptbtw, mEnd0, pt);
                if (Math2::dot3d(pt, pt) < mRadius2)
                   t0 = t;
             }
@@ -150,7 +152,16 @@ namespace CylindricalShape
          double t = (-b - ::sqrt(disc)) / a; // Always a >= 0.0
          if (t < 0.0)
             t = (-b + ::sqrt(disc)) / a;
-         if (!(::abs(distanceSqr(Math2::plus3d(sa, Math2::multiply3d(t, n).data()).data(), closestPointOnAxis(Math2::plus3d(sa, Math2::multiply3d(t, n).data()).data()) - mRadius2)) < 1.0e-10 * mRadius2)) printf("CylindricalShape::getFirstIntersection: < 1.0e-10 * mRadius2 (%.10e)\n", mRadius2);
+         double mult0[3];
+         Math2::multiply3d(t, n, mult0);
+         double p0[3];
+         Math2::plus3d(sa, mult0, p0);
+         double mult1[3];
+         Math2::multiply3d(t, n, mult1);
+         double p1[3];
+         Math2::plus3d(sa, mult1, p1);
+
+         if (!(::abs(distanceSqr(p0, closestPointOnAxis(p1) - mRadius2)) < 1.0e-10 * mRadius2)) printf("CylindricalShape::getFirstIntersection: < 1.0e-10 * mRadius2 (%.10e)\n", mRadius2);
          // Check end caps
          if (md + t * nd < 0.0) {
             t = -md / nd;

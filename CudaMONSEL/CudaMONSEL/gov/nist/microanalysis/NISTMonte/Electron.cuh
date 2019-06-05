@@ -25,17 +25,17 @@ namespace Electron
       int getStepCount() const;
       double stepLength() const;
       __host__ __device__ void candidatePoint(double dS, double res[]) const;
-      void updateDirection(double dTheta, double dPhi);
-      void move(const double newPoint[], double dE);
-      void setEnergy(double newEnergy);
-      void setPreviousEnergy(double newPreviousEnergy);
+      __host__ __device__ void updateDirection(double dTheta, double dPhi);
+      __host__ __device__ void move(const double newPoint[], double dE);
+      __host__ __device__ void setEnergy(double newEnergy);
+      __host__ __device__ void setPreviousEnergy(double newPreviousEnergy);
       __host__ __device__ void setCurrentRegion(const RegionBaseT* reg);
       const ElementT* getScatteringElement() const;
       void setScatteringElement(const ElementT* scatteringElement);
       double getPhi() const;
       double getTheta() const;
       bool isTrajectoryComplete() const;
-      __host__ __device__ void setTrajectoryComplete(bool trajectoryComplete);
+      void setTrajectoryComplete(bool trajectoryComplete);
       long getIdent() const;
       long getParentID() const;
 

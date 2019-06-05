@@ -1,7 +1,6 @@
 #ifndef _MONTE_CARLO_SS_CU_
 #define _MONTE_CARLO_SS_CU_
 
-#include "gov\nist\microanalysis\Utility\Math2.cuh"
 #include "gov\nist\microanalysis\NISTMonte\NullMaterialScatterModel.cuh"
 #include "gov\nist\microanalysis\NISTMonte\Declarations.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\Element.cuh"
@@ -64,8 +63,6 @@ namespace MonteCarloSS
 
       ActionListeners mEventListeners;
    };
-
-   double dist(const double pos0[], const double pos1[]);
 }
 
 #endif

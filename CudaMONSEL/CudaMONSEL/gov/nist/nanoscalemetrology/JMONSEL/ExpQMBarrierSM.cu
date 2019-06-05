@@ -3,6 +3,8 @@
 #include "gov\nist\microanalysis\NISTMonte\Electron.cuh"
 #include "gov\nist\microanalysis\NISTMonte\Shape.cuh"
 #include "gov\nist\microanalysis\NISTMonte\MonteCarloSS.cuh"
+#include "gov\nist\microanalysis\Utility\Math2.cuh"
+
 #include "gov\nist\nanoscalemetrology\JMONSEL\ExpQMBarrierSM.cuh"
 #include "gov\nist\nanoscalemetrology\JMONSEL\SEMaterial.cuh"
 #include "gov\nist\nanoscalemetrology\JMONSEL\NormalShape.cuh"

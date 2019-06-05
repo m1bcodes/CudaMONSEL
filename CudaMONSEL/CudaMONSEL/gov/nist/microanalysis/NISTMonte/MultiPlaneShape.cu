@@ -4,8 +4,7 @@
 
 namespace MultiPlaneShape
 {
-   // construct a Plane object with the specified normal containing the
-      // specified point
+   // construct a Plane object with the specified normal containing the specified point
    Plane::Plane(const double normal[], const double point[])
    {
       memcpy(mNormal, normal, sizeof(double) * 3);
@@ -18,8 +17,7 @@ namespace MultiPlaneShape
       memcpy(mPoint, other.mPoint, sizeof(double) * 3);
    }
 
-   // contains - Is the point p on the inside side of the plane? (Side
-   // opposite to the direction of the normal)
+   // contains - Is the point p on the inside side of the plane? (Side opposite to the direction of the normal)
    bool Plane::contains(const double p[]) const
    {
       //if (!(len == 3)) printf("Plane::contains: len != 3 (%d)", len);
@@ -35,8 +33,7 @@ namespace MultiPlaneShape
    }
 
    // intersection - Where does a line through p1 and p2 intersect the plane?
-   // (Double.MAX_VALUE if the line and the plane
-   // are parallel or the line intersection occurs before p1)
+   // (Double.MAX_VALUE if the line and the plane are parallel or the line intersection occurs before p1)
    double Plane::getFirstIntersection(const double p1[], const double p2[])
    {
       //assert(p1.length == 3);

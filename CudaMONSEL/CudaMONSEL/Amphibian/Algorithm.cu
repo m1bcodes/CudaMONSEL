@@ -2,7 +2,7 @@
 
 namespace Algorithm
 {
-   int binarySearch(const double a[], int l, int r, double t)
+   __host__ __device__ int binarySearch(const double a[], int l, int r, double t)
    {
       while (l <= r) {
          int mid = l + (r - l) / 2;
@@ -13,7 +13,7 @@ namespace Algorithm
       return l;
    }
 
-   static int partition(double a[], int l, int r)
+   __host__ __device__ static int partition(double a[], int l, int r)
    {
       int j = l - 1; // points to the last element less than pivot
       for (int i = l; i < r; ++i) { // going from l to r
@@ -35,7 +35,7 @@ namespace Algorithm
       return j;
    }
 
-   void quicksort(double a[], int l, int r)
+   __host__ __device__ void quicksort(double a[], int l, int r)
    {
       if (l >= r) return;
       int pv = partition(a, l, r);

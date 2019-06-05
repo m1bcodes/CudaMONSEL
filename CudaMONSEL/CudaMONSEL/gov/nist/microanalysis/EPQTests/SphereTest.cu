@@ -8,16 +8,17 @@ namespace SphereTest
    static double SCALE = 1.0e-5;
    static int ITERATIONS = 1000;
 
-   static PositionVecT makeCenter()
+   static void makeCenter(double res[])
    {
-      PositionVecT res({ (Math2::random() - 0.5) * SCALE, (Math2::random() - 0.5) * SCALE, (Math2::random() - 0.5) * SCALE });
-      return res;
+      res[0] = (Math2::random() - 0.5) * SCALE;
+      res[1] = (Math2::random() - 0.5) * SCALE;
+      res[2] = (Math2::random() - 0.5) * SCALE;
    }
 
-   static PositionVecT makeNormal()
+   static void makeNormal(double res[])
    {
-      PositionVecT res({ Math2::random(), Math2::random(), Math2::random() });
-      return Math2::normalize(res);
+      double norm[] = { Math2::random(), Math2::random(), Math2::random() };
+      Math2::normalize3d(norm, res);
    }
 
    static void assertTrue(bool expr) {
@@ -32,16 +33,27 @@ namespace SphereTest
    void testContains()
    {
       for (int i = 0; i < ITERATIONS; ++i) {
-         auto center = makeCenter();
+         double center[3];
+         makeCenter(center);
          double r = Math2::random() * SCALE + SCALE / 100.0;
-         SphereT sphere(center.data(), r);
+         SphereT sphere(center, r);
          {
-            auto testPt = Math2::plus(center, Math2::multiply(0.99 * r * Math2::random(), makeNormal()));
-            assertTrue(sphere.contains(testPt.data()));
+            double norm[3];
+            makeNormal(norm);
+            double mult[3];
+            Math2::multiply3d(0.99 * r * Math2::random(), norm, mult);
+            double testPt[3];
+            Math2::plus3d(center, mult, testPt);
+            assertTrue(sphere.contains(testPt));
          }
          {
-            auto testPt = Math2::plus(center, Math2::multiply(r * (1.01 + Math2::random()), makeNormal()));
-            assertTrue(!sphere.contains(testPt.data()));
+            double norm[3];
+            makeNormal(norm);
+            double mult[3];
+            Math2::multiply3d(r * (1.01 + Math2::random()), norm, mult);
+            double testPt[3];
+            Math2::plus3d(center, mult, testPt);
+            assertTrue(!sphere.contains(testPt));
          }
       }
 
@@ -49,16 +61,25 @@ namespace SphereTest
    }
 
    void testGetFirstIntersection() {
+      double center[3];
+      double norm[3];
+      double mult[3];
       for (int i = 0; i < ITERATIONS; ++i) {
-         auto center = makeCenter();
+         makeCenter(center);
          double r = Math2::random() * SCALE + SCALE / 100.0;
-         SphereT sphere(center.data(), r);
-         auto inside = Math2::plus(center, Math2::multiply(0.99 * r * Math2::random(), makeNormal()));
-         assertTrue(sphere.contains(inside.data()));
-         auto outside = Math2::plus(center, Math2::multiply(r * (1.01 + Math2::random()), makeNormal()));
-         assertTrue(!sphere.contains(outside.data()));
-         double t = sphere.getFirstIntersection(inside.data(), outside.data());
-         double tp = sphere.getFirstIntersection(outside.data(), inside.data());
+         SphereT sphere(center, r);
+         makeNormal(norm);
+         Math2::multiply3d(0.99 * r * Math2::random(), norm, mult);
+         double inside[3];
+         Math2::plus3d(center, mult, inside);
+         assertTrue(sphere.contains(inside));
+         makeNormal(norm);
+         Math2::multiply3d(r * (1.01 + Math2::random()), norm, mult);
+         double outside[3];
+         Math2::plus3d(center, mult, outside);
+         assertTrue(!sphere.contains(outside));
+         double t = sphere.getFirstIntersection(inside, outside);
+         double tp = sphere.getFirstIntersection(outside, inside);
          assertTrue(t < 1.0);
          assertTrue(tp < 1.0);
          assertEquals(1.0, tp + t, 1.0e-6);

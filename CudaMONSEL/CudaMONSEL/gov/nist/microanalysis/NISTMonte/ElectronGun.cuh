@@ -11,7 +11,7 @@ namespace ElectronGun
       virtual void setBeamEnergy(double beamEnergy) = 0;
       virtual double getBeamEnergy() const = 0;
       virtual void setCenter(const double center[]) = 0;
-      virtual PositionVecT getCenter() const = 0;
+      virtual const double* getCenter() const = 0;
       virtual ElectronT* createElectron() const = 0;
    };
 }

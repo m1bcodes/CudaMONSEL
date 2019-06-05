@@ -32,11 +32,6 @@ namespace MonteCarloSS
    const double ChamberRadius = 0.1;
    const double SMALL_DISP = 1.0e-15;
 
-   double dist(const double pos0[], const double pos1[])
-   {
-      return ::sqrt(Math2::sqr(pos1[0] - pos0[0]) + Math2::sqr(pos1[1] - pos0[1]) + Math2::sqr(pos1[2] - pos0[2]));
-   }
-
    MonteCarloSS::MonteCarloSS(ElectronGunT const * gun, RegionT * chamber, ElectronT * electron) : mGun(gun), mChamber(chamber), mElectron(electron)
    {
       //TODO: shift the responsibility to the caller
@@ -123,7 +118,7 @@ namespace MonteCarloSS
       double pos1[3];
       mElectron->candidatePoint(msm->randomMeanPathLength(*mElectron), pos1);
       auto nextRegion = currentRegion->findEndOfStep(pos0, pos1);
-      mElectron->move(pos1, msm->calculateEnergyLoss(dist(pos0, pos1), *mElectron));
+      mElectron->move(pos1, msm->calculateEnergyLoss(Math2::distance3d(pos0, pos1), *mElectron));
       bool tc = (mElectron->getEnergy() < msm->getMinEforTracking()) || mElectron->isTrajectoryComplete();
       mElectron->setTrajectoryComplete(tc);
       if (!tc) {

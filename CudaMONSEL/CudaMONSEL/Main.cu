@@ -14,6 +14,9 @@
 #include "Amphibian\Tests\MapTest.cuh"
 
 #include "CudaUtil.h"
+#include "ImageUtil.h"
+#include <curand.h>
+#include <curand_kernel.h>
 
 #include "gov\nist\microanalysis\Utility\UncertainValue2.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\Element.cuh"
@@ -43,9 +46,13 @@
 
 #include "gov\nist\nanoscalemetrology\JMONSELTests\LinesOnLayers.cuh"
 
-#include "ImageUtil.h"
-#include <curand.h>
-#include <curand_kernel.h>
+//__device__ __host__ float function(float x)
+//{
+//   #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+//      return 10.0f * __sinf(x);
+//   #else // host code here
+//   #endif
+//}
 
 __global__ void testKernel()
 {
@@ -71,6 +78,17 @@ __global__ void testKernel()
    curand_init(1234, i, 0, &state);
    Math2Test::testRandom1CUDA(state);
    Math2Test::testRandom2CUDA(state);
+
+   int arr[5];
+   arr[0] = 0;
+   arr[1] = 1;
+   arr[2] = 2;
+   arr[3] = 3;
+   arr[4] = 4;
+
+   for (int a : arr) {
+      printf("%d, ", a);
+   }
 }
 
 int main()

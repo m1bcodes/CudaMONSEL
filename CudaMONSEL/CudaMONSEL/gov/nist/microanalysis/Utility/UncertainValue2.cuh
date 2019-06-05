@@ -58,9 +58,7 @@ namespace UncertainValue2
    {
    public:
       typedef std::unordered_map<StringT, double> ComponentMapT;
-      typedef std::unordered_map<StringT, double>::iterator ComponentMapTItr;
       typedef std::unordered_set<StringT> KeySetT;
-      typedef std::unordered_set<StringT> KeySetTItr;
       typedef std::vector<UncertainValue2> ResultT;
 
       UncertainValue2();

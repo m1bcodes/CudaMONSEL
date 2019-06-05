@@ -250,7 +250,7 @@ namespace NormalMultiPlaneShape
 
    double NormalMultiPlaneShape::getB(int index) const
    {
-      return Math2::dot(narray[index], carray[index]);
+      return Math2::dot3d(narray[index].data(), carray[index].data());
    }
 
    void NormalMultiPlaneShape::rotate(const double pivot[], double phi, double theta, double psi)

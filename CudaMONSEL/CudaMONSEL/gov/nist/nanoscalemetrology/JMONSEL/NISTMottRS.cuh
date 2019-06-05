@@ -16,7 +16,7 @@ namespace NISTMottRS
       double totalCrossSection(double energy) const override;
       const ElementT& getElement() const override;
 
-      StringT toString() const;
+      const char* toString();
       int getMethod() const;
       //void setMethod(int method);
 
@@ -35,6 +35,8 @@ namespace NISTMottRS
 
       double MottXSatMinEnergy;
       double sfBrowning;
+
+      char name[100];
    };
 
    class NISTMottRSFactory : public RandomizedScatterFactoryT

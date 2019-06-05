@@ -84,7 +84,7 @@ namespace Math2
    //   * @param x double
    //   * @return double
    //   */
-   double sqr(double x)
+   __host__ __device__ double sqr(double x)
    {
       return x * x;
    }
@@ -310,23 +310,8 @@ namespace Math2
    //            z
    //      };
    //   }
-   
-   double distance(const VectorXd& p1, const VectorXd& p2)
-   {
-      if (p1.size() != p2.size()) return -1;
-      double sum2 = 0.0;
-      for (int i = 0; i < p1.size(); ++i) {
-         sum2 += Math2::sqr(p2[i] - p1[i]);
-      }
-      return ::sqrt(sum2);
-   }
 
-   __host__ __device__ double distance3d(const double* p1, const double* p2)
-   {
-      return ::sqrt(Math2::sqr(p2[0] - p1[0]) + Math2::sqr(p2[1] - p1[1]) + Math2::sqr(p2[2] - p1[2]));
-   }
-
-   double distance3d(const VectorXd& p1, const VectorXd& p2)
+   __host__ __device__ double distance3d(const double p1[], const double p2[])
    {
       return ::sqrt(Math2::sqr(p2[0] - p1[0]) + Math2::sqr(p2[1] - p1[1]) + Math2::sqr(p2[2] - p1[2]));
    }
@@ -352,14 +337,6 @@ namespace Math2
    //      return Math.sqrt(sum2);
    //   }
 
-   double magnitude(const VectorXd& p)
-   {
-      double sum2 = 0.0;
-      for (int i = 0; i < p.size(); ++i)
-         sum2 += p[i] * p[i];
-      return ::sqrt(sum2);
-   }
-
    __host__ __device__ double magnitude3d(const double p[])
    {
       return ::sqrt(p[0] * p[0] + p[1] * p[1] + p[2] * p[2]);
@@ -375,20 +352,10 @@ namespace Math2
    //double[] normalize(double[] p) {
    //   return divide(p, Math2.magnitude(p));
    //}
-
-   VectorXd normalize(const VectorXd& p)
-   {
-      return Math2::divide(p, Math2::magnitude(p));
-   }
    
    __host__ __device__ void normalize3d(const double p[], double res[])
    {
       Math2::divide3d(p, Math2::magnitude3d(p), res);
-   }
-
-   VectorXd normalize3d(const double p[])
-   {
-      return Math2::divide3d(p, Math2::magnitude3d(p));
    }
 
    //   /**
@@ -436,28 +403,11 @@ namespace Math2
    //   return res;
    //}
 
-   VectorXd plus(const VectorXd& a, const VectorXd& b)
-   {
-      VectorXd res(a.size(), 0);
-      if (a.size() != b.size()) {
-         printf("Math2::plus bad len: %d, %d", a.size(), b.size());
-         return res;
-      }
-      for (int i = 0; i < a.size(); ++i)
-         res[i] = a[i] + b[i];
-      return res;
-   }
-
    __host__ __device__ void plus3d(const double a[], const double b[], double res[])
    {
       res[0] = a[0] + b[0];
       res[1] = a[1] + b[1];
       res[2] = a[2] + b[2];
-   }
-
-   VectorXd plus3d(const double a[], const double b[])
-   {
-      return { a[0] + b[0], a[1] + b[1], a[2] + b[2] };
    }
    //
    //   /**
@@ -507,34 +457,12 @@ namespace Math2
    //      res[i] = a[i] - b[i];
    //   return res;
    //}
-   //
-   VectorXd minus(const VectorXd& a, const VectorXd& b)
-   {
-      VectorXd res(a.size(), 0);
-      if (a.size() != b.size()) {
-         printf("Math2::plus bad len: %d, %d", a.size(), b.size());
-         return res;
-      }
-      for (int i = 0; i < a.size(); ++i)
-         res[i] = a[i] - b[i];
-      return res;
-   }
 
    __host__ __device__ void minus3d(const double a[], const double b[], double res[])
    {
       res[0] = a[0] - b[0];
       res[1] = a[1] - b[1];
       res[2] = a[2] - b[2];
-   }
-
-   VectorXd minus3d(const double a[], const double b[])
-   {
-      return{ a[0] - b[0], a[1] - b[1], a[2] - b[2] };
-   }
-
-   VectorXd minus3D(const VectorXd& a, const VectorXd& b)
-   {
-      return { a[0] - b[0], a[1] - b[1], a[2] - b[2] };
    }
 
    //
@@ -551,21 +479,6 @@ namespace Math2
    //      res[i] = a[i] - b;
    //   return res;
    //}
-
-   double dot(const VectorXd& a, const VectorXd& b)
-   {
-      if (a.size() != b.size()) printf("Both arguments to the dot product must be the same length.");
-      double res = 0.0;
-      for (int i = 0; i < a.size(); ++i) {
-         res += a[i] * b[i];
-      }
-      return res;
-   }
-
-   double dot3D(const VectorXd& a, const VectorXd& b)
-   {
-      return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
-   }
 
    __host__ __device__ double dot3d(const double a[], const double b[])
    {
@@ -593,11 +506,6 @@ namespace Math2
       * @return A three-vector perpendicular to both a and b and of length |a||b|
       *         sin(th) where th is the angle between a and b
       */
-   VectorXd cross(const VectorXd& a, const VectorXd& b)
-   {
-      if ((a.size() != 3) || (b.size() != 3)) printf("Both arguments to the cross product must be the three-vectors.");
-      return { a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0] };
-   }
 
    __host__ __device__ void cross3d(const double* a, const double* b, double res[])
    {
@@ -620,14 +528,6 @@ namespace Math2
    //         res[i] = a * b[i];
    //      return res;
    //   }
-   //
-   VectorXd multiply(double a, const VectorXd& b)
-   {
-      VectorXd res(b.size(), 0);
-      for (int i = 0; i < 3; ++i)
-         res[i] = a * b[i];
-      return res;
-   }
 
    __host__ __device__ void multiply3d(double a, const double b[], double res[])
    {
@@ -635,12 +535,6 @@ namespace Math2
       res[1] = a * b[1];
       res[2] = a * b[2];
    }
-
-   VectorXd multiply3d(double a, const double b[])
-   {
-      return { a * b[0], a * b[1], a * b[2], };
-   }
-   //
    //   /**
    //   * multiply - Returns a vector containing the product of a, a vector, times
    //   * b, a vector where the multiplication is done piecewise.
@@ -681,14 +575,6 @@ namespace Math2
    * @param f
    * @return double[] - a point
    */
-   VectorXd pointBetween(const VectorXd& a, const VectorXd& b, double f)
-   {
-      VectorXd res(a.size());
-      for (int i = 0; i < res.size(); ++i)
-         res[i] = a[i] + (b[i] - a[i]) * f;
-      return res;
-   }
-
    __host__ __device__ void pointBetween3d(const double a[], const double b[], double f, double res[])
    {
       res[0] = a[0] + (b[0] - a[0]) * f;
@@ -696,11 +582,6 @@ namespace Math2
       res[2] = a[2] + (b[2] - a[2]) * f;
    }
 
-   VectorXd pointBetween3d(const double a[], const double b[], double f)
-   {
-      return{ a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f };
-   }
-   //
    //   /**
    //   * Returns true if the argument vector has magnitude of 1.0.
    //   *
@@ -736,25 +617,12 @@ namespace Math2
    //         res[i] = a[i] / b;
    //      return res;
    //   }
-   //
-   VectorXd divide(const VectorXd& a, double b)
-   {
-      VectorXd res(a.size(), 0);
-      for (int i = 0; i < 3; ++i)
-         res[i] = a[i] / b;
-      return res;
-   }
 
    __host__ __device__ void divide3d(const double a[], double b, double res[])
    {
       res[0] = a[0] / b;
       res[1] = a[1] / b;
       res[2] = a[2] / b;
-   }
-
-   VectorXd divide3d(const double a[], double b)
-   {
-      return{ a[0] / b, a[1] / b, a[2] / b };
    }
    //
    //   final public double[] divideEquals(double[] a, double b) {
@@ -1358,6 +1226,11 @@ namespace Math2
    //      throw new EPQException("Maximum iteration count exceeded in Math2.rootFind");
    //   }
 
+   __host__ __device__ double toRadians(double deg)
+   {
+      return deg * PI / 180.0;
+   }
+
    __host__ double random()
    {
       return (double)rand() / RAND_MAX;
@@ -1373,9 +1246,9 @@ namespace Math2
       return rand() % mod;
    }
 
-   __device__ int randomInt(int mod, curandState& state)
+   __device__ int randomInt(int mod, curandState& curandstate)
    {
-      return (int)truncf((1 - curand_uniform_double(&state)) * mod);
+      return (int)truncf((1 - curand_uniform_double(&curandstate)) * mod);;
    }
 
    __host__ double expRand()
@@ -1410,8 +1283,7 @@ namespace Math2
          u = (rand() / ((double)RAND_MAX)) * 2.0 - 1.0;
          v = (rand() / ((double)RAND_MAX)) * 2.0 - 1.0;
          s = u * u + v * v;
-      }
-      while ((s >= 1.0) || (s == 0.0));
+      } while ((s >= 1.0) || (s == 0.0));
       s = sqrt(-2.0 * log(s) / s);
       spare = v * s;
       return mean + stdDev * u * s;
@@ -1420,10 +1292,5 @@ namespace Math2
    __device__ double generateGaussianNoise(const double mean, const double stdDev, curandState& state)
    {
       return curand_normal_double(&state) * stdDev + mean;
-   }
-
-   __host__ __device__ double toRadians(double deg)
-   {
-      return deg * PI / 180.0;
    }
 }

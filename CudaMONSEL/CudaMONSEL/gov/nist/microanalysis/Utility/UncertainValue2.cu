@@ -41,7 +41,6 @@ namespace UncertainValue2
 
    UncertainValue2::UncertainValue2(const UncertainValue2& other) : mValue(other.doubleValue()),  mSigmas(other.mSigmas)
    {
-      //if (&other == this) return;
    }
 
    UncertainValue2 ONE()
@@ -681,7 +680,7 @@ namespace UncertainValue2
          keys.insert(s.first);
       }
 
-      UncertainValue2::KeySetTItr itr1(keys);
+      UncertainValue2::KeySetT itr1(keys);
       double res = 0.0;
       for (auto s : keys) {
          double val = sigmas[s];

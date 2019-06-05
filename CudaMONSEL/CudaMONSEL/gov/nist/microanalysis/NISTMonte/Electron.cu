@@ -2,6 +2,7 @@
 #include "gov\nist\microanalysis\NISTMonte\RegionBase.cuh"
 #include "gov\nist\microanalysis\NISTMonte\Electron.cuh"
 #include "gov\nist\microanalysis\NISTMonte\MonteCarloSS.cuh"
+#include "gov\nist\microanalysis\Utility\Math2.cuh"
 
 namespace Electron
 {
@@ -96,7 +97,7 @@ namespace Electron
 
    double Electron::stepLength() const
    {
-      return MonteCarloSS::dist(mPrevPosition, mPosition);
+      return Math2::distance3d(mPrevPosition, mPosition);
    }
 
    __host__ __device__ void Electron::candidatePoint(double dS, double res[]) const
@@ -108,7 +109,7 @@ namespace Electron
       res[2] = mPosition[2] + dS * ::cos(mTheta);
    }
 
-   void Electron::updateDirection(double dTheta, double dPhi)
+   __host__ __device__ void Electron::updateDirection(double dTheta, double dPhi)
    {
       // The candidate point is computed by rotating the current trajectory back
       // to the z-axis, deflecting the z-axis by dTheta down from the z-axis and
@@ -130,12 +131,10 @@ namespace Electron
       mPhi = ::atan2(dy, dx);
    }
 
-   void Electron::move(const double newPoint[], double dE)
+   __host__ __device__ void Electron::move(const double newPoint[], double dE)
    {
       // Update mPrevPosition and then mPosition
-      //mPrevPosition = mPosition;
       memcpy(mPrevPosition, mPosition, sizeof(double) * 3);
-      //mPosition.assign(newPoint, newPoint + 3);
       memcpy(mPosition, newPoint, sizeof(double) * 3);
 
       // Update the energy
@@ -144,12 +143,12 @@ namespace Electron
       ++mStepCount;
    }
 
-   void Electron::setEnergy(double newEnergy)
+   __host__ __device__ void Electron::setEnergy(double newEnergy)
    {
       mEnergy = newEnergy;
    }
 
-   void Electron::setPreviousEnergy(double newPreviousEnergy)
+   __host__ __device__ void Electron::setPreviousEnergy(double newPreviousEnergy)
    {
       previousEnergy = newPreviousEnergy;
    }
@@ -185,7 +184,7 @@ namespace Electron
       return mTrajectoryComplete;
    }
 
-   __host__ __device__ void Electron::setTrajectoryComplete(bool trajectoryComplete)
+   void Electron::setTrajectoryComplete(bool trajectoryComplete)
    {
       mTrajectoryComplete = trajectoryComplete;
    }

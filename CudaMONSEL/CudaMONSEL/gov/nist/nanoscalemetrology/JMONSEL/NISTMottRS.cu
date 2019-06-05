@@ -88,11 +88,12 @@ namespace NISTMottRS
       //loadData(elm.getAtomicNumber());
       if (!(method >= 1 && method <= 3))
          printf("NISTMottRS::setMethod: Invalid NISTMottRS method: method must = 1, 2, or 3.");
+      sprintf(name, "CrossSection[NIST-Mott, %s]", mElement.toAbbrev());
    }
 
-   StringT NISTMottRS::toString() const
+   const char* NISTMottRS::toString()
    {
-      return "CrossSection[NIST-Mott," + StringT(mElement.toAbbrev()) + "]";
+      return name;
    }
 
    const ElementT& NISTMottRS::getElement() const
