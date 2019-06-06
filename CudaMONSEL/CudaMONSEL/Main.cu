@@ -68,10 +68,10 @@ __global__ void testKernel()
    setTest.TestString();
    //setTest.TestSetOfSetOfString();
 
-   MapTest::MapTest mapTest;
-   mapTest.TestInteger();
-   mapTest.TestString();
-   mapTest.TestMapOfMap();
+   //MapTest::MapTest mapTest;
+   //mapTest.TestInteger();
+   //mapTest.TestString();
+   //mapTest.TestMapOfMap();
 
    curandState state;
    int i = threadIdx.x + blockDim.x * blockIdx.x;
@@ -89,6 +89,7 @@ __global__ void testKernel()
    for (int a : arr) {
       printf("%d, ", a);
    }
+   printf("\n");
 }
 
 int main()

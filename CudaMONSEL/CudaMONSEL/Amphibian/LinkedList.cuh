@@ -73,7 +73,7 @@ namespace LinkedList
    template<typename T>
    __host__ __device__ void InsertHead(Node<T>** headAddr, T& v)
    {
-      Node<T>* newOne = (*headAddr == NULL) ? new Node<T>(v, NULL) : new Node<T>(v, *headAddr);
+      Node<T>* newOne = (*headAddr == nullptr) ? new Node<T>(v, nullptr) : new Node<T>(v, *headAddr);
       *headAddr = newOne;
    }
 
@@ -81,8 +81,8 @@ namespace LinkedList
    __host__ __device__ void InsertNext(Node<T>** headAddr, T& v)
    {
       Node<T>* newOne;
-      if ((*headAddr) == NULL) {
-         newOne = new Node<T>(v, NULL);
+      if ((*headAddr) == nullptr) {
+         newOne = new Node<T>(v, nullptr);
          (*headAddr) = newOne;
       }
       else {
@@ -94,7 +94,7 @@ namespace LinkedList
    template<typename T>
    __host__ __device__ void DeepCopy(Node<T>** newHeadAddr, Node<T>* head)
    {
-      while (head != NULL) {
+      while (head != nullptr) {
          T v = head->GetValue();
          InsertNext<T>(newHeadAddr, v);
          newHeadAddr = (*newHeadAddr)->GetNextAddr();
@@ -105,7 +105,7 @@ namespace LinkedList
    template<typename T>
    __host__ __device__ bool RemoveHead(Node<T>** headAddr, T& ret)
    {
-      if (*headAddr == NULL) {
+      if (*headAddr == nullptr) {
          return false;
       }
 
@@ -121,7 +121,7 @@ namespace LinkedList
    template<typename T>
    __host__ __device__ bool RemoveHead(Node<T>** headAddr)
    {
-      if (*headAddr == NULL) {
+      if (*headAddr == nullptr) {
          return false;
       }
 
@@ -135,7 +135,7 @@ namespace LinkedList
    template<typename T>
    __host__ __device__ void RemoveAll(Node<T>** headAddr)
    {
-      while (*headAddr != NULL) {
+      while (*headAddr != nullptr) {
          RemoveHead(headAddr);
       }
    }
@@ -144,7 +144,7 @@ namespace LinkedList
    __host__ __device__ T Remove(Node<T>** head, T& k)
    {
       TCompare cmp;
-      while (*head != NULL) {
+      while (*head != nullptr) {
          T tmpK = (*head)->GetValue();
          if (cmp(tmpK, k)) {
             T ret;
@@ -162,7 +162,7 @@ namespace LinkedList
    __host__ __device__ bool Exists(Node<T> * head, T& target)
    {
       TCompare cmp;
-      while (head != NULL) {
+      while (head != nullptr) {
          T tmpV = head->GetValue();
          if (cmp(tmpV, target)) {
             return true;
@@ -176,7 +176,7 @@ namespace LinkedList
    __host__ __device__ int Size(Node<T>* head)
    {
       int c = 0;
-      while (head != NULL) {
+      while (head != nullptr) {
          head = head->GetNext();
          c++;
       }
@@ -186,10 +186,10 @@ namespace LinkedList
    template<typename T>
    __host__ __device__ void AddAllAsSet(Node<T>** res, Node<T>* other, bool(*cmp)(T&, T&))
    {
-      while (other != NULL) {
+      while (other != nullptr) {
          Node<T>* resHead = *res;
          bool found = false;
-         while (resHead != NULL) {
+         while (resHead != nullptr) {
             T tmpV1 = resHead->GetValue();
             T tmpV2 = other->GetValue();
             if (cmp(tmpV1, tmpV2)) {
@@ -219,7 +219,7 @@ namespace LinkedList
    {
       THasher hasher;
       unsigned int res = 0;
-      while (list != NULL) {
+      while (list != nullptr) {
          T v = list->GetValue();
          res += hasher(v);
          list = list->GetNext();
@@ -312,7 +312,7 @@ namespace LinkedListKV
       KHasher khasher;
       VHasher vhasher;
       unsigned int res = 0;
-      while (list != NULL) {
+      while (list != nullptr) {
          KeyT k = list->GetKey();
          ValueT v = list->GetValue();
          res += khasher(k);
@@ -325,7 +325,7 @@ namespace LinkedListKV
    template<typename KeyT, typename ValueT>
    __host__ __device__ void InsertHead(Node<KeyT, ValueT>** head, KeyT& k, ValueT& v)
    {
-      Node<KeyT, ValueT>* newOne = (*head == NULL) ? new Node<KeyT, ValueT>(k, v, NULL) : new Node<KeyT, ValueT>(k, v, *head);
+      Node<KeyT, ValueT>* newOne = (*head == nullptr) ? new Node<KeyT, ValueT>(k, v, nullptr) : new Node<KeyT, ValueT>(k, v, *head);
       *head = newOne;
    }
 
@@ -333,8 +333,8 @@ namespace LinkedListKV
    __host__ __device__ void InsertNext(Node<KeyT, ValueT>** head, KeyT& k, ValueT& v)
    {
       Node<KeyT, ValueT>* newOne;
-      if ((*head == NULL)) {
-         newOne = new Node<KeyT, ValueT>(k, v, NULL);
+      if ((*head == nullptr)) {
+         newOne = new Node<KeyT, ValueT>(k, v, nullptr);
          (*head) = newOne;
       }
       else {
@@ -346,7 +346,7 @@ namespace LinkedListKV
    template<typename KeyT, typename ValueT>
    __host__ __device__ void DeepCopy(Node<KeyT, ValueT>** newHeadAddr, Node<KeyT, ValueT>* head)
    {
-      while (head != NULL) {
+      while (head != nullptr) {
          InsertNext<KeyT, ValueT>(newHeadAddr, head->GetKey(), head->GetValue());
          newHeadAddr = (*newHeadAddr)->GetNextAddr();
          head = head->GetNext();
@@ -356,7 +356,7 @@ namespace LinkedListKV
    template<typename KeyT, typename ValueT>
    __host__ __device__ bool RemoveHead(Node<KeyT, ValueT>** head, ValueT& ret)
    {
-      if (*head == NULL) {
+      if (*head == nullptr) {
          return false;
       }
 
@@ -380,7 +380,7 @@ namespace LinkedListKV
    __host__ __device__ bool Remove(Node<KeyT, ValueT>** head, KeyT& k, ValueT& ret)
    {
       KCompare kcmp;
-      while (*head != NULL) {
+      while (*head != nullptr) {
          KeyT tmpK = (*head)->GetKey();
          if (kcmp(tmpK, k)) {
             ValueT ret;
@@ -398,7 +398,7 @@ namespace LinkedListKV
    __host__ __device__ bool GetValue(Node<KeyT, ValueT>* head, KeyT& target, ValueT& ret)
    {
       KCompare kcmp;
-      while (head != NULL) {
+      while (head != nullptr) {
          KeyT v = head->GetKey();
          if (kcmp(v, target)) {
             ret = head->GetValue();
@@ -419,11 +419,11 @@ namespace LinkedListKV
    //template<typename KeyT, typename ValueT>
    //__host__ __device__ bool AreEquivalentNodes(Node<KeyT, ValueT>* head1, Node<KeyT, ValueT>* head2, bool equalKeys(KeyT, KeyT), bool equalValues(ValueT, ValueT))
    //{
-   //   if (head1 == NULL && head2 == NULL) {
+   //   if (head1 == nullptr && head2 == nullptr) {
    //      return true;
    //   }
 
-   //   if (head1 == NULL || head2 == NULL) {
+   //   if (head1 == nullptr || head2 == nullptr) {
    //      return false;
    //   }
    //   return (equalKeys(head1->GetKey(), head2->GetKey()) && equalValues(head1->GetValue(), head2->GetValue()));
@@ -437,9 +437,9 @@ namespace LinkedListKV
    //   }
 
    //   Node<KeyT, ValueT>** head1 = head;
-   //   while ((*head1) != NULL) {
+   //   while ((*head1) != nullptr) {
    //      Node<KeyT, ValueT>** head2 = (*head1)->GetNextAddr();
-   //      while ((*head2) == NULL) {
+   //      while ((*head2) == nullptr) {
    //         if (AreEquivalentNodes(*head1, *head2, equalKeys, equalValues)) {
    //            RemoveHead(head2);
    //         }
@@ -454,7 +454,7 @@ namespace LinkedListKV
    template<typename KeyT, typename ValueT>
    __host__ __device__ void RemoveAll(Node<KeyT, ValueT>** head)
    {
-      while (*head != NULL) {
+      while (*head != nullptr) {
          RemoveHead(head);
       }
    }
@@ -463,7 +463,7 @@ namespace LinkedListKV
    __host__ __device__ int Size(Node<KeyT, ValueT>* head)
    {
       int sz = 0;
-      while (head != NULL) {
+      while (head != nullptr) {
          head = head->GetNext();
          ++sz;
       }
@@ -473,7 +473,7 @@ namespace LinkedListKV
    template<typename KeyT, typename ValueT>
    __host__ __device__ void MapVal(ValueT& v, Node<KeyT, ValueT>* head, void(*mapper)(ValueT&, ValueT&))
    {
-      while (head != NULL) {
+      while (head != nullptr) {
          head->MapVal(v, mapper);
          head = head->GetNext();
       }
@@ -483,7 +483,7 @@ namespace LinkedListKV
    //__host__ __device__ bool IsSet(Node<KeyT, ValueT>* head, Hasher::pHasher hasher)
    //{
    //   Node<KeyT, ValueT>* head1 = head;
-   //   while (head1 != NULL) {
+   //   while (head1 != nullptr) {
    //      head1->HashCode();
    //      head1 = head1->GetNext();
    //   }
@@ -507,10 +507,10 @@ namespace LinkedListKV
 //   template<typename K, typename V>
 //   __host__ __device__ void AddAllKeys(LinkedList::Node<K>** headAddr, LinkedListKV::Node<K, V>* dataHead, bool (*KeyCmp)(K&, K&))
 //   {
-//      if (dataHead == NULL) {
+//      if (dataHead == nullptr) {
 //         return;
 //      }
-//      while (dataHead != NULL) {
+//      while (dataHead != nullptr) {
 //         if (!LinkedList::Exists<K>(*headAddr, dataHead->GetKey(), KeyCmp)) {
 //            LinkedList::InsertHead<K>(headAddr, dataHead->GetKey());
 //         }
