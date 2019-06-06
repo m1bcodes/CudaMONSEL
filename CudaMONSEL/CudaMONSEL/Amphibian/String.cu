@@ -5,70 +5,52 @@
 
 #include "Amphibian/Hasher.cuh"
 
-namespace String
+namespace amp
 {
-   __host__ __device__ bool AreEqual(char const * const a, char const * const b)
-   {
-      int k = 0;
-      while (true) {
-         if (a[k] == NULL_CHAR && b[k] == NULL_CHAR) {
-            break;
-         }
-         if (b[k] == NULL_CHAR || a[k] == NULL_CHAR) {
-            return false;
-         }
-         if (a[k] != b[k]) {
-            return false;
-         }
-         ++k;
-      }
-      return true;
-   }
-
-   __host__ __device__ String::String()
+   __host__ __device__ string::string()
    {
       Copy("");
    }
 
-   __host__ __device__ String::String(const String& s)
+   __host__ __device__ string::string(const string& s)
    {
       Copy(s.str);
    }
 
-   __host__ __device__ String::String(char const * s)
+   __host__ __device__ string::string(char const * s)
    {
       Copy(s);
    }
 
-   __host__ __device__ void String::operator=(const String& s)
+   __host__ __device__ void string::operator=(const string& s)
    {
       if (&s == this) return;
       Copy(s.str);
    }
 
-   __host__ __device__ void String::operator=(char const * s)
+   __host__ __device__ void string::operator=(char const * s)
    {
       Copy(s);
    }
 
-   __host__ __device__ bool String::operator==(const String& a) const
+   __host__ __device__ bool string::operator==(const string& a) const
    {
       return AreEqual(str, a.str);
    }
 
-   __host__ __device__ const char* String::Get()
+   __host__ __device__ const char* string::c_str() const
    {
       return str;
    }
 
-   __host__ __device__ int String::Size()
+   __host__ __device__ int string::size() const
    {
       int c = 0;
       while (str[c++] != NULL_CHAR);
       return c;
    }
 
-   __host__ __device__ void String::Copy(char const * s)
+   __host__ __device__ void string::Copy(char const * s)
    {
       memset(str, NULL_CHAR, MAX_LEN);
       int k;
@@ -82,9 +64,9 @@ namespace String
       str[k] = NULL_CHAR;
    }
 
-   __host__ __device__ unsigned int String::HashCode()
+   __host__ __device__ unsigned int string::hashcode() const
    {
-      return Hasher::Hash(str, Size());
+      return Hasher::Hash(str, size());
    }
 
    __host__ __device__ void IToA(char * d, int n, int maxArrayLen)
@@ -182,10 +164,28 @@ namespace String
       return res;
    }
 
-   __host__ __device__ bool AreEqual(String& a, String& b)
+   __host__ __device__ bool AreEqual(string& a, string& b)
    {
       if (&a == &b) return true;
       return a == b;
+   }
+
+   __host__ __device__ bool AreEqual(char const * const a, char const * const b)
+   {
+      int k = 0;
+      while (true) {
+         if (a[k] == NULL_CHAR && b[k] == NULL_CHAR) {
+            break;
+         }
+         if (b[k] == NULL_CHAR || a[k] == NULL_CHAR) {
+            return false;
+         }
+         if (a[k] != b[k]) {
+            return false;
+         }
+         ++k;
+      }
+      return true;
    }
 
    __host__ __device__ bool StartsWith(char* src, char* target)

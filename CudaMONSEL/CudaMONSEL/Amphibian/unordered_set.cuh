@@ -15,42 +15,65 @@ namespace amp
 #endif
 
    template<typename T, typename Hash, typename Pred>
-   class Iterator;
-
-   template<typename T, typename Hash, typename Pred>
    class unordered_set
    {
-      friend class Iterator<T, Hash, Pred>;
    public:
       __host__ __device__ unordered_set();
       __host__ __device__ unordered_set(const unordered_set&);
       __host__ __device__ unordered_set& operator=(const unordered_set&);
       __host__ __device__ ~unordered_set();
 
-      __host__ __device__ bool operator==(unordered_set&);
+      __host__ __device__ bool operator==(const unordered_set&) const;
 
       // capacity
-      __host__ __device__ bool empty();
-      __host__ __device__ int size();
-
-      // iterators
+      __host__ __device__ bool empty() const;
+      __host__ __device__ int size() const;
 
       // element lookup
-      __host__ __device__ bool Exists(T&);
+      __host__ __device__ bool Exists(const T&) const;
 
       // modifier
-      __host__ __device__ void insert(T&);
-      __host__ __device__ void erase(T&);
+      __host__ __device__ void insert(const T&);
+      __host__ __device__ void erase(const T&);
       __host__ __device__ void clear();
+      __host__ __device__ void Add(const unordered_set&);
 
-      __host__ __device__ void Add(unordered_set&);
-      __host__ __device__ unsigned int HashCode();
-      __host__ __device__ unsigned int HashCode(T&);
+      // hash
+      __host__ __device__ unsigned int hashcode() const;
+      __host__ __device__ unsigned int hashcode(const T&) const;
       //__host__ __device__ LinkedList::Node<T>* AsList();
+
+      class iterator
+      {
+      public:
+         __host__ __device__ iterator(const unordered_set<T, Hash, Pred>&);
+         __host__ __device__ iterator(const iterator& other);
+         __host__ __device__ void Reset();
+         __host__ __device__ void End();
+         __host__ __device__ void Next();
+
+         __host__ __device__ void operator++();
+         __host__ __device__ bool operator!=(const iterator&) const;
+         __host__ __device__ T& operator*();
+         __host__ __device__ void operator=(const iterator&);
+
+         __host__ __device__ bool HasNext() const;
+
+         __host__ __device__ T& GetValue() const;
+
+      private:
+         const unordered_set<T, Hash, Pred>& refSet;
+         LinkedList::Node<T>* ptr;
+         int bucket;
+      };
+
+      // iterators
+      __host__ __device__ iterator begin();
+      __host__ __device__ iterator end();
 
    private:
       __host__ __device__ LinkedList::Node<T>* GetBucket(int);
-      __host__ __device__ unsigned int GetBucketIdx(T& v);
+      __host__ __device__ unsigned int GetBucketIdx(const T& v)  const;
       __host__ __device__ void DeepCopy(const unordered_set&);
       __host__ __device__ void ClearAndCopy(const unordered_set&);
 
@@ -88,7 +111,7 @@ namespace amp
    }
 
    template<typename T, typename Hash, typename Pred>
-   __host__ __device__ bool unordered_set<T, Hash, Pred>::operator==(unordered_set<T, Hash, Pred>& other)
+   __host__ __device__ bool unordered_set<T, Hash, Pred>::operator==(const unordered_set<T, Hash, Pred>& other) const
    {
       // TODO: could be faster if just check the buckets or hash, without calling exists, since hash function is standardized
       for (int k = 0; k < NUM_BUCKETS; ++k) {
@@ -119,11 +142,12 @@ namespace amp
       }
    }
 
+   // general use case: unordered_set s = s1;
    template<typename T, typename Hash, typename Pred>
    __host__ __device__ void unordered_set<T, Hash, Pred>::ClearAndCopy(const unordered_set<T, Hash, Pred>& other)
    {
       if (&other == this) return;
-      // TODO: would cause mem leak if the assigned set is not empty cannot 
+      // TODO: would cause mem leak if the assigned set is not empty cannot
       for (int k = 0; k < NUM_BUCKETS; ++k) {
          buckets[k] = nullptr;
       }
@@ -131,7 +155,7 @@ namespace amp
    }
 
    template<typename T, typename Hash, typename Pred>
-   __host__ __device__ void unordered_set<T, Hash, Pred>::insert(T& v)
+   __host__ __device__ void unordered_set<T, Hash, Pred>::insert(const T& v)
    {
       if (!Exists(v)) {
          LinkedList::InsertHead<T>(&buckets[GetBucketIdx(v)], v);
@@ -139,7 +163,7 @@ namespace amp
    }
 
    template<typename T, typename Hash, typename Pred>
-   __host__ __device__ void unordered_set<T, Hash, Pred>::Add(unordered_set<T, Hash, Pred>& other)
+   __host__ __device__ void unordered_set<T, Hash, Pred>::Add(const unordered_set<T, Hash, Pred>& other)
    {
       for (int k = 0; k < NUM_BUCKETS; ++k) {
          LinkedList::Node<T>* itr = other.buckets[k];
@@ -152,13 +176,13 @@ namespace amp
    }
 
    template<typename T, typename Hash, typename Pred>
-   __host__ __device__ bool unordered_set<T, Hash, Pred>::Exists(T& v)
+   __host__ __device__ bool unordered_set<T, Hash, Pred>::Exists(const T& v) const
    {
       return LinkedList::Exists<T, Pred>(buckets[GetBucketIdx(v)], v);
    }
 
    template<typename T, typename Hash, typename Pred>
-   __host__ __device__ bool unordered_set<T, Hash, Pred>::empty()
+   __host__ __device__ bool unordered_set<T, Hash, Pred>::empty() const
    {
       for (int k = 0; k < NUM_BUCKETS; ++k) {
          if (buckets[k] != nullptr) {
@@ -169,7 +193,7 @@ namespace amp
    }
 
    template<typename T, typename Hash, typename Pred>
-   __host__ __device__ int unordered_set<T, Hash, Pred>::size()
+   __host__ __device__ int unordered_set<T, Hash, Pred>::size() const
    {
       int c = 0;
       for (int k = 0; k < NUM_BUCKETS; ++k) {
@@ -183,13 +207,13 @@ namespace amp
    }
 
    template<typename T, typename Hash, typename Pred>
-   __host__ __device__ unsigned int unordered_set<T, Hash, Pred>::HashCode(T& v)
+   __host__ __device__ unsigned int unordered_set<T, Hash, Pred>::hashcode(const T& v) const
    {
       return hasher(v);
    }
 
    template<typename T, typename Hash, typename Pred>
-   __host__ __device__ unsigned int unordered_set<T, Hash, Pred>::HashCode()
+   __host__ __device__ unsigned int unordered_set<T, Hash, Pred>::hashcode() const
    {
       unsigned int res = 0;
 
@@ -201,9 +225,9 @@ namespace amp
    }
 
    template<typename T, typename Hash, typename Pred>
-   __host__ __device__ unsigned int unordered_set<T, Hash, Pred>::GetBucketIdx(T& v)
+   __host__ __device__ unsigned int unordered_set<T, Hash, Pred>::GetBucketIdx(const T& v) const
    {
-      return HashCode(v) % NUM_BUCKETS;
+      return hashcode(v) % NUM_BUCKETS;
    }
 
    template<typename T, typename Hash, typename Pred>
@@ -213,7 +237,7 @@ namespace amp
    }
 
    template<typename T, typename Hash, typename Pred>
-   __host__ __device__ void unordered_set<T, Hash, Pred>::erase(T& v)
+   __host__ __device__ void unordered_set<T, Hash, Pred>::erase(const T& v)
    {
       LinkedList::Remove<T, Pred>(&buckets[GetBucketIdx(v)], v);
    }
@@ -240,34 +264,45 @@ namespace amp
    //   return res;
    //}
 
+   //template<typename T, typename Hash, typename Pred>
+   //class Iterator
+   //{
+   //public:
+   //   __host__ __device__ Iterator(unordered_set<T, Hash, Pred>&);
+   //   __host__ __device__ void Reset();
+   //   __host__ __device__ void Next();
+
+   //   __host__ __device__ void operator=(const Iterator&);
+
+   //   __host__ __device__ bool HasNext();
+
+   //   __host__ __device__ T& GetValue();
+
+   //private:
+   //   LinkedList::Node<T>* ptr;
+   //   unordered_set<T, Hash, Pred>& refSet;
+   //   int bucket;
+   //};
+
    template<typename T, typename Hash, typename Pred>
-   class Iterator
-   {
-   public:
-      __host__ __device__ Iterator(unordered_set<T, Hash, Pred>&);
-      __host__ __device__ void Reset();
-      __host__ __device__ void Next();
-
-      __host__ __device__ void operator=(const Iterator&);
-
-      __host__ __device__ bool HasNext();
-
-      __host__ __device__ T& GetValue();
-
-   private:
-      LinkedList::Node<T>* ptr;
-      unordered_set<T, Hash, Pred>& refSet;
-      int bucket;
-   };
-
-   template<typename T, typename Hash, typename Pred>
-   __host__ __device__ Iterator<T, Hash, Pred>::Iterator(unordered_set<T, Hash, Pred>& m) : refSet(m), ptr(NULL), bucket(-1)
+   __host__ __device__ unordered_set<T, Hash, Pred>::iterator::iterator(const unordered_set<T, Hash, Pred>& m) :
+      refSet(m),
+      ptr(NULL),
+      bucket(-1)
    {
       Reset();
    }
 
    template<typename T, typename Hash, typename Pred>
-   __host__ __device__ void Iterator<T, Hash, Pred>::Reset()
+   __host__ __device__ unordered_set<T, Hash, Pred>::iterator::iterator(const unordered_set<T, Hash, Pred>::iterator& other) :
+      refSet(other.refSet),
+      ptr(other.ptr),
+      bucket(other.bucket)
+   {
+   }
+
+   template<typename T, typename Hash, typename Pred>
+   __host__ __device__ void unordered_set<T, Hash, Pred>::iterator::Reset()
    {
       if (refSet.empty()) {
          ptr = nullptr;
@@ -284,7 +319,14 @@ namespace amp
    }
 
    template<typename T, typename Hash, typename Pred>
-   __host__ __device__ void Iterator<T, Hash, Pred>::Next()
+   __host__ __device__ void unordered_set<T, Hash, Pred>::iterator::End()
+   {
+      ptr = nullptr;
+      bucket = -1;
+   }
+
+   template<typename T, typename Hash, typename Pred>
+   __host__ __device__ void unordered_set<T, Hash, Pred>::iterator::Next()
    {
       if (bucket == -1) {
          return;
@@ -305,25 +347,58 @@ namespace amp
    }
 
    template<typename T, typename Hash, typename Pred>
-   __host__ __device__ void Iterator<T, Hash, Pred>::operator=(const Iterator<T, Hash, Pred>& other)
+   __host__ __device__ void unordered_set<T, Hash, Pred>::iterator::operator++()
    {
+      Next();
+   }
+
+   template<typename T, typename Hash, typename Pred>
+   __host__ __device__ bool unordered_set<T, Hash, Pred>::iterator::operator!=(const unordered_set<T, Hash, Pred>::iterator& other) const
+   {
+      return ptr != other.ptr;
+   }
+
+   template<typename T, typename Hash, typename Pred>
+   __host__ __device__ T& unordered_set<T, Hash, Pred>::iterator::operator*()
+   {
+      return ptr->GetValue();
+   }
+
+   template<typename T, typename Hash, typename Pred>
+   __host__ __device__ void unordered_set<T, Hash, Pred>::iterator::operator=(const unordered_set<T, Hash, Pred>::iterator& other)
+   {
+      refSet = other.refSet;
       ptr = other.ptr;
       bucket = other.bucket;
    }
 
    template<typename T, typename Hash, typename Pred>
-   __host__ __device__ bool Iterator<T, Hash, Pred>::HasNext()
+   __host__ __device__ bool unordered_set<T, Hash, Pred>::iterator::HasNext() const
    {
       return bucket != -1;
    }
 
    template<typename T, typename Hash, typename Pred>
-   __host__ __device__ T& Iterator<T, Hash, Pred>::GetValue()
+   __host__ __device__ T& unordered_set<T, Hash, Pred>::iterator::GetValue() const
    {
       if (bucket == -1 || ptr == nullptr) {
          printf("Illegal call to set iterator GetValue(): nullptr, no more element");
       }
       return ptr->GetValue();
+   }
+
+   template<typename T, typename Hash, typename Pred>
+   __host__ __device__ unordered_set<T, Hash, Pred>::iterator unordered_set<T, Hash, Pred>::begin()
+   {
+      return unordered_set<T, Hash, Pred>::iterator(*this);
+   }
+
+   template<typename T, typename Hash, typename Pred>
+   __host__ __device__ unordered_set<T, Hash, Pred>::iterator unordered_set<T, Hash, Pred>::end()
+   {
+      unordered_set<T, Hash, Pred>::iterator res(*this);
+      res.End();
+      return res;
    }
 }
 

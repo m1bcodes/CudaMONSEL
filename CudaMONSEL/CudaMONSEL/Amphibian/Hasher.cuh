@@ -40,14 +40,16 @@ namespace Hasher
 
    struct IntHashFcn
    {
-      __host__ __device__ inline unsigned int operator() (const int& str) {
+      __host__ __device__ inline unsigned int operator() (const int& str) const
+      {
          return Hash((char *)&str, sizeof(str));
       }
    };
 
    struct DoubleHashFcn
    {
-      __host__ __device__ inline unsigned int operator() (const double& str) {
+      __host__ __device__ inline unsigned int operator() (const double& str) const
+      {
          return Hash((char *)&str, sizeof(str));
       }
    };
@@ -57,14 +59,16 @@ namespace Comparator
 {
    struct IntCompareFcn
    {
-      __host__ __device__ inline bool operator() (const int& lhs, const int& rhs) {
+      __host__ __device__ inline bool operator() (const int& lhs, const int& rhs) const
+      {
          return lhs == rhs;
       }
    };
 
    struct DoubleCompareFcn
    {
-      __host__ __device__ inline bool operator() (const double& lhs, const double& rhs) {
+      __host__ __device__ inline bool operator() (const double& lhs, const double& rhs) const
+      {
          return lhs == rhs;
       }
    };

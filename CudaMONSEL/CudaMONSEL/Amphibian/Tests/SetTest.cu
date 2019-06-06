@@ -1,7 +1,7 @@
 #include "Amphibian/Tests/SetTest.cuh"
 
 #include "Amphibian/unordered_set.cuh"
-#include "Amphibian/String.cuh"
+#include "Amphibian/string.cuh"
 
 #include <stdio.h>
 
@@ -9,7 +9,7 @@ namespace SetTest
 {
    struct IntCompare
    {
-      __device__ inline bool operator() (const int& lhs, const int& rhs)
+      __device__ inline bool operator() (const int& lhs, const int& rhs) const
       {
          if (&rhs == &lhs) return true;
          return lhs == rhs;
@@ -121,14 +121,18 @@ namespace SetTest
             printf("number not found: k\n", k);
          }
       }
+      for (auto k : set1) {
+         printf("%d ", k);
+      }
+      printf("\n");
 
       amp::unordered_set<int, Hasher::IntHashFcn, IntCompare> set2;
       for (int k = 0; k < maxNum; ++k) {
          set2.insert(k);
       }
 
-      unsigned int h1 = set1.HashCode();
-      unsigned int h2 = set2.HashCode();
+      unsigned int h1 = set1.hashcode();
+      unsigned int h2 = set2.hashcode();
       if (h1 != h2) {
          printf("HashCodes are different: %u, %u", h1, h2);
       }
@@ -136,22 +140,22 @@ namespace SetTest
       printf("SetTest::TestInt2() completed.\n");
    }
 
-   typedef amp::unordered_set<String::String, String::HashFcn, String::CompareFcn> StringTestT;
-   typedef amp::Iterator<String::String, String::HashFcn, String::CompareFcn> StringTestTItr;
+   typedef amp::unordered_set<amp::string, amp::string_hash, amp::string_cmp> StringTestT;
+   typedef amp::unordered_set<amp::string, amp::string_hash, amp::string_cmp>::iterator StringTestTItr;
 
    __device__ void SetTest::TestString()
    {
       StringTestT set;
       
-      String::String a("a");
-      String::String b("b");
-      String::String a2("a");
-      String::String a3("a");
-      String::String abc("abc");
+      amp::string a("a");
+      amp::string b("b");
+      amp::string a2("a");
+      amp::string a3("a");
+      amp::string abc("abc");
 
-      String::CompareFcn cmp;
+      amp::string_cmp cmp;
       if (cmp(a, b)) {
-         printf("wrong: %s, %s\n", a.Get(), b.Get());
+         printf("wrong: %s, %s\n", a.c_str(), b.c_str());
       }
 
       set.insert(a);
@@ -159,38 +163,38 @@ namespace SetTest
       set.insert(abc);
 
       if (!set.Exists(a2)) {
-         printf("does not exist: %s\n", a2.Get());
+         printf("does not exist: %s\n", a2.c_str());
       }
 
       if (!set.Exists(a3)) {
-         printf("does not exist: %s\n", a2.Get());
+         printf("does not exist: %s\n", a2.c_str());
       }
 
-      String::String d("d");
+      amp::string d("d");
 
       if (set.Exists(d)) {
-         printf("exists: %s\n", d.Get());
+         printf("exists: %s\n", d.c_str());
       }
 
       StringTestTItr itr(set);
       while (itr.HasNext()) {
-         //printf("%s ", itr.GetValue().Get());
+         //printf("%s ", itr.GetValue().c_str());
          itr.Next();
       }
       //printf("\n");
 
       StringTestT set2 = set;
-      String::String xyz("XYZ");
+      amp::string xyz("XYZ");
       set2.insert(xyz);
 
       if (!(set == set2)) {
-         printf("sets are different: %d, %d\n", set.HashCode(), set2.HashCode());
+         printf("sets are different: %d, %d\n", set.hashcode(), set2.hashcode());
       }
 
       int c2 = 0;
       StringTestTItr itr2(set2);
       while (itr2.HasNext()) {
-         //printf("%s ", itr2.GetValue().Get());
+         //printf("%s ", itr2.GetValue().c_str());
          ++c2;
          itr2.Next();
       }
@@ -235,7 +239,7 @@ namespace SetTest
    //__device__ void SetTest::TestSetOfSetOfString()
    //{
    //   StringTestT set0, set1;
-   //   String::String str0("A"), str1("B"), str2("C");
+   //   amp::string str0("A"), str1("B"), str2("C");
    //   set0.insert(str0);
    //   set0.insert(str1);
    //   set1.insert(str2);
@@ -256,7 +260,7 @@ namespace SetTest
    //      StringTestT tmpset = cstmp.GetSet();
    //      StringTestTItr itr2(tmpset);
    //      while (itr2.HasNext()) {
-   //         //printf("%s ", itr2.GetValue().Get());
+   //         //printf("%s ", itr2.GetValue().c_str());
    //         itr2.Next();
    //      }
    //      //printf("\n");
@@ -269,7 +273,7 @@ namespace SetTest
    //   printf("cs2: %d\n", tmpset.Size());
    //   StringTestTItr itr(tmpset);
    //   while (itr.HasNext()) {
-   //      printf("%s ", itr.GetValue().Get());
+   //      printf("%s ", itr.GetValue().c_str());
    //      itr.Next();
    //   }
    //   printf("\n");

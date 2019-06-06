@@ -8,7 +8,7 @@
 
 #define NULL_CHAR '\0'
 
-namespace String
+namespace amp
 {
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
    __constant__ const int MAX_LEN = sizeof(char) * 32;
@@ -16,22 +16,22 @@ namespace String
    const int MAX_LEN = sizeof(char) * 32;
 #endif
 
-   class String
+   class string
    {
    public:
-      __host__ __device__ String();
-      __host__ __device__ String(const String&);
-      __host__ __device__ String(char const *);
+      __host__ __device__ string();
+      __host__ __device__ string(const string&);
+      __host__ __device__ string(char const *);
 
-      __host__ __device__ void operator=(const String&);
+      __host__ __device__ void operator=(const string&);
       __host__ __device__ void operator=(char const *);
 
-      __host__ __device__ bool operator==(const String&) const;
+      __host__ __device__ bool operator==(const string&) const;
 
-      __host__ __device__ const char* Get();
-      __host__ __device__ int Size();
+      __host__ __device__ const char* c_str() const;
+      __host__ __device__ int size() const;
 
-      __host__ __device__ unsigned int HashCode();
+      __host__ __device__ unsigned int hashcode() const;
 
    private:
       __host__ __device__ void Copy(char const *);
@@ -77,24 +77,24 @@ namespace String
       return res*mult;
    }
 
-   typedef bool(*pStrCmp)(String&, String&);
-   __host__ __device__ bool AreEqual(String&, String&);
+   typedef bool(*pStrCmp)(string&, string&);
+   __host__ __device__ bool AreEqual(string&, string&);
    __host__ __device__ bool AreEqual(char const * const a, char const * const b);
    __host__ __device__ bool StartsWith(char* src, char* target);
 
-   struct CompareFcn
+   struct string_cmp
    {
-      __host__ __device__ inline bool operator() (const String& lhs, const String& rhs) const
+      __host__ __device__ inline bool operator() (const string& lhs, const string& rhs) const
       {
          return lhs == rhs;
       }
    };
 
-   struct HashFcn
+   struct string_hash
    {
-      __host__ __device__ inline unsigned int operator() (String& s) const
+      __host__ __device__ inline unsigned int operator() (const string& s) const
       {
-         return s.HashCode();
+         return s.hashcode();
       }
    };
 }

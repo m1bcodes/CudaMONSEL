@@ -14,7 +14,7 @@ namespace LinkedList
    {
    public:
       __host__ __device__ Node();
-      __host__ __device__ Node(T&, Node*);
+      __host__ __device__ Node(const T&, Node*);
 
       __host__ __device__ Node& operator=(const Node&);
 
@@ -34,7 +34,7 @@ namespace LinkedList
    }
 
    template<typename T>
-   __host__ __device__ Node<T>::Node(T& v, Node* n) : val(v), next(n)
+   __host__ __device__ Node<T>::Node(const T& v, Node* n) : val(v), next(n)
    {
    }
 
@@ -71,7 +71,7 @@ namespace LinkedList
    }
 
    template<typename T>
-   __host__ __device__ void InsertHead(Node<T>** headAddr, T& v)
+   __host__ __device__ void InsertHead(Node<T>** headAddr, const T& v)
    {
       Node<T>* newOne = (*headAddr == nullptr) ? new Node<T>(v, nullptr) : new Node<T>(v, *headAddr);
       *headAddr = newOne;
@@ -141,7 +141,7 @@ namespace LinkedList
    }
 
    template<typename T, typename TCompare>
-   __host__ __device__ T Remove(Node<T>** head, T& k)
+   __host__ __device__ T Remove(Node<T>** head, const T& k)
    {
       TCompare cmp;
       while (*head != nullptr) {
@@ -159,7 +159,7 @@ namespace LinkedList
    }
 
    template<typename T, typename TCompare>
-   __host__ __device__ bool Exists(Node<T> * head, T& target)
+   __host__ __device__ bool Exists(Node<T> * head, const T& target)
    {
       TCompare cmp;
       while (head != nullptr) {

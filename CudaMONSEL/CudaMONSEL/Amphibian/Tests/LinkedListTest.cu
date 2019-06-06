@@ -1,5 +1,5 @@
 #include "Amphibian/Tests/LinkedListTest.cuh"
-#include "Amphibian/String.cuh"
+#include "Amphibian/string.cuh"
 
 #include <stdio.h>
 
@@ -14,12 +14,12 @@ namespace LinkedListTest
 
       __device__ TestClassA(double v, char name[], double s) : val(v)
       {
-         String::String nameStr(name);
-         LinkedListKV::InsertHead<String::String, double>(&list, nameStr, s);
+         amp::string nameStr(name);
+         LinkedListKV::InsertHead<amp::string, double>(&list, nameStr, s);
       }
 
       double val;
-      LinkedListKV::Node<String::String, double>* list;
+      LinkedListKV::Node<amp::string, double>* list;
    };
 
    __device__ void PrintList(LinkedList::Node<LinkedListTestType>* head)
@@ -74,11 +74,11 @@ namespace LinkedListTest
       printf("LinkedListTest::testAddAllAsSet completed\n");
    }
 
-   __device__ void BuildList1(LinkedListKV::Node<String::String, float>** head)
+   __device__ void BuildList1(LinkedListKV::Node<amp::string, float>** head)
    {
-      String::String a("a");
-      String::String b("b");
-      String::String c("c");
+      amp::string a("a");
+      amp::string b("b");
+      amp::string c("c");
       float v1 = 0.0f;
       float v2 = 1.0f;
       float v3 = 2.0f;
@@ -87,11 +87,11 @@ namespace LinkedListTest
       LinkedListKV::InsertHead(head, c, v3);
    }
    
-   __device__ void BuildList2(LinkedListKV::Node<String::String, float>** head)
+   __device__ void BuildList2(LinkedListKV::Node<amp::string, float>** head)
    {
-      String::String a("a");
-      String::String b("b");
-      String::String a1("a");
+      amp::string a("a");
+      amp::string b("b");
+      amp::string a1("a");
       float v1 = 0.0f;
       float v2 = 1.0f;
       float v3 = .1f;
@@ -100,22 +100,22 @@ namespace LinkedListTest
       LinkedListKV::InsertHead(head, a1, v3);
    }
    
-   __device__ void PrintListInOrder(LinkedListKV::Node<String::String, float>* head)
+   __device__ void PrintListInOrder(LinkedListKV::Node<amp::string, float>* head)
    {
       if (head != NULL) {
-         printf("%s: %f\n", head->GetKey().Get(), head->GetValue());
+         printf("%s: %f\n", head->GetKey().c_str(), head->GetValue());
          PrintListInOrder(head->GetNext());
       }
    }
    
-   __global__ void SetTest(String::pStrCmp h_strCmpPointFunction)
+   __global__ void SetTest(amp::pStrCmp h_strCmpPointFunction)
    {
    #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
       __syncthreads();
    #endif
 
-      LinkedListKV::Node<String::String, float>* head1 = NULL;
-      LinkedListKV::Node<String::String, float>* head2 = NULL;
+      LinkedListKV::Node<amp::string, float>* head1 = NULL;
+      LinkedListKV::Node<amp::string, float>* head2 = NULL;
       printf("A\n");
       BuildList1(&head1);
       BuildList2(&head2);
@@ -128,12 +128,12 @@ namespace LinkedListTest
    #endif
    }
 
-   //__device__ String::pAreEqual pEqual = String::AreEqual;
+   //__device__ amp::pAreEqual pEqual = amp::AreEqual;
    //
    //int main()
    //{
-   //   String::pAreEqual h_1;
-   //   cudaMemcpyFromSymbol(&h_1, pEqual, sizeof(String::pAreEqual));
+   //   amp::pAreEqual h_1;
+   //   cudaMemcpyFromSymbol(&h_1, pEqual, sizeof(amp::pAreEqual));
    //
    //   kernel << <1, 1 >> >(h_1);
    //   checkCudaErrors(cudaDeviceSynchronize());
