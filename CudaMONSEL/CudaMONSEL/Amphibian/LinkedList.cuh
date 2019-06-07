@@ -235,7 +235,7 @@ namespace LinkedListKV
    {
    public:
       __host__ __device__ Node();
-      __host__ __device__ Node(KeyT&, ValueT&, Node*);
+      __host__ __device__ Node(const KeyT&, const ValueT&, Node*);
 
       __host__ __device__ Node& operator=(const Node&);
 
@@ -244,7 +244,7 @@ namespace LinkedListKV
       __host__ __device__ Node* GetNext();
       __host__ __device__ Node** GetNextAddr();
       __host__ __device__ void UpdateNext(Node* newNext);
-      __host__ __device__ void MapVal(ValueT&, ValueT(*mapper)(ValueT&, ValueT&));
+      __host__ __device__ void MapVal(const ValueT&, const ValueT&(*mapper)(const ValueT&, ValueT&));
 
    private:
       KeyT key;
@@ -258,7 +258,7 @@ namespace LinkedListKV
    }
 
    template<typename KeyT, typename ValueT>
-   __host__ __device__ Node<KeyT, ValueT>::Node<KeyT, ValueT>(KeyT& k, ValueT& v, Node* n) : key(k), val(v), next(n)
+   __host__ __device__ Node<KeyT, ValueT>::Node<KeyT, ValueT>(const KeyT& k, const ValueT& v, Node* n) : key(k), val(v), next(n)
    {
    }
 
@@ -300,8 +300,9 @@ namespace LinkedListKV
       next = newNext;
    }
 
+   // ValueT needs to have copy constructor
    template<typename KeyT, typename ValueT>
-   __host__ __device__ void Node<KeyT, ValueT>::MapVal(ValueT& v, ValueT(*mapper)(ValueT&, ValueT&))
+   __host__ __device__ void Node<KeyT, ValueT>::MapVal(const ValueT& v, const ValueT&(*mapper)(const ValueT&, ValueT&))
    {
       val = mapper(v, val);
    }
@@ -315,15 +316,15 @@ namespace LinkedListKV
       while (list != nullptr) {
          KeyT k = list->GetKey();
          ValueT v = list->GetValue();
-         res += khasher(k);
-         res += vhasher(v);
+         auto h = khasher(k) ^ vhasher(v); // https://docs.oracle.com/javase/7/docs/api/java/util/Map.Entry.html#hashCode()
+         res += h; // https://docs.oracle.com/javase/7/docs/api/java/util/Map.html#hashCode()
          list = list->GetNext();
       }
       return res;
    }
 
    template<typename KeyT, typename ValueT>
-   __host__ __device__ void InsertHead(Node<KeyT, ValueT>** head, KeyT& k, ValueT& v)
+   __host__ __device__ void InsertHead(Node<KeyT, ValueT>** head, const KeyT& k, const ValueT& v)
    {
       Node<KeyT, ValueT>* newOne = (*head == nullptr) ? new Node<KeyT, ValueT>(k, v, nullptr) : new Node<KeyT, ValueT>(k, v, *head);
       *head = newOne;
@@ -395,12 +396,12 @@ namespace LinkedListKV
    }
 
    template<typename KeyT, typename ValueT, typename KCompare>
-   __host__ __device__ bool GetValue(Node<KeyT, ValueT>* head, KeyT& target, ValueT& ret)
+   __host__ __device__ bool GetValue(Node<KeyT, ValueT>* head, const KeyT& target, ValueT& ret)
    {
       KCompare kcmp;
       while (head != nullptr) {
-         KeyT v = head->GetKey();
-         if (kcmp(v, target)) {
+         KeyT k = head->GetKey();
+         if (kcmp(k, target)) {
             ret = head->GetValue();
             return true;
          }
@@ -410,10 +411,24 @@ namespace LinkedListKV
    }
 
    template<typename KeyT, typename ValueT, typename KCompare>
-   __host__ __device__ bool ContainsKey(Node<KeyT, ValueT>* head, KeyT& k)
+   __host__ __device__ bool ContainsKey(Node<KeyT, ValueT>* head, const KeyT& k)
    {
       ValueT v;
       return GetValue<KeyT, ValueT, KCompare>(head, k, v);
+   }
+
+   template<typename KeyT, typename ValueT, typename KCompare>
+   __host__ __device__ Node<KeyT, ValueT>* Find(Node<KeyT, ValueT>* head, const KeyT& target)
+   {
+      KCompare kcmp;
+      while (head != nullptr) {
+         KeyT v = head->GetKey();
+         if (kcmp(v, target)) {
+            return head;
+         }
+         head = head->GetNext();
+      }
+      return nullptr;
    }
 
    //template<typename KeyT, typename ValueT>
@@ -471,7 +486,7 @@ namespace LinkedListKV
    }
 
    template<typename KeyT, typename ValueT>
-   __host__ __device__ void MapVal(ValueT& v, Node<KeyT, ValueT>* head, void(*mapper)(ValueT&, ValueT&))
+   __host__ __device__ void MapVal(const ValueT& v, Node<KeyT, ValueT>* head, void(*mapper)(const ValueT&, ValueT&))
    {
       while (head != nullptr) {
          head->MapVal(v, mapper);

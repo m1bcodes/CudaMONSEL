@@ -9,28 +9,28 @@ namespace amp
 {
    __host__ __device__ string::string()
    {
-      Copy("");
+      copy("");
    }
 
    __host__ __device__ string::string(const string& s)
    {
-      Copy(s.str);
+      copy(s.str);
    }
 
    __host__ __device__ string::string(char const * s)
    {
-      Copy(s);
+      copy(s);
    }
 
    __host__ __device__ void string::operator=(const string& s)
    {
       if (&s == this) return;
-      Copy(s.str);
+      copy(s.str);
    }
 
    __host__ __device__ void string::operator=(char const * s)
    {
-      Copy(s);
+      copy(s);
    }
 
    __host__ __device__ bool string::operator==(const string& a) const
@@ -50,7 +50,7 @@ namespace amp
       return c;
    }
 
-   __host__ __device__ void string::Copy(char const * s)
+   __host__ __device__ void string::copy(char const * s)
    {
       memset(str, NULL_CHAR, MAX_LEN);
       int k;

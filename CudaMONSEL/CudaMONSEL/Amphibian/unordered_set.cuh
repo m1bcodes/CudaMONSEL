@@ -30,7 +30,7 @@ namespace amp
       __host__ __device__ int size() const;
 
       // element lookup
-      __host__ __device__ bool Exists(const T&) const;
+      __host__ __device__ bool contains(const T&) const;
 
       // modifier
       __host__ __device__ void insert(const T&);
@@ -39,8 +39,8 @@ namespace amp
       __host__ __device__ void Add(const unordered_set&);
 
       // hash
-      __host__ __device__ unsigned int hashcode() const;
-      __host__ __device__ unsigned int hashcode(const T&) const;
+      __host__ __device__ unsigned int hashCode() const;
+      __host__ __device__ unsigned int hashCode(const T&) const;
       //__host__ __device__ LinkedList::Node<T>* AsList();
 
       class iterator
@@ -48,9 +48,9 @@ namespace amp
       public:
          __host__ __device__ iterator(const unordered_set<T, Hash, Pred>&);
          __host__ __device__ iterator(const iterator& other);
-         __host__ __device__ void Reset();
-         __host__ __device__ void End();
-         __host__ __device__ void Next();
+         __host__ __device__ void next();
+         __host__ __device__ void reset();
+         __host__ __device__ void end();
 
          __host__ __device__ void operator++();
          __host__ __device__ bool operator!=(const iterator&) const;
@@ -118,7 +118,7 @@ namespace amp
          LinkedList::Node<T>* itr = buckets[k];
          while (itr != nullptr) {
             T v0 = itr->GetValue();
-            if (!other.Exists(v0)) {
+            if (!other.contains(v0)) {
                return false;
             }
             itr = itr->GetNext();
@@ -157,7 +157,7 @@ namespace amp
    template<typename T, typename Hash, typename Pred>
    __host__ __device__ void unordered_set<T, Hash, Pred>::insert(const T& v)
    {
-      if (!Exists(v)) {
+      if (!contains(v)) {
          LinkedList::InsertHead<T>(&buckets[GetBucketIdx(v)], v);
       }
    }
@@ -176,7 +176,7 @@ namespace amp
    }
 
    template<typename T, typename Hash, typename Pred>
-   __host__ __device__ bool unordered_set<T, Hash, Pred>::Exists(const T& v) const
+   __host__ __device__ bool unordered_set<T, Hash, Pred>::contains(const T& v) const
    {
       return LinkedList::Exists<T, Pred>(buckets[GetBucketIdx(v)], v);
    }
@@ -207,13 +207,13 @@ namespace amp
    }
 
    template<typename T, typename Hash, typename Pred>
-   __host__ __device__ unsigned int unordered_set<T, Hash, Pred>::hashcode(const T& v) const
+   __host__ __device__ unsigned int unordered_set<T, Hash, Pred>::hashCode(const T& v) const
    {
       return hasher(v);
    }
 
    template<typename T, typename Hash, typename Pred>
-   __host__ __device__ unsigned int unordered_set<T, Hash, Pred>::hashcode() const
+   __host__ __device__ unsigned int unordered_set<T, Hash, Pred>::hashCode() const
    {
       unsigned int res = 0;
 
@@ -227,7 +227,7 @@ namespace amp
    template<typename T, typename Hash, typename Pred>
    __host__ __device__ unsigned int unordered_set<T, Hash, Pred>::GetBucketIdx(const T& v) const
    {
-      return hashcode(v) % NUM_BUCKETS;
+      return hashCode(v) % NUM_BUCKETS;
    }
 
    template<typename T, typename Hash, typename Pred>
@@ -290,7 +290,7 @@ namespace amp
       ptr(NULL),
       bucket(-1)
    {
-      Reset();
+      reset();
    }
 
    template<typename T, typename Hash, typename Pred>
@@ -302,7 +302,7 @@ namespace amp
    }
 
    template<typename T, typename Hash, typename Pred>
-   __host__ __device__ void unordered_set<T, Hash, Pred>::iterator::Reset()
+   __host__ __device__ void unordered_set<T, Hash, Pred>::iterator::reset()
    {
       if (refSet.empty()) {
          ptr = nullptr;
@@ -319,14 +319,14 @@ namespace amp
    }
 
    template<typename T, typename Hash, typename Pred>
-   __host__ __device__ void unordered_set<T, Hash, Pred>::iterator::End()
+   __host__ __device__ void unordered_set<T, Hash, Pred>::iterator::end()
    {
       ptr = nullptr;
       bucket = -1;
    }
 
    template<typename T, typename Hash, typename Pred>
-   __host__ __device__ void unordered_set<T, Hash, Pred>::iterator::Next()
+   __host__ __device__ void unordered_set<T, Hash, Pred>::iterator::next()
    {
       if (bucket == -1) {
          return;
@@ -349,7 +349,7 @@ namespace amp
    template<typename T, typename Hash, typename Pred>
    __host__ __device__ void unordered_set<T, Hash, Pred>::iterator::operator++()
    {
-      Next();
+      next();
    }
 
    template<typename T, typename Hash, typename Pred>
@@ -397,7 +397,7 @@ namespace amp
    __host__ __device__ unordered_set<T, Hash, Pred>::iterator unordered_set<T, Hash, Pred>::end()
    {
       unordered_set<T, Hash, Pred>::iterator res(*this);
-      res.End();
+      res.end();
       return res;
    }
 }

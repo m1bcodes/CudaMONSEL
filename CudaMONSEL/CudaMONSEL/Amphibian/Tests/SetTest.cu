@@ -72,7 +72,7 @@ namespace SetTest
          set.insert(k);
       }
       for (int k = 0; k < maxNum; ++k) {
-         if (!set.Exists(k)) {
+         if (!set.contains(k)) {
             printf("number not found: k\n", k);
          }
       }
@@ -82,16 +82,16 @@ namespace SetTest
       set.erase(num1);
       set.erase(num2);
 
-      if (set.Exists(num1)) {
+      if (set.contains(num1)) {
          printf("not removing elements properly: %d\n", num1);
       }
-      if (set.Exists(num2)) {
+      if (set.contains(num2)) {
          printf("not removing elements properly: %d\n", num2);
       }
 
       for (int k = 0; k < maxNum - 20; ++k) {
          set.erase(k);
-         if (set.Exists(k)) {
+         if (set.contains(k)) {
             printf("not removing number: %d\n", k);
          }
       }
@@ -99,7 +99,7 @@ namespace SetTest
       set.clear();
 
       for (int k = 0; k < maxNum; ++k) {
-         if (set.Exists(k)) {
+         if (set.contains(k)) {
             printf("not removing number: %d\n", k);
          }
       }
@@ -117,7 +117,7 @@ namespace SetTest
          set1.insert(k);
       }
       for (int k = 0; k < maxNum; ++k) {
-         if (!set1.Exists(k)) {
+         if (!set1.contains(k)) {
             printf("number not found: k\n", k);
          }
       }
@@ -131,8 +131,8 @@ namespace SetTest
          set2.insert(k);
       }
 
-      unsigned int h1 = set1.hashcode();
-      unsigned int h2 = set2.hashcode();
+      unsigned int h1 = set1.hashCode();
+      unsigned int h2 = set2.hashCode();
       if (h1 != h2) {
          printf("HashCodes are different: %u, %u", h1, h2);
       }
@@ -162,33 +162,38 @@ namespace SetTest
       set.insert(b);
       set.insert(abc);
 
-      if (!set.Exists(a2)) {
+      if (!set.contains(a2)) {
          printf("does not exist: %s\n", a2.c_str());
       }
 
-      if (!set.Exists(a3)) {
+      if (!set.contains(a3)) {
          printf("does not exist: %s\n", a2.c_str());
       }
 
       amp::string d("d");
 
-      if (set.Exists(d)) {
+      if (set.contains(d)) {
          printf("exists: %s\n", d.c_str());
       }
 
       StringTestTItr itr(set);
       while (itr.HasNext()) {
          //printf("%s ", itr.GetValue().c_str());
-         itr.Next();
+         itr.next();
       }
       //printf("\n");
+
+      for (auto str : set) {
+         printf("%s ", str.c_str());
+      }
+      printf("\n");
 
       StringTestT set2 = set;
       amp::string xyz("XYZ");
       set2.insert(xyz);
 
       if (!(set == set2)) {
-         printf("sets are different: %d, %d\n", set.hashcode(), set2.hashcode());
+         printf("sets are different: %d, %d\n", set.hashCode(), set2.hashCode());
       }
 
       int c2 = 0;
@@ -196,7 +201,7 @@ namespace SetTest
       while (itr2.HasNext()) {
          //printf("%s ", itr2.GetValue().c_str());
          ++c2;
-         itr2.Next();
+         itr2.next();
       }
       //printf("\n");
       if (c2 != set2.size()) {

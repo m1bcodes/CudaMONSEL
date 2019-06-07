@@ -34,7 +34,7 @@ namespace amp
       __host__ __device__ unsigned int hashcode() const;
 
    private:
-      __host__ __device__ void Copy(char const *);
+      __host__ __device__ void copy(char const *);
 
       char str[MAX_LEN];
    };
