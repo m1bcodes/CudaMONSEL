@@ -9,15 +9,17 @@ namespace LinkedListTest
 {
    typedef int LinkedListTestType;
 
-   __device__ void PrintList(LinkedList::Node<LinkedListTestType>* head);
+   __host__ __device__ void PrintList(LinkedList::Node<LinkedListTestType>* head);
 
    class LinkedListTest
    {
    public:
-      __device__ LinkedListTest();
-      __device__ void InsertionTest();
-      __device__ void TestAddAllAsSet();
+      __host__ __device__ LinkedListTest();
+      __host__ __device__ void InsertionTest();
+      __host__ __device__ void TestAddAllAsSet();
    };
+
+   __host__ __device__ void TestListKV();
 }
 
 #endif

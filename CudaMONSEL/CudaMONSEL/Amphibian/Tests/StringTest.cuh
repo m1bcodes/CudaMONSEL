@@ -1,3 +1,6 @@
+#ifndef _STRING_TEST_CUH_
+#define _STRING_TEST_CUH_
+
 #include "Amphibian\String.cuh"
 
 namespace StringTest
@@ -9,3 +12,5 @@ namespace StringTest
    __host__ __device__ void AtoFTest();
    __host__ __device__ void ItoATest();
 };
+
+#endif

@@ -6,73 +6,85 @@
 
 namespace MapTest
 {
-   __device__ static void AssertEqual(int a, int b)
+   __host__ __device__ static void AssertEqual(int a, int b)
    {
       if (a != b) {
          printf("not equal: (%d, %d)\n", a, b);
       }
    }
 
-   __device__ MapTest::MapTest()
+   __host__ __device__ MapTest::MapTest()
    {
    }
 
-   typedef Map::Map<int, int, Comparator::IntCompareFcn, Comparator::IntCompareFcn, Hasher::IntHashFcn, Hasher::IntHashFcn> IntTestType;
-   typedef Map::Map<int, int, Comparator::IntCompareFcn, Comparator::IntCompareFcn, Hasher::IntHashFcn, Hasher::IntHashFcn>::Iterator IntTestTypeItr;
+   typedef unordered_map::unordered_map<int, int, Comparator::IntCompareFcn, Comparator::IntCompareFcn, Hasher::IntHashFcn, Hasher::IntHashFcn> IntTestType;
+   typedef unordered_map::unordered_map<int, int, Comparator::IntCompareFcn, Comparator::IntCompareFcn, Hasher::IntHashFcn, Hasher::IntHashFcn>::iterator IntTestTypeItr;
 
-   __device__ void MapTest::TestInteger()
+   __host__ __device__ void MapTest::testInteger()
    {
       int k = 0, v = 1;
-      IntTestType m1 =
-         CreateMapA<int, int, Comparator::IntCompareFcn, Comparator::IntCompareFcn, Hasher::IntHashFcn, Hasher::IntHashFcn>(k, v);
+      IntTestType m1 = CreateMapA<int, int, Comparator::IntCompareFcn, Comparator::IntCompareFcn, Hasher::IntHashFcn, Hasher::IntHashFcn>(k, v);
       int k0 = 1, v0 = 1;
       m1.Put(k0, v0);
 
-      AssertEqual(m1.Size(), 2);
+      AssertEqual(m1.size(), 2);
 
       IntTestType m2(m1);
-      AssertEqual(m2.Size(), 2);
+      AssertEqual(m2.size(), 2);
       int k1 = 2, v1 = 3;
-      m2.Put(k1, v1);
-      AssertEqual(m2.Size(), 3);
-      AssertEqual(m1.Size(), 2);
+      //m2.Put(k1, v1);
+      m2.insert(amp::make_pair<int, int>(k1, v1));
+      AssertEqual(m2.size(), 3);
+      AssertEqual(m1.size(), 2);
 
       int c1 = 0;
       IntTestTypeItr itr1(m1);
       while (itr1.HasNext()) {
-         //printf("(%d, %d) ", itr1.GetKey(), itr1.GetValue());
+         printf("(%d, %d) ", itr1.GetKey(), itr1.GetValue());
          c1++;
          itr1.Next();
       }
+      printf("\n");
+
+      for (auto itr = m1.begin(); itr != m1.end(); ++itr) {
+         printf("(%d, %d) ", itr.GetKey(), itr.GetValue());
+      }
+      printf("\n");
       AssertEqual(c1, 2);
 
       int c2 = 0;
       IntTestTypeItr itr2(m2);
       while (itr2.HasNext()) {
-         //printf("(%d, %d) ", itr2.GetKey(), itr2.GetValue());
+         printf("(%d, %d) ", itr2.GetKey(), itr2.GetValue());
          c2++;
          itr2.Next();
       }
+      printf("\n");
+      for (auto itr = m2.begin(); itr != m2.end(); ++itr) {
+         printf("(%d, %d) ", itr.GetKey(), itr.GetValue());
+      }
+      printf("\n");
+
       AssertEqual(c2, 3);
 
       IntTestType m3 = m2;
-      AssertEqual(m3.Size(), 3);
+      AssertEqual(m3.size(), 3);
       int k2 = 2, v2 = 3;
       m3.Put(k2, v2);
-      AssertEqual(m3.Size(), 3);
-      unsigned int h2 = m2.HashCode();
-      unsigned int h3 = m3.HashCode();
+      AssertEqual(m3.size(), 3);
+      unsigned int h2 = m2.hashCode();
+      unsigned int h3 = m3.hashCode();
       if (h2 != h3) {
          printf("HashCodes are different: %d, %d\n", h2, h3);
       }
 
-      printf("MapTest::TestInteger() completed\n");
+      printf("MapTest::testInteger() completed\n");
    }
 
-   typedef Map::Map<amp::string, double, amp::string_cmp, Comparator::DoubleCompareFcn, amp::string_hash, Hasher::DoubleHashFcn> StringTestType;
-   typedef Map::Map<amp::string, double, amp::string_cmp, Comparator::DoubleCompareFcn, amp::string_hash, Hasher::DoubleHashFcn>::Iterator StringTestTypeItr;
+   typedef unordered_map::unordered_map<amp::string, double, amp::string_cmp, Comparator::DoubleCompareFcn, amp::string_hash, Hasher::DoubleHashFcn> StringTestType;
+   typedef unordered_map::unordered_map<amp::string, double, amp::string_cmp, Comparator::DoubleCompareFcn, amp::string_hash, Hasher::DoubleHashFcn>::iterator StringTestTypeItr;
 
-   __device__ StringTestType makeMap()
+   __host__ __device__ StringTestType makeMap()
    {
       StringTestType map;
       double v0 = 1, v1 = 2, v2 = 3, v3 = 4, v4 = 5;
@@ -85,7 +97,7 @@ namespace MapTest
       return map;
    }
 
-   __device__ void MapTest::TestString()
+   __host__ __device__ void MapTest::testString()
    {
       StringTestType m1;
       double v0 = 1, v1 = 2, v2 = 3, v3 = 4;
@@ -93,13 +105,13 @@ namespace MapTest
       m1.Put(A, v0);
       m1.Put(B, v1);
 
-      AssertEqual(m1.Size(), 2);
+      AssertEqual(m1.size(), 2);
 
       StringTestType m2(m1);
-      AssertEqual(m2.Size(), 2);
+      AssertEqual(m2.size(), 2);
       m2.Put(C, v2);
-      AssertEqual(m2.Size(), 3);
-      AssertEqual(m1.Size(), 2);
+      AssertEqual(m2.size(), 3);
+      AssertEqual(m1.size(), 2);
 
       int c1 = 0;
       StringTestTypeItr itr1(m1);
@@ -122,9 +134,9 @@ namespace MapTest
       //printf("\n");
 
       StringTestType m3 = m2;
-      AssertEqual(m3.Size(), 3);
+      AssertEqual(m3.size(), 3);
       m3.Put(D, v3);
-      AssertEqual(m3.Size(), 4);
+      AssertEqual(m3.size(), 4);
 
       int c3 = 0;
       StringTestTypeItr itr3(m3);
@@ -133,7 +145,7 @@ namespace MapTest
          c3++;
          itr3.Next();
       }
-      AssertEqual(m3.Size(), 4);
+      AssertEqual(m3.size(), 4);
       //printf("\n");
 
       StringTestType map4;
@@ -149,17 +161,17 @@ namespace MapTest
          c4++;
          itr4.Next();
       }
-      AssertEqual(map4.Size(), 2);
+      AssertEqual(map4.size(), 2);
       AssertEqual(c4, 2);
 
       StringTestType m5 = map4;
       if (!(m5 == map4)) {
          printf("maps are different\n");
       }
-      if (!(m5.Size() == map4.Size())) {
-         printf("maps sizes are different: %d, %d\n", map4.Size(), m5.Size());
+      if (!(m5.size() == map4.size())) {
+         printf("maps sizes are different: %d, %d\n", map4.size(), m5.size());
       }
-      if (m5.HashCode() != map4.HashCode()) {
+      if (m5.hashCode() != map4.hashCode()) {
          printf("maps hashcodes are different\n");
       }
 
@@ -177,14 +189,14 @@ namespace MapTest
       }
       //printf("\n");
 
-      printf("MapTest::TestString() completed\n");
+      printf("MapTest::testString() completed\n");
    }
 
    class TestClass
    {
    public:
-      __device__ TestClass() {}
-      __device__ StringTestType& GetMap() { return m; }
+      __host__ __device__ TestClass() {}
+      __host__ __device__ StringTestType& GetMap() { return m; }
 
    private:
       StringTestType m;
@@ -192,7 +204,7 @@ namespace MapTest
 
    struct TestClassCompare
    {
-      __device__ inline bool operator() (TestClass& lhs, TestClass& rhs)
+      __host__ __device__ inline bool operator() (TestClass& lhs, TestClass& rhs)
       {
          return lhs.GetMap() == rhs.GetMap();
       }
@@ -200,16 +212,16 @@ namespace MapTest
 
    struct TestClassHashFcn
    {
-      __device__ inline unsigned int operator() (TestClass& t)
+      __host__ __device__ inline unsigned int operator() (TestClass& t)
       {
-         return t.GetMap().HashCode();
+         return t.GetMap().hashCode();
       }
    };
 
-   typedef Map::Map<amp::string, TestClass, amp::string_cmp, TestClassCompare, amp::string_hash, TestClassHashFcn> MapTestT;
-   typedef Map::Map<amp::string, TestClass, amp::string_cmp, TestClassCompare, amp::string_hash, TestClassHashFcn>::Iterator MapTestTItr;
+   typedef unordered_map::unordered_map<amp::string, TestClass, amp::string_cmp, TestClassCompare, amp::string_hash, TestClassHashFcn> MapTestT;
+   typedef unordered_map::unordered_map<amp::string, TestClass, amp::string_cmp, TestClassCompare, amp::string_hash, TestClassHashFcn>::iterator MapTestTItr;
 
-   __device__ void MapTest::TestMapOfMap()
+   __host__ __device__ void MapTest::testMapOfMap()
    {
       MapTestT m1;
       TestClass a;
@@ -225,10 +237,10 @@ namespace MapTest
       m1.Put(s4, a);
       m1.Put(s5, b);
 
-      printf("MapTest::TestMapOfMap() completed\n");
+      printf("MapTest::testMapOfMap() completed\n");
    }
 
-   __device__ void MapTest::TestAggregate()
+   __host__ __device__ void MapTest::testAggregate()
    {
       StringTestType t;
       double v0 = 0.1, v1 = 0.5, v2 = 100;
@@ -250,6 +262,6 @@ namespace MapTest
       if (ret3 != ans) {
          printf("wrong : %lf, %lf", ret3, ans);
       }
-      printf("MapTest::TestAggregate() completed\n");
+      printf("MapTest::testAggregate() completed\n");
    }
 }

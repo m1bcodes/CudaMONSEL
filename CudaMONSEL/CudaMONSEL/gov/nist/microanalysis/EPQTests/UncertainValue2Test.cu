@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <math.h>
 
-extern double __longlong_as_double(long long int);
+extern __device__ double __longlong_as_double(long long int);
 
 namespace UncertainValue2Test
 {

@@ -317,7 +317,7 @@ namespace MaterialFactory
                k = std::atof(str.substr(0, p).c_str());
             }
             catch (std::exception&) {
-               printf("Error parsing number: %s\n", str.substr(0, p));
+               printf("Error parsing number: %s\n", str.substr(0, p).c_str());
             }
             CompositionT cr = createCompound(str.substr(p + 1));
             auto elms = cr.getElementSet();

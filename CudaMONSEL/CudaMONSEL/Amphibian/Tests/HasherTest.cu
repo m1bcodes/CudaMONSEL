@@ -6,14 +6,14 @@
 
 namespace HasherTest
 {
-   __device__ void Equals(unsigned int hash, unsigned int target)
+   __host__ __device__ void Equals(unsigned int hash, unsigned int target)
    {
       if (hash != target) {
          printf("Hash not equal: (%u, %u)\n", hash, target);
       }
    }
 
-   __device__ void TestOne()
+   __host__ __device__ void TestOne()
    {
       char* key = "abcdefghijklmnopqrstuvwxyz1234567890";
 

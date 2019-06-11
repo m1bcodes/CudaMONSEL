@@ -70,6 +70,8 @@ namespace amp
       // iterators
       __host__ __device__ iterator begin();
       __host__ __device__ iterator end();
+      __host__ __device__ iterator cbegin();
+      __host__ __device__ iterator cend();
 
    private:
       __host__ __device__ LinkedList::Node<T>* GetBucket(int);
@@ -399,6 +401,20 @@ namespace amp
       unordered_set<T, Hash, Pred>::iterator res(*this);
       res.end();
       return res;
+   }
+
+   // TODO: implemented properly
+   template<typename T, typename Hash, typename Pred>
+   __host__ __device__ unordered_set<T, Hash, Pred>::iterator unordered_set<T, Hash, Pred>::cbegin()
+   {
+      return begin();
+   }
+
+   // TODO: implemented properly
+   template<typename T, typename Hash, typename Pred>
+   __host__ __device__ unordered_set<T, Hash, Pred>::iterator unordered_set<T, Hash, Pred>::cend()
+   {
+      return end();
    }
 }
 

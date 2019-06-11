@@ -5,6 +5,7 @@
 #include <algorithm>
 
 #include "Amphibian\Hasher.cuh"
+#include "Amphibian\String.cuh"
 
 namespace UncertainValue2
 {
@@ -22,7 +23,8 @@ namespace UncertainValue2
    {
       char tmpName[MAX_LEN];
       memcpy(tmpName, DEFAULT, sizeof(DEFAULT));
-      itoa(sDefIndex++, tmpName + sizeof(DEFAULT), MAX_LEN - sizeof(DEFAULT));
+      //itoa(sDefIndex++, tmpName + sizeof(DEFAULT), MAX_LEN - sizeof(DEFAULT));
+      amp::IToA(sDefIndex++, tmpName + sizeof(DEFAULT), MAX_LEN - sizeof(DEFAULT));
       assignComponent(tmpName, dv);
    }
 
@@ -78,14 +80,19 @@ namespace UncertainValue2
 
    unsigned int UncertainValue2::hashCode() const
    {
-      unsigned int res = 1;
-      const unsigned int PRIME = 31;
-      auto khashfcn = mSigmas.hash_function();
-      Hasher::DoubleHashFcn vhashfcn;
-      for (auto s : mSigmas) {
-         res = res * PRIME + khashfcn(s.first);
-         res = res * PRIME + vhashfcn(s.second);
-      }
+      //unsigned int res = 1;
+      //const unsigned int PRIME = 31;
+      //auto khashfcn = mSigmas.hash_function();
+      //Hasher::DoubleHashFcn vhashfcn;
+      //for (auto s : mSigmas) {
+      //   res = res * PRIME + khashfcn(s.first);
+      //   res = res * PRIME + vhashfcn(s.second);
+      //}
+      //return res;
+
+      // https://docs.oracle.com/javase/8/docs/api/java/util/Arrays.html#hashCode-java.lang.Object:A-
+      unsigned int res = Hasher::APHash((char*)&mValue, sizeof(double));
+      res = Hasher::APHash((char*)&mSigmas, sizeof(ComponentMapT*));
       return res;
    }
 
@@ -460,27 +467,27 @@ namespace UncertainValue2
       return pow(uv, 0.5);
    }
 
-   UncertainValue2::ResultT quadratic(const UncertainValue2& a, const UncertainValue2& b, const UncertainValue2& c)
-   {
-      // q=-0.5*(b+signum(b)*sqrt(pow(b,2.0)-4*a*c))
-      // return [ q/a, c/q ]
-      auto uv0 = pow(b, 2.0);
-      auto uv1 = multiply(a, c);
-      UncertainValue2 r = add(1.0, uv0, -4.0, uv1);
-      if (r.doubleValue() <= 0.0) {
-         return UncertainValue2::ResultT();
-      }
-      auto uv2 = r.sqrt();
-      auto uv3 = multiply(copysign(1.0, b.doubleValue()), uv2);
-      auto uv4 = add(b, uv3);
-      UncertainValue2 q = multiply(-0.5, uv4);
-      auto uv5 = divide(q, a);
-      auto uv6 = divide(c, q);
-      UncertainValue2::ResultT head;
-      head.push_back(uv5);
-      head.push_back(uv6);
-      return head;
-   }
+   //UncertainValue2::ResultT quadratic(const UncertainValue2& a, const UncertainValue2& b, const UncertainValue2& c)
+   //{
+   //   // q=-0.5*(b+signum(b)*sqrt(pow(b,2.0)-4*a*c))
+   //   // return [ q/a, c/q ]
+   //   auto uv0 = pow(b, 2.0);
+   //   auto uv1 = multiply(a, c);
+   //   UncertainValue2 r = add(1.0, uv0, -4.0, uv1);
+   //   if (r.doubleValue() <= 0.0) {
+   //      return UncertainValue2::ResultT();
+   //   }
+   //   auto uv2 = r.sqrt();
+   //   auto uv3 = multiply(copysign(1.0, b.doubleValue()), uv2);
+   //   auto uv4 = add(b, uv3);
+   //   UncertainValue2 q = multiply(-0.5, uv4);
+   //   auto uv5 = divide(q, a);
+   //   auto uv6 = divide(c, q);
+   //   UncertainValue2::ResultT head;
+   //   head.push_back(uv5);
+   //   head.push_back(uv6);
+   //   return head;
+   //}
 
    double UncertainValue2::doubleValue() const
    {
@@ -637,7 +644,7 @@ namespace UncertainValue2
       return mSource2 < k2.mSource2;
    }
 
-   size_t Key::HashCode() const
+   size_t Key::hashCode() const
    {
       unsigned int s = 0;
       for (auto ch : mSource1) {

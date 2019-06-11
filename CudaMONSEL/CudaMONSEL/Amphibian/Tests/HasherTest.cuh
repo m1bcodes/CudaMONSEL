@@ -5,7 +5,7 @@
 
 namespace HasherTest
 {
-   __device__ void TestOne();
+   __host__ __device__ void TestOne();
 }
 
 #endif

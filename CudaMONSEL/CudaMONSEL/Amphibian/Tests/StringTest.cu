@@ -58,22 +58,22 @@ namespace StringTest
       char num[MAX_LEN];
       memset(num, NULL_CHAR, MAX_LEN);
 
-      amp::IToA(num, 0, MAX_LEN);
-      assertTrue(amp::AreEqual(num, "0"));
-      amp::IToA(num, 1, MAX_LEN);
-      assertTrue(amp::AreEqual(num, "1"));
-      amp::IToA(num, 12, MAX_LEN);
-      assertTrue(amp::AreEqual(num, "12"));
-      amp::IToA(num, 123, MAX_LEN);
-      assertTrue(amp::AreEqual(num, "123"));
-      amp::IToA(num, -1, MAX_LEN);
-      assertTrue(amp::AreEqual(num, "-1"));
-      amp::IToA(num, -12, MAX_LEN);
-      assertTrue(amp::AreEqual(num, "-12"));
-      amp::IToA(num, -123, MAX_LEN);
-      assertTrue(amp::AreEqual(num, "-123"));
-      amp::IToA(num, -2147483647, MAX_LEN);
-      assertTrue(amp::AreEqual(num, "-2147483647"));
+      amp::IToA(0, num, MAX_LEN);
+      assertTrue(amp::equal(num, "0"));
+      amp::IToA(1, num, MAX_LEN);
+      assertTrue(amp::equal(num, "1"));
+      amp::IToA(12, num, MAX_LEN);
+      assertTrue(amp::equal(num, "12"));
+      amp::IToA(123, num, MAX_LEN);
+      assertTrue(amp::equal(num, "123"));
+      amp::IToA(-1, num, MAX_LEN);
+      assertTrue(amp::equal(num, "-1"));
+      amp::IToA(-12, num, MAX_LEN);
+      assertTrue(amp::equal(num, "-12"));
+      amp::IToA(-123, num, MAX_LEN);
+      assertTrue(amp::equal(num, "-123"));
+      amp::IToA(-2147483647, num, MAX_LEN);
+      assertTrue(amp::equal(num, "-2147483647"));
 
       printf("StringTest::ItoATest() completed\n");
    }

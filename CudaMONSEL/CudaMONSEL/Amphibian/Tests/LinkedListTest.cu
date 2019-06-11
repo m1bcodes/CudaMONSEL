@@ -8,24 +8,25 @@ namespace LinkedListTest
    class TestClassA
    {
    public:
-      __device__ TestClassA() : val(0), list(NULL)
+      __host__ __device__ TestClassA() : val(0), list(nullptr)
       {
       }
 
-      __device__ TestClassA(double v, char name[], double s) : val(v)
+      __host__ __device__ TestClassA(double v, char name[], double s) : val(v)
       {
          amp::string nameStr(name);
          LinkedListKV::InsertHead<amp::string, double>(&list, nameStr, s);
       }
 
+   private:
       double val;
       LinkedListKV::Node<amp::string, double>* list;
    };
 
-   __device__ void PrintList(LinkedList::Node<LinkedListTestType>* head)
+   __host__ __device__ void PrintList(LinkedList::Node<LinkedListTestType>* head)
    {
       while (true) {
-         if (head != NULL) {
+         if (head != nullptr) {
             printf("%d, ", head->GetValue());
          }
          else {
@@ -36,13 +37,13 @@ namespace LinkedListTest
       }
    }
 
-   __device__ LinkedListTest::LinkedListTest()
+   __host__ __device__ LinkedListTest::LinkedListTest()
    {
    }
 
-   __device__ void LinkedListTest::InsertionTest()
+   __host__ __device__ void LinkedListTest::InsertionTest()
    {
-      LinkedList::Node<int> * head = NULL;
+      LinkedList::Node<int> * head = nullptr;
       LinkedList::Node<int>** newHeadAddr = &head;
       int v1 = 0, v2 = 1, v3 = 2;
       LinkedList::InsertNext(newHeadAddr, v1);
@@ -51,7 +52,7 @@ namespace LinkedListTest
       LinkedList::InsertNext(newHeadAddr, v3);
    
       PrintList(head);
-      LinkedList::Node<int> * head2 = NULL;
+      LinkedList::Node<int> * head2 = nullptr;
       LinkedList::DeepCopy(&head2, head);
       LinkedList::RemoveAll(&head);
       PrintList(head);
@@ -60,21 +61,21 @@ namespace LinkedListTest
       PrintList(head2);
    }
 
-   __device__ void LinkedListTest::TestAddAllAsSet()
+   __host__ __device__ void LinkedListTest::TestAddAllAsSet()
    {
-      LinkedList::Node<LinkedListTestType>* head = NULL;
+      LinkedList::Node<LinkedListTestType>* head = nullptr;
       int a[] = { 0, 1, 2, 3 };
       int b[] = { 0, 1, 2, 3 };
       int c[] = { 5 };
 
-      LinkedList::Node<LinkedListTestType>* alist = NULL, * blist = NULL, * clist = NULL;
+      LinkedList::Node<LinkedListTestType>* alist = nullptr, * blist = nullptr, * clist = nullptr;
       LinkedList::BuildList(&alist, a, 4);
       LinkedList::BuildList(&blist, b, 4);
       LinkedList::BuildList(&clist, c, 1);
-      printf("LinkedListTest::testAddAllAsSet completed\n");
+      printf("LinkedListTest::TestAddAllAsSet completed\n");
    }
 
-   __device__ void BuildList1(LinkedListKV::Node<amp::string, float>** head)
+   __host__ __device__ void BuildList1(LinkedListKV::Node<amp::string, float>** head)
    {
       amp::string a("a");
       amp::string b("b");
@@ -87,7 +88,7 @@ namespace LinkedListTest
       LinkedListKV::InsertHead(head, c, v3);
    }
    
-   __device__ void BuildList2(LinkedListKV::Node<amp::string, float>** head)
+   __host__ __device__ void BuildList2(LinkedListKV::Node<amp::string, float>** head)
    {
       amp::string a("a");
       amp::string b("b");
@@ -100,9 +101,9 @@ namespace LinkedListTest
       LinkedListKV::InsertHead(head, a1, v3);
    }
    
-   __device__ void PrintListInOrder(LinkedListKV::Node<amp::string, float>* head)
+   __host__ __device__ void PrintListInOrder(LinkedListKV::Node<amp::string, float>* head)
    {
-      if (head != NULL) {
+      if (head != nullptr) {
          printf("%s: %f\n", head->GetKey().c_str(), head->GetValue());
          PrintListInOrder(head->GetNext());
       }
@@ -114,8 +115,8 @@ namespace LinkedListTest
       __syncthreads();
    #endif
 
-      LinkedListKV::Node<amp::string, float>* head1 = NULL;
-      LinkedListKV::Node<amp::string, float>* head2 = NULL;
+      LinkedListKV::Node<amp::string, float>* head1 = nullptr;
+      LinkedListKV::Node<amp::string, float>* head2 = nullptr;
       printf("A\n");
       BuildList1(&head1);
       BuildList2(&head2);
@@ -128,7 +129,7 @@ namespace LinkedListTest
    #endif
    }
 
-   //__device__ amp::pAreEqual pEqual = amp::AreEqual;
+   //__host__ __device__ amp::pAreEqual pEqual = amp::AreEqual;
    //
    //int main()
    //{
@@ -141,4 +142,22 @@ namespace LinkedListTest
    //
    //   return 0;
    //}
+
+   __host__ __device__ void TestListKV()
+   {
+      LinkedListKV::Node<amp::string, int>* pairlist = new LinkedListKV::Node<amp::string, int>("a", 1, nullptr);
+      amp::string k = "b";
+      int v = 2;
+      LinkedListKV::InsertHead(&pairlist, k, v);
+      k = "c";
+      v = 3;
+      LinkedListKV::InsertHead(&pairlist, k, v);
+
+      while (pairlist) {
+         printf("%s, %d\n", ((amp::string&)(pairlist->first)).c_str(), (int)pairlist->second);
+         pairlist = pairlist->GetNext();
+      }
+
+      printf("LinkedListTest::TestListKV() completed.\n");
+   }
 }

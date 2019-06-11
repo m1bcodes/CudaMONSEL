@@ -246,6 +246,26 @@ namespace LinkedListKV
       __host__ __device__ void UpdateNext(Node* newNext);
       __host__ __device__ void MapVal(const ValueT&, const ValueT&(*mapper)(const ValueT&, ValueT&));
 
+      class First
+      {
+      public:
+         __host__ __device__ First(Node& node) : node(node) {}
+         __host__ __device__ operator KeyT&() const { return (KeyT&)node.key; }
+
+      private:
+         Node& node;
+      } first;
+
+      class Second
+      {
+      public:
+         __host__ __device__ Second(Node& node) : node(node) {}
+         __host__ __device__ operator ValueT&() const { return (ValueT&)node.val; }
+
+      private:
+         Node& node;
+      } second;
+
    private:
       KeyT key;
       ValueT val;
@@ -253,12 +273,12 @@ namespace LinkedListKV
    };
 
    template<typename KeyT, typename ValueT>
-   __host__ __device__ Node<KeyT, ValueT>::Node<KeyT, ValueT>()
+   __host__ __device__ Node<KeyT, ValueT>::Node<KeyT, ValueT>() : first(*this), second(*this)
    {
    }
 
    template<typename KeyT, typename ValueT>
-   __host__ __device__ Node<KeyT, ValueT>::Node<KeyT, ValueT>(const KeyT& k, const ValueT& v, Node* n) : key(k), val(v), next(n)
+   __host__ __device__ Node<KeyT, ValueT>::Node<KeyT, ValueT>(const KeyT& k, const ValueT& v, Node* n) : key(k), val(v), next(n), first(*this), second(*this)
    {
    }
 
@@ -327,6 +347,13 @@ namespace LinkedListKV
    __host__ __device__ void InsertHead(Node<KeyT, ValueT>** head, const KeyT& k, const ValueT& v)
    {
       Node<KeyT, ValueT>* newOne = (*head == nullptr) ? new Node<KeyT, ValueT>(k, v, nullptr) : new Node<KeyT, ValueT>(k, v, *head);
+      *head = newOne;
+   }
+
+   template<typename KeyT, typename ValueT>
+   __host__ __device__ void InsertHead(Node<KeyT, ValueT>** head, Node<KeyT, ValueT>* newOne)
+   {
+      newOne->UpdateNext(*head);
       *head = newOne;
    }
 
@@ -422,8 +449,8 @@ namespace LinkedListKV
    {
       KCompare kcmp;
       while (head != nullptr) {
-         KeyT v = head->GetKey();
-         if (kcmp(v, target)) {
+         KeyT k = head->GetKey();
+         if (kcmp(k, target)) {
             return head;
          }
          head = head->GetNext();
@@ -515,23 +542,13 @@ namespace LinkedListKV
    //}
 }
 
-// Advanced Templates
-
-//namespace AdvancedLinkedList
-//{
-//   template<typename K, typename V>
-//   __host__ __device__ void AddAllKeys(LinkedList::Node<K>** headAddr, LinkedListKV::Node<K, V>* dataHead, bool (*KeyCmp)(K&, K&))
-//   {
-//      if (dataHead == nullptr) {
-//         return;
-//      }
-//      while (dataHead != nullptr) {
-//         if (!LinkedList::Exists<K>(*headAddr, dataHead->GetKey(), KeyCmp)) {
-//            LinkedList::InsertHead<K>(headAddr, dataHead->GetKey());
-//         }
-//         dataHead = dataHead->GetNext();
-//      }
-//   }
-//}
+namespace amp
+{
+   template<typename First, typename Second>
+   __host__ __device__ LinkedListKV::Node<First, Second>* make_pair(First first, Second second)
+   {
+      return new LinkedListKV::Node<First, Second>(first, second, nullptr);
+   }
+}
 
 #endif

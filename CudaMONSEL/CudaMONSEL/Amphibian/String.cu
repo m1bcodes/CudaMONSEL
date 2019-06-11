@@ -14,6 +14,7 @@ namespace amp
 
    __host__ __device__ string::string(const string& s)
    {
+      if (&s == this) return;
       copy(s.str);
    }
 
@@ -35,7 +36,7 @@ namespace amp
 
    __host__ __device__ bool string::operator==(const string& a) const
    {
-      return AreEqual(str, a.str);
+      return equal(str, a.str);
    }
 
    __host__ __device__ const char* string::c_str() const
@@ -69,7 +70,7 @@ namespace amp
       return Hasher::Hash(str, size());
    }
 
-   __host__ __device__ void IToA(char * d, int n, int maxArrayLen)
+   __host__ __device__ void IToA(int n, char * d, int maxArrayLen)
    {
       if (maxArrayLen < 1) {
          return;
@@ -164,13 +165,13 @@ namespace amp
       return res;
    }
 
-   __host__ __device__ bool AreEqual(string& a, string& b)
+   __host__ __device__ bool equal(string& a, string& b)
    {
       if (&a == &b) return true;
       return a == b;
    }
 
-   __host__ __device__ bool AreEqual(char const * const a, char const * const b)
+   __host__ __device__ bool equal(char const * const a, char const * const b)
    {
       int k = 0;
       while (true) {

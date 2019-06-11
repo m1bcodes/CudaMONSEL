@@ -8,6 +8,9 @@
 #include "unordered_set"
 #include "vector"
 
+#include "Amphibian/unordered_map.cuh"
+#include "Amphibian/unordered_set.cuh"
+
 namespace UncertainValue2
 {
    typedef std::string StringT;
@@ -18,7 +21,7 @@ namespace UncertainValue2
       Key(const StringT& src1, const StringT& src2);
       bool operator==(const Key& k2) const;
       bool operator<(const Key& k2) const;
-      size_t HashCode() const;
+      size_t hashCode() const;
 
    private:
       StringT mSource1, mSource2;
@@ -28,7 +31,7 @@ namespace UncertainValue2
    {
       inline bool operator() (const Key& lhs, const Key& rhs) const
       {
-         return lhs < rhs;
+         return lhs == rhs;
       }
    };
 
@@ -36,7 +39,7 @@ namespace UncertainValue2
    {
       inline size_t operator() (const Key& k) const
       {
-         return k.HashCode();
+         return k.hashCode();
       }
    };
 
@@ -59,7 +62,7 @@ namespace UncertainValue2
    public:
       typedef std::unordered_map<StringT, double> ComponentMapT;
       typedef std::unordered_set<StringT> KeySetT;
-      typedef std::vector<UncertainValue2> ResultT;
+      //typedef std::vector<UncertainValue2> ResultT;
 
       UncertainValue2();
       //~UncertainValue2();
@@ -132,7 +135,7 @@ namespace UncertainValue2
    UncertainValue2 log(const UncertainValue2& v2);
    UncertainValue2 pow(const UncertainValue2& v1, double n);
    UncertainValue2 sqrt(const UncertainValue2& uv);
-   UncertainValue2::ResultT quadratic(const UncertainValue2& a, const UncertainValue2& b, const UncertainValue2& c);
+   //UncertainValue2::ResultT quadratic(const UncertainValue2& a, const UncertainValue2& b, const UncertainValue2& c);
    UncertainValue2 sqr(const UncertainValue2& uv);
    UncertainValue2 negate(const UncertainValue2& uv);
    UncertainValue2 atan(const UncertainValue2& uv);

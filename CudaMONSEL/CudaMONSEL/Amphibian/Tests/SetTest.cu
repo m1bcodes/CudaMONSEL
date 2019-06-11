@@ -9,7 +9,7 @@ namespace SetTest
 {
    struct IntCompare
    {
-      __device__ inline bool operator() (const int& lhs, const int& rhs) const
+      __host__ __device__ inline bool operator() (const int& lhs, const int& rhs) const
       {
          if (&rhs == &lhs) return true;
          return lhs == rhs;
@@ -28,11 +28,11 @@ namespace SetTest
    //   }
    //}
 
-   __device__ SetTest::SetTest()
+   __host__ __device__ SetTest::SetTest()
    {
    }
 
-   __device__ void SetTest::TestIntBasic()
+   __host__ __device__ void SetTest::testIntBasic()
    {
       int a = 1, b = 1;
       IntCompare cmp;
@@ -54,10 +54,10 @@ namespace SetTest
       //}
       //printf("\n");
 
-      printf("SetTest::TestIntBasic() completed.\n");
+      printf("SetTest::testIntBasic() completed.\n");
    }
 
-   __device__ void SetTest::TestInt()
+   __host__ __device__ void SetTest::testInt()
    {
       amp::unordered_set<int, Hasher::IntHashFcn, IntCompare> set;
 
@@ -104,10 +104,10 @@ namespace SetTest
          }
       }
 
-      printf("SetTest::TestInt() completed.\n");
+      printf("SetTest::testInt() completed.\n");
    }
 
-   __device__ void SetTest::TestInt2()
+   __host__ __device__ void SetTest::testInt2()
    {
       amp::unordered_set<int, Hasher::IntHashFcn, IntCompare> set1;
 
@@ -137,13 +137,13 @@ namespace SetTest
          printf("HashCodes are different: %u, %u", h1, h2);
       }
 
-      printf("SetTest::TestInt2() completed.\n");
+      printf("SetTest::testInt2() completed.\n");
    }
 
    typedef amp::unordered_set<amp::string, amp::string_hash, amp::string_cmp> StringTestT;
    typedef amp::unordered_set<amp::string, amp::string_hash, amp::string_cmp>::iterator StringTestTItr;
 
-   __device__ void SetTest::TestString()
+   __host__ __device__ void SetTest::testString()
    {
       StringTestT set;
       
@@ -208,7 +208,7 @@ namespace SetTest
          printf("different sizes: (%d, %d)", c2, set2.size());
       }
 
-      printf("SetTest::TestString() completed.\n");
+      printf("SetTest::testString() completed.\n");
    }
 
    //class ClassSet

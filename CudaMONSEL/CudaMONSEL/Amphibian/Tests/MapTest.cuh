@@ -4,23 +4,23 @@
 #include <cuda_runtime.h>
 
 #include "Amphibian/Hasher.cuh"
-#include "Amphibian/Map.cuh"
+#include "Amphibian/unordered_map.cuh"
 
 namespace MapTest
 {
    class MapTest
    {
    public:
-      __device__ MapTest();
-      __device__ void TestInteger();
-      __device__ void TestString();
-      __device__ void TestMapOfMap();
-      __device__ void TestAggregate();
+      __host__ __device__ MapTest();
+      __host__ __device__ void testInteger();
+      __host__ __device__ void testString();
+      __host__ __device__ void testMapOfMap();
+      __host__ __device__ void testAggregate();
 
       template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
-      __device__ Map::Map<K, V, KCompare, VCompare, KHasher, VHasher> CreateMapA(K& k, V& v)
+      __host__ __device__ unordered_map::unordered_map<K, V, KCompare, VCompare, KHasher, VHasher> CreateMapA(K& k, V& v)
       {
-         Map::Map<K, V, KCompare, VCompare, KHasher, VHasher> m1;
+         unordered_map::unordered_map<K, V, KCompare, VCompare, KHasher, VHasher> m1;
          m1.Put(k, v);
 
          return m1;

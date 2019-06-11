@@ -56,47 +56,60 @@
 
 __global__ void testKernel()
 {
-   HasherTest::TestOne();
-
-   LinkedListTest::LinkedListTest lltest;
-   lltest.TestAddAllAsSet();
-
-   SetTest::SetTest setTest;
-   setTest.TestIntBasic();
-   setTest.TestInt();
-   setTest.TestInt2();
-   setTest.TestString();
-   //setTest.TestSetOfSetOfString();
-
-   MapTest::MapTest mapTest;
-   mapTest.TestInteger();
-   mapTest.TestString();
-   mapTest.TestMapOfMap();
-
    curandState state;
    int i = threadIdx.x + blockDim.x * blockIdx.x;
    curand_init(1234, i, 0, &state);
    Math2Test::testRandom1CUDA(state);
    Math2Test::testRandom2CUDA(state);
 
-   int arr[5];
-   arr[0] = 0;
-   arr[1] = 1;
-   arr[2] = 2;
-   arr[3] = 3;
-   arr[4] = 4;
+   HasherTest::TestOne();
 
-   for (int a : arr) {
-      printf("%d, ", a);
-   }
-   printf("\n");
+   LinkedListTest::LinkedListTest lltest;
+   lltest.InsertionTest();
+   lltest.TestAddAllAsSet();
+
+   SetTest::SetTest setTest;
+   setTest.testIntBasic();
+   setTest.testInt();
+   setTest.testInt2();
+   setTest.testString();
+   //setTest.TestSetOfSetOfString();
+
+   MapTest::MapTest mapTest;
+   mapTest.testInteger();
+   mapTest.testString();
+   mapTest.testMapOfMap();
 }
 
-int main()
+void GPUTest()
 {
+   printf("-----------------GPU-----------------------------\n");
    testKernel<<<1, 1>>>();
    checkCudaErrors(cudaDeviceSynchronize());
    checkCudaErrors(cudaGetLastError());
+}
+
+void CPUTests()
+{
+   printf("-----------------CPU-----------------------------\n");
+   HasherTest::TestOne();
+
+   LinkedListTest::LinkedListTest lltest;
+   lltest.InsertionTest();
+   lltest.TestAddAllAsSet();
+   LinkedListTest::TestListKV();
+
+   SetTest::SetTest setTest;
+   setTest.testIntBasic();
+   setTest.testInt();
+   setTest.testInt2();
+   setTest.testString();
+   //setTest.TestSetOfSetOfString();
+
+   MapTest::MapTest mapTest;
+   mapTest.testInteger();
+   mapTest.testString();
+   mapTest.testMapOfMap();
 
    EdgeEnergy::DiracHartreeSlaterIonizationEnergies::loadxionUis();
    EdgeEnergy::NISTEdgeEnergy::loadNISTxrtdb();
@@ -123,7 +136,7 @@ int main()
    printf("%d\n", v1.equals(v2));
    printf("%d\n", v1.equals(v3));
    printf("%d\n", v2.equals(v3));
-   
+
    UncertainValue2Test::UncertainValue2Test uvTest;
    uvTest.testSpecialValues();
    uvTest.testA();
@@ -136,7 +149,7 @@ int main()
    uvTest.testMultiply();
    uvTest.testDivide();
    uvTest.testFunctions();
-   
+
    ElementTest::ElementTest elementTest;
    elementTest.testZero();
    elementTest.testOne();
@@ -149,7 +162,7 @@ int main()
    EdgeEnergyTest::testOne();
 
    MeanIonizationPotentialTest::testOne();
-   
+
    SphereTest::testContains();
    SphereTest::testGetFirstIntersection();
 
@@ -176,6 +189,34 @@ int main()
    SumShapeTest::testAll();
 
    LinesOnLayers::run();
+}
+
+class Foo
+{
+public:
+   __host__ __device__ Foo(int v) : v(v), alpha(*this) {}
+
+   class Property
+   {
+   public:
+      __host__ __device__ Property(Foo& f) : f(f) {}
+      __host__ __device__ operator int() const { return (int)f.v; }
+
+   private:
+      Foo& f;
+   } alpha;
+
+private:
+   int v;
+};
+
+int main()
+{
+   Foo foo(999);
+   printf("%d\n", (int)(foo.alpha));
+
+   GPUTest();
+   CPUTests();
 
    return 0;
 }

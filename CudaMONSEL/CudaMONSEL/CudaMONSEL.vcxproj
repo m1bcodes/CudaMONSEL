@@ -120,7 +120,7 @@
     <ClInclude Include="Amphibian\Comparator.cuh" />
     <ClInclude Include="Amphibian\Hasher.cuh" />
     <ClInclude Include="Amphibian\LinkedList.cuh" />
-    <ClInclude Include="Amphibian\Map.cuh" />
+    <ClInclude Include="Amphibian\unordered_map.cuh" />
     <ClInclude Include="Amphibian\unordered_set.cuh" />
     <ClInclude Include="Amphibian\String.cuh" />
     <ClInclude Include="Amphibian\Tests\HasherTest.cuh" />

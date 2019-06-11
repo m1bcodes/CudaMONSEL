@@ -8,11 +8,11 @@ namespace SetTest
    class SetTest
    {
    public:
-      __device__ SetTest();
-      __device__ void TestIntBasic();
-      __device__ void TestInt();
-      __device__ void TestInt2();
-      __device__ void TestString();
+      __host__ __device__ SetTest();
+      __host__ __device__ void testIntBasic();
+      __host__ __device__ void testInt();
+      __host__ __device__ void testInt2();
+      __host__ __device__ void testString();
       //__device__ void TestSetOfSetOfString();
    };
 }

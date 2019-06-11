@@ -39,10 +39,11 @@ namespace amp
       char str[MAX_LEN];
    };
 
-   __host__ __device__ void IToA(char *, int, int maxArrayLen = 11 /* integer limit */);
+   __host__ __device__ void IToA(int, char *, int maxArrayLen = 11 /* integer limit */);
    __host__ __device__ int AToI(char const *);
    //__host__ __device__ float AToF(char*);
    //__host__ __device__ double AToD(char*);
+
    template<typename T>
    __host__ __device__ T AToF(char const * d)
    {
@@ -78,8 +79,8 @@ namespace amp
    }
 
    typedef bool(*pStrCmp)(string&, string&);
-   __host__ __device__ bool AreEqual(string&, string&);
-   __host__ __device__ bool AreEqual(char const * const a, char const * const b);
+   __host__ __device__ bool equal(string&, string&);
+   __host__ __device__ bool equal(char const * const a, char const * const b);
    __host__ __device__ bool StartsWith(char* src, char* target);
 
    struct string_cmp
