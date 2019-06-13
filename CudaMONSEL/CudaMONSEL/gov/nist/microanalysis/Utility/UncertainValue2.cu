@@ -24,7 +24,7 @@ namespace UncertainValue2
       char tmpName[MAX_LEN];
       memcpy(tmpName, DEFAULT, sizeof(DEFAULT));
       //itoa(sDefIndex++, tmpName + sizeof(DEFAULT), MAX_LEN - sizeof(DEFAULT));
-      amp::IToA(sDefIndex++, tmpName + sizeof(DEFAULT), MAX_LEN - sizeof(DEFAULT));
+      amp::IToA(sDefIndex++, tmpName + sizeof(DEFAULT), MAX_LEN - sizeof(DEFAULT)); // eg Default1, Default2 etc
       assignComponent(tmpName, dv);
    }
 
@@ -82,12 +82,12 @@ namespace UncertainValue2
    {
       // https://docs.oracle.com/javase/8/docs/api/java/util/Arrays.html#hashCode-java.lang.Object:A-
       unsigned int res = 1;
+      static const unsigned int PRIME = 31; // https://docs.oracle.com/javase/8/docs/api/java/util/List.html#hashCode--
       //auto khashfcn = mSigmas.hash_function();
       amp::string_hash khashfcn;
       Hasher::DoubleHashFcn vhashfcn;
-      for (auto s : mSigmas) {
-         res += khashfcn(s.first) ^ vhashfcn((double)s.second);
-      }
+      res += PRIME * res + (long long)((long long)mValue ^ ((long long)mValue >> 32)); // https://docs.oracle.com/javase/7/docs/api/java/lang/Double.html#hashCode()
+      res += PRIME * res + mSigmas.hashCode();
       return res;
    }
 
@@ -652,15 +652,16 @@ namespace UncertainValue2
 
    size_t Key::hashCode() const
    {
-      unsigned int s = 0;
+      //unsigned int s = 0;
       //for (auto ch : mSource1) {
       //   s += ch;
       //}
       //for (auto ch : mSource2) {
       //   s += ch;
       //}
-      s = mSource1.hashcode() + mSource2.hashcode();
-      return s;
+      //return s;
+
+      return mSource1.hashCode() + mSource2.hashCode();;
    }
 
    Correlations::Correlations()

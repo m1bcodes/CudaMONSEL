@@ -11,6 +11,8 @@ namespace StringTest
    __host__ __device__ void AtoITest();
    __host__ __device__ void AtoFTest();
    __host__ __device__ void ItoATest();
+   __host__ __device__ void findTest();
+   __host__ __device__ void addTest();
 };
 
 #endif

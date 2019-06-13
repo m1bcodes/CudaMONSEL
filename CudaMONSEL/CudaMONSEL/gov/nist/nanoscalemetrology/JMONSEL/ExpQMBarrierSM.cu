@@ -216,6 +216,6 @@ namespace ExpQMBarrierSM
 
    StringT ExpQMBarrierSM::toString() const
    {
-      return "ExpQMBarrierSM(" + mat->toString() + "," + std::to_string(u0) + "," + std::to_string(lambda) + ")";
+      return "ExpQMBarrierSM(" + StringT(mat->toString()) + "," + std::to_string(u0) + "," + std::to_string(lambda) + ")";
    }
 }

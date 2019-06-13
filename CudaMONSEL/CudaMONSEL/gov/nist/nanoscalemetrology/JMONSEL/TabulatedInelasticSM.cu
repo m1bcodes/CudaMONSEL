@@ -465,7 +465,7 @@ namespace TabulatedInelasticSM
    void TabulatedInelasticSM::setMaterial(const MaterialT* mat)
    {
       if (!(mat->isSEmaterial()))
-         printf("Material %s is not an SEmaterial as required for TabulatedInelasticSM.", mat->toString().c_str());
+         printf("Material %s is not an SEmaterial as required for TabulatedInelasticSM.", mat->toString());
 
       const SEmaterialT* semat = (SEmaterialT*)mat;
 

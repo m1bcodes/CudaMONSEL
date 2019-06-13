@@ -27,7 +27,7 @@ namespace Gas
    {
    }
 
-   Gas::Gas(ElementT elms[], int stoic[], int len, double pressure, double temperature, StringT name) : Material(0.0), mTemperature(temperature), mPressure(pressure)
+   Gas::Gas(ElementT elms[], int stoic[], int len, double pressure, double temperature, const char* name) : Material(0.0), mTemperature(temperature), mPressure(pressure)
    {
       for (int i = 0; i < len; ++i)
          addElementByStoiciometry(elms[i], stoic[i]);

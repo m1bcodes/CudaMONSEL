@@ -155,7 +155,11 @@ namespace UncertainValue2Test
       UncertainValue2::UncertainValue2 mA2a(makeA2a());
       UncertainValue2::UncertainValue2 mB(8.82, "B", 1.2);
       UncertainValue2::UncertainValue2 mB2a(makeB2a());
-      
+
+      UncertainValue2::UncertainValue2 mA2a1(makeA2a());
+      UncertainValue2::UncertainValue2 mA2a2(makeA2a());
+      assertEquals(mA2a1.hashCode(), mA2a2.hashCode(), 0.0001);
+
       //auto pp = mA.getComponents();
       //printf("abc\n");
       //printf("mA comp: %d\n", pp.Size());

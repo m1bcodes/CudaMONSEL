@@ -97,4 +97,30 @@ namespace StringTest
 
       printf("StringTest::AtoFTest() completed\n");
    }
+
+   __host__ __device__ void findTest()
+   {
+      amp::string s0("abcd  efgh 123");
+      assertTrue(s0.find("abc") == 0);
+      assertTrue(s0.find("ef") == 6);
+      assertTrue(s0.find(" 12") == 10);
+      assertTrue(s0.find("123") == 11);
+      assertTrue(s0.find("1234") == -1);
+
+      printf("StringTest::findTest() completed\n");
+   }
+
+   __host__ __device__ void addTest()
+   {
+      amp::string s0("abcd");
+      amp::string s1("+");
+      s0 += s1;
+      amp::string s2 = s0 + "1234";
+      amp::string s3("abcd+1234");
+      printf("%s\n", s2.c_str());
+      printf("%s\n", s3.c_str());
+      assertTrue(s2 == s3);
+
+      printf("StringTest::addTest() completed\n");
+   }
 }

@@ -4,39 +4,39 @@
 
 namespace MaterialFactory
 {
-   const StringT K3189 = "K3189";
-   const StringT RynasAlTiAlloy = "Ryna's Al-Ti alloy";
-   const StringT Mylar = "Mylar";
-   const StringT VanadiumPentoxide = "Vanadium Pentoxide";
-   const StringT SiliconDioxide = "Silicon Dioxide";
-   const StringT Ice = "Ice";
-   const StringT PerfectVacuum = "Perfect vacuum";
-   const StringT CaCO3 = "Calcium carbonate";
-   const StringT Al2O3 = "Alumina";
-   const StringT SS316 = "Stainless Steel 316";
-   const StringT UraniumOxide = "Uranium oxide";
-   const StringT K227 = "K227";
-   const StringT K309 = "K309";
-   const StringT K411 = "K411";
-   const StringT K412 = "K412";
-   const StringT K961 = "K961";
-   const StringT K1080 = "K1080";
-   const StringT K2450 = "K2450";
-   const StringT K2451 = "K2451";
-   const StringT K2466 = "K2466";
-   const StringT K2469 = "K2469";
-   const StringT K2472 = "K2472";
-   const StringT K2496 = "K2496";
-   const StringT ParaleneC = "Paralene C";
-   const StringT MagnesiumOxide = "Magnesium Oxide";
-   const StringT Chloroapatite = "Chloroapatite";
-   const StringT CalciumFluoride = "Calcium Fluoride";
-   const StringT GalliumPhosphate = "Gallium Phosphate";
-   const StringT Nothing = "None";
+   const char* K3189 = "K3189";
+   const char* RynasAlTiAlloy = "Ryna's Al-Ti alloy";
+   const char* Mylar = "Mylar";
+   const char* VanadiumPentoxide = "Vanadium Pentoxide";
+   const char* SiliconDioxide = "Silicon Dioxide";
+   const char* Ice = "Ice";
+   const char* PerfectVacuum = "Perfect vacuum";
+   const char* CaCO3 = "Calcium carbonate";
+   const char* Al2O3 = "Alumina";
+   const char* SS316 = "Stainless Steel 316";
+   const char* UraniumOxide = "Uranium oxide";
+   const char* K227 = "K227";
+   const char* K309 = "K309";
+   const char* K411 = "K411";
+   const char* K412 = "K412";
+   const char* K961 = "K961";
+   const char* K1080 = "K1080";
+   const char* K2450 = "K2450";
+   const char* K2451 = "K2451";
+   const char* K2466 = "K2466";
+   const char* K2469 = "K2469";
+   const char* K2472 = "K2472";
+   const char* K2496 = "K2496";
+   const char* ParaleneC = "Paralene C";
+   const char* MagnesiumOxide = "Magnesium Oxide";
+   const char* Chloroapatite = "Chloroapatite";
+   const char* CalciumFluoride = "Calcium Fluoride";
+   const char* GalliumPhosphate = "Gallium Phosphate";
+   const char* Nothing = "None";
 
    typedef std::unordered_map<StringT, CompositionT*> CompositionMap;
 
-   static const StringT PBaseMaterials[] = {
+   static const char* PBaseMaterials[] = {
       K3189,
       RynasAlTiAlloy,
       Mylar,
@@ -272,7 +272,7 @@ namespace MaterialFactory
       return elMap;
    }
 
-   CompositionT createCompound1(StringT str)
+   CompositionT createCompound1(const char* str)
    {
       ElementMap elMap = parseCompound(str);
       CompositionT comp;
@@ -329,7 +329,7 @@ namespace MaterialFactory
             return ret;
          }
       }
-      return createCompound1(str);
+      return createCompound1(str.c_str());
    }
 
    //static const CompositionT compoundSiO2 = createCompound("SiO2");
@@ -356,15 +356,25 @@ namespace MaterialFactory
 
    void init()
    {
+      //StringT compoundSiO2Name("SiO2");
       compoundSiO2 = createCompound("SiO2");
+      //StringT compoundAl2O3Name("Al2O3");
       compoundAl2O3 = createCompound("Al2O3");
+      //StringT compoundCaOName("CaO");
       compoundCaO = createCompound("CaO");
+      //StringT compoundMgOName("MgO");
       compoundMgO = createCompound("MgO");
+      //StringT compoundTiO2Name("TiO2");
       compoundTiO2 = createCompound("TiO2");
+      //StringT compoundFe2O3Name("Fe2O3");
       compoundFe2O3 = createCompound("Fe2O3");
+      //StringT compoundPbOName("PbO");
       compoundPbO = createCompound("PbO");
+      //StringT compoundBaOName("BaO");
       compoundBaO = createCompound("BaO");
+      //StringT compoundFeOName("FeO");
       compoundFeO = createCompound("FeO");
+      //StringT compoundV2O5Name("V2O5");
       compoundV2O5 = createCompound("V2O5");
    }
 
@@ -468,19 +478,19 @@ namespace MaterialFactory
          else if (name == (K961)) {
             const ElementT* elms[] = { &Element::Na, &Element::Mg, &Element::Al, &Element::Si, &Element::P, &Element::K, &Element::Ca, &Element::Ti, &Element::Mn, &Element::Fe, &Element::O };
             double massFracs[] = { 0.029674, 0.030154, 0.058215, 0.299178, 0.002182, 0.024904, 0.035735, 0.011990, 0.003160, 0.034972, 0.469837 };
-            return MaterialT(elms, 11, massFracs, 11, ToSI::gPerCC(6.0), K961.c_str());
+            return MaterialT(elms, 11, massFracs, 11, ToSI::gPerCC(6.0), K961);
          }
          else if (name == (K1080)) {
             const ElementT* elms[] = { &Element::Li, &Element::B, &Element::Mg, &Element::Al, &Element::Si, &Element::Ca, &Element::Ti, &Element::Sr, &Element::Zr, &Element::Lu, &Element::O };
             double massFracs[] = { 0.027871, 0.006215, 0.008634, 0.079384, 0.186986, 0.107204, 0.011990, 0.126838, 0.007403, 0.017588, 0.416459 };
-            return MaterialT(elms, 11, massFracs, 11, ToSI::gPerCC(6.0), K1080.c_str());
+            return MaterialT(elms, 11, massFracs, 11, ToSI::gPerCC(6.0), K1080);
          }
          else if (name == (K2450)) {
             const CompositionT* cons[] = { &compoundSiO2, &compoundAl2O3, &compoundCaO, &compoundTiO2 };
             double massFracs[] = { 0.30000, 0.30000, 0.30000, 0.10000 };
             CompositionT comp;
             comp.defineByMaterialFraction(cons, 4, massFracs, 4);
-            comp.setName(name);
+            comp.setName(name.c_str());
             return comp;
          }
          else if (name == (K2451)) {
@@ -488,7 +498,7 @@ namespace MaterialFactory
             double massFracs[] = { 0.300000, 0.300000, 0.300000, 0.100000 };
             CompositionT comp;
             comp.defineByMaterialFraction(cons, 4, massFracs, 4);
-            comp.setName(name);
+            comp.setName(name.c_str());
             return comp;
          }
          else if (name == (K2466)) {
@@ -496,7 +506,7 @@ namespace MaterialFactory
             const CompositionT* cons[] = { &compoundSiO2, &compoundBaO, &compoundTiO2 };
             double massFracs[] = { 0.44, 0.48, 0.08 };
             comp.defineByMaterialFraction(cons, 3, massFracs, 3);
-            comp.setName(name);
+            comp.setName(name.c_str());
             return comp;
          }
          else if (name == (K2469)) {
@@ -504,7 +514,7 @@ namespace MaterialFactory
             double massFracs[] = { 0.36, 0.48, 0.16 };
             CompositionT comp;
             comp.defineByMaterialFraction(cons, 3, massFracs, 3);
-            comp.setName(name);
+            comp.setName(name.c_str());
             return comp;
          }
          else if (name == (K2472)) {
@@ -512,7 +522,7 @@ namespace MaterialFactory
             double massFracs[] = { 0.36, 0.48, 0.10, 0.06 };
             CompositionT comp;
             comp.defineByMaterialFraction(cons, 4, massFracs, 4);
-            comp.setName(name);
+            comp.setName(name.c_str());
             return comp;
          }
          else if (name == (K2496)) {
@@ -520,7 +530,7 @@ namespace MaterialFactory
             const CompositionT* cons[] = { &compoundSiO2, &compoundBaO, &compoundTiO2 };
             double massFracs[] = { 0.49, 0.48, 0.03 };
             comp.defineByMaterialFraction(cons, 3, massFracs, 3);
-            comp.setName(name);
+            comp.setName(name.c_str());
             return comp;
          }
          else if (name == (ParaleneC)) {

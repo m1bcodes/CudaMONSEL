@@ -17,12 +17,11 @@ namespace Composition
    class Composition
    {
    public:
-      //typedef std::unordered_map<Element::Element, double, Element::HashFcn> CompositionMap;
-      //typedef std::unordered_map<Element::Element, double, Element::HashFcn>::iterator CompositionMapItr;
-      typedef std::unordered_map<const Element::Element*, UncertainValue2::UncertainValue2, Element::HashFcn> ConstituentsMapT;
-      typedef std::unordered_map<const Element::Element*, UncertainValue2::UncertainValue2, Element::HashFcn>::iterator ConstituentsMapTItr;
+      //typedef std::unordered_map<const Element::Element*, UncertainValue2::UncertainValue2, Element::HashFcn> ConstituentsMapT;
+      typedef amp::unordered_map<const Element::Element*, UncertainValue2::UncertainValue2, Element::CompareFcn, UncertainValue2::CompareFcn, Element::HashFcn, UncertainValue2::HashFcn> ConstituentsMapT;
       typedef std::unordered_map<const Element::Element*, double, Element::HashFcn> ErrorMapT;
-      typedef std::string StringT;
+      //typedef std::string StringT;
+      typedef amp::string StringT;
 
       Composition();
       ~Composition();
@@ -50,7 +49,7 @@ namespace Composition
       UncertainValue2::UncertainValue2 atomicPercentU(const Element::Element&, bool positiveOnly) const;
       void defineByWeightFraction(const Element::Element* elms[], int elmsLen, double wgtFracs[], int wgtFracsLen);
       void defineByWeightFraction(const Element::Element* elms[], int elmsLen, const UncertainValue2::UncertainValue2 wgtFracs[], int wgtFracsLen);
-      void defineByWeightFraction(ConstituentsMapT map);
+      //void defineByWeightFraction(ConstituentsMapT map);
       UncertainValue2::UncertainValue2 stoichiometryU(const Element::Element&) const;
       double atomsPerKg(Element::Element& elm, bool normalized);
       UncertainValue2::UncertainValue2 atomsPerKgU(const Element::Element& elm, bool normalized) const;
@@ -112,14 +111,14 @@ namespace Composition
       double weightAvgAtomicNumber() const;
       double sumWeightFraction() const;
       UncertainValue2::UncertainValue2 sumWeightFractionU() const;
-      StringT toString() const;
+      const char* toString() const;
       ////String::String stoichiometryString();
       ////String::String weightPercentString(bool normalize);
       ////String::String descriptiveString(bool normalize);
       //Element::Element getNthElementByWeight(int n);
       //Element::Element getNthElementByAtomicFraction(int n);
-      void setName(const StringT& name);
-      StringT getName() const;
+      void setName(const char* name);
+      const char* getName() const;
       int compareTo(const Composition& comp) const;
       Composition asComposition() const;
       Composition clone() const;

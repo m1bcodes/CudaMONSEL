@@ -107,6 +107,6 @@ namespace JoyLuoNieminenCSD
 
    StringT JoyLuoNieminenCSD::toString() const
    {
-      return "JoyLuoNieminenCSD(" + mat.toString() + "," + std::to_string(bh) + "," + std::to_string(breakE) + ")";
+      return "JoyLuoNieminenCSD(" + StringT(mat.toString()) + "," + std::to_string(bh) + "," + std::to_string(breakE) + ")";
    }
 }

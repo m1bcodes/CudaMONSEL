@@ -64,6 +64,14 @@ __global__ void testKernel()
 
    HasherTest::TestOne();
 
+   StringTest::EmptyTest();
+   StringTest::TestOne();
+   StringTest::AtoITest();
+   StringTest::AtoFTest();
+   StringTest::ItoATest();
+   StringTest::findTest();
+   StringTest::addTest();
+
    LinkedListTest::LinkedListTest lltest;
    lltest.InsertionTest();
    lltest.TestAddAllAsSet();
@@ -93,6 +101,14 @@ void CPUTests()
 {
    printf("-----------------CPU-----------------------------\n");
    HasherTest::TestOne();
+
+   StringTest::EmptyTest();
+   StringTest::TestOne();
+   StringTest::AtoITest();
+   StringTest::AtoFTest();
+   StringTest::ItoATest();
+   StringTest::findTest();
+   StringTest::addTest();
 
    LinkedListTest::LinkedListTest lltest;
    lltest.InsertionTest();

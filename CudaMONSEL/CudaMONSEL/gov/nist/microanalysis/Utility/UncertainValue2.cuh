@@ -144,6 +144,22 @@ namespace UncertainValue2
    UncertainValue2 atan(const UncertainValue2& uv);
    UncertainValue2 atan2(const UncertainValue2& y, const UncertainValue2& x);
    UncertainValue2 positiveDefinite(const UncertainValue2& uv);
+
+   struct CompareFcn
+   {
+      __host__ __device__ inline bool operator() (const UncertainValue2& uv0, const UncertainValue2& uv1) const
+      {
+         return uv0 == uv1;
+      }
+   };
+
+   struct HashFcn
+   {
+      __host__ __device__ inline unsigned int operator() (const UncertainValue2& uv) const
+      {
+         return uv.hashCode();
+      }
+   };
 }
 
 #endif

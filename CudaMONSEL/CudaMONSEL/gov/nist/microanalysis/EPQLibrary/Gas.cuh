@@ -16,7 +16,7 @@ namespace Gas
 
    public:
       double getMassPerSubunit();
-      Gas(ElementT elms[], int stoic[], int len, double pressure, double temperature, StringT name);
+      Gas(ElementT elms[], int stoic[], int len, double pressure, double temperature, const char* name);
       void setTemperature(double newTemp);
       double getTemperature();
       double getPressure();

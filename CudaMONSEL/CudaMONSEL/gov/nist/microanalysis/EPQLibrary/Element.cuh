@@ -162,14 +162,6 @@ namespace Element
       int mAtomicNumber;
    };
 
-   struct HashFcn
-   {
-      inline unsigned int operator()(const Element* e) const
-      {
-         return e->hashCode();
-      }
-   };
-
    extern const Element None;
    extern const Element H;
    extern const Element He;
@@ -304,6 +296,22 @@ namespace Element
    ElementNameVecT getListOfElements(const Element& minEl, const Element& maxEl);
 
    void init();
+
+   struct HashFcn
+   {
+      inline unsigned int operator()(const Element* e) const
+      {
+         return e->hashCode();
+      }
+   };
+
+   struct CompareFcn
+   {
+      inline bool operator()(const Element* e0, const Element* e1) const
+      {
+         return e0->getAtomicNumber() == e1->getAtomicNumber();
+      }
+   };
 
    typedef std::unordered_set<const Element*, HashFcn> UnorderedSetT;
    typedef std::unordered_set<const Element*, HashFcn> OrderedSetT;

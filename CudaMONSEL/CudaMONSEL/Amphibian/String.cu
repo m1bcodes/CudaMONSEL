@@ -18,7 +18,7 @@ namespace amp
       copy(s.str);
    }
 
-   __host__ __device__ string::string(char const * s)
+   __host__ __device__ string::string(const char s[])
    {
       copy(s);
    }
@@ -53,9 +53,31 @@ namespace amp
          if (str[i] == NULL_CHAR && a.str[i] == NULL_CHAR) return false;
          if (str[i] < a.str[i]) return true;
          if (str[i] > a.str[i]) return false;
-         //if (str[i] == a.str[i]) continue;
          ++i;
       }
+   }
+
+   __host__ __device__ string& string::operator+=(const string& other)
+   {
+      int i = 0;
+      while (str[i]) ++i;
+      if (i >= MAX_LEN) printf("string too long\n");
+      unsigned int otherlen = other.size();
+      if (i + otherlen + 1 > MAX_LEN) printf("new string too long\n");
+      memcpy(str + i, other.str, sizeof(char) * otherlen);
+
+      return *this;
+   }
+
+   __host__ __device__ string& string::operator+=(const char ch)
+   {
+      int i = 0;
+      while (str[i]) ++i;
+      if (i >= MAX_LEN) printf("string too long\n");
+      if (i + 1 + 1 > MAX_LEN) printf("new string too long\n");
+      memcpy(str + i, &ch, sizeof(char));
+
+      return *this;
    }
 
    __host__ __device__ const char* string::c_str() const
@@ -63,11 +85,43 @@ namespace amp
       return str;
    }
 
+   __host__ __device__ int string::find(const char * target) const
+   {
+      int len = 0;
+      while (target[len]) ++len;
+
+      for (int i = 0; i < MAX_LEN - len; ++i) {
+         for (int j = 0; j < len; ++j) {
+            if (str[i + j] != target[j]) break;
+            if (j == len - 1) return i;
+         }
+      }
+
+      return npos;
+   }
+
+   __host__ __device__ string string::substr(size_t pos, size_t len) const
+   {
+      string newstr;
+      memcpy(newstr.str, str + pos, sizeof(char) * len);
+      return newstr;
+   }
+
    __host__ __device__ int string::size() const
    {
       int c = 0;
       while (str[c++] != NULL_CHAR);
       return c;
+   }
+
+   __host__ __device__ int string::length() const
+   {
+      return size();
+   }
+
+   __host__ __device__ const char& string::at(unsigned int i) const
+   {
+      return str[i];
    }
 
    __host__ __device__ void string::copy(char const * s)
@@ -84,7 +138,7 @@ namespace amp
       str[k] = NULL_CHAR;
    }
 
-   __host__ __device__ unsigned int string::hashcode() const
+   __host__ __device__ unsigned int string::hashCode() const
    {
       return Hasher::Hash(str, size());
    }
@@ -94,7 +148,7 @@ namespace amp
       if (maxArrayLen < 1) {
          return;
       }
-      d[0] = '\0';
+      d[0] = NULL_CHAR;
       if (maxArrayLen == 1) {
          return;
       }
@@ -184,7 +238,7 @@ namespace amp
       return res;
    }
 
-   __host__ __device__ bool equal(string& a, string& b)
+   __host__ __device__ bool equal(const string& a, const string& b)
    {
       if (&a == &b) return true;
       return a == b;
@@ -212,10 +266,10 @@ namespace amp
    {
       int c = 0;
       while (true) {
-         if (target[c] == '\0') {
+         if (target[c] == NULL_CHAR) {
             return true;
          }
-         if (src[c] == '\0') {
+         if (src[c] == NULL_CHAR) {
             return false;
          }
          if (src[c] != target[c]) {
@@ -223,5 +277,19 @@ namespace amp
          }
          ++c;
       }
+   }
+
+   __host__ __device__ string operator+(const string& lhs, const string& rhs)
+   {
+      string newstr(lhs);
+      newstr += rhs;
+      return newstr;
+   }
+
+   __host__ __device__ string operator+(const string& lhs, const char * rhs)
+   {
+      string newstr(lhs);
+      newstr += rhs;
+      return newstr;
    }
 }

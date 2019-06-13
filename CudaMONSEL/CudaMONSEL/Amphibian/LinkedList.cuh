@@ -357,7 +357,7 @@ namespace LinkedListKV
       while (list != nullptr) {
          KeyT k = list->GetKey();
          ValueT v = list->GetValue();
-         auto h = khasher(k) ^ vhasher(v); // https://docs.oracle.com/javase/7/docs/api/java/util/Map.Entry.html#hashCode()
+         unsigned int h = khasher(k) ^ vhasher(v); // https://docs.oracle.com/javase/7/docs/api/java/util/Map.Entry.html#hashCode()
          res += h; // https://docs.oracle.com/javase/7/docs/api/java/util/Map.html#hashCode()
          list = list->GetNext();
       }

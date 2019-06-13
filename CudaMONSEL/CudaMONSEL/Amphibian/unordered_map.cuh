@@ -43,6 +43,7 @@ namespace amp
       __host__ __device__ void insert(LinkedListKVPtr);
       __host__ __device__ bool erase(const K&, V&);
       __host__ __device__ bool erase(const K&);
+      __host__ __device__ void clear();
 
       // hash
       __host__ __device__ unsigned int hashCode() const;
@@ -56,7 +57,6 @@ namespace amp
       __host__ __device__ amp::unordered_set<K, KCompare, KHasher> GetKeys();
       __host__ __device__ unsigned int Hash(const K&) const;
       __host__ __device__ void DeepCopy(const unordered_map& other);
-      __host__ __device__ void RemoveAll();
       __host__ __device__ double Aggregate(double(*fcn)(double)) const;
 
       class iterator
@@ -166,7 +166,7 @@ namespace amp
    __host__ __device__ unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::~unordered_map()
    {
       //printf("called des\n");
-      RemoveAll();
+      clear();
    }
 
    template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
@@ -180,7 +180,7 @@ namespace amp
       }
       for (int k = 0; k < NUM_MAP_BUCKETS; ++k) {
          LinkedListKVPtr itr = other.buckets[k];
-         while (itr != nullptr) {
+         while (itr) {
             K k1 = itr->GetKey();
             V v0, v1;
             bool found0 = GetValue(k1, v0);
@@ -210,11 +210,11 @@ namespace amp
    template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
    __host__ __device__ void unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::DeepCopy(const unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>& other)
    {
-      RemoveAll();
+      clear();
       for (int k = 0; k < NUM_MAP_BUCKETS; ++k) {
          // LinkedListKV::DeepCopy(&buckets, other.buckets[k]); hash function may be different
          LinkedListKVPtr itr = other.buckets[k];
-         while (itr != nullptr) {
+         while (itr) {
             K k = itr->GetKey();
             V v = itr->GetValue();
             Put(k, v);
@@ -243,7 +243,7 @@ namespace amp
       amp::unordered_set<K, KCompare, KHasher> res;
       for (int k = 0; k < NUM_MAP_BUCKETS; ++k) {
          LinkedListKVPtr itr = buckets[k];
-         while (itr != nullptr) {
+         while (itr) {
             res.Put(itr->GetKey());
             itr = itr->GetNext();
          }
@@ -265,7 +265,7 @@ namespace amp
    }
 
    template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
-   __host__ __device__ void unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::RemoveAll()
+   __host__ __device__ void unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::clear()
    {
       for (int k = 0; k < NUM_MAP_BUCKETS; ++k) {
          LinkedListKV::RemoveAll<K, V>(&buckets[k]);
@@ -362,7 +362,7 @@ namespace amp
    __host__ __device__ bool unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::empty() const
    {
       for (int k = 0; k < NUM_MAP_BUCKETS; ++k) {
-         if (buckets[k] != nullptr) {
+         if (buckets[k]) {
             return false;
          }
       }
@@ -375,7 +375,7 @@ namespace amp
       int c = 0;
       for (int k = 0; k < NUM_MAP_BUCKETS; ++k) {
          LinkedListKVPtr itr = buckets[k];
-         while (itr != nullptr) {
+         while (itr) {
             ++c;
             itr = itr->GetNext();
          }
@@ -395,7 +395,7 @@ namespace amp
       double res = 0;
       for (int k = 0; k < NUM_MAP_BUCKETS; ++k) {
          LinkedListKVPtr itr = buckets[k];
-         while (itr != nullptr) {
+         while (itr) {
             const V& v = itr->GetValue();
             res += fcn(v);
             itr = itr->GetNext();
@@ -419,7 +419,7 @@ namespace amp
          return;
       }
       for (int k = 0; k < NUM_MAP_BUCKETS; ++k) {
-         if (refMap.buckets[k] != nullptr) {
+         if (refMap.buckets[k]) {
             bucket = k;
             ptr = refMap.buckets[bucket];
             break;
@@ -433,12 +433,12 @@ namespace amp
       if (bucket == -1) {
          return;
       }
-      if (ptr != nullptr) {
+      if (ptr) {
          ptr = ptr->GetNext();
       }
       if (ptr == nullptr) {
          for (int k = bucket + 1; k < NUM_MAP_BUCKETS; ++k) {
-            if (refMap.buckets[k] != nullptr) {
+            if (refMap.buckets[k]) {
                bucket = k;
                ptr = refMap.buckets[bucket];
                return;
@@ -546,7 +546,7 @@ namespace amp
          return;
       }
       for (int k = 0; k < NUM_MAP_BUCKETS; ++k) {
-         if (refMap.buckets[k] != nullptr) {
+         if (refMap.buckets[k]) {
             bucket = k;
             ptr = refMap.buckets[bucket];
             break;
@@ -560,12 +560,12 @@ namespace amp
       if (bucket == -1) {
          return;
       }
-      if (ptr != nullptr) {
+      if (ptr) {
          ptr = ptr->GetNext();
       }
       if (ptr == nullptr) {
          for (int k = bucket + 1; k < NUM_MAP_BUCKETS; ++k) {
-            if (refMap.buckets[k] != nullptr) {
+            if (refMap.buckets[k]) {
                bucket = k;
                ptr = refMap.buckets[bucket];
                return;

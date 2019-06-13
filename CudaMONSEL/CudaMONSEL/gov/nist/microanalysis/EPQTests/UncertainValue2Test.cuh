@@ -9,6 +9,7 @@ namespace UncertainValue2Test
    {
    public:
       UncertainValue2Test();
+
       void testSpecialValues();
       void testA();
       void testB();
