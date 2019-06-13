@@ -294,7 +294,7 @@ namespace LinesOnLayers
       //for (int i = -100; i < 100; ++i) {
       //   yvals.push_back(i);
       //}
-      for (int i = -256; i < 256; i += 1) {
+      for (int i = -64; i < 64; i += 1) {
          yvals.push_back(i);
       }
 
@@ -312,20 +312,20 @@ namespace LinesOnLayers
       }
 
       VectorXd xvals;
-      double deltax = 1.;
+      double deltax = 5.;
       double x = xstart;
       while (x < xfinestart) {
          xvals.push_back(x);
          x += deltax;
       }
       x = xfinestart;
-      deltax = 0.5;
+      deltax = 1;
       while (x < xfinestop) {
          xvals.push_back(x);
          x += deltax;
       }
       x = xfinestop;
-      deltax = 1.;
+      deltax = 5.;
       while (x < xstop) {
          xvals.push_back(x);
          x += deltax;

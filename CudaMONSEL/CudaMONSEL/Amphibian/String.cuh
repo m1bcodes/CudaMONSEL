@@ -27,6 +27,8 @@ namespace amp
       __host__ __device__ void operator=(char const *);
 
       __host__ __device__ bool operator==(const string&) const;
+      __host__ __device__ bool operator!=(const string&) const;
+      __host__ __device__ bool operator<(const string&) const;
 
       __host__ __device__ const char* c_str() const;
       __host__ __device__ int size() const;

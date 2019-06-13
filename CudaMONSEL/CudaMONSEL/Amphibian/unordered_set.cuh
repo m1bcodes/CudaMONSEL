@@ -9,9 +9,9 @@
 namespace amp
 {
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-   __device__ static const int NUM_BUCKETS = 23;
+   __device__ static const int NUM_SET_BUCKETS = 23;
 #else
-   static const int NUM_BUCKETS = 23;
+   static const int NUM_SET_BUCKETS = 23;
 #endif
 
    template<typename T, typename Hash, typename Pred>
@@ -79,7 +79,7 @@ namespace amp
       __host__ __device__ void DeepCopy(const unordered_set&);
       __host__ __device__ void ClearAndCopy(const unordered_set&);
 
-      LinkedList::Node<T>* buckets[NUM_BUCKETS];
+      LinkedList::Node<T>* buckets[NUM_SET_BUCKETS];
       Pred cmp;
       Hash hasher;
    };
@@ -87,7 +87,7 @@ namespace amp
    template<typename T, typename Hash, typename Pred>
    __host__ __device__ unordered_set<T, Hash, Pred>::unordered_set()
    {
-      for (int k = 0; k < NUM_BUCKETS; ++k) {
+      for (int k = 0; k < NUM_SET_BUCKETS; ++k) {
          buckets[k] = nullptr;
       }
    }
@@ -116,7 +116,7 @@ namespace amp
    __host__ __device__ bool unordered_set<T, Hash, Pred>::operator==(const unordered_set<T, Hash, Pred>& other) const
    {
       // TODO: could be faster if just check the buckets or hash, without calling exists, since hash function is standardized
-      for (int k = 0; k < NUM_BUCKETS; ++k) {
+      for (int k = 0; k < NUM_SET_BUCKETS; ++k) {
          LinkedList::Node<T>* itr = buckets[k];
          while (itr != nullptr) {
             T v0 = itr->GetValue();
@@ -133,7 +133,7 @@ namespace amp
    __host__ __device__ void unordered_set<T, Hash, Pred>::DeepCopy(const unordered_set<T, Hash, Pred>& other)
    {
       clear();
-      for (int k = 0; k < NUM_BUCKETS; ++k) {
+      for (int k = 0; k < NUM_SET_BUCKETS; ++k) {
          // LinkedListKV::DeepCopy(&buckets, other.buckets[k]); hash function may be different
          LinkedList::Node<T>* itr = other.buckets[k];
          while (itr != nullptr) {
@@ -150,7 +150,7 @@ namespace amp
    {
       if (&other == this) return;
       // TODO: would cause mem leak if the assigned set is not empty cannot
-      for (int k = 0; k < NUM_BUCKETS; ++k) {
+      for (int k = 0; k < NUM_SET_BUCKETS; ++k) {
          buckets[k] = nullptr;
       }
       DeepCopy(other);
@@ -167,7 +167,7 @@ namespace amp
    template<typename T, typename Hash, typename Pred>
    __host__ __device__ void unordered_set<T, Hash, Pred>::Add(const unordered_set<T, Hash, Pred>& other)
    {
-      for (int k = 0; k < NUM_BUCKETS; ++k) {
+      for (int k = 0; k < NUM_SET_BUCKETS; ++k) {
          LinkedList::Node<T>* itr = other.buckets[k];
          while (itr != nullptr) {
             T v = itr->GetValue();
@@ -186,7 +186,7 @@ namespace amp
    template<typename T, typename Hash, typename Pred>
    __host__ __device__ bool unordered_set<T, Hash, Pred>::empty() const
    {
-      for (int k = 0; k < NUM_BUCKETS; ++k) {
+      for (int k = 0; k < NUM_SET_BUCKETS; ++k) {
          if (buckets[k] != nullptr) {
             return false;
          }
@@ -198,7 +198,7 @@ namespace amp
    __host__ __device__ int unordered_set<T, Hash, Pred>::size() const
    {
       int c = 0;
-      for (int k = 0; k < NUM_BUCKETS; ++k) {
+      for (int k = 0; k < NUM_SET_BUCKETS; ++k) {
          LinkedList::Node<T>* itr = buckets[k];
          while (itr != nullptr) {
             ++c;
@@ -219,7 +219,7 @@ namespace amp
    {
       unsigned int res = 0;
 
-      for (int k = 0; k < NUM_BUCKETS; ++k) {
+      for (int k = 0; k < NUM_SET_BUCKETS; ++k) {
          res += LinkedList::HashCode<T, Hash>(buckets[k]);
       }
 
@@ -229,13 +229,13 @@ namespace amp
    template<typename T, typename Hash, typename Pred>
    __host__ __device__ unsigned int unordered_set<T, Hash, Pred>::GetBucketIdx(const T& v) const
    {
-      return hashCode(v) % NUM_BUCKETS;
+      return hashCode(v) % NUM_SET_BUCKETS;
    }
 
    template<typename T, typename Hash, typename Pred>
    __host__ __device__ LinkedList::Node<T>* unordered_set<T, Hash, Pred>::GetBucket(int n)
    {
-      return buckets[n % NUM_BUCKETS];
+      return buckets[n % NUM_SET_BUCKETS];
    }
 
    template<typename T, typename Hash, typename Pred>
@@ -247,7 +247,7 @@ namespace amp
    template<typename T, typename Hash, typename Pred>
    __host__ __device__ void unordered_set<T, Hash, Pred>::clear()
    {
-      for (int k = 0; k < NUM_BUCKETS; ++k) {
+      for (int k = 0; k < NUM_SET_BUCKETS; ++k) {
          LinkedList::RemoveAll(&buckets[k]);
       }
    }
@@ -311,7 +311,7 @@ namespace amp
          bucket = -1;
          return;
       }
-      for (int k = 0; k < NUM_BUCKETS; ++k) {
+      for (int k = 0; k < NUM_SET_BUCKETS; ++k) {
          if (refSet.buckets[k] != nullptr) {
             bucket = k;
             ptr = refSet.buckets[bucket];
@@ -337,7 +337,7 @@ namespace amp
          ptr = ptr->GetNext();
       }
       if (ptr == nullptr) {
-         for (int k = bucket + 1; k < NUM_BUCKETS; ++k) {
+         for (int k = bucket + 1; k < NUM_SET_BUCKETS; ++k) {
             if (refSet.buckets[k] != nullptr) {
                bucket = k;
                ptr = refSet.buckets[bucket];

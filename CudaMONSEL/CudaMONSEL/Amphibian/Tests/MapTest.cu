@@ -17,8 +17,8 @@ namespace MapTest
    {
    }
 
-   typedef unordered_map::unordered_map<int, int, Comparator::IntCompareFcn, Comparator::IntCompareFcn, Hasher::IntHashFcn, Hasher::IntHashFcn> IntTestType;
-   typedef unordered_map::unordered_map<int, int, Comparator::IntCompareFcn, Comparator::IntCompareFcn, Hasher::IntHashFcn, Hasher::IntHashFcn>::iterator IntTestTypeItr;
+   typedef amp::unordered_map<int, int, Comparator::IntCompareFcn, Comparator::IntCompareFcn, Hasher::IntHashFcn, Hasher::IntHashFcn> IntTestType;
+   typedef amp::unordered_map<int, int, Comparator::IntCompareFcn, Comparator::IntCompareFcn, Hasher::IntHashFcn, Hasher::IntHashFcn>::iterator IntTestTypeItr;
 
    __host__ __device__ void MapTest::testInteger()
    {
@@ -81,8 +81,8 @@ namespace MapTest
       printf("MapTest::testInteger() completed\n");
    }
 
-   typedef unordered_map::unordered_map<amp::string, double, amp::string_cmp, Comparator::DoubleCompareFcn, amp::string_hash, Hasher::DoubleHashFcn> StringTestType;
-   typedef unordered_map::unordered_map<amp::string, double, amp::string_cmp, Comparator::DoubleCompareFcn, amp::string_hash, Hasher::DoubleHashFcn>::iterator StringTestTypeItr;
+   typedef amp::unordered_map<amp::string, double, amp::string_cmp, Comparator::DoubleCompareFcn, amp::string_hash, Hasher::DoubleHashFcn> StringTestType;
+   typedef amp::unordered_map<amp::string, double, amp::string_cmp, Comparator::DoubleCompareFcn, amp::string_hash, Hasher::DoubleHashFcn>::iterator StringTestTypeItr;
 
    __host__ __device__ StringTestType makeMap()
    {
@@ -185,9 +185,14 @@ namespace MapTest
       StringTestTypeItr itr6(m6);
       while (itr6.HasNext()) {
          //printf("(%s, %lf) ", itr6.GetKey().Get(), itr6.GetValue());
+         printf("(%s, %lf) ", ((amp::string&)(itr6->first)).c_str(), (double)(itr6->second));
          itr6.Next();
       }
-      //printf("\n");
+      printf("\n");
+      for (auto p : m6) {
+         printf("(%s, %lf) ", ((amp::string&)(p.first)).c_str(), (double)(p.second));
+      }
+      printf("\n");
 
       printf("MapTest::testString() completed\n");
    }
@@ -218,8 +223,8 @@ namespace MapTest
       }
    };
 
-   typedef unordered_map::unordered_map<amp::string, TestClass, amp::string_cmp, TestClassCompare, amp::string_hash, TestClassHashFcn> MapTestT;
-   typedef unordered_map::unordered_map<amp::string, TestClass, amp::string_cmp, TestClassCompare, amp::string_hash, TestClassHashFcn>::iterator MapTestTItr;
+   typedef amp::unordered_map<amp::string, TestClass, amp::string_cmp, TestClassCompare, amp::string_hash, TestClassHashFcn> MapTestT;
+   typedef amp::unordered_map<amp::string, TestClass, amp::string_cmp, TestClassCompare, amp::string_hash, TestClassHashFcn>::iterator MapTestTItr;
 
    __host__ __device__ void MapTest::testMapOfMap()
    {

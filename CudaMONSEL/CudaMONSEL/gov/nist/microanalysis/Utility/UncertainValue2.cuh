@@ -8,12 +8,13 @@
 #include "unordered_set"
 #include "vector"
 
+#include "Amphibian/String.cuh"
 #include "Amphibian/unordered_map.cuh"
 #include "Amphibian/unordered_set.cuh"
 
 namespace UncertainValue2
 {
-   typedef std::string StringT;
+   typedef amp::string StringT;
 
    class Key
    {
@@ -45,10 +46,10 @@ namespace UncertainValue2
 
    class Correlations
    {
-      typedef std::unordered_map<Key, double, KeyHashFcn> CorrelationMap;
+      typedef std::unordered_map<Key, double, KeyHashFcn> CorrelationMapT;
 
    private:
-      CorrelationMap mCorrelations;
+      CorrelationMapT mCorrelations;
 
    public:
       Correlations();
@@ -60,8 +61,10 @@ namespace UncertainValue2
    class UncertainValue2
    {
    public:
-      typedef std::unordered_map<StringT, double> ComponentMapT;
-      typedef std::unordered_set<StringT> KeySetT;
+      //typedef std::unordered_map<StringT, double, amp::string_hash> ComponentMapT;
+      typedef amp::unordered_map<StringT, double, amp::string_cmp, Comparator::DoubleCompareFcn, amp::string_hash, Hasher::DoubleHashFcn> ComponentMapT;
+      //typedef std::unordered_set<StringT, amp::string_hash> KeySetT;
+      typedef std::unordered_set<StringT, amp::string_hash, amp::string_cmp> KeySetT;
       //typedef std::vector<UncertainValue2> ResultT;
 
       UncertainValue2();

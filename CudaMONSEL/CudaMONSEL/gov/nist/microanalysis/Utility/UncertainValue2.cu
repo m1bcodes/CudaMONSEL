@@ -80,26 +80,21 @@ namespace UncertainValue2
 
    unsigned int UncertainValue2::hashCode() const
    {
-      //unsigned int res = 1;
-      //const unsigned int PRIME = 31;
-      //auto khashfcn = mSigmas.hash_function();
-      //Hasher::DoubleHashFcn vhashfcn;
-      //for (auto s : mSigmas) {
-      //   res = res * PRIME + khashfcn(s.first);
-      //   res = res * PRIME + vhashfcn(s.second);
-      //}
-      //return res;
-
       // https://docs.oracle.com/javase/8/docs/api/java/util/Arrays.html#hashCode-java.lang.Object:A-
-      unsigned int res = Hasher::APHash((char*)&mValue, sizeof(double));
-      res = Hasher::APHash((char*)&mSigmas, sizeof(ComponentMapT*));
+      unsigned int res = 1;
+      //auto khashfcn = mSigmas.hash_function();
+      amp::string_hash khashfcn;
+      Hasher::DoubleHashFcn vhashfcn;
+      for (auto s : mSigmas) {
+         res += khashfcn(s.first) ^ vhashfcn((double)s.second);
+      }
       return res;
    }
 
    void UncertainValue2::assignComponent(const StringT& name, double sigma)
    {
       if (sigma != 0.0) {
-         mSigmas.insert(std::make_pair(name, sigma));
+         mSigmas.insert(amp::make_pair(name, sigma));
       }
       else {
          mSigmas.erase(name);
@@ -109,7 +104,7 @@ namespace UncertainValue2
    double UncertainValue2::getComponent(const StringT& src) const
    {
       auto itr = mSigmas.find(src);
-      return itr == mSigmas.end() ? 0 : itr->second;
+      return itr == mSigmas.end() ? 0 : (double)itr->second;
    }
 
    UncertainValue2::ComponentMapT& UncertainValue2::getComponents()
@@ -145,7 +140,7 @@ namespace UncertainValue2
       }
       double val = mSigmas.erase(oldName);
       if (val != NULL) {
-         mSigmas.insert(std::make_pair(newName, val));
+         mSigmas.insert(amp::make_pair(newName, val));
       }
    }
 
@@ -297,7 +292,7 @@ namespace UncertainValue2
       UncertainValue2 res(v1 * v2.doubleValue());
 
       for (auto itr = v2.getComponentsItrBegin(); itr != v2.getComponentsItrEnd(); ++itr) {
-         res.assignComponent(itr->first, v1 * itr->second);
+         res.assignComponent(itr->first, v1 * (double)itr->second);
       }
       return res;
    }
@@ -314,6 +309,11 @@ namespace UncertainValue2
 
       UncertainValue2 res(v1.doubleValue() * v2.doubleValue());
       for (auto src : keys) {
+         //printf("v1.doubleValue: %.10e, ", v1.doubleValue());
+         //printf("v2.getComponent %s: %.10e, ", src.c_str(), v2.getComponent(src));
+         //printf("v2.doubleValue: %.10e, ", v2.doubleValue());
+         //printf("v1.getComponent %s: %.10e, ", src.c_str(), v1.getComponent(src));
+         //printf("\n");
          res.assignComponent(src, v1.doubleValue() * v2.getComponent(src) + v2.doubleValue() * v1.getComponent(src));
       }
 
@@ -335,8 +335,8 @@ namespace UncertainValue2
 
       UncertainValue2::KeySetT keys;
 
-      std::transform(v1.getComponentsItrBegin(), v1.getComponentsItrEnd(), std::inserter(keys, keys.end()), [](std::pair<StringT, double> pair){ return pair.first; });
-      std::transform(v2.getComponentsItrBegin(), v2.getComponentsItrEnd(), std::inserter(keys, keys.end()), [](std::pair<StringT, double> pair){ return pair.first; });
+      std::transform(v1.getComponentsItrBegin(), v1.getComponentsItrEnd(), std::inserter(keys, keys.end()), [](LinkedListKV::Node<StringT, double> pair){ return pair.first; });
+      std::transform(v2.getComponentsItrBegin(), v2.getComponentsItrEnd(), std::inserter(keys, keys.end()), [](LinkedListKV::Node<StringT, double> pair){ return pair.first; });
 
       //for (auto itr = v1.getComponentsItrBegin(); itr != v1.getComponentsItrEnd(); ++itr) {
       //   keys.insert(itr->first);
@@ -348,13 +348,13 @@ namespace UncertainValue2
       const double ua = fabs(1.0 / v2.doubleValue());
       const double ub = fabs(v1.doubleValue() / (v2.doubleValue() * v2.doubleValue()));
 
-      //for (auto itr = keys.begin(); itr != keys.end(); ++itr) {
-      //   auto src = *itr;
-      //   res.assignComponent(src, ua * v1.getComponent(src) + ub * v2.getComponent(src));
-      //}
-
       UncertainValue2 res(v);
-      std::transform(keys.begin(), keys.end(), std::inserter(res.getComponents(), res.getComponents().end()), [&](StringT name){ return std::make_pair(name, ua * v1.getComponent(name) + ub * v2.getComponent(name)); });
+      for (auto itr = keys.begin(); itr != keys.end(); ++itr) {
+         auto src = *itr;
+         res.assignComponent(src, ua * v1.getComponent(src) + ub * v2.getComponent(src));
+      }
+
+      //std::transform(keys.begin(), keys.end(), std::inserter(res.getComponents(), res.getComponents().end()), [&](StringT name){ return amp::make_pair(name, ua * v1.getComponent(name) + ub * v2.getComponent(name)); });
       return res;
    }
 
@@ -367,13 +367,17 @@ namespace UncertainValue2
 
       UncertainValue2::KeySetT keys;
 
-      std::transform(v1.getComponentsItrBegin(), v1.getComponentsItrEnd(), std::inserter(keys, keys.end()), [](std::pair<StringT, double> pair){ return pair.first; });
-      std::transform(v2.getComponentsItrBegin(), v2.getComponentsItrEnd(), std::inserter(keys, keys.end()), [](std::pair<StringT, double> pair){ return pair.first; });
+      std::transform(v1.getComponentsItrBegin(), v1.getComponentsItrEnd(), std::inserter(keys, keys.end()), [](LinkedListKV::Node<StringT, double> pair){ return pair.first; });
+      std::transform(v2.getComponentsItrBegin(), v2.getComponentsItrEnd(), std::inserter(keys, keys.end()), [](LinkedListKV::Node<StringT, double> pair){ return pair.first; });
 
       const double ua = fabs(1.0 / v2.doubleValue());
       const double ub = fabs(v1.doubleValue() / (v2.doubleValue() * v2.doubleValue()));
 
-      std::transform(keys.begin(), keys.end(), std::inserter(res.getComponents(), res.getComponents().end()), [&](StringT name){ return std::make_pair(name, ua * v1.getComponent(name) + ub * v2.getComponent(name)); });
+      for (auto itr = keys.begin(); itr != keys.end(); ++itr) {
+         auto src = *itr;
+         res.assignComponent(src, ua * v1.getComponent(src) + ub * v2.getComponent(src));
+      }
+      //std::transform(keys.begin(), keys.end(), std::inserter(res.getComponents(), res.getComponents().end()), [&](StringT name){ return amp::make_pair(name, ua * v1.getComponent(name) + ub * v2.getComponent(name)); });
    }
 
    UncertainValue2 divide(double a, const UncertainValue2& b)
@@ -383,7 +387,7 @@ namespace UncertainValue2
          const double ub = fabs(a / (b.doubleValue() * b.doubleValue()));
 
          for (auto itr = b.getComponentsItrBegin(); itr != b.getComponentsItrEnd(); ++itr) {
-            res.assignComponent(itr->first, ub * itr->second);
+            res.assignComponent(itr->first, ub * (double)itr->second);
          }
       }
       return res;
@@ -401,7 +405,7 @@ namespace UncertainValue2
       const double ua = fabs(1.0 / b);
 
       for (auto itr = a.getComponentsItrBegin(); itr != a.getComponentsItrEnd(); ++itr) {
-         res.assignComponent(itr->first, ua * itr->second);
+         res.assignComponent(itr->first, ua * (double)itr->second);
       }
       return res;
    }
@@ -417,7 +421,7 @@ namespace UncertainValue2
       UncertainValue2 res(ex);
 
       for (auto itr = x.getComponentsItrBegin(); itr != x.getComponentsItrEnd(); ++itr) {
-         res.assignComponent(itr->first, ex * itr->second);
+         res.assignComponent(itr->first, ex * (double)itr->second);
       }
       return res;
    }
@@ -435,7 +439,7 @@ namespace UncertainValue2
       UncertainValue2 res(lv);
 
       for (auto itr = v2.getComponentsItrBegin(); itr != v2.getComponentsItrEnd(); ++itr) {
-         res.assignComponent(itr->first, tmp * itr->second);
+         res.assignComponent(itr->first, tmp * (double)itr->second);
       }
 
       return res;
@@ -451,7 +455,7 @@ namespace UncertainValue2
       UncertainValue2 res(f);
 
       for (auto itr = v1.getComponentsItrBegin(); itr != v1.getComponentsItrEnd(); ++itr) {
-         res.assignComponent(itr->first, df * itr->second);
+         res.assignComponent(itr->first, df * (double)itr->second);
       }
 
       return res;
@@ -508,8 +512,10 @@ namespace UncertainValue2
    {
       double sigma2 = 0.0;
       for (auto s : mSigmas) {
-         sigma2 += s.second * s.second;
+         //printf("%.10e, ", (double)s.second);
+         sigma2 += (double)s.second * (double)s.second;
       }
+      //printf("\n");
       return sigma2;
    }
 
@@ -533,7 +539,7 @@ namespace UncertainValue2
       for (auto s : other.mSigmas) {
          auto itr = mSigmas.find(s.first);
          if (itr == mSigmas.end()) return false;
-         if (itr->second != s.second) return false;
+         if ((double)itr->second != (double)s.second) return false;
       }
 
       return mValue == other.doubleValue();
@@ -594,7 +600,7 @@ namespace UncertainValue2
       UncertainValue2 res(f);
 
       for (auto itr = uv.getComponentsItrBegin(); itr != uv.getComponentsItrEnd(); ++itr) {
-         res.assignComponent(itr->first, df * itr->second);
+         res.assignComponent(itr->first, df * (double)itr->second);
       }
 
       return res;
@@ -615,7 +621,7 @@ namespace UncertainValue2
 
       auto m = divide(y, x).getComponents();
       for (auto itr = m.begin(); itr != m.end(); ++itr) {
-         res.assignComponent(itr->first, df * itr->second);
+         res.assignComponent(itr->first, df * (double)itr->second);
       }
       return res;
    }
@@ -647,12 +653,13 @@ namespace UncertainValue2
    size_t Key::hashCode() const
    {
       unsigned int s = 0;
-      for (auto ch : mSource1) {
-         s += ch;
-      }
-      for (auto ch : mSource2) {
-         s += ch;
-      }
+      //for (auto ch : mSource1) {
+      //   s += ch;
+      //}
+      //for (auto ch : mSource2) {
+      //   s += ch;
+      //}
+      s = mSource1.hashcode() + mSource2.hashcode();
       return s;
    }
 

@@ -9,12 +9,12 @@
 
 #include <stdio.h>
 
-namespace unordered_map
+namespace amp
 {
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-   __constant__ static const int NUM_BUCKETS = 23;
+   __constant__ static const int NUM_MAP_BUCKETS = 23;
 #else
-   static const int NUM_BUCKETS = 23;
+   static const int NUM_MAP_BUCKETS = 23;
 #endif
 
    template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
@@ -35,16 +35,18 @@ namespace unordered_map
       __host__ __device__ bool empty() const;
       __host__ __device__ int size() const;
 
+      // element access
+      __host__ __device__ V& operator[](const K&);
+      __host__ __device__ const V& operator[](const K&) const;
+
       // modifiers
       __host__ __device__ void insert(LinkedListKVPtr);
       __host__ __device__ bool erase(const K&, V&);
       __host__ __device__ bool erase(const K&);
 
-      // element lookup
-      __host__ __device__ LinkedListKVPtr find(const K& k) const;
-
       // hash
       __host__ __device__ unsigned int hashCode() const;
+      __host__ __device__ KHasher hash_function() const; // key has function, as per STL
 
       __host__ __device__ void Initialize();
       __host__ __device__ void ClearAndCopy(const unordered_map&);
@@ -56,11 +58,6 @@ namespace unordered_map
       __host__ __device__ void DeepCopy(const unordered_map& other);
       __host__ __device__ void RemoveAll();
       __host__ __device__ double Aggregate(double(*fcn)(double)) const;
-      //__host__ __device__ LinkedListKV::Node<K, V>* AsList();
-
-      //__host__ __device__ Hasher::pHasher GetHasher(); // DEBUGGING PURPOSES
-      //__host__ __device__ pKeyCmp GetKeyCmp(); // DEBUGGING PURPOSES
-      //__host__ __device__ pValCmp GetValCmp(); // DEBUGGING PURPOSES
 
       class iterator
       {
@@ -70,78 +67,76 @@ namespace unordered_map
          __host__ __device__ void Next();
          __host__ __device__ void End();
 
-         __host__ __device__ bool HasNext();
+         __host__ __device__ bool HasNext() const;
 
          __host__ __device__ void operator++();
          __host__ __device__ bool operator!=(const iterator&) const;
          __host__ __device__ bool operator==(const iterator&) const;
-         __host__ __device__ LinkedListKV::Node<K, V>& operator*();
          __host__ __device__ void operator=(const iterator&);
 
          __host__ __device__ K& GetKey() const;
          __host__ __device__ V& GetValue() const;
 
-         //class
-         //{
-         //public:
-         //   __host__ __device__ iterator & operator = (const iterator &i) { return value = i; }
-         //   __host__ __device__ operator iterator() const { return itr.GetKey(); }
+         __host__ __device__ LinkedListKV::Node<K, V>& operator*();
+         __host__ __device__ LinkedListKV::Node<K, V>* operator->();
 
-         //private:
-         //   iterator itr;
-         //} first;
-
-         //class
-         //{
-         //public:
-         //   __host__ __device__ iterator & operator = (const iterator &i) { return value = i; }
-         //   __host__ __device__ operator iterator() const { return itr.GetValue(); }
-
-         //private:
-         //   iterator itr;
-         //} second;
-
-      private:
-         LinkedListKV::Node<K, V>* ptr;
+      protected:
          unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>& refMap;
+         LinkedListKV::Node<K, V>* ptr;
          int bucket;
       };
+
+      class const_iterator
+      {
+      public:
+         __host__ __device__ const_iterator(const unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>&);
+         __host__ __device__ void Reset();
+         __host__ __device__ void Next();
+         __host__ __device__ void End();
+
+         __host__ __device__ bool HasNext() const;
+
+         __host__ __device__ void operator++();
+         __host__ __device__ bool operator!=(const const_iterator&) const;
+         __host__ __device__ bool operator==(const const_iterator&) const;
+         __host__ __device__ void operator=(const const_iterator&);
+
+         __host__ __device__ const K& GetKey() const;
+         __host__ __device__ const V& GetValue() const;
+
+         __host__ __device__ const LinkedListKV::Node<K, V>& operator*() const;
+         __host__ __device__ const LinkedListKV::Node<K, V>* operator->() const;
+
+      protected:
+         const unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>& refMap;
+         const LinkedListKV::Node<K, V>* ptr;
+         int bucket;
+      };
+
+      // element lookup
+      __host__ __device__ iterator find(const K& k);
+      __host__ __device__ const_iterator find(const K& k) const;
 
       // iterators
       __host__ __device__ iterator begin();
       __host__ __device__ iterator end();
-      __host__ __device__ iterator cbegin();
-      __host__ __device__ iterator cend();
+      __host__ __device__ const_iterator begin() const;
+      __host__ __device__ const_iterator end() const;
+      __host__ __device__ const_iterator cbegin() const;
+      __host__ __device__ const_iterator cend() const;
 
    private:
       __host__ __device__ int unsigned GetBucketIdx(const K& k) const;
       __host__ __device__ LinkedListKVPtr GetBucket(int); // DEBUGGING PURPOSES
 
-      LinkedListKVPtr buckets[NUM_BUCKETS];
+      LinkedListKVPtr buckets[NUM_MAP_BUCKETS];
+      V defaultv;
    };
-
-   //template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
-   //__host__ __device__ Hasher::pHasher unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::GetHasher()
-   //{
-   //   return hasher;
-   //}
-
-   //template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
-   //__host__ __device__ unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::pKeyCmp unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::GetKeyCmp()
-   //{
-   //   return kcmp;
-   //}
-
-   //template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
-   //__host__ __device__ unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::pValCmp unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::GetValCmp()
-   //{
-   //   return vcmp;
-   //}
 
    template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
    __host__ __device__ unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::unordered_map()
    {
-      for (int k = 0; k < NUM_BUCKETS; ++k) {
+      for (int k = 0; k < NUM_MAP_BUCKETS; ++k) {
          buckets[k] = nullptr;
       }
    }
@@ -183,7 +178,7 @@ namespace unordered_map
       if (size() != other.size()) {
          return false;
       }
-      for (int k = 0; k < NUM_BUCKETS; ++k) {
+      for (int k = 0; k < NUM_MAP_BUCKETS; ++k) {
          LinkedListKVPtr itr = other.buckets[k];
          while (itr != nullptr) {
             K k1 = itr->GetKey();
@@ -207,7 +202,7 @@ namespace unordered_map
    template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
    __host__ __device__ void unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::Initialize()
    {
-      for (int k = 0; k < NUM_BUCKETS; ++k) {
+      for (int k = 0; k < NUM_MAP_BUCKETS; ++k) {
          buckets[k] = nullptr;
       }
    }
@@ -216,7 +211,7 @@ namespace unordered_map
    __host__ __device__ void unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::DeepCopy(const unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>& other)
    {
       RemoveAll();
-      for (int k = 0; k < NUM_BUCKETS; ++k) {
+      for (int k = 0; k < NUM_MAP_BUCKETS; ++k) {
          // LinkedListKV::DeepCopy(&buckets, other.buckets[k]); hash function may be different
          LinkedListKVPtr itr = other.buckets[k];
          while (itr != nullptr) {
@@ -239,7 +234,6 @@ namespace unordered_map
    template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
    __host__ __device__ bool unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::GetValue(const K& k, V& v) const
    {
-      //LinkedListKV::GetValue<K, V>(buckets[0], k, kcmp);
       return LinkedListKV::GetValue<K, V, KCompare>(buckets[GetBucketIdx(k)], k, v);
    }
 
@@ -247,7 +241,7 @@ namespace unordered_map
    __host__ __device__ amp::unordered_set<K, KCompare, KHasher> unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::GetKeys()
    {
       amp::unordered_set<K, KCompare, KHasher> res;
-      for (int k = 0; k < NUM_BUCKETS; ++k) {
+      for (int k = 0; k < NUM_MAP_BUCKETS; ++k) {
          LinkedListKVPtr itr = buckets[k];
          while (itr != nullptr) {
             res.Put(itr->GetKey());
@@ -268,13 +262,12 @@ namespace unordered_map
    {
       V v;
       return erase(k, v);
-      //return LinkedListKV::erase<K, V, KCompare>(&buckets[GetBucketIdx(k)], k, v);
    }
 
    template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
    __host__ __device__ void unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::RemoveAll()
    {
-      for (int k = 0; k < NUM_BUCKETS; ++k) {
+      for (int k = 0; k < NUM_MAP_BUCKETS; ++k) {
          LinkedListKV::RemoveAll<K, V>(&buckets[k]);
       }
    }
@@ -288,12 +281,12 @@ namespace unordered_map
    template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
    __host__ __device__ void unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::insert(LinkedListKV::Node<K, V>* node)
    {
-      LinkedListKVPtr itr = find(node->GetKey());
-      if (itr == nullptr) {
+      auto itr = find(node->GetKey());
+      if (itr == end()) {
          LinkedListKV::InsertHead<K, V>(&buckets[GetBucketIdx(node->GetKey())], node);
       }
       else {
-         itr->MapVal(node->GetValue(), GetFirstParam<V>);
+         (*itr).MapVal(node->GetValue(), GetFirstParam<V>);
          delete node;
       }
    }
@@ -301,21 +294,12 @@ namespace unordered_map
    template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
    __host__ __device__ void unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::Put(const K& k, const V& v)
    {
-      LinkedListKVPtr itr = find(k);
-      if (itr == nullptr) {
+      auto itr = find(k);
+      if (itr == end()) {
          LinkedListKV::InsertHead<K, V>(&buckets[GetBucketIdx(k)], k, v);
       }
       else {
-         //LinkedListKVPtr bucketItr = buckets[GetBucketIdx(k)];
-         //while (bucketItr != nullptr) {
-         //   const K& tmpK = bucketItr->GetKey();
-         //   if (kcmp(tmpK, k)) {
-         //      bucketItr->MapVal(v, GetFirstParam<V>);
-         //      break;
-         //   }
-         //   bucketItr = bucketItr->GetNext();
-         //}
-         itr->MapVal(v, GetFirstParam<V>);
+         (*itr).MapVal(v, GetFirstParam<V>);
       }
    }
 
@@ -326,9 +310,27 @@ namespace unordered_map
    }
 
    template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
-   __host__ __device__ unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::LinkedListKVPtr unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::find(const K& k) const
+   __host__ __device__ unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::iterator unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::find(const K& k)
    {
-      return LinkedListKV::Find<K, V, KCompare>(buckets[GetBucketIdx(k)], k);
+      KCompare kcmp;
+      iterator itr(*this);
+      while (itr != end()) {
+         if (kcmp(itr.GetKey(), k)) return itr;
+         ++itr;
+      }
+      return itr;
+   }
+
+   template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
+   __host__ __device__ unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::const_iterator unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::find(const K& k) const
+   {
+      KCompare kcmp;
+      const_iterator itr(*this);
+      while (itr != end()) {
+         if (kcmp(itr.GetKey(), k)) return itr;
+         ++itr;
+      }
+      return itr;
    }
 
    template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
@@ -341,7 +343,7 @@ namespace unordered_map
    template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
    __host__ __device__ unsigned int unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::GetBucketIdx(const K& v) const
    {
-      return Hash(v) % NUM_BUCKETS;
+      return Hash(v) % NUM_MAP_BUCKETS;
    }
 
    template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
@@ -349,7 +351,7 @@ namespace unordered_map
    {
       unsigned int res = 0;
 
-      for (int k = 0; k < NUM_BUCKETS; ++k) {
+      for (int k = 0; k < NUM_MAP_BUCKETS; ++k) {
          res += LinkedListKV::HashCode<K, V, KHasher, VHasher>(buckets[k]);
       }
 
@@ -359,7 +361,7 @@ namespace unordered_map
    template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
    __host__ __device__ bool unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::empty() const
    {
-      for (int k = 0; k < NUM_BUCKETS; ++k) {
+      for (int k = 0; k < NUM_MAP_BUCKETS; ++k) {
          if (buckets[k] != nullptr) {
             return false;
          }
@@ -371,7 +373,7 @@ namespace unordered_map
    __host__ __device__ int unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::size() const
    {
       int c = 0;
-      for (int k = 0; k < NUM_BUCKETS; ++k) {
+      for (int k = 0; k < NUM_MAP_BUCKETS; ++k) {
          LinkedListKVPtr itr = buckets[k];
          while (itr != nullptr) {
             ++c;
@@ -391,7 +393,7 @@ namespace unordered_map
    __host__ __device__ double unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::Aggregate(double(*fcn)(double)) const
    {
       double res = 0;
-      for (int k = 0; k < NUM_BUCKETS; ++k) {
+      for (int k = 0; k < NUM_MAP_BUCKETS; ++k) {
          LinkedListKVPtr itr = buckets[k];
          while (itr != nullptr) {
             const V& v = itr->GetValue();
@@ -400,15 +402,8 @@ namespace unordered_map
          }
       }
       return res;
-   }
-
-   //template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
-   //__host__ __device__ bool AreEqual(unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>& a, unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>& b)
-   //{
-   //   if (&a == &b) return true;
-   //   return a == b;
-   //}
-
+   }   
+   
    template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
    __host__ __device__ unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::iterator::iterator(unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>& m) : refMap(m), ptr(nullptr), bucket(-1)
    {
@@ -423,7 +418,7 @@ namespace unordered_map
          bucket = -1;
          return;
       }
-      for (int k = 0; k < NUM_BUCKETS; ++k) {
+      for (int k = 0; k < NUM_MAP_BUCKETS; ++k) {
          if (refMap.buckets[k] != nullptr) {
             bucket = k;
             ptr = refMap.buckets[bucket];
@@ -442,7 +437,7 @@ namespace unordered_map
          ptr = ptr->GetNext();
       }
       if (ptr == nullptr) {
-         for (int k = bucket + 1; k < NUM_BUCKETS; ++k) {
+         for (int k = bucket + 1; k < NUM_MAP_BUCKETS; ++k) {
             if (refMap.buckets[k] != nullptr) {
                bucket = k;
                ptr = refMap.buckets[bucket];
@@ -461,7 +456,7 @@ namespace unordered_map
    }
 
    template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
-   __host__ __device__ bool unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::iterator::HasNext()
+   __host__ __device__ bool unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::iterator::HasNext() const
    {
       return bucket != -1;
    }
@@ -488,6 +483,12 @@ namespace unordered_map
    __host__ __device__ LinkedListKV::Node<K, V>& unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::iterator::operator*()
    {
       return *ptr;
+   }
+
+   template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
+   __host__ __device__ LinkedListKV::Node<K, V>* unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::iterator::operator->()
+   {
+      return ptr;
    }
 
    template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
@@ -530,18 +531,170 @@ namespace unordered_map
       return res;
    }
 
-   // TODO: implemented properly
    template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
-   __host__ __device__ unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::iterator unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::cbegin()
+   __host__ __device__ unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::const_iterator::const_iterator(const unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>& m) : refMap(m), ptr(nullptr), bucket(-1)
    {
-      return begin();
+      Reset();
    }
 
-   // TODO: implemented properly
    template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
-   __host__ __device__ unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::iterator unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::cend()
+   __host__ __device__ void unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::const_iterator::Reset()
    {
-      return end();
+      if (refMap.empty()) {
+         ptr = nullptr;
+         bucket = -1;
+         return;
+      }
+      for (int k = 0; k < NUM_MAP_BUCKETS; ++k) {
+         if (refMap.buckets[k] != nullptr) {
+            bucket = k;
+            ptr = refMap.buckets[bucket];
+            break;
+         }
+      }
+   }
+
+   template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
+   __host__ __device__ void unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::const_iterator::Next()
+   {
+      if (bucket == -1) {
+         return;
+      }
+      if (ptr != nullptr) {
+         ptr = ptr->GetNext();
+      }
+      if (ptr == nullptr) {
+         for (int k = bucket + 1; k < NUM_MAP_BUCKETS; ++k) {
+            if (refMap.buckets[k] != nullptr) {
+               bucket = k;
+               ptr = refMap.buckets[bucket];
+               return;
+            }
+         }
+         bucket = -1;
+      }
+   }
+
+   template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
+   __host__ __device__ void unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::const_iterator::End()
+   {
+      ptr = nullptr;
+      bucket = -1;
+   }
+
+   template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
+   __host__ __device__ bool unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::const_iterator::HasNext() const
+   {
+      return bucket != -1;
+   }
+
+   template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
+   __host__ __device__ void unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::const_iterator::operator++()
+   {
+      Next();
+   }
+
+   template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
+   __host__ __device__ bool unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::const_iterator::operator==(const unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::const_iterator& other) const
+   {
+      return ptr == other.ptr && bucket == other.bucket;
+   }
+
+   template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
+   __host__ __device__ bool unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::const_iterator::operator!=(const unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::const_iterator& other) const
+   {
+      return !(*this == other);
+   }
+
+   template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
+   __host__ __device__ void unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::const_iterator::operator=(const unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::const_iterator& other)
+   {
+      refMap = other.refMap;
+      ptr = other.ptr;
+      bucket = other.bucket;
+   }
+
+   template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
+   __host__ __device__ const LinkedListKV::Node<K, V>& unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::const_iterator::operator*() const
+   {
+      return *ptr;
+   }
+
+   template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
+   __host__ __device__ const LinkedListKV::Node<K, V>* unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::const_iterator::operator->() const
+   {
+      return ptr;
+   }
+
+   template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
+   __host__ __device__ const K& unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::const_iterator::GetKey() const
+   {
+      if (bucket == -1 || ptr == nullptr) {
+         printf("Illegal call to map iterator GetKey(): nullptr pointer, no more element\n");
+      }
+      return ptr->GetKey();
+   }
+
+   template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
+   __host__ __device__ const V& unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::const_iterator::GetValue() const
+   {
+      if (bucket == -1 || ptr == nullptr) {
+         printf("Illegal call to map iterator GetValue(): nullptr pointer, no more element\n");
+      }
+      return ptr->GetValue();
+   }
+
+   template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
+   __host__ __device__ unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::const_iterator unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::begin() const
+   {
+      return unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::const_iterator(*this);
+   }
+
+   template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
+   __host__ __device__ unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::const_iterator unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::end() const
+   {
+      unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::const_iterator res(*this);
+      res.End();
+      return res;
+   }
+
+   template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
+   __host__ __device__ unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::const_iterator unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::cbegin() const
+   {
+      return unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::const_iterator(*this);
+   }
+
+   template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
+   __host__ __device__ unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::const_iterator unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::cend() const
+   {
+      unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::const_iterator res(*this);
+      res.End();
+      return res;
+   }
+
+   template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
+   __host__ __device__ KHasher unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::hash_function() const
+   {
+      KHasher h;
+      return h;
+   }
+
+   template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
+   __host__ __device__ V& unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::operator[](const K& k)
+   {
+      KCompare kcmp;
+      for (auto p : *this) {
+         if (kcmp(p.first, k)) {
+            return p.second;
+         }
+      }
+      return defaultv;
+   }
+
+   template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
+   __host__ __device__ const V& unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::operator[](const K& k) const
+   {
+      return (*this)[k];
    }
 }
 

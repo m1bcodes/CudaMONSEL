@@ -39,6 +39,25 @@ namespace amp
       return equal(str, a.str);
    }
 
+   __host__ __device__ bool string::operator!=(const string& a) const
+   {
+      return !equal(str, a.str);
+   }
+
+   __host__ __device__ bool string::operator<(const string& a) const
+   {
+      int i = 0;
+      while (true) {
+         if (str[i] == NULL_CHAR && a.str[i] != NULL_CHAR) return true;
+         if (str[i] != NULL_CHAR && a.str[i] == NULL_CHAR) return false;
+         if (str[i] == NULL_CHAR && a.str[i] == NULL_CHAR) return false;
+         if (str[i] < a.str[i]) return true;
+         if (str[i] > a.str[i]) return false;
+         //if (str[i] == a.str[i]) continue;
+         ++i;
+      }
+   }
+
    __host__ __device__ const char* string::c_str() const
    {
       return str;

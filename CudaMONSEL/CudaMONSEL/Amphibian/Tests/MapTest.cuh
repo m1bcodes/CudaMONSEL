@@ -18,9 +18,9 @@ namespace MapTest
       __host__ __device__ void testAggregate();
 
       template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
-      __host__ __device__ unordered_map::unordered_map<K, V, KCompare, VCompare, KHasher, VHasher> CreateMapA(K& k, V& v)
+      __host__ __device__ amp::unordered_map<K, V, KCompare, VCompare, KHasher, VHasher> CreateMapA(K& k, V& v)
       {
-         unordered_map::unordered_map<K, V, KCompare, VCompare, KHasher, VHasher> m1;
+         amp::unordered_map<K, V, KCompare, VCompare, KHasher, VHasher> m1;
          m1.Put(k, v);
 
          return m1;

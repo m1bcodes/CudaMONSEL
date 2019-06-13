@@ -241,7 +241,10 @@ namespace LinkedListKV
 
       __host__ __device__ KeyT& GetKey();
       __host__ __device__ ValueT& GetValue();
+      __host__ __device__ const KeyT& GetKey() const;
+      __host__ __device__ const ValueT& GetValue() const;
       __host__ __device__ Node* GetNext();
+      __host__ __device__ const Node* GetNext() const;
       __host__ __device__ Node** GetNextAddr();
       __host__ __device__ void UpdateNext(Node* newNext);
       __host__ __device__ void MapVal(const ValueT&, const ValueT&(*mapper)(const ValueT&, ValueT&));
@@ -303,7 +306,25 @@ namespace LinkedListKV
    }
 
    template<typename KeyT, typename ValueT>
+   __host__ __device__ const KeyT& Node<KeyT, ValueT>::GetKey() const
+   {
+      return key;
+   }
+
+   template<typename KeyT, typename ValueT>
+   __host__ __device__ const ValueT& Node<KeyT, ValueT>::GetValue() const
+   {
+      return val;
+   }
+
+   template<typename KeyT, typename ValueT>
    __host__ __device__ Node<KeyT, ValueT>* Node<KeyT, ValueT>::GetNext()
+   {
+      return next;
+   }
+
+   template<typename KeyT, typename ValueT>
+   __host__ __device__ const Node<KeyT, ValueT>* Node<KeyT, ValueT>::GetNext() const
    {
       return next;
    }
@@ -405,7 +426,7 @@ namespace LinkedListKV
    }
 
    template<typename KeyT, typename ValueT, typename KCompare>
-   __host__ __device__ bool Remove(Node<KeyT, ValueT>** head, KeyT& k, ValueT& ret)
+   __host__ __device__ bool Remove(Node<KeyT, ValueT>** head, const KeyT& k, ValueT& ret)
    {
       KCompare kcmp;
       while (*head != nullptr) {
@@ -458,41 +479,6 @@ namespace LinkedListKV
       return nullptr;
    }
 
-   //template<typename KeyT, typename ValueT>
-   //__host__ __device__ bool AreEquivalentNodes(Node<KeyT, ValueT>* head1, Node<KeyT, ValueT>* head2, bool equalKeys(KeyT, KeyT), bool equalValues(ValueT, ValueT))
-   //{
-   //   if (head1 == nullptr && head2 == nullptr) {
-   //      return true;
-   //   }
-
-   //   if (head1 == nullptr || head2 == nullptr) {
-   //      return false;
-   //   }
-   //   return (equalKeys(head1->GetKey(), head2->GetKey()) && equalValues(head1->GetValue(), head2->GetValue()));
-   //}
-
-   //template<typename KeyT, typename ValueT>
-   //__host__ __device__ void RemoveRepeatedNodes(Node<KeyT, ValueT>** head, bool equalKeys(KeyT, KeyT), bool equalValues(ValueT, ValueT))
-   //{
-   //   if (IsSet(*head, equalKeys, equalValues)) {
-   //      return;
-   //   }
-
-   //   Node<KeyT, ValueT>** head1 = head;
-   //   while ((*head1) != nullptr) {
-   //      Node<KeyT, ValueT>** head2 = (*head1)->GetNextAddr();
-   //      while ((*head2) == nullptr) {
-   //         if (AreEquivalentNodes(*head1, *head2, equalKeys, equalValues)) {
-   //            RemoveHead(head2);
-   //         }
-   //         else {
-   //            head2 = (*head2)->GetNextAddr();
-   //         }
-   //      }
-   //      head1 = (*head1)->GetNextAddr();
-   //   }
-   //}
-
    template<typename KeyT, typename ValueT>
    __host__ __device__ void RemoveAll(Node<KeyT, ValueT>** head)
    {
@@ -520,26 +506,6 @@ namespace LinkedListKV
          head = head->GetNext();
       }
    }
-
-   //template<typename KeyT, typename ValueT>
-   //__host__ __device__ bool IsSet(Node<KeyT, ValueT>* head, Hasher::pHasher hasher)
-   //{
-   //   Node<KeyT, ValueT>* head1 = head;
-   //   while (head1 != nullptr) {
-   //      head1->HashCode();
-   //      head1 = head1->GetNext();
-   //   }
-   //   return true;
-   //}
-
-   //template<typename KeyT, typename ValueT>
-   //__host__ __device__ bool AreEquivalentSets(Node<KeyT, ValueT>* h1, Node<KeyT, ValueT>* h2, Hasher::pHasher hasher)
-   //{
-   //   if (!IsSet(h1, hasher) || !IsSet(h2, hasher)) {
-   //      return false;
-   //   }
-   //   return (HashCode(h1, hasher) == HashCode(h2, hasher));
-   //}
 }
 
 namespace amp
