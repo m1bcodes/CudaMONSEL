@@ -293,16 +293,24 @@ namespace MaterialFactory
          if (p != std::string::npos) {
             CompositionT cl = createCompound(str.substr(0, p));
             CompositionT cr = createCompound(str.substr(p + 1));
-            auto cles = cl.getElementSet();
-            auto cres = cr.getElementSet();
+            const Element::UnorderedSetT& cles = cl.getElementSet();
+            const Element::UnorderedSetT& cres = cr.getElementSet();
             std::unordered_set<const ElementT*> elms;
-            elms.insert(cles.begin(), cles.end());
-            elms.insert(cres.begin(), cres.end());
+            //elms.insert(cles.begin(), cles.end());
+            //elms.insert(cres.begin(), cres.end());
+            for (auto e : cles) {
+               elms.insert(e);
+            }for (auto e : cres) {
+               elms.insert(e);
+            }
 
-            std::vector<const ElementT*> elmA(elms.begin(), elms.end());
             double* massFracs = new double[elms.size()];
+            std::vector<const ElementT*> elmA(elms.begin(), elms.end());
             for (int i = 0; i < elmA.size(); ++i)
                massFracs[i] = cl.weightFraction(*elmA[i], false) + cr.weightFraction(*elmA[i], false);
+            //double* massFracs = new double[elms.size()];
+            //for (auto i : elms) {
+            //}
             
             CompositionT ret(elmA.data(), elmA.size(), massFracs, elms.size());
             delete[] massFracs;
@@ -320,8 +328,12 @@ namespace MaterialFactory
                printf("Error parsing number: %s\n", str.substr(0, p).c_str());
             }
             CompositionT cr = createCompound(str.substr(p + 1));
-            auto elms = cr.getElementSet();
-            std::vector<const ElementT*> elmA(elms.begin(), elms.end());
+            const Element::UnorderedSetT& elms = cr.getElementSet();
+            //std::vector<const ElementT*> elmA(elms.begin(), elms.end());
+            std::vector<const ElementT*> elmA;
+            for (auto e : elms) {
+               elmA.push_back(e);
+            }
             std::vector<double> massFracs(elms.size());
             for (int i = 0; i < elmA.size(); ++i)
                massFracs[i] = k * cr.weightFraction(*elmA[i], false);

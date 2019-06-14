@@ -271,7 +271,7 @@ namespace Composition
    Composition positiveDefinite(const Composition& comp)
    {
       Composition res;
-      auto elemSet = comp.getElementSet();
+      const Element::UnorderedSetT& elemSet = comp.getElementSet();
       for (auto elm : elemSet) {
          if (comp.weightFraction(*elm, false) > 0.0) {
             res.addElement(*elm, comp.weightFractionU(*elm, false));
@@ -414,7 +414,7 @@ namespace Composition
    {
       Element::UnorderedSetT elms;
       for (int i = 0; i < len; ++i) {
-         auto elmset = compositions[i]->getElementSet();
+         const Element::UnorderedSetT& elmset = compositions[i]->getElementSet();
          for (auto elm : elmset) {
             elms.insert(elm);
          }
@@ -428,10 +428,12 @@ namespace Composition
          printf("Composition::defineByMaterialFraction: lengths are different (%d, %d)", compLen , matFracsLen);
       }
       clear();
-      auto elms = elementSet(compositions, compLen);
-      int len = elms.size();
-      std::vector<const Element::Element*> newElms(len);
-      std::vector<UncertainValue2::UncertainValue2> frac(len);
+      const Element::UnorderedSetT& elms = elementSet(compositions, compLen);
+      const int len = elms.size();
+      //std::vector<const Element::Element*> newElms(len);
+      //std::vector<UncertainValue2::UncertainValue2> frac(len);
+      const Element::Element** newElms = new const Element::Element*[len];
+      UncertainValue2::UncertainValue2* frac = new UncertainValue2::UncertainValue2[len];
 
       int ji = 0;
       for (auto el : elms) {
@@ -444,7 +446,11 @@ namespace Composition
          newElms[ji] = el;
          ++ji;
       }
-      defineByWeightFraction(newElms.data(), len, frac.data(), len);
+      //defineByWeightFraction(newElms.data(), len, frac.data(), len);
+      defineByWeightFraction(newElms, len, frac, len);
+
+      delete[] newElms;
+      delete[] frac;
    }
 
    void Composition::removeElement(const Element::Element& el)
@@ -722,8 +728,8 @@ namespace Composition
       // assert (comp.getElementCount() == this.getElementCount());
       UncertainValue2::UncertainValue2 delta = UncertainValue2::ZERO();
       Element::UnorderedSetT allElms;
-      auto s0 = getElementSet();
-      auto s1 = comp.getElementSet();
+      const Element::UnorderedSetT& s0 = getElementSet();
+      const Element::UnorderedSetT& s1 = comp.getElementSet();
       allElms.insert(s0.begin(), s0.end());
       allElms.insert(s1.begin(), s1.end());
 
@@ -818,11 +824,11 @@ namespace Composition
          return false;
       }
       Element::UnorderedSetT allElms;
-      auto elms0 = other.getElementSet();
+      const Element::UnorderedSetT& elms0 = other.getElementSet();
       for (auto e : elms0) {
          allElms.insert(e);
       }
-      auto elms1 = getElementSet();
+      const Element::UnorderedSetT& elms1 = getElementSet();
       for (auto e : elms1) {
          allElms.insert(e);
       }
@@ -853,44 +859,45 @@ namespace Composition
       return true;
    }
 
-   Composition::ErrorMapT Composition::absoluteError(const Composition& std, bool normalize) const
-   {
-      Element::UnorderedSetT elms;
-      auto elms0 = std.getElementSet();
-      for (auto e : elms0) {
-         elms.insert(e);
-      }
-      auto elms1 = getElementSet();
-      for (auto e : elms1) {
-         elms.insert(e);
-      }
-      ErrorMapT res;
-      for (auto elm : elms) {
-         double u = weightFractionU(*elm, normalize).doubleValue();
-         double s = std.weightFractionU(*elm, normalize).doubleValue();
-         res.insert(std::make_pair(elm, s != 0.0 ? (u - s) / s : (u == 0.0 ? 0.0 : 1.0)));
-      }
-      return res;
-   }
+   //Composition::ErrorMapT Composition::absoluteError(const Composition& std, bool normalize) const
+   //{
+   //   Element::UnorderedSetT elms;
+   //   const Element::UnorderedSetT& elms0 = std.getElementSet();
+   //   for (auto e : elms0) {
+   //      elms.insert(e);
+   //   }
+   //   const Element::UnorderedSetT& elms1 = getElementSet();
+   //   for (auto e : elms1) {
+   //      elms.insert(e);
+   //   }
+   //   ErrorMapT res;
+   //   for (auto elm : elms) {
+   //      double u = weightFractionU(*elm, normalize).doubleValue();
+   //      double s = std.weightFractionU(*elm, normalize).doubleValue();
+   //      res.insert(std::make_pair(elm, s != 0.0 ? (u - s) / s : (u == 0.0 ? 0.0 : 1.0)));
+   //   }
+   //   return res;
+   //}
 
-   Composition::ErrorMapT Composition::relativeError(const Composition& std, bool normalize) const
-   {
-      Element::UnorderedSetT elms; auto elms0 = std.getElementSet();
-      for (auto e : elms0) {
-         elms.insert(e);
-      }
-      auto elms1 = getElementSet();
-      for (auto e : elms1) {
-         elms.insert(e);
-      }
-      ErrorMapT res;
-      for (auto elm : elms) {
-         double u = weightFractionU(*elm, normalize).doubleValue();
-         double s = std.weightFractionU(*elm, normalize).doubleValue();
-         res.insert(std::make_pair(elm, u - s));
-      }
-      return res;
-   }
+   //Composition::ErrorMapT Composition::relativeError(const Composition& std, bool normalize) const
+   //{
+   //   Element::UnorderedSetT elms;
+   //   const Element::UnorderedSetT& elms0 = std.getElementSet();
+   //   for (auto e : elms0) {
+   //      elms.insert(e);
+   //   }
+   //   const Element::UnorderedSetT& elms1 = getElementSet();
+   //   for (auto e : elms1) {
+   //      elms.insert(e);
+   //   }
+   //   ErrorMapT res;
+   //   for (auto elm : elms) {
+   //      double u = weightFractionU(*elm, normalize).doubleValue();
+   //      double s = std.weightFractionU(*elm, normalize).doubleValue();
+   //      res.insert(std::make_pair(elm, u - s));
+   //   }
+   //   return res;
+   //}
 
    bool Composition::isUncertain()
    {
@@ -920,9 +927,9 @@ namespace Composition
    UncertainValue2::UncertainValue2 Composition::meanAtomicNumberU() const
    {
       UncertainValue2::UncertainValue2 res = UncertainValue2::ZERO();
-      auto elms = getElementSet();
+      const Element::UnorderedSetT& elms = getElementSet();
       for (auto elm : elms) {
-         auto uv = UncertainValue2::multiply(elm->getAtomicNumber(), atomicPercentU(*elm));
+         const UncertainValue2::UncertainValue2& uv = UncertainValue2::multiply(elm->getAtomicNumber(), atomicPercentU(*elm));
          res = UncertainValue2::add(res, uv);
       }
       return res;
@@ -931,7 +938,7 @@ namespace Composition
    double Composition::meanAtomicNumber() const
    {
       double res = 0.0;
-      auto elms = getElementSet();
+      const Element::UnorderedSetT& elms = getElementSet();
       for (auto elm : elms) {
          res += elm->getAtomicNumber() * atomicPercent(*elm);
       }
@@ -1039,7 +1046,7 @@ namespace Composition
    {
       srand(0);
       Composition res;
-      auto elms = getElementSet();
+      const Element::UnorderedSetT& elms = getElementSet();
       for (auto elm : elms) {
          double w = weightFraction(*elm, false);
          double v = w + w * Math2::generateGaussianNoise(0, 1) * proportional + offset * Math2::generateGaussianNoise(0, 1);
@@ -1079,7 +1086,7 @@ namespace Composition
    {
       if (mIndexHashS == INT_MAX) {
          long res = 0;
-         auto elms = getElementSet();
+         const Element::UnorderedSetT& elms = getElementSet();
          for (auto elm : elms) {
             int v = (int)sqrt(100.0 * weightFraction(*elm, false));
             v = v > 0 ? v : 0;
@@ -1095,7 +1102,7 @@ namespace Composition
    {
       if (mIndexHashL == INT_MAX) {
          long res = 0;
-         auto elms = getElementSet();
+         const Element::UnorderedSetT& elms = getElementSet();
          for (auto elm : elms) {
             int v = (int)(10.0 * weightFraction(*elm, false));
             v = v > 0 ? v : 0;

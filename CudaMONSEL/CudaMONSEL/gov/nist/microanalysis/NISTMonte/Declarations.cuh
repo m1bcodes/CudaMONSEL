@@ -8,7 +8,6 @@
 #include <stack>
 
 typedef std::string StringT;
-typedef std::vector<double> PositionVecT;
 typedef std::vector<float> VectorXf;
 typedef std::vector<VectorXf> MatrixXf;
 typedef std::vector<double> VectorXd;

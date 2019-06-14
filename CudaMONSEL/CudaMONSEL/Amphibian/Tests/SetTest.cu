@@ -1,21 +1,13 @@
 #include "Amphibian/Tests/SetTest.cuh"
 
 #include "Amphibian/unordered_set.cuh"
-#include "Amphibian/string.cuh"
+#include "Amphibian/String.cuh"
+#include "Amphibian/Hasher.cuh"
 
 #include <stdio.h>
 
 namespace SetTest
 {
-   struct IntCompare
-   {
-      __host__ __device__ inline bool operator() (const int& lhs, const int& rhs) const
-      {
-         if (&rhs == &lhs) return true;
-         return lhs == rhs;
-      }
-   };
-
    //__device__ void Print(Set::Set<int, IntCompare> set)
    //{
    //   for (int k = 0; k < Set::NUM_BUCKETS; ++k) {
@@ -34,12 +26,12 @@ namespace SetTest
 
    __host__ __device__ void SetTest::testIntBasic()
    {
+      Comparator::IntCompareFcn cmp;
       int a = 1, b = 1;
-      IntCompare cmp;
       if (!cmp(a, b)) {
          printf("bad: %d, %d\n", a, b);
       }
-      amp::unordered_set<int, Hasher::IntHashFcn, IntCompare> set;
+      amp::unordered_set<int, Hasher::IntHashFcn, Comparator::IntCompareFcn> set;
       int k = 0;
       set.insert(k);
       set.insert(k);
@@ -59,7 +51,7 @@ namespace SetTest
 
    __host__ __device__ void SetTest::testInt()
    {
-      amp::unordered_set<int, Hasher::IntHashFcn, IntCompare> set;
+      amp::unordered_set<int, Hasher::IntHashFcn, Comparator::IntCompareFcn> set;
 
       //for (int k = 0; k < 23; ++k) {
       //   auto b = set.GetBucket(k);
@@ -109,7 +101,7 @@ namespace SetTest
 
    __host__ __device__ void SetTest::testInt2()
    {
-      amp::unordered_set<int, Hasher::IntHashFcn, IntCompare> set1;
+      amp::unordered_set<int, Hasher::IntHashFcn, Comparator::IntCompareFcn> set1;
 
       int maxNum = 100;
 
@@ -126,7 +118,7 @@ namespace SetTest
       }
       printf("\n");
 
-      amp::unordered_set<int, Hasher::IntHashFcn, IntCompare> set2;
+      amp::unordered_set<int, Hasher::IntHashFcn, Comparator::IntCompareFcn> set2;
       for (int k = 0; k < maxNum; ++k) {
          set2.insert(k);
       }
@@ -141,7 +133,7 @@ namespace SetTest
    }
 
    typedef amp::unordered_set<amp::string, amp::string_hash, amp::string_cmp> StringTestT;
-   typedef amp::unordered_set<amp::string, amp::string_hash, amp::string_cmp>::iterator StringTestTItr;
+   typedef amp::unordered_set<amp::string, amp::string_hash, amp::string_cmp>::const_iterator StringTestTItr;
 
    __host__ __device__ void SetTest::testString()
    {

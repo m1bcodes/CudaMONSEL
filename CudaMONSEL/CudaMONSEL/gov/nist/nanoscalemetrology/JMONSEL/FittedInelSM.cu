@@ -14,7 +14,7 @@ namespace FittedInelSM
    {
       const double phi = 2 * Math2::PI * Math2::random();
       const double theta = ::acos(1. - (2. * Math2::random()));
-      return new ElectronT(*pe, theta, phi, energySEgen + eFermi); // TODO: deal with the new electron
+      return new ElectronT(*pe, theta, phi, energySEgen + eFermi);
    }
 
    double FittedInelSM::scatterRate(const ElectronT* pe)

@@ -1,8 +1,9 @@
+#include "gov\nist\nanoscalemetrology\JMONSEL\MONSEL_MaterialScatterModel.cuh"
+
 #include "gov\nist\microanalysis\NISTMonte\Electron.cuh"
 #include "gov\nist\microanalysis\NISTMonte\MonteCarloSS.cuh"
 #include "gov\nist\microanalysis\Utility\Math2.cuh"
 
-#include "gov\nist\nanoscalemetrology\JMONSEL\MONSEL_MaterialScatterModel.cuh"
 #include "gov\nist\nanoscalemetrology\JMONSEL\SEmaterial.cuh"
 #include "gov\nist\nanoscalemetrology\JMONSEL\ScatterMechanism.cuh"
 #include "gov\nist\nanoscalemetrology\JMONSEL\BarrierScatterMechanism.cuh"

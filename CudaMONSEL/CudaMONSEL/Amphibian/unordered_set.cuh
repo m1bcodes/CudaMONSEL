@@ -43,19 +43,44 @@ namespace amp
       __host__ __device__ unsigned int hashCode(const T&) const;
       //__host__ __device__ LinkedList::Node<T>* AsList();
 
-      class iterator
+      //class iterator
+      //{
+      //public:
+      //   __host__ __device__ iterator(unordered_set<T, Hash, Pred>&);
+      //   __host__ __device__ iterator(iterator& other);
+      //   __host__ __device__ void next();
+      //   __host__ __device__ void reset();
+      //   __host__ __device__ void end();
+
+      //   __host__ __device__ void operator++();
+      //   __host__ __device__ bool operator!=(const iterator&) const;
+      //   __host__ __device__ T& operator*();
+      //   __host__ __device__ void operator=(const iterator&);
+      //   //__host__ __device__ operator T&() const {return };
+
+      //   __host__ __device__ bool HasNext() const;
+
+      //   __host__ __device__ T& GetValue() const;
+
+      //private:
+      //   unordered_set<T, Hash, Pred>& refSet;
+      //   LinkedList::Node<T>* ptr;
+      //   int bucket;
+      //};
+
+      class const_iterator
       {
       public:
-         __host__ __device__ iterator(const unordered_set<T, Hash, Pred>&);
-         __host__ __device__ iterator(const iterator& other);
+         __host__ __device__ const_iterator(const unordered_set<T, Hash, Pred>&);
+         __host__ __device__ const_iterator(const const_iterator& other);
          __host__ __device__ void next();
          __host__ __device__ void reset();
          __host__ __device__ void end();
 
          __host__ __device__ void operator++();
-         __host__ __device__ bool operator!=(const iterator&) const;
-         __host__ __device__ T& operator*();
-         __host__ __device__ void operator=(const iterator&);
+         __host__ __device__ bool operator!=(const const_iterator&) const;
+         __host__ __device__ const T& operator*() const;
+         __host__ __device__ void operator=(const const_iterator&);
 
          __host__ __device__ bool HasNext() const;
 
@@ -63,15 +88,17 @@ namespace amp
 
       private:
          const unordered_set<T, Hash, Pred>& refSet;
-         LinkedList::Node<T>* ptr;
+         const LinkedList::Node<T>* ptr;
          int bucket;
       };
 
       // iterators
-      __host__ __device__ iterator begin();
-      __host__ __device__ iterator end();
-      __host__ __device__ iterator cbegin();
-      __host__ __device__ iterator cend();
+      //__host__ __device__ const_iterator begin();
+      //__host__ __device__ const_iterator end();
+      __host__ __device__ const_iterator begin() const;
+      __host__ __device__ const_iterator end() const;
+
+      __host__ __device__ void insert(const_iterator& start, const_iterator& stop);
 
    private:
       __host__ __device__ LinkedList::Node<T>* GetBucket(int);
@@ -161,6 +188,16 @@ namespace amp
    {
       if (!contains(v)) {
          LinkedList::InsertHead<T>(&buckets[GetBucketIdx(v)], v);
+      }
+   }
+
+   template<typename T, typename Hash, typename Pred>
+   __host__ __device__ void unordered_set<T, Hash, Pred>::insert(unordered_set<T, Hash, Pred>::const_iterator& start, unordered_set<T, Hash, Pred>::const_iterator& stop)
+   {
+      for (auto v : *this) {
+         if (!contains(v)) {
+            LinkedList::InsertHead<T>(&buckets[GetBucketIdx(v)], v);
+         }
       }
    }
 
@@ -287,7 +324,7 @@ namespace amp
    //};
 
    template<typename T, typename Hash, typename Pred>
-   __host__ __device__ unordered_set<T, Hash, Pred>::iterator::iterator(const unordered_set<T, Hash, Pred>& m) :
+   __host__ __device__ unordered_set<T, Hash, Pred>::const_iterator::const_iterator(const unordered_set<T, Hash, Pred>& m) :
       refSet(m),
       ptr(NULL),
       bucket(-1)
@@ -296,7 +333,7 @@ namespace amp
    }
 
    template<typename T, typename Hash, typename Pred>
-   __host__ __device__ unordered_set<T, Hash, Pred>::iterator::iterator(const unordered_set<T, Hash, Pred>::iterator& other) :
+   __host__ __device__ unordered_set<T, Hash, Pred>::const_iterator::const_iterator(const unordered_set<T, Hash, Pred>::const_iterator& other) :
       refSet(other.refSet),
       ptr(other.ptr),
       bucket(other.bucket)
@@ -304,7 +341,7 @@ namespace amp
    }
 
    template<typename T, typename Hash, typename Pred>
-   __host__ __device__ void unordered_set<T, Hash, Pred>::iterator::reset()
+   __host__ __device__ void unordered_set<T, Hash, Pred>::const_iterator::reset()
    {
       if (refSet.empty()) {
          ptr = nullptr;
@@ -321,14 +358,14 @@ namespace amp
    }
 
    template<typename T, typename Hash, typename Pred>
-   __host__ __device__ void unordered_set<T, Hash, Pred>::iterator::end()
+   __host__ __device__ void unordered_set<T, Hash, Pred>::const_iterator::end()
    {
       ptr = nullptr;
       bucket = -1;
    }
 
    template<typename T, typename Hash, typename Pred>
-   __host__ __device__ void unordered_set<T, Hash, Pred>::iterator::next()
+   __host__ __device__ void unordered_set<T, Hash, Pred>::const_iterator::next()
    {
       if (bucket == -1) {
          return;
@@ -349,25 +386,25 @@ namespace amp
    }
 
    template<typename T, typename Hash, typename Pred>
-   __host__ __device__ void unordered_set<T, Hash, Pred>::iterator::operator++()
+   __host__ __device__ void unordered_set<T, Hash, Pred>::const_iterator::operator++()
    {
       next();
    }
 
    template<typename T, typename Hash, typename Pred>
-   __host__ __device__ bool unordered_set<T, Hash, Pred>::iterator::operator!=(const unordered_set<T, Hash, Pred>::iterator& other) const
+   __host__ __device__ bool unordered_set<T, Hash, Pred>::const_iterator::operator!=(const unordered_set<T, Hash, Pred>::const_iterator& other) const
    {
       return ptr != other.ptr;
    }
 
    template<typename T, typename Hash, typename Pred>
-   __host__ __device__ T& unordered_set<T, Hash, Pred>::iterator::operator*()
+   __host__ __device__ const T& unordered_set<T, Hash, Pred>::const_iterator::operator*() const
    {
       return ptr->GetValue();
    }
 
    template<typename T, typename Hash, typename Pred>
-   __host__ __device__ void unordered_set<T, Hash, Pred>::iterator::operator=(const unordered_set<T, Hash, Pred>::iterator& other)
+   __host__ __device__ void unordered_set<T, Hash, Pred>::const_iterator::operator=(const unordered_set<T, Hash, Pred>::const_iterator& other)
    {
       refSet = other.refSet;
       ptr = other.ptr;
@@ -375,47 +412,150 @@ namespace amp
    }
 
    template<typename T, typename Hash, typename Pred>
-   __host__ __device__ bool unordered_set<T, Hash, Pred>::iterator::HasNext() const
+   __host__ __device__ bool unordered_set<T, Hash, Pred>::const_iterator::HasNext() const
    {
       return bucket != -1;
    }
 
    template<typename T, typename Hash, typename Pred>
-   __host__ __device__ T& unordered_set<T, Hash, Pred>::iterator::GetValue() const
+   __host__ __device__ T& unordered_set<T, Hash, Pred>::const_iterator::GetValue() const
    {
       if (bucket == -1 || ptr == nullptr) {
-         printf("Illegal call to set iterator GetValue(): nullptr, no more element");
+         printf("Illegal call to set const_iterator GetValue(): nullptr, no more element");
       }
       return ptr->GetValue();
    }
 
    template<typename T, typename Hash, typename Pred>
-   __host__ __device__ unordered_set<T, Hash, Pred>::iterator unordered_set<T, Hash, Pred>::begin()
+   __host__ __device__ unordered_set<T, Hash, Pred>::const_iterator unordered_set<T, Hash, Pred>::begin() const
    {
-      return unordered_set<T, Hash, Pred>::iterator(*this);
+      return unordered_set<T, Hash, Pred>::const_iterator(*this);
    }
 
    template<typename T, typename Hash, typename Pred>
-   __host__ __device__ unordered_set<T, Hash, Pred>::iterator unordered_set<T, Hash, Pred>::end()
+   __host__ __device__ unordered_set<T, Hash, Pred>::const_iterator unordered_set<T, Hash, Pred>::end() const
    {
-      unordered_set<T, Hash, Pred>::iterator res(*this);
+      unordered_set<T, Hash, Pred>::const_iterator res(*this);
       res.end();
       return res;
    }
 
-   // TODO: implemented properly
-   template<typename T, typename Hash, typename Pred>
-   __host__ __device__ unordered_set<T, Hash, Pred>::iterator unordered_set<T, Hash, Pred>::cbegin()
-   {
-      return begin();
-   }
+   //template<typename T, typename Hash, typename Pred>
+   //__host__ __device__ unordered_set<T, Hash, Pred>::iterator::iterator(unordered_set<T, Hash, Pred>& m) :
+   //   refSet(m),
+   //   ptr(NULL),
+   //   bucket(-1)
+   //{
+   //   reset();
+   //}
 
-   // TODO: implemented properly
-   template<typename T, typename Hash, typename Pred>
-   __host__ __device__ unordered_set<T, Hash, Pred>::iterator unordered_set<T, Hash, Pred>::cend()
-   {
-      return end();
-   }
+   //template<typename T, typename Hash, typename Pred>
+   //__host__ __device__ unordered_set<T, Hash, Pred>::iterator::iterator(unordered_set<T, Hash, Pred>::iterator& other) :
+   //   refSet(other.refSet),
+   //   ptr(other.ptr),
+   //   bucket(other.bucket)
+   //{
+   //}
+
+   //template<typename T, typename Hash, typename Pred>
+   //__host__ __device__ void unordered_set<T, Hash, Pred>::iterator::reset()
+   //{
+   //   if (refSet.empty()) {
+   //      ptr = nullptr;
+   //      bucket = -1;
+   //      return;
+   //   }
+   //   for (int k = 0; k < NUM_SET_BUCKETS; ++k) {
+   //      if (refSet.buckets[k] != nullptr) {
+   //         bucket = k;
+   //         ptr = refSet.buckets[bucket];
+   //         break;
+   //      }
+   //   }
+   //}
+
+   //template<typename T, typename Hash, typename Pred>
+   //__host__ __device__ void unordered_set<T, Hash, Pred>::iterator::end()
+   //{
+   //   ptr = nullptr;
+   //   bucket = -1;
+   //}
+
+   //template<typename T, typename Hash, typename Pred>
+   //__host__ __device__ void unordered_set<T, Hash, Pred>::iterator::next()
+   //{
+   //   if (bucket == -1) {
+   //      return;
+   //   }
+   //   if (ptr != nullptr) {
+   //      ptr = ptr->GetNext();
+   //   }
+   //   if (ptr == nullptr) {
+   //      for (int k = bucket + 1; k < NUM_SET_BUCKETS; ++k) {
+   //         if (refSet.buckets[k] != nullptr) {
+   //            bucket = k;
+   //            ptr = refSet.buckets[bucket];
+   //            return;
+   //         }
+   //      }
+   //      bucket = -1;
+   //   }
+   //}
+
+   //template<typename T, typename Hash, typename Pred>
+   //__host__ __device__ void unordered_set<T, Hash, Pred>::iterator::operator++()
+   //{
+   //   next();
+   //}
+
+   //template<typename T, typename Hash, typename Pred>
+   //__host__ __device__ bool unordered_set<T, Hash, Pred>::iterator::operator!=(unordered_set<T, Hash, Pred>::iterator& other) const
+   //{
+   //   return ptr != other.ptr;
+   //}
+
+   //template<typename T, typename Hash, typename Pred>
+   //__host__ __device__ const T& unordered_set<T, Hash, Pred>::iterator::operator*() const
+   //{
+   //   return ptr->GetValue();
+   //}
+
+   //template<typename T, typename Hash, typename Pred>
+   //__host__ __device__ void unordered_set<T, Hash, Pred>::iterator::operator=(unordered_set<T, Hash, Pred>::iterator& other)
+   //{
+   //   refSet = other.refSet;
+   //   ptr = other.ptr;
+   //   bucket = other.bucket;
+   //}
+
+   //template<typename T, typename Hash, typename Pred>
+   //__host__ __device__ bool unordered_set<T, Hash, Pred>::iterator::HasNext() const
+   //{
+   //   return bucket != -1;
+   //}
+
+   //template<typename T, typename Hash, typename Pred>
+   //__host__ __device__ T& unordered_set<T, Hash, Pred>::iterator::GetValue() const
+   //{
+   //   if (bucket == -1 || ptr == nullptr) {
+   //      printf("Illegal call to set iterator GetValue(): nullptr, no more element");
+   //   }
+   //   return ptr->GetValue();
+   //}
+
+   //template<typename T, typename Hash, typename Pred>
+   //__host__ __device__ unordered_set<T, Hash, Pred>::iterator unordered_set<T, Hash, Pred>::begin()
+   //{
+   //   return unordered_set<T, Hash, Pred>::iterator(*this);
+   //}
+
+   //template<typename T, typename Hash, typename Pred>
+   //__host__ __device__ unordered_set<T, Hash, Pred>::iterator unordered_set<T, Hash, Pred>::end()
+   //{
+   //   unordered_set<T, Hash, Pred>::iterator res(*this);
+   //   res.end();
+   //   return res;
+   //}
 }
 
 #endif

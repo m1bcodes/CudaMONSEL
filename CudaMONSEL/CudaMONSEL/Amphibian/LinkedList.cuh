@@ -19,7 +19,9 @@ namespace LinkedList
       __host__ __device__ Node& operator=(const Node&);
 
       __host__ __device__ T& GetValue();
+      __host__ __device__ const T& GetValue() const;
       __host__ __device__ Node* GetNext();
+      __host__ __device__ const Node* GetNext() const;
       __host__ __device__ Node** GetNextAddr();
       __host__ __device__ void UpdateNext(Node*);
 
@@ -53,7 +55,19 @@ namespace LinkedList
    }
 
    template<typename T>
+   __host__ __device__ const T& Node<T>::GetValue() const
+   {
+      return val;
+   }
+
+   template<typename T>
    __host__ __device__ Node<T>* Node<T>::GetNext()
+   {
+      return next;
+   }
+
+   template<typename T>
+   __host__ __device__ const Node<T>* Node<T>::GetNext() const
    {
       return next;
    }

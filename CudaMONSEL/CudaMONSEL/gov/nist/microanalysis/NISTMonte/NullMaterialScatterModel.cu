@@ -6,7 +6,6 @@
 
 namespace NullMaterialScatterModel
 {
-
    NullMaterialScatterModel::NullMaterialScatterModel() : minEforTracking(ToSI::eV(0.1))
    {
    }

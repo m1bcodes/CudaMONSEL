@@ -10,6 +10,8 @@
 #include <vector>
 #include <unordered_set>
 
+#include "Amphibian\unordered_set.cuh"
+
 namespace Element
 {
    //extern float mIonizationEnergy[104]; // Nominal in Joules, IonizationEnergies.csv
@@ -283,17 +285,17 @@ namespace Element
    const Element& byAtomicNumber(int an);
    double getAtomicWeight(int atomicNo);
    Element const * const * allElements();
-   std::vector<const Element*> range(const Element& min, const Element& max);
+   //std::vector<const Element*> range(const Element& min, const Element& max);
    //double meanIonizationPotential(int atomicNo);
 
    char const * toAbbrev(int atomicNo);
    char const * toString(int el);
    bool isValid(int atomicNo);
 
-   typedef std::vector<std::string> ElementNameVecT;
+   //typedef std::vector<std::string> ElementNameVecT;
 
-   ElementNameVecT getListOfAbbreviations(const Element& minEl, const Element& maxEl);
-   ElementNameVecT getListOfElements(const Element& minEl, const Element& maxEl);
+   //ElementNameVecT getListOfAbbreviations(const Element& minEl, const Element& maxEl);
+   //ElementNameVecT getListOfElements(const Element& minEl, const Element& maxEl);
 
    void init();
 
@@ -309,12 +311,12 @@ namespace Element
    {
       inline bool operator()(const Element* e0, const Element* e1) const
       {
-         return e0->getAtomicNumber() == e1->getAtomicNumber();
+         return *e0 == *e1;
       }
    };
 
-   typedef std::unordered_set<const Element*, HashFcn> UnorderedSetT;
-   typedef std::unordered_set<const Element*, HashFcn> OrderedSetT;
+   typedef amp::unordered_set<const Element*, HashFcn, CompareFcn> UnorderedSetT;
+   typedef amp::unordered_set<const Element*, HashFcn, CompareFcn> OrderedSetT;
 }
 
 #endif

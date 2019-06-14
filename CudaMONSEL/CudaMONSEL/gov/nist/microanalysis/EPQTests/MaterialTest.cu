@@ -38,7 +38,6 @@ namespace MaterialTest
          double fac = 1.1;
          mat.addElement(Element::elmTi, fac * wTi);
          mat.addElement(Element::elmO, fac * wO);
-
          {
             int elemLen = 2;
             const Element::Element* elms[] = {

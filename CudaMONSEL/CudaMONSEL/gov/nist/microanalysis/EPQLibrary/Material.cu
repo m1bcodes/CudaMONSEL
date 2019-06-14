@@ -75,11 +75,14 @@ namespace Material
 
    void Material::defineByMaterialFraction(const Material* mats[], int matsLen, double matFracs[], int matFracsLen)
    {
-      std::vector<const Composition*> comp;
+      //std::vector<const Composition*> comp;
+      const Composition** comp = new const Composition*[matsLen];
       for (int k = 0; k < matsLen; ++k) {
-         comp.push_back(mats[k]);
+         //comp.push_back(mats[k]);
+         comp[k] = mats[k];
       }
-      Composition::defineByMaterialFraction(comp.data(), matsLen, matFracs, matFracsLen);
+      Composition::defineByMaterialFraction(comp, matsLen, matFracs, matFracsLen);
+      delete[] comp;
       double den = 0.0;
       for (int i = 0; i < matsLen; ++i) {
          den += matFracs[i] * mats[i]->getDensity();

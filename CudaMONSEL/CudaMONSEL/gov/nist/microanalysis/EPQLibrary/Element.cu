@@ -754,19 +754,19 @@ namespace Element
       return mAllElements;
    }
 
-   std::vector<const Element*> range(const Element& min, const Element& max)
-   {
-      if (min.getAtomicNumber() <= max.getAtomicNumber()) {
-         printf("make sure min < max when calling range");
-         return std::vector<const Element*>();
-      }
-      int numElem = max.getAtomicNumber() - min.getAtomicNumber() + 1;
-      std::vector<Element const *> res(numElem);
-      for (int k = 0; k < numElem; ++k) {
-         res[k] = mAllElements[min.getAtomicNumber() - 1 + k];
-      }
-      return res;
-   }
+   //std::vector<const Element*> range(const Element& min, const Element& max)
+   //{
+   //   if (min.getAtomicNumber() <= max.getAtomicNumber()) {
+   //      printf("make sure min < max when calling range");
+   //      return std::vector<const Element*>();
+   //   }
+   //   int numElem = max.getAtomicNumber() - min.getAtomicNumber() + 1;
+   //   std::vector<Element const *> res(numElem);
+   //   for (int k = 0; k < numElem; ++k) {
+   //      res[k] = mAllElements[min.getAtomicNumber() - 1 + k];
+   //   }
+   //   return res;
+   //}
 
    //double Element::meanIonizationPotential(int atomicNo) {
    //   try {
@@ -889,23 +889,23 @@ namespace Element
       return ::Element::byAtomicNumber(mAtomicNumber);
    }
 
-   ElementNameVecT getListOfAbbreviations(const Element& minEl, const Element& maxEl)
-   {
-      int numEl = maxEl.getAtomicNumber() - minEl.getAtomicNumber() + 1;
-      std::vector<std::string> res(numEl, "");
-      for (int z = minEl.getAtomicNumber(); z <= maxEl.getAtomicNumber(); ++z) {
-         std::string abbrev(toAbbrev(z));
-         res[z - minEl.getAtomicNumber()] = abbrev;
-      }
-      return res;
-   }
+   //ElementNameVecT getListOfAbbreviations(const Element& minEl, const Element& maxEl)
+   //{
+   //   int numEl = maxEl.getAtomicNumber() - minEl.getAtomicNumber() + 1;
+   //   std::vector<std::string> res(numEl, "");
+   //   for (int z = minEl.getAtomicNumber(); z <= maxEl.getAtomicNumber(); ++z) {
+   //      std::string abbrev(toAbbrev(z));
+   //      res[z - minEl.getAtomicNumber()] = abbrev;
+   //   }
+   //   return res;
+   //}
 
-   ElementNameVecT getListOfElements(const Element& minEl, const Element& maxEl)
-   {
-      std::vector<std::string> res;
-      for (int z = minEl.getAtomicNumber(); z <= maxEl.getAtomicNumber(); ++z) {
-         res.push_back(toString(z));
-      }
-      return res;
-   }
+   //ElementNameVecT getListOfElements(const Element& minEl, const Element& maxEl)
+   //{
+   //   std::vector<std::string> res;
+   //   for (int z = minEl.getAtomicNumber(); z <= maxEl.getAtomicNumber(); ++z) {
+   //      res.push_back(toString(z));
+   //   }
+   //   return res;
+   //}
 }

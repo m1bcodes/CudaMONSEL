@@ -19,7 +19,7 @@ namespace Composition
    public:
       //typedef std::unordered_map<const Element::Element*, UncertainValue2::UncertainValue2, Element::HashFcn> ConstituentsMapT;
       typedef amp::unordered_map<const Element::Element*, UncertainValue2::UncertainValue2, Element::CompareFcn, UncertainValue2::CompareFcn, Element::HashFcn, UncertainValue2::HashFcn> ConstituentsMapT;
-      typedef std::unordered_map<const Element::Element*, double, Element::HashFcn> ErrorMapT;
+      //typedef std::unordered_map<const Element::Element*, double, Element::HashFcn> ErrorMapT;
       //typedef std::string StringT;
       typedef amp::string StringT;
 
@@ -112,9 +112,9 @@ namespace Composition
       double sumWeightFraction() const;
       UncertainValue2::UncertainValue2 sumWeightFractionU() const;
       const char* toString() const;
-      ////String::String stoichiometryString();
-      ////String::String weightPercentString(bool normalize);
-      ////String::String descriptiveString(bool normalize);
+      //String::String stoichiometryString();
+      //String::String weightPercentString(bool normalize);
+      //String::String descriptiveString(bool normalize);
       //Element::Element getNthElementByWeight(int n);
       //Element::Element getNthElementByAtomicFraction(int n);
       void setName(const char* name);
@@ -130,8 +130,8 @@ namespace Composition
       bool sameConstituentsAtomic(const ConstituentsMapT&) const;
       bool equals(const Composition& other) const;
       bool almostEquals(const Composition& other, double tol) const;
-      ErrorMapT absoluteError(const Composition& std, bool normalize) const;
-      ErrorMapT relativeError(const Composition& std, bool normalize) const;
+      //ErrorMapT absoluteError(const Composition& std, bool normalize) const;
+      //ErrorMapT relativeError(const Composition& std, bool normalize) const;
       bool isUncertain();
       UncertainValue2::UncertainValue2 meanAtomicNumberU() const;
       double meanAtomicNumber() const;

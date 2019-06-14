@@ -335,15 +335,15 @@ namespace UncertainValue2
 
       UncertainValue2::KeySetT keys;
 
-      std::transform(v1.getComponentsItrBegin(), v1.getComponentsItrEnd(), std::inserter(keys, keys.end()), [](LinkedListKV::Node<StringT, double> pair){ return pair.first; });
-      std::transform(v2.getComponentsItrBegin(), v2.getComponentsItrEnd(), std::inserter(keys, keys.end()), [](LinkedListKV::Node<StringT, double> pair){ return pair.first; });
+      //std::transform(v1.getComponentsItrBegin(), v1.getComponentsItrEnd(), std::inserter(keys, keys.end()), [](LinkedListKV::Node<StringT, double> pair){ return pair.first; });
+      //std::transform(v2.getComponentsItrBegin(), v2.getComponentsItrEnd(), std::inserter(keys, keys.end()), [](LinkedListKV::Node<StringT, double> pair){ return pair.first; });
 
-      //for (auto itr = v1.getComponentsItrBegin(); itr != v1.getComponentsItrEnd(); ++itr) {
-      //   keys.insert(itr->first);
-      //}
-      //for (auto itr = v2.getComponentsItrBegin(); itr != v2.getComponentsItrEnd(); ++itr) {
-      //   keys.insert(itr->first);
-      //}
+      for (auto itr = v1.getComponentsItrBegin(); itr != v1.getComponentsItrEnd(); ++itr) {
+         keys.insert(itr->first);
+      }
+      for (auto itr = v2.getComponentsItrBegin(); itr != v2.getComponentsItrEnd(); ++itr) {
+         keys.insert(itr->first);
+      }
 
       const double ua = fabs(1.0 / v2.doubleValue());
       const double ub = fabs(v1.doubleValue() / (v2.doubleValue() * v2.doubleValue()));
@@ -367,8 +367,15 @@ namespace UncertainValue2
 
       UncertainValue2::KeySetT keys;
 
-      std::transform(v1.getComponentsItrBegin(), v1.getComponentsItrEnd(), std::inserter(keys, keys.end()), [](LinkedListKV::Node<StringT, double> pair){ return pair.first; });
-      std::transform(v2.getComponentsItrBegin(), v2.getComponentsItrEnd(), std::inserter(keys, keys.end()), [](LinkedListKV::Node<StringT, double> pair){ return pair.first; });
+      //std::transform(v1.getComponentsItrBegin(), v1.getComponentsItrEnd(), std::inserter(keys, keys.end()), [](LinkedListKV::Node<StringT, double> pair){ return pair.first; });
+      //std::transform(v2.getComponentsItrBegin(), v2.getComponentsItrEnd(), std::inserter(keys, keys.end()), [](LinkedListKV::Node<StringT, double> pair){ return pair.first; });
+
+      for (auto itr = v1.getComponentsItrBegin(); itr != v1.getComponentsItrEnd(); ++itr) {
+         keys.insert(itr->first);
+      }
+      for (auto itr = v2.getComponentsItrBegin(); itr != v2.getComponentsItrEnd(); ++itr) {
+         keys.insert(itr->first);
+      }
 
       const double ua = fabs(1.0 / v2.doubleValue());
       const double ub = fabs(v1.doubleValue() / (v2.doubleValue() * v2.doubleValue()));

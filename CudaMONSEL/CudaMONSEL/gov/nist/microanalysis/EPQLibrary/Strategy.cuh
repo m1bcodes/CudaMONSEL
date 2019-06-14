@@ -6,11 +6,36 @@
 #include <map>
 #include <set>
 
+#include "Amphibian\unordered_set.cuh"
+#include "Amphibian\unordered_map.cuh"
+#include "Amphibian\String.cuh"
+#include "Amphibian\Hasher.cuh"
+
 namespace Strategy
 {
    typedef std::map<StringT, const AlgorithmClassT*> AlgorithmMap;
    typedef std::set<StringT> AlgorithmNames;
    typedef std::set<const AlgorithmClassT*> Algorithms;
+
+   //struct CompareFcn
+   //{
+   //   __host__ __device__ inline bool operator() (const AlgorithmClassT* lhs, const AlgorithmClassT* rhs) const
+   //   {
+   //      return lhs == rhs;
+   //   }
+   //};
+
+   //struct HashFcn
+   //{
+   //   __host__ __device__ inline unsigned int operator() (const AlgorithmClassT* ptr) const
+   //   {
+   //      return Hasher::Hash((char *)ptr, sizeof(ptr));
+   //   }
+   //};
+
+   //typedef amp::unordered_map<StringT, const AlgorithmClassT*, amp::string_cmp, CompareFcn, amp::string_hash, HashFcn> AlgorithmMap;
+   //typedef amp::unordered_set<StringT, amp::string_hash, amp::string_cmp> AlgorithmNames;
+   //typedef amp::unordered_set<const AlgorithmClassT*, HashFcn, CompareFcn> Algorithms;
 
    class Strategy
    {
