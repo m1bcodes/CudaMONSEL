@@ -133,7 +133,7 @@ namespace MONSEL_MaterialScatterModel
       while (cached_cumulativeScatterRate[index] < r)
          index++;
 
-      return scatterArray.at(index)->scatter(&pe);
+      return scatterArray[index]->scatter(&pe);
    }
 
    ElectronT* MONSEL_MaterialScatterModel::barrierScatter(ElectronT* pe, const RegionBaseT* nextRegion) const

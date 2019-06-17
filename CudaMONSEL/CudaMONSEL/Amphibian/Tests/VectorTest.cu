@@ -16,7 +16,7 @@ namespace VectorTest
       int *ptr = new int(9);
       printf("%d\n", *ptr);
 
-      amp::vector<int, IntCmp> v;
+      amp::vector<int> v;
       v.push_back(0);
       v.push_back(1);
       v[0] = 5;
@@ -29,6 +29,41 @@ namespace VectorTest
       v.clear();
       printf("cleared size: %d\n", v.size());
 
-      printf("VectorTest::InsertTest() completed.\n");
+      printf("VectorTest::testOne() completed.\n");
+   }
+
+   __host__ __device__ void testTwo()
+   {
+      amp::vector<amp::vector<int>> v;
+      amp::vector<int> u0;
+      amp::vector<int> u1;
+      u0.push_back(0);
+      u0.push_back(1);
+      u0.push_back(2);
+
+      u1.push_back(10);
+      u1.push_back(11);
+      u1.push_back(12);
+
+      v.push_back(u0);
+      v.push_back(u1);
+
+      for (auto i : v) {
+         for (auto j : i) {
+            printf("%d, ", j);
+         }
+         printf("\n");
+      }
+
+      amp::vector<amp::vector<int>> v2(v);
+      v.clear();
+      for (auto i : v2) {
+         for (auto j : i) {
+            printf("%d, ", j);
+         }
+         printf("\n");
+      }
+
+      printf("VectorTest::testTwo() completed.\n");
    }
 }

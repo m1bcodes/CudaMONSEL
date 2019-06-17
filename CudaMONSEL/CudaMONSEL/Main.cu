@@ -131,6 +131,7 @@ void CPUTests()
    mapTest.testMapOfMap();
 
    VectorTest::testOne();
+   VectorTest::testTwo();
 
    EdgeEnergy::DiracHartreeSlaterIonizationEnergies::loadxionUis();
    EdgeEnergy::NISTEdgeEnergy::loadNISTxrtdb();
