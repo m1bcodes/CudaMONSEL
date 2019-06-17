@@ -12,6 +12,7 @@
 #include "Amphibian\Tests\LinkedListTest.cuh"
 #include "Amphibian\Tests\SetTest.cuh"
 #include "Amphibian\Tests\MapTest.cuh"
+#include "Amphibian\Tests\VectorTest.cuh"
 
 #include "CudaUtil.h"
 #include "ImageUtil.h"
@@ -87,6 +88,8 @@ __global__ void testKernel()
    mapTest.testInteger();
    mapTest.testString();
    mapTest.testMapOfMap();
+
+   VectorTest::testOne();
 }
 
 void GPUTest()
@@ -126,6 +129,8 @@ void CPUTests()
    mapTest.testInteger();
    mapTest.testString();
    mapTest.testMapOfMap();
+
+   VectorTest::testOne();
 
    EdgeEnergy::DiracHartreeSlaterIonizationEnergies::loadxionUis();
    EdgeEnergy::NISTEdgeEnergy::loadNISTxrtdb();

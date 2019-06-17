@@ -26,6 +26,7 @@
     <CudaCompile Include="Amphibian\Tests\MapTest.cu" />
     <CudaCompile Include="Amphibian\Tests\SetTest.cu" />
     <CudaCompile Include="Amphibian\Tests\StringTest.cu" />
+    <CudaCompile Include="Amphibian\Tests\VectorTest.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\AlgorithmClass.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\AlgorithmUser.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\AtomicShell.cu" />
@@ -117,9 +118,9 @@
     <CudaCompile Include="t527.cu" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Amphibian\Comparator.cuh" />
     <ClInclude Include="Amphibian\Hasher.cuh" />
     <ClInclude Include="Amphibian\LinkedList.cuh" />
+    <ClInclude Include="Amphibian\Tests\VectorTest.cuh" />
     <ClInclude Include="Amphibian\unordered_map.cuh" />
     <ClInclude Include="Amphibian\unordered_set.cuh" />
     <ClInclude Include="Amphibian\String.cuh" />
@@ -128,6 +129,7 @@
     <ClInclude Include="Amphibian\Tests\MapTest.cuh" />
     <ClInclude Include="Amphibian\Tests\SetTest.cuh" />
     <ClInclude Include="Amphibian\Tests\StringTest.cuh" />
+    <ClInclude Include="Amphibian\vector.cuh" />
     <ClInclude Include="CudaUtil.h" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\AlgorithmClass.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQLibrary\AlgorithmUser.cuh" />
