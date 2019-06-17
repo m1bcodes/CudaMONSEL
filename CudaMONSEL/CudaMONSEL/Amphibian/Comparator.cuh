@@ -14,6 +14,18 @@ namespace Comparator
    {
       return a == b;
    }
+
+   template<typename T>
+   __host__ __device__ vector::vector()
+   {
+
+   }
+
+   template<typename T>
+   __host__ __device__ vector::~vector()
+   {
+
+   }
 }
 
 #endif
