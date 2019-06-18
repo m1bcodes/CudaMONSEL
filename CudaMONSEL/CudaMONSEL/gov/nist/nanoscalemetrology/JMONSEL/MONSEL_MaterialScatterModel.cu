@@ -171,7 +171,7 @@ namespace MONSEL_MaterialScatterModel
       // mechanism
       // mechCopy.setMaterial(mat); // Initialize the copy for this material
       // if(scatterSet.add(mechCopy)) {
-      if (std::find(scatterArray.begin(), scatterArray.end(), mech) == scatterArray.end()) { // TODO: fix slow find
+      if (amp::find(scatterArray.begin(), scatterArray.end(), mech) == scatterArray.end()) { // TODO: fix slow find
          scatterArray.push_back(mech);
          nscattermech = scatterArray.size();
          cached_cumulativeScatterRate.resize(nscattermech);
@@ -192,9 +192,9 @@ namespace MONSEL_MaterialScatterModel
    //   */
    //}
 
-   bool MONSEL_MaterialScatterModel::removeScatterMechanism(const ScatterMechanismT* mech)
+   bool MONSEL_MaterialScatterModel::removeScatterMechanism(ScatterMechanismT* mech)
    {
-      auto itr = std::find(scatterArray.begin(), scatterArray.end(), mech); // TODO: fix slow find
+      ScatterMechanismList::const_iterator itr = amp::find(scatterArray.begin(), scatterArray.end(), mech); // TODO: fix slow find
       if (itr == scatterArray.end()) return false;
 
       scatterArray.erase(itr);

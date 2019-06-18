@@ -5,11 +5,13 @@
 #include "gov\nist\microanalysis\NISTMonte\IMaterialScatterModel.cuh"
 #include "gov\nist\nanoscalemetrology\JMONSEL\ZeroCSD.cuh"
 
+#include "Amphibian\vector.cuh"
+
 namespace MONSEL_MaterialScatterModel
 {
    class MONSEL_MaterialScatterModel : public IMaterialScatterModelT
    {
-      typedef std::vector<ScatterMechanismT*> ScatterMechanismList;
+      typedef amp::vector<ScatterMechanismT*> ScatterMechanismList;
 
    public:
       MONSEL_MaterialScatterModel(const SEmaterialT* mat, const BarrierScatterMechanismT* bsm);
@@ -18,7 +20,8 @@ namespace MONSEL_MaterialScatterModel
       void setCSD(SlowingDownAlgT* csd);
       SlowingDownAlgT* getCSD();
       bool addScatterMechanism(ScatterMechanismT* mech);
-      bool removeScatterMechanism(const ScatterMechanismT* mech);
+      //bool removeScatterMechanism(const ScatterMechanismT* mech);
+      bool removeScatterMechanism(ScatterMechanismT* mech);
 
       const MaterialT& getMaterial() const override;
       double getMinEforTracking() const override;

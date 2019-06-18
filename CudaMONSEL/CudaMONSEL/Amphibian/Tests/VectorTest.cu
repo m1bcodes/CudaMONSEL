@@ -56,7 +56,14 @@ namespace VectorTest
       }
 
       amp::vector<amp::vector<int>> v2(v);
+      if (v.operator==(v2)) printf("good!\n");
       v.clear();
+      for (auto i : v) {
+         for (auto j : i) {
+            printf("%d, ", j);
+         }
+         printf("\n");
+      }
       for (auto i : v2) {
          for (auto j : i) {
             printf("%d, ", j);

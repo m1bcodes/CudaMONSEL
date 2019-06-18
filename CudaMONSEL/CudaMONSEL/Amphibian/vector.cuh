@@ -27,10 +27,12 @@ namespace amp
          __host__ __device__ void operator++();
          __host__ __device__ bool operator!=(const const_iterator&) const;
          __host__ __device__ const T& operator*() const;
-         __host__ __device__ const T& operator=(const const_iterator&) const;
+         __host__ __device__ const T& operator=(const const_iterator&);
+         __host__ __device__ bool operator==(const const_iterator&) const;
 
          __host__ __device__ void begin();
          __host__ __device__ void end();
+         __host__ __device__ unsigned int index() const;
 
       private:
          const vector& refvec;
@@ -58,8 +60,11 @@ namespace amp
       // modifiers
       __host__ __device__ void clear();
       //__host__ __device__ void insert(const int&, const T&);
-      //__host__ __device__ void erase(const int&);
+      __host__ __device__ void erase(const const_iterator&);
       __host__ __device__ void push_back(const T&);
+
+      // comparison
+      __host__ __device__ bool operator==(const vector<T>&) const;
 
    private:
       T** vec;
@@ -101,12 +106,18 @@ namespace amp
    }
 
    template<typename T>
-   __host__ __device__ const T& vector<T>::const_iterator::operator=(const const_iterator& other) const
+   __host__ __device__ const T& vector<T>::const_iterator::operator=(const const_iterator& other)
    {
       refvec = other.refvec;
       i = other.i;
 
       return *this;
+   }
+
+   template<typename T>
+   __host__ __device__ bool vector<T>::const_iterator::operator==(const const_iterator& other) const
+   {
+      return ((refvec == other.refvec) && (i == other.i));
    }
 
    template<typename T>
@@ -119,6 +130,12 @@ namespace amp
    __host__ __device__ void vector<T>::const_iterator::end()
    {
       i = refvec.size();
+   }
+
+   template<typename T>
+   __host__ __device__ unsigned int vector<T>::const_iterator::index() const
+   {
+      return i;
    }
 
    template<typename T>
@@ -215,22 +232,52 @@ namespace amp
    //}
 
    template<typename T>
+   __host__ __device__ void vector<T>::erase(const vector<T>::const_iterator& itr)
+   {
+      unsigned int sz = size();
+      if (itr.index() >= sz) printf("void vector<T>::erase: out of range\n");
+      else {
+         unsigned int idx = itr.index();
+         delete vec[idx];
+         vec[idx] = nullptr;
+         for (int i = idx + 1; i < sz; ++i) {
+            vec[i - 1] = vec[i];
+         }
+         vec[sz - 1] = nullptr;
+      }
+   }
+
+   template<typename T>
    __host__ __device__ void vector<T>::push_back(const T& t)
    {
       if (size() >= cap) printf("void vector<T>::insert: out of range\n");
       else vec[size()] = new T(t); // note: relies on copy constructor
    }
 
-   //template<typename T>
-   //__host__ __device__ typename vector<T>::const_iterator find(const typename vector<T>::const_iterator<T>& start, const typename vector<T>::const_iterator<T>& finish, const T& t)
-   //{
-   //   typename vector<T>::const_iterator itr(start);
-   //   while (itr != finish) {
-   //      if (*itr == t) return cur;
-   //      ++itr;
-   //   }
-   //   return itr.end();
-   //}
+   template<typename T>
+   __host__ __device__ bool vector<T>::operator==(const vector<T>& other) const
+   {
+      int i = 0;
+      while (true) {
+         if (i >= cap || i >= other.cap) return false;
+         if (!vec[i] && !other.vec[i]) return true;
+         if (!vec[i] || !other.vec[i]) return false;
+         if (!(*vec[i] == *other.vec[i])) return false; // note: relies on overloading the operator== for the type T
+         ++i;
+      }
+   }
+
+   template<typename T>
+   __host__ __device__ typename vector<T>::const_iterator find(const typename vector<T>::const_iterator& start, const typename vector<T>::const_iterator& finish, const T& t)
+   {
+      typename vector<T>::const_iterator itr(start);
+      while (itr != finish) {
+         if (*itr == t) return itr; // note: relies on overloading the operator== for the type T
+         ++itr;
+      }
+      itr.end();
+      return itr;
+   }
 }
 
 #endif

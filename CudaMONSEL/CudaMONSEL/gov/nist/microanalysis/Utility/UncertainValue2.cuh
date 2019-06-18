@@ -3,10 +3,10 @@
 
 #include <math_constants.h>
 
-#include "string"
-#include "unordered_map"
-#include "unordered_set"
-#include "vector"
+#include <string>
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
 
 #include "Amphibian/String.cuh"
 #include "Amphibian/unordered_map.cuh"
