@@ -71,6 +71,34 @@ namespace VectorTest
          printf("\n");
       }
 
+      int a[] = { 0, 1, 2 };
+      amp::vector<int> v3(a, a + 3);
+      for (auto i : v3) {
+         printf("%d, ", i);
+      }
+      printf("\n");
+
+      auto itr = amp::find(v3.begin(), v3.end(), 1);
+      v3.erase(itr);
+      for (auto i : v3) {
+         printf("%d, ", i);
+      }
+      printf("\n");
+
       printf("VectorTest::testTwo() completed.\n");
+   }
+
+   __host__ __device__ void testThree()
+   {
+      amp::vector<int> v;
+      for (int i = 0; i < 100000; ++i) {
+         v.push_back(i);
+         //printf("%d ", v[0]);
+         auto itr = amp::find(v.begin(), v.end(), i);
+         //v.clear();
+         v.erase(itr);
+      }
+      //printf("\n");
+      printf("VectorTest::testThree() completed.\n");
    }
 }

@@ -285,11 +285,11 @@ namespace LinesOnLayers
       //   RegionT lineRegion(&chamber, &PMMAMSM, line);
       //}
 
-      double xcenter = leftmostLineCenterx + 0*pitch;
+      double xcenter = leftmostLineCenterx + 0 * pitch;
       NormalIntersectionShapeT* line = (NormalIntersectionShapeT*)NShapes::createLine(-h, w, linelength, thetal, thetar, radl, radr);
       RegionT lineRegion(&chamber, &PMMAMSM, line);
 
-//      VectorXd yvals = { 0. };
+      //      VectorXd yvals = { 0. };
       VectorXd yvals;
       //for (int i = -100; i < 100; ++i) {
       //   yvals.push_back(i);
@@ -355,6 +355,16 @@ namespace LinesOnLayers
       output += "\n";
       output += "\nbeamE (eV)	x(nm)	y (nm)	BSE yield	SE yield";
 
+      //amp::vector<ActionListenerT*> v0;
+      //for (int i = 0; i < 100000; ++i) {
+      //   BackscatterStatsT back(monte, (int)(beamEeV / binSizeEV));
+      //   v0.push_back(&back);
+      //   auto itr = amp::find(v0.begin(), v0.end(), (ActionListenerT*)&back);
+      //if (itr != mEventListeners.end()) {
+      //   v0.erase(itr);
+      //}
+      //}
+
       auto start = std::chrono::system_clock::now();
       for (auto ynm : yvals) {
          //double ynm = yvals[0];
@@ -364,11 +374,11 @@ namespace LinesOnLayers
             double egCenter[] = { x, y, -h - 20.*meterspernm };
             eg.setCenter(egCenter);
 
-            int nbins = (int)(beamEeV / binSizeEV);
+            static const int nbins = (int)(beamEeV / binSizeEV);
             BackscatterStatsT back(monte, nbins);
             monte.addActionListener(back);
 
-            try {
+            //try {
                monte.runMultipleTrajectories(nTrajectories);
 
                const HistogramT& hist = back.backscatterEnergyHistogram();
@@ -388,10 +398,10 @@ namespace LinesOnLayers
                printf("%s", tmp.c_str());
 
                monte.removeActionListener(back);
-            }
-            catch (std::exception&) {
-               printf("wtfweewew\n");
-            }
+            //}
+            //catch (std::exception&) {
+            //   printf("\nwtfweewew");
+            //}
          }
       }
       auto end = std::chrono::system_clock::now();

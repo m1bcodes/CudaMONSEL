@@ -5,6 +5,8 @@
 #include "gov\nist\microanalysis\NISTMonte\Declarations.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\Element.cuh"
 
+#include "Amphibian\vector.cuh"
+
 namespace MonteCarloSS
 {
    extern const int ScatterEvent;

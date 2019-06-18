@@ -90,6 +90,8 @@ __global__ void testKernel()
    mapTest.testMapOfMap();
 
    VectorTest::testOne();
+   VectorTest::testTwo();
+   VectorTest::testThree();
 }
 
 void GPUTest()
@@ -132,6 +134,7 @@ void CPUTests()
 
    VectorTest::testOne();
    VectorTest::testTwo();
+   VectorTest::testThree();
 
    EdgeEnergy::DiracHartreeSlaterIonizationEnergies::loadxionUis();
    EdgeEnergy::NISTEdgeEnergy::loadNISTxrtdb();

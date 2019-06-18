@@ -7,6 +7,7 @@ namespace VectorTest
 {
    __host__ __device__ void testOne();
    __host__ __device__ void testTwo();
+   __host__ __device__ void testThree();
 }
 
 #endif

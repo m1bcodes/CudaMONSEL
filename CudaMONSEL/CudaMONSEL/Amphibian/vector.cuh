@@ -42,6 +42,7 @@ namespace amp
       // *structor
       __host__ __device__ vector(int cap = VECTOR_INITIAL_SIZE);
       __host__ __device__ vector(const vector&);
+      __host__ __device__ vector(const T [], const T []);
       __host__ __device__ ~vector();
 
       // element access
@@ -62,6 +63,7 @@ namespace amp
       //__host__ __device__ void insert(const int&, const T&);
       __host__ __device__ void erase(const const_iterator&);
       __host__ __device__ void push_back(const T&);
+      __host__ __device__ void resize(const int);
 
       // comparison
       __host__ __device__ bool operator==(const vector<T>&) const;
@@ -145,7 +147,6 @@ namespace amp
       for (int i = 0; i < cap; ++i) {
          vec[i] = nullptr;
       }
-      //memset(vec, nullptr, sizeof(T*) * cap);
    }
 
    template<typename T>
@@ -159,22 +160,35 @@ namespace amp
    }
 
    template<typename T>
+   __host__ __device__ vector<T>::vector(const T *start, const T *finish) :
+      cap(max(finish - start, VECTOR_INITIAL_SIZE))
+   {
+      vec = new T*[cap];
+      const unsigned int numelem = finish - start;
+      for (int i = 0; i < cap; ++i) {
+         vec[i] = nullptr;
+         if (i < numelem) push_back(*(start+i));
+      }
+   }
+
+   template<typename T>
    __host__ __device__ vector<T>::~vector()
    {
       clear();
+      delete[] vec;
    }
 
    template<typename T>
    __host__ __device__ const T& vector<T>::at(const int i) const
    {
-      if (!(i >= 0 && i < size())) printf("vector<T>::at out of range\n");
+      if (!(i >= 0 && i < size())) printf("vector<T>::at: out of range\n");
       return *vec[i];
    }
 
    template<typename T>
    __host__ __device__ T& vector<T>::operator[] (const int i)
    {
-      if (!(i >= 0 && i < size())) printf("vector<T>::at out of range\n");
+      if (!(i >= 0 && i < size())) printf("vector<T>::operator[]: out of range\n");
       return *vec[i];
    }
 
@@ -234,12 +248,12 @@ namespace amp
    template<typename T>
    __host__ __device__ void vector<T>::erase(const vector<T>::const_iterator& itr)
    {
-      unsigned int sz = size();
+      const unsigned int sz = size();
       if (itr.index() >= sz) printf("void vector<T>::erase: out of range\n");
       else {
-         unsigned int idx = itr.index();
+         const unsigned int idx = itr.index();
          delete vec[idx];
-         vec[idx] = nullptr;
+         //vec[idx] = nullptr;
          for (int i = idx + 1; i < sz; ++i) {
             vec[i - 1] = vec[i];
          }
@@ -250,8 +264,40 @@ namespace amp
    template<typename T>
    __host__ __device__ void vector<T>::push_back(const T& t)
    {
-      if (size() >= cap) printf("void vector<T>::insert: out of range\n");
+      if (size() >= cap) printf("void vector<T>::push_back: out of range\n");
       else vec[size()] = new T(t); // note: relies on copy constructor
+   }
+
+   template<typename T>
+   __host__ __device__ void vector<T>::resize(const int newsz)
+   {
+      const unsigned int oldsz = size();
+      if (cap < newsz) {
+         T** tmp = new T*[newsz];
+         for (int i = 0; i < newsz; ++i) {
+            if (i < oldsz) tmp[i] = vec[i];
+            else tmp[i] = nullptr;
+         }
+
+         delete[] vec;
+         vec = new T*[newsz];
+         memcpy(vec, tmp, newsz * sizeof(T*));
+         delete[] tmp;
+         cap = newsz;
+      }
+      else {
+         if (newsz < oldsz) {
+            for (int i = newsz; i < oldsz; ++i) {
+               delete vec[i];
+               vec[i] = nullptr;
+            }
+         }
+         else {
+            for (int i = oldsz; i < newsz; ++i) {
+               vec[i] = new T(); // note: relies on default constructor
+            }
+         }
+      }
    }
 
    template<typename T>

@@ -7,6 +7,8 @@
 #include "gov\nist\microanalysis\NISTMonte\Declarations.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\ITransform.cuh"
 
+#include "Amphibian\vector.cuh"
+
 namespace SumShape
 {
    class SumShape : public ShapeT, public ITransformT//, TrajectoryVRML.IRender

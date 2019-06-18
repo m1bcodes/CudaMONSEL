@@ -196,7 +196,6 @@ namespace MonteCarloSS
       bool tc = mElectron->isTrajectoryComplete();
       while (tc && (mElectronStack.size() > 0)) {
          fireEvent(EndSecondaryEvent);
-         // TODO: delete mElectron;
          delete mElectron;
          mElectron = mElectronStack.top();
          mElectronStack.pop();

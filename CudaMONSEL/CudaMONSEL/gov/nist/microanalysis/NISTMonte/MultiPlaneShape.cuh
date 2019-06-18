@@ -5,6 +5,8 @@
 #include "gov\nist\microanalysis\NISTMonte\Shape.cuh"
 #include "gov\nist\microanalysis\EPQlibrary\ITransform.cuh"
 
+#include "Amphibian\vector.cuh"
+
 namespace MultiPlaneShape
 {
    class Plane : public ShapeT, public ITransformT

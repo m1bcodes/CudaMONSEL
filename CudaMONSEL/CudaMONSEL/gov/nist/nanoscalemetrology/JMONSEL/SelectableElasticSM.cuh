@@ -4,6 +4,8 @@
 #include "gov\nist\microanalysis\NISTMonte\Declarations.cuh"
 #include "gov\nist\nanoscalemetrology\JMONSEL\ScatterMechanism.cuh"
 
+#include "Amphibian\vector.cuh"
+
 namespace SelectableElasticSM
 {
    class SelectableElasticSM : public ScatterMechanismT
