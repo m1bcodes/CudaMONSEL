@@ -105,7 +105,7 @@ namespace SumShape
    //      ((TrajectoryVRML.IRender) shape).render(rc, wr);
    //}
 
-   std::vector<ShapeT*> SumShape::getShapes() const
+   const amp::vector<ShapeT*>& SumShape::getShapes() const
    {
       return mShapes;
    }

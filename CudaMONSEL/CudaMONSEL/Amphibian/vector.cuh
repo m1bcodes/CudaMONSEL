@@ -71,6 +71,7 @@ namespace amp
    private:
       T** vec;
       unsigned int cap;
+      //unsigned int sz;
    };
 
    template<typename T>
@@ -141,7 +142,7 @@ namespace amp
    }
 
    template<typename T>
-   __host__ __device__ vector<T>::vector(int cap) : cap(cap)
+   __host__ __device__ vector<T>::vector(int cap) : cap(cap)//, sz(0)
    {
       vec = new T*[cap];
       for (int i = 0; i < cap; ++i) {
@@ -155,19 +156,24 @@ namespace amp
       vec = new T*[cap];
       for (int i = 0; i < cap; ++i) {
          vec[i] = nullptr;
-         if (v.vec[i]) push_back(*v.vec[i]);
+         if (v.vec[i]) {
+            push_back(*v.vec[i]);
+            //++sz;
+         }
       }
    }
 
    template<typename T>
-   __host__ __device__ vector<T>::vector(const T *start, const T *finish) :
-      cap(max(finish - start, VECTOR_INITIAL_SIZE))
+   __host__ __device__ vector<T>::vector(const T *start, const T *finish) : cap(max(finish - start, VECTOR_INITIAL_SIZE))
    {
       vec = new T*[cap];
       const unsigned int numelem = finish - start;
       for (int i = 0; i < cap; ++i) {
          vec[i] = nullptr;
-         if (i < numelem) push_back(*(start+i));
+         if (i < numelem) {
+            push_back(*(start + i));
+            //++sz;
+         }
       }
    }
 
@@ -211,16 +217,16 @@ namespace amp
    __host__ __device__ unsigned int vector<T>::size() const
    {
       unsigned int i = 0;
-      while (vec[i] != nullptr) {
-         ++i;
-      }
+      while (vec[i]) ++i;
+      //if (i != sz) printf("vector<T>::size(): wrong size: %d != %d\n", i, sz);
+      //return sz;
       return i;
    }
 
    template<typename T>
    __host__ __device__ bool vector<T>::empty() const
    {
-      return size() == 0;
+      return !vec[0];
    }
 
    template<typename T>
@@ -233,10 +239,12 @@ namespace amp
    __host__ __device__ void vector<T>::clear()
    {
       unsigned int i = 0;
-      while (vec[i] != nullptr) {
+      while (vec[i]) {
          delete vec[i];
          vec[i] = nullptr;
+         ++i;
       }
+      //sz = 0;
    }
 
    //template<typename T>
@@ -248,16 +256,17 @@ namespace amp
    template<typename T>
    __host__ __device__ void vector<T>::erase(const vector<T>::const_iterator& itr)
    {
-      const unsigned int sz = size();
-      if (itr.index() >= sz) printf("void vector<T>::erase: out of range\n");
+      const unsigned int num = size();
+      if (itr.index() >= num) printf("void vector<T>::erase: out of range\n");
       else {
          const unsigned int idx = itr.index();
          delete vec[idx];
          //vec[idx] = nullptr;
-         for (int i = idx + 1; i < sz; ++i) {
+         for (int i = idx + 1; i < num; ++i) {
             vec[i - 1] = vec[i];
          }
-         vec[sz - 1] = nullptr;
+         vec[num - 1] = nullptr;
+         //--sz;
       }
    }
 
@@ -265,7 +274,10 @@ namespace amp
    __host__ __device__ void vector<T>::push_back(const T& t)
    {
       if (size() >= cap) printf("void vector<T>::push_back: out of range\n");
-      else vec[size()] = new T(t); // note: relies on copy constructor
+      else {
+         vec[size()] = new T(t); // note: relies on copy constructor
+         //++sz;
+      }
    }
 
    template<typename T>
@@ -284,6 +296,7 @@ namespace amp
          memcpy(vec, tmp, newsz * sizeof(T*));
          delete[] tmp;
          cap = newsz;
+         //sz = newsz;
       }
       else {
          if (newsz < oldsz) {

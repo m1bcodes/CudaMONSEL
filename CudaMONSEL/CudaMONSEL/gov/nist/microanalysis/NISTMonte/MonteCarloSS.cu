@@ -173,10 +173,10 @@ namespace MonteCarloSS
       }
    }
 
-   int MonteCarloSS::getElectronGeneration() const
-   {
-      return mElectronStack.size();
-   }
+   //int MonteCarloSS::getElectronGeneration() const
+   //{
+   //   return mElectronStack.size();
+   //}
 
    void MonteCarloSS::addActionListener(ActionListenerT& sel)
    {
@@ -185,7 +185,7 @@ namespace MonteCarloSS
 
    void MonteCarloSS::removeActionListener(ActionListenerT& sel)
    {
-      auto itr = std::find(mEventListeners.begin(), mEventListeners.end(), &sel);
+      auto itr = amp::find(mEventListeners.begin(), mEventListeners.end(), &sel);
       if (itr != mEventListeners.end()) {
          mEventListeners.erase(itr);
       }
@@ -194,7 +194,7 @@ namespace MonteCarloSS
    bool MonteCarloSS::allElectronsComplete()
    {
       bool tc = mElectron->isTrajectoryComplete();
-      while (tc && (mElectronStack.size() > 0)) {
+      while (tc && !mElectronStack.empty()) {
          fireEvent(EndSecondaryEvent);
          delete mElectron;
          mElectron = mElectronStack.top();

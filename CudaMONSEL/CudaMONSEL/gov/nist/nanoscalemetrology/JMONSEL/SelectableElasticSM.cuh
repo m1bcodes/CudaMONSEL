@@ -10,7 +10,7 @@ namespace SelectableElasticSM
 {
    class SelectableElasticSM : public ScatterMechanismT
    {
-      typedef std::vector<const RandomizedScatterT*> RandomizedScatterList;
+      typedef amp::vector<const RandomizedScatterT*> RandomizedScatterList;
 
    public:
       SelectableElasticSM(const MaterialT& mat, const RandomizedScatterFactoryT& rsf);

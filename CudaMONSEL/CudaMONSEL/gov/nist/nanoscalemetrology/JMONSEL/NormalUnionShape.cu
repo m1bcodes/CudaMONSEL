@@ -16,7 +16,8 @@ namespace NormalUnionShape
 
    bool NormalUnionShape::contains(const double pos0[], const double pos1[]) const
    {
-      for (auto shape : getShapes())
+      const amp::vector<ShapeT*>& shapes = getShapes();
+      for (auto shape : shapes)
          if (((NormalShapeT*)shape)->contains(pos0, pos1))
             return true;
       return false;
@@ -34,7 +35,7 @@ namespace NormalUnionShape
       result[2] = 0.;
       result[3] = INFINITY;
 
-      auto shapes = getShapes();
+      const amp::vector<ShapeT*>& shapes = getShapes();
       NormalShape* shapeA = (NormalShape*)shapes.at(0);
       NormalShape* shapeB = (NormalShape*)shapes.at(1);
       int adepth, bdepth;

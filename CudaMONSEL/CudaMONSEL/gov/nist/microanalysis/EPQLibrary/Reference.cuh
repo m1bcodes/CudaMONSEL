@@ -3,6 +3,8 @@
 
 #include "gov\nist\microanalysis\NISTMonte\Declarations.cuh"
 
+#include "Amphibian\vector.cuh"
+
 namespace Reference
 {
    class Reference
@@ -32,10 +34,7 @@ namespace Reference
       StringT mAffiliation;
    };
 
-   typedef std::vector<const Author*> AuthorList;
-
-   static StringT toString(AuthorList authors);
-   static StringT toAbbrev(AuthorList authors);
+   typedef amp::vector<const Author*> AuthorList;
 
    class Journal
    {
@@ -81,7 +80,7 @@ namespace Reference
       StringT GetTitle() const;
       StringT GetPublisher() const;
       int GetYear() const;
-      AuthorList GetAuthors() const;
+      const AuthorList& GetAuthors() const;
 
       StringT getShortForm() const override;
       StringT getLongForm() const override;

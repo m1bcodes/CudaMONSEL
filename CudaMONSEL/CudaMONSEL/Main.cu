@@ -13,6 +13,7 @@
 #include "Amphibian\Tests\SetTest.cuh"
 #include "Amphibian\Tests\MapTest.cuh"
 #include "Amphibian\Tests\VectorTest.cuh"
+#include "Amphibian\Tests\StackTest.cuh"
 
 #include "CudaUtil.h"
 #include "ImageUtil.h"
@@ -76,6 +77,8 @@ __global__ void testKernel()
    LinkedListTest::LinkedListTest lltest;
    lltest.InsertionTest();
    lltest.TestAddAllAsSet();
+   LinkedListTest::TestListKV();
+   LinkedListTest::testDLinkedList();
 
    SetTest::SetTest setTest;
    setTest.testIntBasic();
@@ -92,6 +95,8 @@ __global__ void testKernel()
    VectorTest::testOne();
    VectorTest::testTwo();
    VectorTest::testThree();
+
+   StackTest::testOne();
 }
 
 void GPUTest()
@@ -119,6 +124,7 @@ void CPUTests()
    lltest.InsertionTest();
    lltest.TestAddAllAsSet();
    LinkedListTest::TestListKV();
+   LinkedListTest::testDLinkedList();
 
    SetTest::SetTest setTest;
    setTest.testIntBasic();
@@ -135,6 +141,8 @@ void CPUTests()
    VectorTest::testOne();
    VectorTest::testTwo();
    VectorTest::testThree();
+
+   StackTest::testOne();
 
    EdgeEnergy::DiracHartreeSlaterIonizationEnergies::loadxionUis();
    EdgeEnergy::NISTEdgeEnergy::loadNISTxrtdb();

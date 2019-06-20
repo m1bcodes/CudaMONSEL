@@ -23,6 +23,11 @@ namespace LinkedListTest
       LinkedListKV::Node<amp::string, double>* list;
    };
 
+   __host__ __device__ static void assertTrue(bool expr)
+   {
+      if (!expr) printf("wrong!\n");
+   }
+
    __host__ __device__ void PrintList(LinkedList::Node<LinkedListTestType>* head)
    {
       while (true) {
@@ -159,5 +164,55 @@ namespace LinkedListTest
       }
 
       printf("LinkedListTest::TestListKV() completed.\n");
+   }
+
+   __host__ __device__ void testDLinkedList()
+   {
+      DLinkedList::Node<int>* head = nullptr;
+      int a = 0;
+      DLinkedList::Node<int>* newone0 = new DLinkedList::Node<int>(nullptr, nullptr, a);
+      DLinkedList::Node<int>::Insert(&head, newone0);
+      a = 1;
+      DLinkedList::Node<int>* newone1 = new DLinkedList::Node<int>(nullptr, nullptr, a);
+      DLinkedList::Node<int>::Insert(&head, newone1);
+      a = 2;
+      DLinkedList::Node<int>* newone2 = new DLinkedList::Node<int>(nullptr, nullptr, a);
+      DLinkedList::Node<int>::Insert(&head, newone2);
+
+      auto itr0 = newone0;
+      while (itr0) {
+         printf("%d ", itr0->GetValue());
+         itr0 = itr0->GetPrev();
+      }
+      printf("\n");
+
+      auto itr1 = newone2;
+      while (itr1) {
+         printf("%d ", itr1->GetValue());
+         itr1 = itr1->GetNext();
+      }
+      printf("\n");
+
+      DLinkedList::Node<int>::Remove(&head);
+      DLinkedList::Node<int>::Remove(&head);
+      DLinkedList::Node<int>::Remove(&head);
+      DLinkedList::Node<int>::Remove(&head);
+      assertTrue(head == nullptr);
+
+      //int i;
+      //for (i = 0; i < 100000; ++i) {
+      //   DLinkedList::Node<int>* newone = new DLinkedList::Node<int>(nullptr, nullptr, i);
+      //   DLinkedList::Node<int>::Insert(&head, newone);
+      //}
+      //assertTrue(i == 100000);
+
+      //for (i = 0; i < 100000; ++i) {
+      //   if (head == nullptr) break;
+      //   DLinkedList::Node<int>::Remove(&head);
+      //}
+      //assertTrue(head == nullptr);
+      //assertTrue(i == 100000);
+
+      printf("LinkedListTest::testDLinkedList() completed.\n");
    }
 }

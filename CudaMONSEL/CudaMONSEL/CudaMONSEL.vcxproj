@@ -25,6 +25,7 @@
     <CudaCompile Include="Amphibian\Tests\LinkedListTest.cu" />
     <CudaCompile Include="Amphibian\Tests\MapTest.cu" />
     <CudaCompile Include="Amphibian\Tests\SetTest.cu" />
+    <CudaCompile Include="Amphibian\Tests\StackTest.cu" />
     <CudaCompile Include="Amphibian\Tests\StringTest.cu" />
     <CudaCompile Include="Amphibian\Tests\VectorTest.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQLibrary\AlgorithmClass.cu" />
@@ -120,6 +121,8 @@
   <ItemGroup>
     <ClInclude Include="Amphibian\Hasher.cuh" />
     <ClInclude Include="Amphibian\LinkedList.cuh" />
+    <ClInclude Include="Amphibian\stack.cuh" />
+    <ClInclude Include="Amphibian\Tests\StackTest.cuh" />
     <ClInclude Include="Amphibian\Tests\VectorTest.cuh" />
     <ClInclude Include="Amphibian\unordered_map.cuh" />
     <ClInclude Include="Amphibian\unordered_set.cuh" />

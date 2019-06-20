@@ -11,7 +11,7 @@ namespace MONSEL_MaterialScatterModel
 {
    class MONSEL_MaterialScatterModel : public IMaterialScatterModelT
    {
-      typedef std::vector<ScatterMechanismT*> ScatterMechanismList;
+      typedef amp::vector<ScatterMechanismT*> ScatterMechanismList;
 
    public:
       MONSEL_MaterialScatterModel(const SEmaterialT* mat, const BarrierScatterMechanismT* bsm);

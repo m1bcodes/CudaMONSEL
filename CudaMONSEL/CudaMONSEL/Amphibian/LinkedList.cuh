@@ -13,7 +13,7 @@ namespace LinkedList
    class Node
    {
    public:
-      __host__ __device__ Node();
+      //__host__ __device__ Node();
       __host__ __device__ Node(const T&, Node*);
 
       __host__ __device__ Node& operator=(const Node&);
@@ -30,10 +30,10 @@ namespace LinkedList
       Node* next;
    };
 
-   template<typename T>
-   __host__ __device__ Node<T>::Node()
-   {
-   }
+   //template<typename T>
+   //__host__ __device__ Node<T>::Node()
+   //{
+   //}
 
    template<typename T>
    __host__ __device__ Node<T>::Node(const T& v, Node* n) : val(v), next(n)
@@ -519,6 +519,111 @@ namespace LinkedListKV
          head->MapVal(v, mapper);
          head = head->GetNext();
       }
+   }
+}
+
+namespace DLinkedList
+{
+   template<typename T>
+   class Node
+   {
+   public:
+      __host__ __device__ Node(const Node&);
+      __host__ __device__ Node(Node* fwd, Node* bwd, const T&);
+
+      __host__ __device__ const T& GetValue() const;
+      __host__ __device__ Node* GetNext() const;
+      __host__ __device__ Node* GetPrev() const;
+
+      __host__ __device__ static void Insert(Node** node, Node* newone);
+      __host__ __device__ static void Insert(Node** node, const T& val);
+      __host__ __device__ static void Remove(Node** node);
+
+   private:
+      Node *fwd, *bwd;
+      T val;
+   };
+
+   template<typename T>
+   __host__ __device__ Node<T>::Node(const Node& other) : fwd(other.fwd), bwd(other.bwd), val(other.val)
+   {
+   }
+
+   template<typename T>
+   __host__ __device__ Node<T>::Node(Node* fwd, Node* bwd, const T& val) : fwd(fwd), bwd(bwd), val(val)
+   {
+   }
+
+
+   template<typename T>
+   __host__ __device__ const T& Node<T>::GetValue() const
+   {
+      return val;
+   }
+
+   template<typename T>
+   __host__ __device__ Node<T>* Node<T>::GetNext() const
+   {
+      return fwd;
+   }
+
+   template<typename T>
+   __host__ __device__ Node<T>* Node<T>::GetPrev() const
+   {
+      return bwd;
+   }
+
+   template<typename T>
+   __host__ __device__ void Node<T>::Insert(Node** node, const T& val)
+   {
+      Node *newone = new Node(nullptr, nullptr, val);
+      if (!(*node)) {
+         *node = newone;
+         return;
+      }
+
+      newone->fwd = *node;
+      newone->bwd = (*node)->bwd;
+      (*node)->bwd = newone;
+
+      if (newone->bwd) {
+         (newone->bwd)->fwd = newone;
+      }
+
+      *node = newone;
+   }
+
+   template<typename T>
+   __host__ __device__ void Node<T>::Insert(Node** node, Node* newone)
+   {
+      if (!newone) return;
+      if (!(*node)) {
+         *node = newone;
+         return;
+      }
+
+      newone->fwd = *node;
+      newone->bwd = (*node)->bwd;
+      (*node)->bwd = newone;
+
+      if (newone->bwd) {
+         (newone->bwd)->fwd = newone;
+      }
+
+      *node = newone;
+   }
+
+   template<typename T>
+   __host__ __device__ void Node<T>::Remove(Node** node)
+   {
+      if (!(*node)) return;
+      Node *f = (*node)->fwd, *b = (*node)->bwd;
+
+      if ((*node)->fwd) ((*node)->fwd)->bwd = b;
+      if ((*node)->bwd) ((*node)->bwd)->fwd = f;
+      delete *node;
+
+      *node = f ? f : b;
    }
 }
 

@@ -25,10 +25,10 @@ namespace SumShape
       void rotate(const double pivot[], double phi, double theta, double psi) override;
       void translate(const double distance[]) override;
 
-      std::vector<ShapeT*> getShapes() const;
+      const amp::vector<ShapeT*>& getShapes() const;
 
    private:
-      std::vector<ShapeT*> mShapes;
+      amp::vector<ShapeT*> mShapes;
    };
 }
 

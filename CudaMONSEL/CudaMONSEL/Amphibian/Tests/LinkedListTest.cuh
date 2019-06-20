@@ -20,6 +20,8 @@ namespace LinkedListTest
    };
 
    __host__ __device__ void TestListKV();
+
+   __host__ __device__ void testDLinkedList();
 }
 
 #endif

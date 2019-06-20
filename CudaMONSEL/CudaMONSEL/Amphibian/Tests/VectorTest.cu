@@ -11,6 +11,11 @@ namespace VectorTest
       }
    };
 
+   __host__ __device__ void assertTrue(bool cond)
+   {
+      if (!cond) printf("bad!\n");
+   }
+
    __host__ __device__ void testOne()
    {
       int *ptr = new int(9);
@@ -56,7 +61,7 @@ namespace VectorTest
       }
 
       amp::vector<amp::vector<int>> v2(v);
-      if (v.operator==(v2)) printf("good!\n");
+      assertTrue(v.operator==(v2));
       v.clear();
       for (auto i : v) {
          for (auto j : i) {

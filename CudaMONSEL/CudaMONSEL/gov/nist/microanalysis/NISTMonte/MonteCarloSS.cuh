@@ -6,6 +6,7 @@
 #include "gov\nist\microanalysis\EPQLibrary\Element.cuh"
 
 #include "Amphibian\vector.cuh"
+#include "Amphibian\stack.cuh"
 
 namespace MonteCarloSS
 {
@@ -28,8 +29,8 @@ namespace MonteCarloSS
 
    class MonteCarloSS final
    {
-      typedef std::stack<ElectronT*> ElectronStack;
-      typedef std::vector<ActionListenerT*> ActionListeners;
+      typedef amp::stack<ElectronT*> ElectronStack;
+      typedef amp::vector<ActionListenerT*> ActionListeners;
 
    public:
       MonteCarloSS(ElectronGunT const * gun, RegionT * mChamber, ElectronT * electron);
@@ -41,7 +42,7 @@ namespace MonteCarloSS
       void trackSecondaryElectron(ElectronT* newElectron);
       bool allElectronsComplete();
       void runTrajectory();
-      int getElectronGeneration() const;
+      //int getElectronGeneration() const;
       void addActionListener(ActionListenerT& sel);
       void removeActionListener(ActionListenerT& sel);
       void runMultipleTrajectories(int n);

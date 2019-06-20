@@ -34,23 +34,23 @@ namespace Reference
       return mLast;
    }
 
-   StringT toString(AuthorList authors)
+   StringT toString(const AuthorList& authors)
    {
       StringT ret;
       for (int i = 0; i < authors.size(); ++i) {
          if (i != 0)
             ret.append(i == authors.size() - 1 ? " & " : ", ");
-         ret.append(authors[i]->getAuthor());
+         ret.append(authors.at(i)->getAuthor());
       }
       return ret;
    }
 
-   StringT toAbbrev(AuthorList authors)
+   StringT toAbbrev(const AuthorList& authors)
    {
       if (authors.size() > 1)
-         return authors[0]->getLast() + " et al";
+         return authors.at(0)->getLast() + " et al";
       else if (authors.size() > 0)
-         return authors[0]->getLast();
+         return authors.at(0)->getLast();
       else
          return "";
    }
@@ -198,7 +198,7 @@ namespace Reference
       return mYear;
    }
 
-   AuthorList Book::GetAuthors() const
+   const AuthorList& Book::GetAuthors() const
    {
       return mAuthors;
    }

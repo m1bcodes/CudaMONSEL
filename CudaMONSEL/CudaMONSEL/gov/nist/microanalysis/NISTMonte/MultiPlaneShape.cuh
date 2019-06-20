@@ -35,7 +35,7 @@ namespace MultiPlaneShape
    class MultiPlaneShape : public ShapeT, public ITransformT//, TrajectoryVRML.IRender
    {
    public:
-      typedef std::vector<Plane*> Planes;
+      typedef amp::vector<Plane*> Planes;
 
       MultiPlaneShape();
       MultiPlaneShape(Plane* const planes[], int len);
