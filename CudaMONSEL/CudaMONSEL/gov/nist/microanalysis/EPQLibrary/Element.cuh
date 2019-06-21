@@ -280,10 +280,11 @@ namespace Element
 
    //void readAtomicWeights();
    //void readIonizationEnergy();
-   int atomicNumberForName(char const * name);
-   const Element& byName(char const * name);
-   const Element& byAtomicNumber(int an);
-   double getAtomicWeight(int atomicNo);
+   int atomicNumberForName(char const *);
+   const Element& byName(char const *);
+   const Element& byAtomicNumber(int);
+   double getAtomicWeight(int);
+   __device__ double getAtomicWeightDevice(int);
    Element const * const * allElements();
    //std::vector<const Element*> range(const Element& min, const Element& max);
    //double meanIonizationPotential(int atomicNo);

@@ -14,10 +14,10 @@ namespace MONSEL_MaterialScatterModel
       typedef amp::vector<ScatterMechanismT*> ScatterMechanismList;
 
    public:
-      MONSEL_MaterialScatterModel(const SEmaterialT* mat, const BarrierScatterMechanismT* bsm);
+      __host__ __device__ MONSEL_MaterialScatterModel(const SEmaterialT* mat, const BarrierScatterMechanismT* bsm, SlowingDownAlgT* sda);
 
       const BarrierScatterMechanismT* MONSEL_MaterialScatterModel::getBarrierSM() const;
-      void setCSD(SlowingDownAlgT* csd);
+      __host__ __device__ void setCSD(SlowingDownAlgT* csd);
       SlowingDownAlgT* getCSD();
       bool addScatterMechanism(ScatterMechanismT* mech);
       //bool removeScatterMechanism(const ScatterMechanismT* mech);

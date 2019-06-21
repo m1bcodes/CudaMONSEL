@@ -3,6 +3,20 @@
 
 namespace ToSI
 {
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+   __constant__ const double MEV = 1.60217653e-19 * 1.0e6; // PhysicalConstants::ElectronCharge * 1.0e6;
+   __constant__ const double KEV = 1.60217653e-19 * 1.0e3; // PhysicalConstants::ElectronCharge * 1.0e3;
+   __constant__ const double EV = 1.60217653e-19; // PhysicalConstants::ElectronCharge;
+   __constant__ const double GRAM = 1.0e-3;
+   __constant__ const double CM = 1.0e-2;
+   __constant__ const double MICROMETER = 1.0e-6;
+   // const double AMU = PhysicalConstants::UnifiedAtomicMass;
+   __constant__ const double ANGSTROM = 1.0e-10;
+   __constant__ const double BARN = 1.0e-28;
+   __constant__ const double TORR = 101325.0 / 760; // PhysicalConstants::StandardAtmosphere / 760.0;
+   __constant__ const double NANO = 1.0e-9;
+   __constant__ const double PICO = 1.0e-12;
+#else
    const double MEV = 1.60217653e-19 * 1.0e6; // PhysicalConstants::ElectronCharge * 1.0e6;
    const double KEV = 1.60217653e-19 * 1.0e3; // PhysicalConstants::ElectronCharge * 1.0e3;
    const double EV = 1.60217653e-19; // PhysicalConstants::ElectronCharge;
@@ -15,6 +29,7 @@ namespace ToSI
    const double TORR = 101325.0 / 760; // PhysicalConstants::StandardAtmosphere / 760.0;
    const double NANO = 1.0e-9;
    const double PICO = 1.0e-12;
+#endif
 
    double Torr(double torr)
    {
@@ -31,7 +46,7 @@ namespace ToSI
       return KEV * e;
    }
 
-   double eV(double e)
+   __host__ __device__ double eV(double e)
    {
       return EV * e;
    }

@@ -207,9 +207,9 @@ namespace MultiPlaneShape
    //   mPlanes.push_back(&newPlane);
    //}
 
-   void MultiPlaneShape::addPlane(Plane& plane)
+   void MultiPlaneShape::addPlane(Plane *plane)
    {
-      mPlanes.push_back(&plane);
+      mPlanes.push_back(plane);
    }
 
    bool MultiPlaneShape::contains(const double pos[]) const

@@ -42,48 +42,48 @@ namespace LinesOnLayers
 
       StringT output = "Output will be to file: ";
 
-      int seed = rand();
+      const int seed = rand();
       srand(seed);
       output += "\n Random number seed: ";
       output += std::to_string(seed);
       for (int i = 0; i < 10; ++i) {
-         double r = Math2::random();
-         output += "\n " + std::to_string(r);
+         output += "\n " + std::to_string(Math2::random());
       }
 
-      int nTrajectories = 100;
+      const int nTrajectories = 100;
 
-      double pitchnm = 180;
-      int nlines = 3;
-      double hnm = 120;
-      double wnm = 80;
-      double linelengthnm = 1000;
-      double thetardeg = 3;
-      double thetaldeg = 3;
-      double radrnm = 20;
-      double radlnm = 20;
-      double layer1thicknessnm = 80;
-      double layer2thicknessnm = 200;
+      const double pitchnm = 180;
+      const int nlines = 3;
+      const double hnm = 120;
+      const double wnm = 80;
+      const double linelengthnm = 1000;
+      const double thetardeg = 3;
+      const double thetaldeg = 3;
+      const double radrnm = 20;
+      const double radlnm = 20;
+      const double layer1thicknessnm = 80;
+      const double layer2thicknessnm = 200;
 
-      double beamEeVvals[] = { 500. };
-      int beamEeVvalsLen = 1;
-      double beamsizenm = 0.5;
-      double deepnm = 15;
+      const double beamEeVvals[] = { 500. };
+      const int beamEeVvalsLen = 1;
+      const double beamsizenm = 0.5;
+      const double deepnm = 15;
 
-      bool trajImg = true;
-      int trajImgMaxTraj = 50;
-      double trajImgSize = 200e-9;
+      const bool trajImg = true;
+      const int trajImgMaxTraj = 50;
+      const double trajImgSize = 200e-9;
 
-      bool VRML = false;
-      int VRMLImgMaxTraj = 0;
+      const bool VRML = false;
+      const int VRMLImgMaxTraj = 0;
 
       SEmaterialT vacuum;
       vacuum.setName("SE vacuum");
       ExpQMBarrierSMT vacuumBarrier(&vacuum);
+      ZeroCSDT sZeroCSD;
 
-      MONSEL_MaterialScatterModelT vacuumMSM(&vacuum, &vacuumBarrier);
+      MONSEL_MaterialScatterModelT vacuumMSM(&vacuum, &vacuumBarrier, &sZeroCSD);
 
-      double breakE = ToSI::eV(45.);
+      const double breakE = ToSI::eV(45.);
       double density = 1190.;
       double workfun = 5.5;
       double bandgap = 5.;
@@ -99,7 +99,7 @@ namespace LinesOnLayers
       PMMAcomp.defineByMoleFraction(componentsCOH, 3, compositionCOH, 3);
       SEmaterialT PMMA(PMMAcomp, density);
       PMMA.setName("PMMA");
-      double PMMAWorkfunction = ToSI::eV(workfun);
+      const double PMMAWorkfunction = ToSI::eV(workfun);
       PMMA.setWorkfunction(PMMAWorkfunction);
       PMMA.setBandgap(ToSI::eV(bandgap));
       PMMA.setEnergyCBbottom(ToSI::eV(potU));
@@ -111,14 +111,14 @@ namespace LinesOnLayers
 
       ExpQMBarrierSMT pmmaeqmbsm(&PMMA);
 
-      MONSEL_MaterialScatterModelT PMMAMSM(&PMMA, &pmmaeqmbsm);
+      MONSEL_MaterialScatterModelT PMMAMSM(&PMMA, &pmmaeqmbsm, &sZeroCSD);
       PMMAMSM.addScatterMechanism(&PMMANISTMott);
       PMMAMSM.addScatterMechanism(&PMMAfittedInel);
       PMMAMSM.addScatterMechanism(&PMMApolaron);
 
       PMMAMSM.setCSD(&PMMACSD);
 
-      MONSEL_MaterialScatterModelT PMMAMSMDeep(&PMMA, &pmmaeqmbsm);
+      MONSEL_MaterialScatterModelT PMMAMSMDeep(&PMMA, &pmmaeqmbsm, &sZeroCSD);
       PMMAMSMDeep.addScatterMechanism(&PMMANISTMott);
       PMMAMSMDeep.addScatterMechanism(&PMMAfittedInel);
       PMMAMSMDeep.addScatterMechanism(&PMMApolaron);
@@ -160,11 +160,11 @@ namespace LinesOnLayers
 
       ExpQMBarrierSMT glceqmbsm(&glC);
 
-      MONSEL_MaterialScatterModelT glCMSM(&glC, &glceqmbsm);
+      MONSEL_MaterialScatterModelT glCMSM(&glC, &glceqmbsm, &sZeroCSD);
       glCMSM.addScatterMechanism(&glCNISTMott);
       glCMSM.addScatterMechanism(&glCDS);
 
-      MONSEL_MaterialScatterModelT glCMSMDeep(&glC, &glceqmbsm);
+      MONSEL_MaterialScatterModelT glCMSMDeep(&glC, &glceqmbsm, &sZeroCSD);
       glCMSMDeep.addScatterMechanism(&glCNISTMott);
       glCMSMDeep.addScatterMechanism(&glCDS);
 
@@ -181,11 +181,11 @@ namespace LinesOnLayers
       const ElementT* SiComponent[] = { &Element::Si };
       const double SiComposition[] = { 1. };
       SEmaterialT Si(SiComponent, 1, SiComposition, 1, density, "Silicon");
-      double SiWorkfunction = ToSI::eV(workfun);
+      const double SiWorkfunction = ToSI::eV(workfun);
       Si.setWorkfunction(SiWorkfunction);
       Si.setEnergyCBbottom(ToSI::eV(potU));
       Si.setBandgap(ToSI::eV(bandgap));
-      double SiCoreEnergy[] = { ToSI::eV(99.2), ToSI::eV(99.8), ToSI::eV(149.7), ToSI::eV(1839.) };
+      const double SiCoreEnergy[] = { ToSI::eV(99.2), ToSI::eV(99.8), ToSI::eV(149.7), ToSI::eV(1839.) };
       Si.setCoreEnergy(SiCoreEnergy, 4);
 
       tablePath = "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\SiTables\\";
@@ -207,33 +207,33 @@ namespace LinesOnLayers
 
       ExpQMBarrierSMT sieqmbsm(&Si);
 
-      MONSEL_MaterialScatterModelT SiMSM(&Si, &sieqmbsm);
+      MONSEL_MaterialScatterModelT SiMSM(&Si, &sieqmbsm, &sZeroCSD);
       SiMSM.addScatterMechanism(&SiNISTMott);
       SiMSM.addScatterMechanism(&SiDS);
       SiMSM.addScatterMechanism(&Siphonon);
 
-      MONSEL_MaterialScatterModelT SiMSMDeep(&Si, &sieqmbsm);
+      MONSEL_MaterialScatterModelT SiMSMDeep(&Si, &sieqmbsm, &sZeroCSD);
       SiMSMDeep.addScatterMechanism(&SiNISTMott);
       SiMSMDeep.addScatterMechanism(&SiDS);
       SiMSMDeep.addScatterMechanism(&Siphonon);
 
       SiMSMDeep.setMinEforTracking(ToSI::eV(50.));
 
-      double meterspernm = 1.e-9;
-      double pitch = pitchnm*meterspernm;
-      double h = hnm*meterspernm;
-      double w = wnm*meterspernm;
-      double linelength = linelengthnm*meterspernm;
+      const double meterspernm = 1.e-9;
+      const double pitch = pitchnm*meterspernm;
+      const double h = hnm*meterspernm;
+      const double w = wnm*meterspernm;
+      const double linelength = linelengthnm*meterspernm;
 
-      double radperdeg = Math2::PI / 180.;
-      double thetar = thetardeg*radperdeg;
-      double thetal = thetaldeg*radperdeg;
-      double radr = radrnm*meterspernm;
-      double radl = radlnm*meterspernm;
-      double layer1thickness = layer1thicknessnm*meterspernm;
-      double layer2thickness = layer2thicknessnm*meterspernm;
-      double beamsize = beamsizenm*meterspernm;
-      double deep = deepnm*meterspernm;
+      const double radperdeg = Math2::PI / 180.;
+      const double thetar = thetardeg*radperdeg;
+      const double thetal = thetaldeg*radperdeg;
+      const double radr = radrnm*meterspernm;
+      const double radl = radlnm*meterspernm;
+      const double layer1thickness = layer1thicknessnm*meterspernm;
+      const double layer2thickness = layer2thicknessnm*meterspernm;
+      const double beamsize = beamsizenm*meterspernm;
+      const double deep = deepnm*meterspernm;
 
       NullMaterialScatterModelT NULL_MSM;
       const double center[] = {
@@ -242,8 +242,8 @@ namespace LinesOnLayers
          0.0
       };
 
-      double beamEeV = beamEeVvals[0];
-      double beamE = ToSI::eV(beamEeV);
+      const double beamEeV = beamEeVvals[0];
+      const double beamE = ToSI::eV(beamEeV);
       SphereT sphere(center, MonteCarloSS::ChamberRadius);
       GaussianBeamT eg(beamsize, beamE, center);
 
@@ -254,29 +254,29 @@ namespace LinesOnLayers
       const double layer1Pos[] = { 0., 0., 0. };
       NormalMultiPlaneShapeT layer1;
       PlaneT pl1(normalvector, layer1Pos);
-      layer1.addPlane(pl1);
+      layer1.addPlane(&pl1);
       RegionT layer1Region(&chamber, &ARCMSM, (NormalShapeT*)&layer1);
 
-      double layer2Pos[] = { 0., 0., layer1thickness };
+      const double layer2Pos[] = { 0., 0., layer1thickness };
       NormalMultiPlaneShapeT layer2;
       PlaneT pl2(normalvector, layer2Pos);
-      layer2.addPlane(pl2);
+      layer2.addPlane(&pl2);
       RegionT layer2Region(&layer1Region, &glCMSM, (NormalShapeT*)&layer2);
 
-      double layer3Pos[] = { 0., 0., layer1thickness + layer2thickness };
+      const double layer3Pos[] = { 0., 0., layer1thickness + layer2thickness };
       NormalMultiPlaneShapeT layer3;
       PlaneT pl3(normalvector, layer2Pos);
-      layer3.addPlane(pl3);
+      layer3.addPlane(&pl3);
       RegionT layer3Region(&layer2Region, &SiMSM, (NormalShapeT*)&layer3);
 
-      double layer4Pos[] = { 0., 0., layer1thickness + layer2thickness + deep };
+      const double layer4Pos[] = { 0., 0., layer1thickness + layer2thickness + deep };
       NormalMultiPlaneShapeT layer4;
       PlaneT pl4(normalvector, layer4Pos);
       RegionT layer4Region(&layer3Region, &SiMSM, (NormalShapeT*)&layer4);
 
       RegionT deepRegion(&layer3Region, &SiMSMDeep, (NormalShapeT*)&layer4);
 
-      double leftmostLineCenterx = -pitch*(nlines / 2);
+      const double leftmostLineCenterx = -pitch*(nlines / 2);
       //for (int i = 0; i < nlines; ++i) {
       //   double xcenter = leftmostLineCenterx + i*pitch;
       //   NormalIntersectionShapeT* line = (NormalIntersectionShapeT*)NShapes::createLine(-h, w, linelength, thetal, thetar, radl, radr);
@@ -285,7 +285,7 @@ namespace LinesOnLayers
       //   RegionT lineRegion(&chamber, &PMMAMSM, line);
       //}
 
-      double xcenter = leftmostLineCenterx + 0 * pitch;
+      const double xcenter = leftmostLineCenterx + 0 * pitch;
       NormalIntersectionShapeT* line = (NormalIntersectionShapeT*)NShapes::createLine(-h, w, linelength, thetal, thetar, radl, radr);
       RegionT lineRegion(&chamber, &PMMAMSM, line);
 
@@ -298,11 +298,11 @@ namespace LinesOnLayers
          yvals.push_back(i);
       }
 
-      double xbottom = wnm / 2.;
-      double xtop = wnm / 2. - hnm * ::tan(thetar);
-      double xstart = xbottom - 100.5;
-      double xstop = xbottom + 100.5;
-      double xfinestart = xtop - 20.5;
+      const double xbottom = wnm / 2.;
+      const double xtop = wnm / 2. - hnm * ::tan(thetar);
+      const double xstart = xbottom - 100.5;
+      const double xstop = xbottom + 100.5;
+      const double xfinestart = xtop - 20.5;
       double xfinestop;
       if (thetar < 0.) {
          xfinestop = xtop + 20.5;
@@ -332,7 +332,7 @@ namespace LinesOnLayers
       }
       xvals.push_back(xstop);
 
-      double binSizeEV = 10.;
+      const double binSizeEV = 10.;
 
       MonteCarloSS::MonteCarloSS monte(&eg, &chamber, eg.createElectron());
 

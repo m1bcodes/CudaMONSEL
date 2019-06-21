@@ -220,7 +220,7 @@ namespace NormalMultiPlaneShape
    //   updateCach();
    //}
 
-   void NormalMultiPlaneShape::addPlane(PlaneT& plane)
+   void NormalMultiPlaneShape::addPlane(PlaneT *plane)
    {
       MultiPlaneShapeT::addPlane(plane);
       updateCach();

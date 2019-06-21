@@ -2,7 +2,7 @@
 
 namespace ZeroCSD
 {
-   ZeroCSD::ZeroCSD()
+   __host__ __device__ ZeroCSD::ZeroCSD()
    {
    }
 

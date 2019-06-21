@@ -218,38 +218,17 @@ void CPUTests()
 
    MonteCarloSSTest::testOne();
 
-   SumShapeTest::testGetFirstIntersection();
-   SumShapeTest::testAll();
-
-   LinesOnLayers::run();
+   SumShapeTest::SumShapeTest sumShapeTest;
+   sumShapeTest.testGetFirstIntersection();
+   sumShapeTest.testAll();
 }
-
-class Foo
-{
-public:
-   __host__ __device__ Foo(int v) : v(v), alpha(*this) {}
-
-   class Property
-   {
-   public:
-      __host__ __device__ Property(Foo& f) : f(f) {}
-      __host__ __device__ operator int() const { return (int)f.v; }
-
-   private:
-      Foo& f;
-   } alpha;
-
-private:
-   int v;
-};
 
 int main()
 {
-   Foo foo(999);
-   printf("%d\n", (int)(foo.alpha));
-
-   GPUTest();
    CPUTests();
+   GPUTest();
+
+   LinesOnLayers::run();
 
    return 0;
 }

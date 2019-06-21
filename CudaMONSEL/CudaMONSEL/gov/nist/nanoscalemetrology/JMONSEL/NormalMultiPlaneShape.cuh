@@ -24,7 +24,7 @@ namespace NormalMultiPlaneShape
       const double* getPreviousNormal() const override;
 
       //void addPlane(const double normal[], const double point[]);
-      void addPlane(PlaneT&) override;
+      void addPlane(PlaneT*) override;
 
       int getNumPlanes() const;
       //const VectorXd& getNormal(int index) const;

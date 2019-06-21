@@ -50,7 +50,7 @@ namespace UncertainValue2
       return UncertainValue2(1.0);
    }
 
-   UncertainValue2 NaN()
+   __host__ __device__ UncertainValue2 NaN()
    {
       return UncertainValue2(NAN);
    }

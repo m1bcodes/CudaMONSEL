@@ -35,7 +35,7 @@ namespace SEmaterial
       Setd getCoreEnergyArray() const;
       double getEFermi() const;
       //VectorXd getElectronDensityArray() const;
-      double getEnergyCBbottom() const;
+      __host__ __device__ double getEnergyCBbottom() const;
       double getEplasmon() const;
       //VectorXd getKineticEnergyArray() const;
       double getWorkfunction() const;

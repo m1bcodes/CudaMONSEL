@@ -11,7 +11,7 @@
 
 namespace ExpQMBarrierSM
 {
-   ExpQMBarrierSM::ExpQMBarrierSM(const MaterialT* mat) :
+   __host__ __device__ ExpQMBarrierSM::ExpQMBarrierSM(const MaterialT* mat) :
       u0(mat->isSEmaterial() ? ((SEmaterialT*)mat)->getEnergyCBbottom() : 0),
       classical(true),
       lambda(0),

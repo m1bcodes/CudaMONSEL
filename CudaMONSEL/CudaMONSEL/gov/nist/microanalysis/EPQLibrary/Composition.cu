@@ -5,20 +5,25 @@
 
 namespace Composition
 {
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+   __device__ static const long long serialVersionUID = 0x42;
+   __device__ static const double OUT_OF_THIS_MANY_ATOMS = 1.0;
+#else
    static const long long serialVersionUID = 0x42;
    static const double OUT_OF_THIS_MANY_ATOMS = 1.0;
+#endif
    
    //static std::pair<const Element::Element*, UncertainValue2::UncertainValue2> make_pair(const Element::Element* first, const UncertainValue2::UncertainValue2& second)
    //{
    //   return std::make_pair(first, second);
    //}
 
-   static LinkedListKV::Node<const Element::Element*, UncertainValue2::UncertainValue2>* make_pair(const Element::Element* first, const UncertainValue2::UncertainValue2& second)
+   __host__ __device__ static LinkedListKV::Node<const Element::Element*, UncertainValue2::UncertainValue2>* make_pair(const Element::Element* first, const UncertainValue2::UncertainValue2& second)
    {
       return amp::make_pair(first, second);
    }
 
-   void Composition::renormalize()
+   __host__ __device__ void Composition::renormalize()
    {
       if (!mConstituents.empty()) {
          mNormalization = UncertainValue2::ZERO();
@@ -44,7 +49,7 @@ namespace Composition
       mMoleNorm = UncertainValue2::NaN();
    }
 
-   Composition::Composition() :
+   __host__ __device__ Composition::Composition() :
       mNormalization(UncertainValue2::UncertainValue2(1)),
       mAtomicNormalization(UncertainValue2::UncertainValue2(1)),
       mName(""),
@@ -106,10 +111,6 @@ namespace Composition
       mName = name;
       recomputeStoiciometry();
       renormalize();
-   }
-
-   Composition::~Composition()
-   {
    }
 
    bool Composition::operator==(const Composition& obj) const
@@ -190,7 +191,7 @@ namespace Composition
       return elmset;
    }
 
-   int Composition::getElementCount() const
+   __host__ __device__ int Composition::getElementCount() const
    {
       return mConstituents.size();
    }
@@ -662,7 +663,7 @@ namespace Composition
    //   return Element::None;
    //}
 
-   void Composition::setName(const char* name)
+   __host__ __device__ void Composition::setName(const char* name)
    {
       mName = name;
    }

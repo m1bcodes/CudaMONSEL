@@ -64,7 +64,7 @@ namespace UncertainValue2
       //typedef std::unordered_map<StringT, double, amp::string_hash> ComponentMapT;
       typedef amp::unordered_map<StringT, double, amp::string_cmp, Comparator::DoubleCompareFcn, amp::string_hash, Hasher::DoubleHashFcn> ComponentMapT;
       //typedef std::unordered_set<StringT, amp::string_hash> KeySetT;
-      typedef std::unordered_set<StringT, amp::string_hash, amp::string_cmp> KeySetT;
+      typedef amp::unordered_set<StringT, amp::string_hash, amp::string_cmp> KeySetT;
       //typedef std::vector<UncertainValue2> ResultT;
 
       UncertainValue2();

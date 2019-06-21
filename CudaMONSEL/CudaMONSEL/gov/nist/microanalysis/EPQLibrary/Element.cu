@@ -2,10 +2,17 @@
 
 #include <algorithm>
 
+#include "CudaUtil.h"
+
 namespace Element
 {
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+   __device__ static const int numIonizationEnergy = 104;
+   __device__ static const int numAtomicWeight = 112;
+#else
    static const int numIonizationEnergy = 104;
    static const int numAtomicWeight = 112;
+#endif
 
    const long long serialVersionUID = 0x987360133793L;
 
@@ -590,12 +597,13 @@ namespace Element
    static std::vector<float> mAtomicWeight; // nominal, in AMU, AtomicWeights.csv
    static std::vector<float> mIonizationEnergy; // Nominal in Joules, IonizationEnergies.csv
 
+   __constant__ static float dAtomicWeight[112], dIonizationEnergy[104];
+
    static void readAtomicWeights()
    {
       if (!mAtomicWeight.empty()) return;
       mAtomicWeight.resize(numAtomicWeight);
 
-      //float hAtomicWeight[numAtomicWeight];
       try {
          char filepath[] = ".\\gov\\nist\\microanalysis\\EPQLibrary\\AtomicWeights.csv";
          std::ifstream file(filepath);
@@ -614,8 +622,6 @@ namespace Element
          printf("didnt see file AtomicWeights.csv\n");
          throw 0; //throw new EPQFatalException("Fatal error while attempting to load the atomic weights data file.");
       }
-      //memcpy(mAtomicWeight, hAtomicWeight, sizeof(hAtomicWeight));
-      //checkCudaErrors(cudaMemcpyToSymbol(mAtomicWeight, &hAtomicWeight, sizeof(float) * 112));
    }
 
    static void readIonizationEnergy()
@@ -647,7 +653,17 @@ namespace Element
       catch (std::exception&) {
          printf("Fatal error while attempting to load the ionization data file: %s.\n", filepath);
       }
+
+      //int bytes = sizeof(float) * mIonizationEnergy.size();
+      //checkCudaErrors(cudaMalloc(&dIonizationEnergy, bytes));
+      //checkCudaErrors(cudaMemcpyToSymbol(dIonizationEnergy, mIonizationEnergy.data(), bytes, cudaMemcpyHostToDevice));
       //memcpy(mIonizationEnergy, hIonizationEnergy, sizeof(hIonizationEnergy));
+   }
+
+   static void copyDataToDevice()
+   {
+      checkCudaErrors(cudaMemcpyToSymbol(dAtomicWeight, mAtomicWeight.data(), sizeof(float) * mAtomicWeight.size()));
+      checkCudaErrors(cudaMemcpyToSymbol(dIonizationEnergy, mIonizationEnergy.data(), sizeof(float) * mIonizationEnergy.size()));
    }
 
    //struct Initializer
@@ -667,6 +683,7 @@ namespace Element
    {
       readAtomicWeights();
       readIonizationEnergy();
+      copyDataToDevice();
 
       printf("InitializeElements() completed: %d bytes\n", sizeof(mAllElements));
    }
@@ -747,6 +764,15 @@ namespace Element
          printf("need to load mAtomicWeight array by calling readAtomicWeights first\n");
       }
       return mAtomicWeight[atomicNo - 1];
+   }
+
+   __device__ double getAtomicWeightDevice(int atomicNo)
+   {
+      if (atomicNo <= 0 || atomicNo >= numAtomicWeight) {
+         printf("invalid atmoic number: %d\n", atomicNo);
+         return -1;
+      }
+      return dAtomicWeight[atomicNo - 1];
    }
 
    Element const * const * allElements()

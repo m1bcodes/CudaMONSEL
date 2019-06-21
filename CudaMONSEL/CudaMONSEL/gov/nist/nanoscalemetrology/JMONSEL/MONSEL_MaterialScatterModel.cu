@@ -7,13 +7,16 @@
 #include "gov\nist\nanoscalemetrology\JMONSEL\SEmaterial.cuh"
 #include "gov\nist\nanoscalemetrology\JMONSEL\ScatterMechanism.cuh"
 #include "gov\nist\nanoscalemetrology\JMONSEL\BarrierScatterMechanism.cuh"
-#include "gov\nist\nanoscalemetrology\JMONSEL\SlowingDownAlg.cuh"
 
 namespace MONSEL_MaterialScatterModel
 {
-   static ZeroCSDT sZeroCSD;
+//#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+//   __constant__ static ZeroCSDT sZeroCSD;
+//#else
+//   static ZeroCSDT sZeroCSD;
+//#endif
 
-   MONSEL_MaterialScatterModel::MONSEL_MaterialScatterModel(const SEmaterialT* mat, const BarrierScatterMechanismT* bsm) : mat(mat), barrierSM(bsm), csd(&sZeroCSD)
+   __host__ __device__ MONSEL_MaterialScatterModel::MONSEL_MaterialScatterModel(const SEmaterialT* mat, const BarrierScatterMechanismT* bsm, SlowingDownAlgT* sda) : mat(mat), barrierSM(bsm), csd(sda)
    {
       // TODO: take note of difference wrt original JMONSEL code
       //this->mat = mat.clone();
@@ -146,7 +149,7 @@ namespace MONSEL_MaterialScatterModel
       return barrierSM;
    }
 
-   void MONSEL_MaterialScatterModel::setCSD(SlowingDownAlgT* csd)
+   __host__ __device__ void MONSEL_MaterialScatterModel::setCSD(SlowingDownAlgT* csd)
    {
       this->csd = csd;
       // TODO I should clone it first. User is likely to use this in more than

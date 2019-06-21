@@ -49,7 +49,7 @@ namespace MultiPlaneShape
 
       //void addOffsetPlane(const double normal[], const double pt[], double dist);
       //void addPlane(const double normal[], const double point[]);
-      virtual void addPlane(Plane& plane);
+      virtual void addPlane(Plane *plane);
 
       Planes getPlanes() const;
 

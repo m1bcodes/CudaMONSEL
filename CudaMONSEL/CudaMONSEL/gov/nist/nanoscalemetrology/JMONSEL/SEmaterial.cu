@@ -225,7 +225,7 @@ namespace SEmaterial
    //   return electronDensity;
    //}
 
-   double SEmaterial::getEnergyCBbottom() const
+   __host__ __device__ double SEmaterial::getEnergyCBbottom() const
    {
       return energyCBbottom;
    }

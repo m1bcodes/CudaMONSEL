@@ -9,7 +9,7 @@ namespace ExpQMBarrierSM
    class ExpQMBarrierSM : public BarrierScatterMechanismT
    {
    public:
-      ExpQMBarrierSM(const MaterialT* mat);
+      __host__ __device__ ExpQMBarrierSM(const MaterialT* mat);
       ExpQMBarrierSM(const MaterialT* mat, double lambda);
 
       ElectronT* barrierScatter(ElectronT* pe, const RegionBaseT* nextRegion) const override;

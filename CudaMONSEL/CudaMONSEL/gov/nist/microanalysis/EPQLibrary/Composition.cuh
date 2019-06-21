@@ -23,8 +23,7 @@ namespace Composition
       //typedef std::string StringT;
       typedef amp::string StringT;
 
-      Composition();
-      ~Composition();
+      __host__ __device__ Composition();
       //Composition(const Composition& comp);
       Composition(const Element::Element* elms[], int elmsLen, const double massFracs[], int massFracsLen);
       Composition(const Element::Element& elm);
@@ -35,7 +34,7 @@ namespace Composition
 
       Element::UnorderedSetT getElementSet() const;
       Element::OrderedSetT getSortedElements() const;
-      int getElementCount() const;
+      __host__ __device__ int getElementCount() const;
       void addElement(int atomicNo, double massFrac);
       void addElement(int atomicNo, const UncertainValue2::UncertainValue2 massFrac);
       void addElement(const Element::Element& elm, double massFrac);
@@ -117,7 +116,7 @@ namespace Composition
       //String::String descriptiveString(bool normalize);
       //Element::Element getNthElementByWeight(int n);
       //Element::Element getNthElementByAtomicFraction(int n);
-      void setName(const char* name);
+      __host__ __device__ void setName(const char* name);
       const char* getName() const;
       int compareTo(const Composition& comp) const;
       Composition asComposition() const;
@@ -157,7 +156,7 @@ namespace Composition
       UncertainValue2::UncertainValue2 mMoleNorm;// = UncertainValue2::NaN();
 
    protected:
-      void renormalize();
+      __host__ __device__ void renormalize();
       void replicate(const Composition& comp);
       void clear();
    };

@@ -14,6 +14,7 @@ namespace SumShape
    class SumShape : public ShapeT, public ITransformT//, TrajectoryVRML.IRender
    {
    public:
+      SumShape();
       SumShape(ShapeT* const shapes[], int len);
       SumShape(ShapeT* const a, ShapeT* const b);
 
@@ -26,6 +27,8 @@ namespace SumShape
       void translate(const double distance[]) override;
 
       const amp::vector<ShapeT*>& getShapes() const;
+
+      void addShape(ShapeT* b);
 
    private:
       amp::vector<ShapeT*> mShapes;

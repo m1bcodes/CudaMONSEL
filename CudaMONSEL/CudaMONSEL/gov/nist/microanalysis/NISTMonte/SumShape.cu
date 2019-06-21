@@ -6,6 +6,10 @@
 
 namespace SumShape
 {
+   SumShape::SumShape()
+   {
+   }
+
    SumShape::SumShape(ShapeT* const shapes[], int len) : mShapes(shapes, shapes + len)
    {
    }
@@ -14,6 +18,11 @@ namespace SumShape
    {
       mShapes.push_back(a);
       mShapes.push_back(b);
+   }
+
+   void SumShape::addShape(ShapeT* s)
+   {
+      mShapes.push_back(s);
    }
 
    bool SumShape::isNormalShape() const

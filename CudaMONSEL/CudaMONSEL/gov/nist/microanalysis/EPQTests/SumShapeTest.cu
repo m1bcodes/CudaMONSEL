@@ -2,19 +2,7 @@
 
 #include "gov\nist\microanalysis\EPQLibrary\Composition.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\Element.cuh"
-#include "gov\nist\microanalysis\EPQLibrary\Material.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\ToSI.cuh"
-
-#include "gov\nist\microanalysis\NISTMonte\CylindricalShape.cuh"
-#include "gov\nist\microanalysis\NISTMonte\GaussianBeam.cuh"
-#include "gov\nist\microanalysis\NISTMonte\MonteCarloSS.cuh"
-#include "gov\nist\microanalysis\NISTMonte\MultiPlaneShape.cuh"
-#include "gov\nist\microanalysis\NISTMonte\RegionBase.cuh"
-#include "gov\nist\microanalysis\NISTMonte\Shape.cuh"
-#include "gov\nist\microanalysis\NISTMonte\Sphere.cuh"
-#include "gov\nist\microanalysis\NISTMonte\SumShape.cuh"
-#include "gov\nist\microanalysis\NISTMonte\NullMaterialScatterModel.cuh"
-#include "gov\nist\microanalysis\NISTMonte\BasicMaterialModel.cuh"
 
 //#include "gov\nist\microanalysis\NISTMonte\TrajectoryVRML.cuh"
 
@@ -33,7 +21,7 @@ namespace SumShapeTest
       0.02
    };
    //static const CompositionT mat1Comp(mat1Elements, 3, mat1MassFracs, 3, "Resin");
-   static const MaterialT mat1(mat1Elements, 3, mat1MassFracs, 3, ToSI::gPerCC(1.14), "Resin");
+   //static const MaterialT mat1(mat1Elements, 3, mat1MassFracs, 3, ToSI::gPerCC(1.14), "Resin");
 
    static const ElementT* mat2Element[] = {
       &Element::C,
@@ -54,7 +42,7 @@ namespace SumShapeTest
       0.02
    };
    //static const CompositionT mat2Comp(mat2Element, 7, mat2MassFracs, 7, "Inner");
-   static const MaterialT mat2(mat2Element, 7, mat2MassFracs, 7, ToSI::gPerCC(1.11), "Inner");
+   //static const MaterialT mat2(mat2Element, 7, mat2MassFracs, 7, ToSI::gPerCC(1.11), "Inner");
 
    static const double ChamberRadius = 0.1;
 
@@ -64,9 +52,9 @@ namespace SumShapeTest
       0.0,
       0.0
    };
-   static SphereT sphere(center, ChamberRadius);
-   static NullMaterialScatterModelT NULL_MSM;
-   static RegionT mChamber(nullptr, &NULL_MSM, &sphere);
+   //static SphereT sphere(center, ChamberRadius);
+   //static NullMaterialScatterModelT NULL_MSM;
+   //static RegionT mChamber(nullptr, &NULL_MSM, &sphere);
 
    static const double beamCenter[] = {
       0,
@@ -75,13 +63,13 @@ namespace SumShapeTest
    };
    static const double beamEnergy = ToSI::keV(20.0);
    static const double beamDia = 1.0e-8;
-   static const GaussianBeamT beam(beamDia, beamEnergy, beamCenter);
+   //static const GaussianBeamT beam(beamDia, beamEnergy, beamCenter);
 
-   static MonteCarloSST mMonte(&beam, &mChamber, beam.createElectron());
+   //static MonteCarloSST mMonte(&beam, &mChamber, beam.createElectron());
 
-   static PlaneT pl(Math2::MINUS_Z_AXIS, Math2::ORIGIN_3D);
-   static PlaneT* pls[] = { &pl };
-   static MultiPlaneShape::MultiPlaneShape blk(pls, 1);
+   //static PlaneT pl(Math2::MINUS_Z_AXIS, Math2::ORIGIN_3D);
+   //static PlaneT* pls[] = { &pl };
+   //static MultiPlaneShapeT blk(pls, 1);
 
    static const double radius = 0.5e-6;
    static const double length = 1.0e-6;
@@ -96,23 +84,49 @@ namespace SumShapeTest
       2.0 * radius
    };
 
-   static SphereT mCap0Outer(end0, radius);
-   static SphereT mCap1Outer(end1, radius);
-   static CylindricalShapeT mCylOuter(end0, end1, radius);
+   //static SphereT mCap0Outer(end0, radius);
+   //static SphereT mCap1Outer(end1, radius);
+   //static CylindricalShapeT mCylOuter(end0, end1, radius);
 
-   static ShapeT* const shapes[] = {
-      &mCylOuter,
-      &mCap0Outer,
-      &mCap1Outer
-   };
+   //static ShapeT* const shapes[] = {
+   //   &mCylOuter,
+   //   &mCap0Outer,
+   //   &mCap1Outer
+   //};
 
-   static SumShapeT mPillOuter(shapes, 3);
+   //static SumShapeT mPillOuter(shapes, 3);
 
-   static BasicMaterialModelT bmm1(mat1);
-   static RegionT r1(&mChamber, &bmm1, &blk);
+   //static BasicMaterialModelT bmm1(mat1);
+   //static RegionT r1(&mChamber, &bmm1, &blk);
 
-   static BasicMaterialModelT bmm2(mat2);
-   static RegionT r2(&r1, &bmm2, &mPillOuter);
+   //static BasicMaterialModelT bmm2(mat2);
+   //static RegionT r2(&r1, &bmm2, &mPillOuter);
+
+   SumShapeTest::SumShapeTest() :
+      mat1(mat1Elements, 3, mat1MassFracs, 3, ToSI::gPerCC(1.14), "Resin"),
+      mat2(mat2Element, 7, mat2MassFracs, 7, ToSI::gPerCC(1.11), "Inner"),
+      sphere(center, ChamberRadius),
+      mChamber(nullptr, &NULL_MSM, &sphere),
+      beam(beamDia, beamEnergy, beamCenter),
+      mMonte(&beam, &mChamber, beam.createElectron()),
+      pl(Math2::MINUS_Z_AXIS, Math2::ORIGIN_3D),
+      //pls{ &pl },
+      //blk(pls, 1),
+      mCap0Outer(end0, radius),
+      mCap1Outer(end1, radius),
+      mCylOuter(end0, end1, radius),
+      //shapes{ &mCylOuter, &mCap0Outer, &mCap1Outer },
+      //mPillOuter(shapes, 3),
+      bmm1(mat1),
+      bmm2(mat2),
+      r1(&mChamber, &bmm1, &blk),
+      r2(&r1, &bmm2, &mPillOuter)
+   {
+      blk.addPlane(&pl);
+      mPillOuter.addShape(&mCylOuter);
+      mPillOuter.addShape(&mCap0Outer);
+      mPillOuter.addShape(&mCap1Outer);
+   }
 
    static void assertTrue(bool expr)
    {
@@ -124,7 +138,7 @@ namespace SumShapeTest
       if (::abs(a - b) >= err) printf("not equal: %.10e, %.10e\n", a, b);;
    }
 
-   static void pointInside(double res[])
+   void SumShapeTest::pointInside(double res[])
    {
       switch (Math2::randomInt(3)) {
       case 0: {
@@ -168,7 +182,7 @@ namespace SumShapeTest
       res[2] = 2.0 * radius + ::sin(phi) * r;
    }
 
-   void testGetFirstIntersection()
+   void SumShapeTest::testGetFirstIntersection()
    {
       for (int i = 0; i < 1000; ++i) {
          double inside1[3];
@@ -241,7 +255,7 @@ namespace SumShapeTest
       printf("SumShapeTest::testGetFirstIntersection() completed.\n");
    }
 
-   void testAll()
+   void SumShapeTest::testAll()
    {
       mMonte.runMultipleTrajectories(1000);
 
