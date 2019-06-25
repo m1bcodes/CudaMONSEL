@@ -16,7 +16,7 @@ namespace NISTMottScatteringAngle
    const double DL50 = ::log(50.0);
    const double PARAM = (::log(2.0e4) - DL50) / 60.0;
 
-   const double MAX_NISTMOTT = ToSI::keV(20.0);
+   static const double MAX_NISTMOTT = ToSI::keV(20.0);
 
    static double value(double a, double b, double c, double y0, double y1, double y2, double x)
    {
@@ -80,7 +80,7 @@ namespace NISTMottScatteringAngle
       return mElement;
    }
    
-   double NISTMottScatteringAngle::totalCrossSection(double energy) const
+   double NISTMottScatteringAngle::totalCrossSection(const double energy) const
    {
       if (energy < MAX_NISTMOTT) {
          double scale = PhysicalConstants::BohrRadius * PhysicalConstants::BohrRadius;
@@ -101,19 +101,17 @@ namespace NISTMottScatteringAngle
       }
    }
 
-   double NISTMottScatteringAngle::randomScatteringAngle(double energy) const
+   double NISTMottScatteringAngle::randomScatteringAngle(const double energy) const
    {
       if (energy < MAX_NISTMOTT) {
          double logE = ::log(FromSI::eV(energy));
          int j = (int)((logE - DL50) / PARAM); // offset to zero-based
          double e2 = DL50 + (j + 1) * PARAM;
          double e1 = e2 - PARAM;
-         int i = (logE - e1 < e2 - logE ? j : j + 1); // offset to
-         // zero-based
+         int i = (logE - e1 < e2 - logE ? j : j + 1); // offset to zero-based
          if (!((i >= 0) && (i < SPWEM_LEN))) printf("%s\n", StringT(std::to_string(i) + "\t" + std::to_string(FromSI::eV(energy)) + "\t" + std::to_string(e1) + "\t" + std::to_string(e2)).c_str());
          // via j
-         int k = Math2::randomInt(200); // offset to
-         // zero-based
+         int k = Math2::randomInt(200); // offset to zero-based
          double x = (mX1[i][k + 1] - mX1[i][k]) * Math2::random();
          double q = mX1[i][k] + x;
          double com = 1.0 - 2.0 * q * q;

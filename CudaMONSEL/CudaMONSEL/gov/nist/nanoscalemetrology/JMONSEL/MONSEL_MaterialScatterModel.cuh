@@ -19,13 +19,13 @@ namespace MONSEL_MaterialScatterModel
       const BarrierScatterMechanismT* MONSEL_MaterialScatterModel::getBarrierSM() const;
       __host__ __device__ void setCSD(SlowingDownAlgT* csd);
       SlowingDownAlgT* getCSD();
-      bool addScatterMechanism(ScatterMechanismT* mech);
+      __host__ __device__ bool addScatterMechanism(ScatterMechanismT* mech);
       //bool removeScatterMechanism(const ScatterMechanismT* mech);
       bool removeScatterMechanism(ScatterMechanismT* mech);
 
       const MaterialT& getMaterial() const override;
       double getMinEforTracking() const override;
-      void setMinEforTracking(double minEforTracking) override;
+      __host__ __device__ void setMinEforTracking(double minEforTracking) override;
       double randomMeanPathLength(ElectronT& pe) override;
       ElectronT* scatter(ElectronT& pe) override;
       ElectronT* barrierScatter(ElectronT* pe, const RegionBaseT* nextRegion) const override;

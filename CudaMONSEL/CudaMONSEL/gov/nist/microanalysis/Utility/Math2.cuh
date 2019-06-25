@@ -31,8 +31,12 @@ namespace Math2
    __device__ extern double expRand(curandState&);
    __host__ extern double generateGaussianNoise(const double mean, const double stdDev);
    __device__ extern double generateGaussianNoise(const double mean, const double stdDev, curandState&);
-
+   
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+   extern __constant__ const double PI;
+#else
    extern const double PI;
+#endif
    extern const double ORIGIN_3D[];
    extern const double ONE[];
    extern const double X_AXIS[];

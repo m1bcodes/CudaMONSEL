@@ -328,7 +328,7 @@ namespace Composition
       renormalize();
    }
 
-   void Composition::defineByMoleFraction(const Element::Element* elms[], int elmsLen, const double moleFracs[], int moleFracsLen)
+   __host__ __device__ void Composition::defineByMoleFraction(const Element::Element* elms[], int elmsLen, const double moleFracs[], int moleFracsLen)
    {
       clear();
       if (elmsLen != moleFracsLen) {
@@ -339,14 +339,8 @@ namespace Composition
          mfSum += moleFracs[k];
       }
       for (int i = 0; i < moleFracsLen; ++i) {
-         double tmp = moleFracs[i] / mfSum;
-         auto elm = elms[i];
-         mConstituentsAtomic.insert(make_pair(elm, UncertainValue2::UncertainValue2(tmp)));
+         mConstituentsAtomic.insert(make_pair(elms[i], UncertainValue2::UncertainValue2(moleFracs[i] / mfSum)));
       }
-      //for (int i = 0; i < moleFracsLen; ++i) {
-      //   auto elm = elms[i];
-      //   mConstituentsAtomic.insert(std::make_pair(elm, UncertainValue2::UncertainValue2(moleFracs[i])));
-      //}
       recomputeWeightFractions();
       renormalize();
    }
@@ -362,7 +356,7 @@ namespace Composition
       return itr == mConstituentsAtomic.cend() ? UncertainValue2::ZERO() : normalize(itr->second, mAtomicNormalization, positiveOnly);
    }
 
-   void Composition::recomputeWeightFractions()
+   __host__ __device__ void Composition::recomputeWeightFractions()
    {
       UncertainValue2::UncertainValue2 totalWgt = UncertainValue2::ZERO();
       Element::UnorderedSetT constituentsAtomicKeys;

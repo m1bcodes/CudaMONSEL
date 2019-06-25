@@ -41,8 +41,7 @@ namespace SelectableElasticSM
 
    double SelectableElasticSM::scatterRate(const ElectronT* pe)
    {
-      setCache(pe->getEnergy()); // computes totalScaledCrossSection for this
-      // eK
+      setCache(pe->getEnergy()); // computes totalScaledCrossSection for this eK
       return totalScaledCrossSection * densityNa;
    }
 
@@ -72,7 +71,7 @@ namespace SelectableElasticSM
       densityNa = mat->getDensity() * PhysicalConstants::AvagadroNumber;
       if (nce > 0) {
          // Element[] elements = (Element[]) mat.getElementSet().toArray();
-         Element::UnorderedSetT elements = mat->getElementSet();
+         const Element::UnorderedSetT& elements = mat->getElementSet();
          rse.resize(nce);
          scalefactor.resize(nce);
          cumulativeScaledCrossSection.resize(nce);

@@ -92,7 +92,7 @@ namespace BasicMaterialModel
       return minEforTracking;
    }
 
-   void BasicMaterialModel::setMinEforTracking(double minEforTracking)
+   __host__ __device__ void BasicMaterialModel::setMinEforTracking(double minEforTracking)
    {
       this->minEforTracking = minEforTracking;
    }

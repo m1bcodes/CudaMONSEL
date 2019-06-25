@@ -104,6 +104,16 @@ namespace VectorTest
          v.erase(itr);
       }
       //printf("\n");
+
+      amp::vector<amp::vector<int>> u(10);
+      for (int i = 0; i < 10; ++i) {
+         amp::vector<int> tmp(100);
+         for (int j = 0; j < 100; ++j) {
+            tmp.push_back(j);
+         }
+         u.push_back(tmp);
+      }
+
       printf("VectorTest::testThree() completed.\n");
    }
 }

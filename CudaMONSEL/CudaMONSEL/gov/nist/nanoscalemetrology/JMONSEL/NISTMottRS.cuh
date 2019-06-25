@@ -51,8 +51,8 @@ namespace NISTMottRS
       int method;
    };
 
-   extern const double MAX_NISTMOTT;
-   extern const double MIN_NISTMOTT;
+   //extern const double MAX_NISTMOTT;
+   //extern const double MIN_NISTMOTT;
 
    extern const RandomizedScatterFactoryT& Factory;
    extern const RandomizedScatterFactoryT& Factory100;

@@ -24,8 +24,8 @@ namespace amp
       __host__ __device__ bool empty() const;
 
    private:
-      void DeepCopy(const stack&);
-      void RemoveAll();
+      __host__ __device__ void DeepCopy(const stack&);
+      __host__ __device__ void RemoveAll();
 
       DLinkedList::Node<T>* head;
    };

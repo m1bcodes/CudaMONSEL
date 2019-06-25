@@ -23,7 +23,7 @@ namespace NullMaterialScatterModel
 
       double getMinEforTracking() const override;
 
-      void setMinEforTracking(double minEforTracking) override;
+      __host__ __device__ void setMinEforTracking(double minEforTracking) override;
 
    private:
       double minEforTracking;

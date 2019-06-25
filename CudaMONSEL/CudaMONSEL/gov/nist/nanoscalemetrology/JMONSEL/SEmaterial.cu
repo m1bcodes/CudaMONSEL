@@ -338,7 +338,7 @@ namespace SEmaterial
    //   version = (version == _UI32_MAX) ? 0L : version + 1L;
    //}
 
-   void SEmaterial::setEnergyCBbottom(double energyCBbottom)
+   __host__ __device__ void SEmaterial::setEnergyCBbottom(double energyCBbottom)
    {
       this->energyCBbottom = energyCBbottom;
       if (!userSetKE) {
@@ -347,7 +347,7 @@ namespace SEmaterial
       version = (version == _UI32_MAX) ? 0L : version + 1L;
    }
 
-   void SEmaterial::setBandgap(double bandgap)
+   __host__ __device__ void SEmaterial::setBandgap(double bandgap)
    {
       this->bandgap = bandgap;
       version = (version == _UI32_MAX) ? 0L : version + 1L;
@@ -406,7 +406,7 @@ namespace SEmaterial
    //   version = (version == _UI32_MAX) ? 0L : version + 1L;
    //}
 
-   void SEmaterial::setWorkfunction(double workfunction)
+   __host__ __device__ void SEmaterial::setWorkfunction(double workfunction)
    {
       this->workfunction = workfunction;
       if (energyCBbottom > -workfunction) {

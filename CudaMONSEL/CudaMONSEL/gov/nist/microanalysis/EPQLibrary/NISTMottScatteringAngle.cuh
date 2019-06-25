@@ -19,25 +19,25 @@ namespace NISTMottScatteringAngle
    public:
       NISTMottScatteringAngle(const ElementT& elm);
 
-      void loadData(int an);
-
       StringT toString() const;
 
       const ElementT& getElement() const override;
-      double totalCrossSection(double energy) const override;
-      double randomScatteringAngle(double energy) const override;
+      double totalCrossSection(const double) const override;
+      double randomScatteringAngle(const double) const override;
 
       const VectorXd& getSpwem() const;
       const MatrixXd& getX1() const;
 
    private:
+      void loadData(int an);
+
       const ElementT& mElement;
       VectorXd mSpwem;
       MatrixXd mX1;
       const ScreenedRutherfordScatteringAngleT& mRutherford;
    };
 
-   extern const double MAX_NISTMOTT;
+   //extern const double MAX_NISTMOTT;
 
    class NISTMottRandomizedScatterFactory : public RandomizedScatterFactoryT
    {

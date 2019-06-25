@@ -13,8 +13,8 @@
 
 namespace NISTMottRS
 {
-   const double MAX_NISTMOTT = ToSI::keV(20.0);
-   const double MIN_NISTMOTT = ToSI::keV(0.050);
+   static const double MAX_NISTMOTT = ToSI::keV(20.0);
+   static const double MIN_NISTMOTT = ToSI::keV(0.050);
 
    static const int qINTERPOLATIONORDER = 3;
    static const int sigmaINTERPOLATIONORDER = 3;
@@ -32,22 +32,22 @@ namespace NISTMottRS
    };
    static const Reference::WebSite mReferenceWebsite("http://www.nist.gov/srd/nist64.htm", "NIST Electron Elastic-Scattering Cross-Section Database version 3.1", "AUGUST 24, 2007", al, 3);
 
-   static double sciToDub(const std::string& str)
-   {
-      std::string tmp = str.substr(str.find_first_not_of(" "));
-      std::stringstream ss(tmp);
-      double d = 0;
-      ss >> d;
+   //static double sciToDub(const std::string& str)
+   //{
+   //   std::string tmp = str.substr(str.find_first_not_of(" "));
+   //   std::stringstream ss(tmp);
+   //   double d = 0;
+   //   ss >> d;
 
-      if (ss.fail()) {
-         std::string s = "Unable to format ";
-         s += tmp;
-         s += " as a number!";
-         throw s;
-      }
+   //   if (ss.fail()) {
+   //      std::string s = "Unable to format ";
+   //      s += tmp;
+   //      s += " as a number!";
+   //      throw s;
+   //   }
 
-      return d;
-   }
+   //   return d;
+   //}
 
    //void NISTMottRS::loadData(int an)
    //{

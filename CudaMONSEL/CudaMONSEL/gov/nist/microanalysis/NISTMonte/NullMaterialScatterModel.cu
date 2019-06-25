@@ -43,7 +43,7 @@ namespace NullMaterialScatterModel
       return minEforTracking;
    }
 
-   void NullMaterialScatterModel::setMinEforTracking(double minEforTracking)
+   __host__ __device__ void NullMaterialScatterModel::setMinEforTracking(double minEforTracking)
    {
       this->minEforTracking = minEforTracking;
    }

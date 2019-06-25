@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.image as mim
 
-data = np.loadtxt("CudaMONSEL\outputs\data25.txt")
+data = np.loadtxt("CudaMONSEL\outputs\data26.txt")
 SE = data[:, 4]
 
 c = 80
@@ -18,4 +18,4 @@ SE = SE.reshape((r, c))
 plt.imshow(SE, cmap='gray')
 plt.show()
 
-mim.imsave("SE25.png",  SE, cmap='gray')
+mim.imsave("SE26.png",  SE, cmap='gray')

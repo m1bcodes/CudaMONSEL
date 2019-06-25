@@ -167,7 +167,7 @@ namespace MONSEL_MaterialScatterModel
       return csd->compute(len, &pe);
    }
 
-   bool MONSEL_MaterialScatterModel::addScatterMechanism(ScatterMechanismT* mech)
+   __host__ __device__ bool MONSEL_MaterialScatterModel::addScatterMechanism(ScatterMechanismT* mech)
    {
       // final ScatterMechanism mechCopy = mech.clone(); // Make a copy of the
       // scatter
@@ -212,7 +212,7 @@ namespace MONSEL_MaterialScatterModel
       return minEforTracking;
    }
 
-   void MONSEL_MaterialScatterModel::setMinEforTracking(double minEforTracking)
+   __host__ __device__ void MONSEL_MaterialScatterModel::setMinEforTracking(double minEforTracking)
    {
       this->minEforTracking = minEforTracking;
    }

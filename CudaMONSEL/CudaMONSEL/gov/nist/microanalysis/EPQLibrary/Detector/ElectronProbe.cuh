@@ -5,6 +5,8 @@
 
 #include "gov\nist\microanalysis\NISTMonte\Declarations.cuh"
 
+#include <cuda_runtime.h>
+
 namespace ElectronProbe
 {
    // Properties that are shared by all detectors attached to the instrument
@@ -17,7 +19,7 @@ namespace ElectronProbe
    //   double mMaxBeamEnergy = ToSI.keV(30.0);
    //};
 
-   void computePosition(double optWD, double altitudeAngle, double azimuthAngle, double distance, double res[]);
+   extern void computePosition(const double optWD, const double altitudeAngle, const double azimuthAngle, const double distance, double res[]);
 }
 
 #endif

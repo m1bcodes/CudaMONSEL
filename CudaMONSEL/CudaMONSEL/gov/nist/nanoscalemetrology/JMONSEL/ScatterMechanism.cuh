@@ -9,7 +9,7 @@ namespace ScatterMechanism
    {
    public:
       virtual double scatterRate(const ElectronT* pe) = 0;
-      virtual ElectronT* scatter(ElectronT* pe) = 0; // WARNING: needs destructor
+      virtual ElectronT* scatter(ElectronT* pe) = 0; // note: needs destructor
       virtual void setMaterial(const MaterialT* mat) = 0;
    };
 }

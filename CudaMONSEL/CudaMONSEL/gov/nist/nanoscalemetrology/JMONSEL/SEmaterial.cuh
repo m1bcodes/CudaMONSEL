@@ -50,14 +50,14 @@ namespace SEmaterial
       void setCoreEnergy();
       void setCoreEnergy(const double coreEnergy[], int len);
       //void setElectronDensity(int index, double density);
-      void setEnergyCBbottom(double energyCBbottom);
-      void setBandgap(double bandgap);
+      __host__ __device__ void setEnergyCBbottom(double energyCBbottom);
+      __host__ __device__ void setBandgap(double bandgap);
       void setEplasmon(double eplasmon);
       void setEstimatedCoreEnergy();
       void setEstimatedCoreEnergy(double cutoff);
       void setKEtoDefault();
       //void setKineticEnergy(int index, double energy);
-      void setWorkfunction(double workfunction);
+      __host__ __device__ void setWorkfunction(double workfunction);
       void setEpsr(double epsr);
       void setDielectricBreakdownField(double breakdownField);
 

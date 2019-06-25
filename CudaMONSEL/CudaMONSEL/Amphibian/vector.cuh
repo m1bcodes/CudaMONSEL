@@ -217,7 +217,13 @@ namespace amp
    __host__ __device__ unsigned int vector<T>::size() const
    {
       unsigned int i = 0;
-      while (vec[i]) ++i;
+      while (vec[i]) {
+         if (i == cap) {
+            printf("vector<T>::size(): over\n");
+            break;
+         }
+         ++i;
+      }
       //if (i != sz) printf("vector<T>::size(): wrong size: %d != %d\n", i, sz);
       //return sz;
       return i;
@@ -240,6 +246,10 @@ namespace amp
    {
       unsigned int i = 0;
       while (vec[i]) {
+         if (i == cap) {
+            printf("vector<T>::clear(): over\n");
+            break;
+         }
          delete vec[i];
          vec[i] = nullptr;
          ++i;

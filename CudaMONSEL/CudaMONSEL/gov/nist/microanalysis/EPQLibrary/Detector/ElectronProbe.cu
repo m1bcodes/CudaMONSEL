@@ -63,7 +63,7 @@ namespace ElectronProbe
    //* @param distance
    //* @return double[3] with the detector position
    //*/
-   void computePosition(double optWD, double altitudeAngle, double azimuthAngle, double distance, double res[])
+   void computePosition(const double optWD, const double altitudeAngle, const double azimuthAngle, const double distance, double res[])
    {
       res[0] = distance * ::cos(altitudeAngle) * ::cos(azimuthAngle);
       res[1] = distance * ::cos(altitudeAngle) * ::sin(azimuthAngle);

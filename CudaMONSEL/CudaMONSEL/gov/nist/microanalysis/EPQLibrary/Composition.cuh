@@ -98,7 +98,7 @@ namespace Composition
       //   renormalize();
       //}
 
-      void defineByMoleFraction(const Element::Element* elms[], int elmsLen, const double moleFracs[], int moleFracsLen);
+      __host__ __device__ void defineByMoleFraction(const Element::Element* elms[], int elmsLen, const double moleFracs[], int moleFracsLen);
       void setOptimalRepresentation(const Representation opt);
       void defineByMaterialFraction(const Composition* compositions[], int compLen, const double matFracs[], int matFracsLen);
       void removeElement(const Element::Element&);
@@ -144,7 +144,7 @@ namespace Composition
    private:
       Composition readResolve();
       void recomputeStoiciometry();
-      void recomputeWeightFractions();
+      __host__ __device__ void recomputeWeightFractions();
 
       ConstituentsMapT mConstituents;
       ConstituentsMapT mConstituentsAtomic;
