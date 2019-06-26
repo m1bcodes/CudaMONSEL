@@ -475,7 +475,10 @@ namespace TabulatedInelasticSM
       energyGap = bandgap;
       offsetFermiEnergy = semat->getEFermi() + energyOffset;
       auto coreEnergiesSet = semat->getCoreEnergyArray();
-      coreEnergies.insert(coreEnergies.begin(), coreEnergiesSet.begin(), coreEnergiesSet.end());
+      for (auto ce : coreEnergiesSet) {
+         coreEnergies.push_back(ce);
+      }
+      //coreEnergies.insert(coreEnergies.begin(), coreEnergiesSet.begin(), coreEnergiesSet.end());
       /*
       * My source for binding energies provides them relative to vacuum for a
       * few nobel and binary gases that we're unlikely to use, relative to the

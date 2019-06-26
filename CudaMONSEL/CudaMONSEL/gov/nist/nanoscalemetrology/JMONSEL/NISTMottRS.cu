@@ -76,24 +76,24 @@ namespace NISTMottRS
    NISTMottRS::NISTMottRS(const ElementT& elm, int method) :
       RandomizedScatterT("NIST Elastic cross-section", mReferenceWebsite),
       mElement(elm),
-      method(method),
+      method(method >= 1 && method <= 3 ? method : 1),
       mRutherford(ScreenedRutherfordScatteringAngle::getSRSA(elm.getAtomicNumber())),
       mBrowning(BrowningEmpiricalCrossSection::getBECS(elm.getAtomicNumber())),
       extrapolateBelowEnergy(method == 1 ? ToSI::eV(50.) : ToSI::eV(100.)),
       mSpwem(NISTMottScatteringAngle::getNISTMSA(elm.getAtomicNumber()).getSpwem()),
       mX1(NISTMottScatteringAngle::getNISTMSA(elm.getAtomicNumber()).getX1()),
       MottXSatMinEnergy(totalCrossSection(extrapolateBelowEnergy)),
-      sfBrowning(MottXSatMinEnergy / mBrowning.totalCrossSection(extrapolateBelowEnergy))
+      sfBrowning(MottXSatMinEnergy / mBrowning.totalCrossSection(extrapolateBelowEnergy)),
+      name(StringT("CrossSection[NIST-Mott, ") + StringT(mElement.toAbbrev()) + "]")
    {
       //loadData(elm.getAtomicNumber());
-      if (!(method >= 1 && method <= 3))
-         printf("NISTMottRS::setMethod: Invalid NISTMottRS method: method must = 1, 2, or 3.");
-      sprintf(name, "CrossSection[NIST-Mott, %s]", mElement.toAbbrev());
+      //if (!(method >= 1 && method <= 3))
+      //   printf("NISTMottRS::setMethod: Invalid NISTMottRS method: method must = 1, 2, or 3.");
    }
 
    const char* NISTMottRS::toString()
    {
-      return name;
+      return name.c_str();
    }
 
    const ElementT& NISTMottRS::getElement() const
@@ -170,301 +170,8 @@ namespace NISTMottRS
    //   MottXSatMinEnergy = totalCrossSection(extrapolateBelowEnergy);
    //}
 
-   //const NISTMottRS NMRS1_1(Element::H, 1);
-   //const NISTMottRS NMRS2_1(Element::He, 1);
-   //const NISTMottRS NMRS3_1(Element::Li, 1);
-   //const NISTMottRS NMRS4_1(Element::Be, 1);
-   //const NISTMottRS NMRS5_1(Element::B, 1);
-   //const NISTMottRS NMRS6_1(Element::C, 1);
-   //const NISTMottRS NMRS7_1(Element::N, 1);
-   //const NISTMottRS NMRS8_1(Element::O, 1);
-   //const NISTMottRS NMRS9_1(Element::F, 1);
-   //const NISTMottRS NMRS10_1(Element::Ne, 1);
-   //const NISTMottRS NMRS11_1(Element::Na, 1);
-   //const NISTMottRS NMRS12_1(Element::Mg, 1);
-   //const NISTMottRS NMRS13_1(Element::Al, 1);
-   //const NISTMottRS NMRS14_1(Element::Si, 1);
-   //const NISTMottRS NMRS15_1(Element::P, 1);
-   //const NISTMottRS NMRS16_1(Element::S, 1);
-   //const NISTMottRS NMRS17_1(Element::Cl, 1);
-   //const NISTMottRS NMRS18_1(Element::Ar, 1);
-   //const NISTMottRS NMRS19_1(Element::K, 1);
-   //const NISTMottRS NMRS20_1(Element::Ca, 1);
-   //const NISTMottRS NMRS21_1(Element::Sc, 1);
-   //const NISTMottRS NMRS22_1(Element::Ti, 1);
-   //const NISTMottRS NMRS23_1(Element::V, 1);
-   //const NISTMottRS NMRS24_1(Element::Cr, 1);
-   //const NISTMottRS NMRS25_1(Element::Mn, 1);
-   //const NISTMottRS NMRS26_1(Element::Fe, 1);
-   //const NISTMottRS NMRS27_1(Element::Co, 1);
-   //const NISTMottRS NMRS28_1(Element::Ni, 1);
-   //const NISTMottRS NMRS29_1(Element::Cu, 1);
-   //const NISTMottRS NMRS30_1(Element::Zn, 1);
-   //const NISTMottRS NMRS31_1(Element::Ga, 1);
-   //const NISTMottRS NMRS32_1(Element::Ge, 1);
-   //const NISTMottRS NMRS33_1(Element::As, 1);
-   //const NISTMottRS NMRS34_1(Element::Se, 1);
-   //const NISTMottRS NMRS35_1(Element::Br, 1);
-   //const NISTMottRS NMRS36_1(Element::Kr, 1);
-   //const NISTMottRS NMRS37_1(Element::Rb, 1);
-   //const NISTMottRS NMRS38_1(Element::Sr, 1);
-   //const NISTMottRS NMRS39_1(Element::Y, 1);
-   //const NISTMottRS NMRS40_1(Element::Zr, 1);
-   //const NISTMottRS NMRS41_1(Element::Nb, 1);
-   //const NISTMottRS NMRS42_1(Element::Mo, 1);
-   //const NISTMottRS NMRS43_1(Element::Tc, 1);
-   //const NISTMottRS NMRS44_1(Element::Ru, 1);
-   //const NISTMottRS NMRS45_1(Element::Rh, 1);
-   //const NISTMottRS NMRS46_1(Element::Pd, 1);
-   //const NISTMottRS NMRS47_1(Element::Ag, 1);
-   //const NISTMottRS NMRS48_1(Element::Cd, 1);
-   //const NISTMottRS NMRS49_1(Element::In, 1);
-   //const NISTMottRS NMRS50_1(Element::Sn, 1);
-   //const NISTMottRS NMRS51_1(Element::Sb, 1);
-   //const NISTMottRS NMRS52_1(Element::Te, 1);
-   //const NISTMottRS NMRS53_1(Element::I, 1);
-   //const NISTMottRS NMRS54_1(Element::Xe, 1);
-   //const NISTMottRS NMRS55_1(Element::Cs, 1);
-   //const NISTMottRS NMRS56_1(Element::Ba, 1);
-   //const NISTMottRS NMRS57_1(Element::La, 1);
-   //const NISTMottRS NMRS58_1(Element::Ce, 1);
-   //const NISTMottRS NMRS59_1(Element::Pr, 1);
-   //const NISTMottRS NMRS60_1(Element::Nd, 1);
-   //const NISTMottRS NMRS61_1(Element::Pm, 1);
-   //const NISTMottRS NMRS62_1(Element::Sm, 1);
-   //const NISTMottRS NMRS63_1(Element::Eu, 1);
-   //const NISTMottRS NMRS64_1(Element::Gd, 1);
-   //const NISTMottRS NMRS65_1(Element::Tb, 1);
-   //const NISTMottRS NMRS66_1(Element::Dy, 1);
-   //const NISTMottRS NMRS67_1(Element::Ho, 1);
-   //const NISTMottRS NMRS68_1(Element::Er, 1);
-   //const NISTMottRS NMRS69_1(Element::Tm, 1);
-   //const NISTMottRS NMRS70_1(Element::Yb, 1);
-   //const NISTMottRS NMRS71_1(Element::Lu, 1);
-   //const NISTMottRS NMRS72_1(Element::Hf, 1);
-   //const NISTMottRS NMRS73_1(Element::Ta, 1);
-   //const NISTMottRS NMRS74_1(Element::W, 1);
-   //const NISTMottRS NMRS75_1(Element::Re, 1);
-   //const NISTMottRS NMRS76_1(Element::Os, 1);
-   //const NISTMottRS NMRS77_1(Element::Ir, 1);
-   //const NISTMottRS NMRS78_1(Element::Pt, 1);
-   //const NISTMottRS NMRS79_1(Element::Au, 1);
-   //const NISTMottRS NMRS80_1(Element::Hg, 1);
-   //const NISTMottRS NMRS81_1(Element::Tl, 1);
-   //const NISTMottRS NMRS82_1(Element::Pb, 1);
-   //const NISTMottRS NMRS83_1(Element::Bi, 1);
-   //const NISTMottRS NMRS84_1(Element::Po, 1);
-   //const NISTMottRS NMRS85_1(Element::At, 1);
-   //const NISTMottRS NMRS86_1(Element::Rn, 1);
-   //const NISTMottRS NMRS87_1(Element::Fr, 1);
-   //const NISTMottRS NMRS88_1(Element::Ra, 1);
-   //const NISTMottRS NMRS89_1(Element::Ac, 1);
-   //const NISTMottRS NMRS90_1(Element::Th, 1);
-   //const NISTMottRS NMRS91_1(Element::Pa, 1);
-   //const NISTMottRS NMRS92_1(Element::U, 1);
-   //const NISTMottRS NMRS93_1(Element::Np, 1);
-   //const NISTMottRS NMRS94_1(Element::Pu, 1);
-   //const NISTMottRS NMRS95_1(Element::Am, 1);
-   //const NISTMottRS NMRS96_1(Element::Cm, 1);
-
    const NISTMottRS* mScatter1[113];
-
-   //const NISTMottRS NMRS1_2(Element::H, 2);
-   //const NISTMottRS NMRS2_2(Element::He, 2);
-   //const NISTMottRS NMRS3_2(Element::Li, 2);
-   //const NISTMottRS NMRS4_2(Element::Be, 2);
-   //const NISTMottRS NMRS5_2(Element::B, 2);
-   //const NISTMottRS NMRS6_2(Element::C, 2);
-   //const NISTMottRS NMRS7_2(Element::N, 2);
-   //const NISTMottRS NMRS8_2(Element::O, 2);
-   //const NISTMottRS NMRS9_2(Element::F, 2);
-   //const NISTMottRS NMRS10_2(Element::Ne, 2);
-   //const NISTMottRS NMRS11_2(Element::Na, 2);
-   //const NISTMottRS NMRS12_2(Element::Mg, 2);
-   //const NISTMottRS NMRS13_2(Element::Al, 2);
-   //const NISTMottRS NMRS14_2(Element::Si, 2);
-   //const NISTMottRS NMRS15_2(Element::P, 2);
-   //const NISTMottRS NMRS16_2(Element::S, 2);
-   //const NISTMottRS NMRS17_2(Element::Cl, 2);
-   //const NISTMottRS NMRS18_2(Element::Ar, 2);
-   //const NISTMottRS NMRS19_2(Element::K, 2);
-   //const NISTMottRS NMRS20_2(Element::Ca, 2);
-   //const NISTMottRS NMRS21_2(Element::Sc, 2);
-   //const NISTMottRS NMRS22_2(Element::Ti, 2);
-   //const NISTMottRS NMRS23_2(Element::V, 2);
-   //const NISTMottRS NMRS24_2(Element::Cr, 2);
-   //const NISTMottRS NMRS25_2(Element::Mn, 2);
-   //const NISTMottRS NMRS26_2(Element::Fe, 2);
-   //const NISTMottRS NMRS27_2(Element::Co, 2);
-   //const NISTMottRS NMRS28_2(Element::Ni, 2);
-   //const NISTMottRS NMRS29_2(Element::Cu, 2);
-   //const NISTMottRS NMRS30_2(Element::Zn, 2);
-   //const NISTMottRS NMRS31_2(Element::Ga, 2);
-   //const NISTMottRS NMRS32_2(Element::Ge, 2);
-   //const NISTMottRS NMRS33_2(Element::As, 2);
-   //const NISTMottRS NMRS34_2(Element::Se, 2);
-   //const NISTMottRS NMRS35_2(Element::Br, 2);
-   //const NISTMottRS NMRS36_2(Element::Kr, 2);
-   //const NISTMottRS NMRS37_2(Element::Rb, 2);
-   //const NISTMottRS NMRS38_2(Element::Sr, 2);
-   //const NISTMottRS NMRS39_2(Element::Y, 2);
-   //const NISTMottRS NMRS40_2(Element::Zr, 2);
-   //const NISTMottRS NMRS41_2(Element::Nb, 2);
-   //const NISTMottRS NMRS42_2(Element::Mo, 2);
-   //const NISTMottRS NMRS43_2(Element::Tc, 2);
-   //const NISTMottRS NMRS44_2(Element::Ru, 2);
-   //const NISTMottRS NMRS45_2(Element::Rh, 2);
-   //const NISTMottRS NMRS46_2(Element::Pd, 2);
-   //const NISTMottRS NMRS47_2(Element::Ag, 2);
-   //const NISTMottRS NMRS48_2(Element::Cd, 2);
-   //const NISTMottRS NMRS49_2(Element::In, 2);
-   //const NISTMottRS NMRS50_2(Element::Sn, 2);
-   //const NISTMottRS NMRS51_2(Element::Sb, 2);
-   //const NISTMottRS NMRS52_2(Element::Te, 2);
-   //const NISTMottRS NMRS53_2(Element::I, 2);
-   //const NISTMottRS NMRS54_2(Element::Xe, 2);
-   //const NISTMottRS NMRS55_2(Element::Cs, 2);
-   //const NISTMottRS NMRS56_2(Element::Ba, 2);
-   //const NISTMottRS NMRS57_2(Element::La, 2);
-   //const NISTMottRS NMRS58_2(Element::Ce, 2);
-   //const NISTMottRS NMRS59_2(Element::Pr, 2);
-   //const NISTMottRS NMRS60_2(Element::Nd, 2);
-   //const NISTMottRS NMRS61_2(Element::Pm, 2);
-   //const NISTMottRS NMRS62_2(Element::Sm, 2);
-   //const NISTMottRS NMRS63_2(Element::Eu, 2);
-   //const NISTMottRS NMRS64_2(Element::Gd, 2);
-   //const NISTMottRS NMRS65_2(Element::Tb, 2);
-   //const NISTMottRS NMRS66_2(Element::Dy, 2);
-   //const NISTMottRS NMRS67_2(Element::Ho, 2);
-   //const NISTMottRS NMRS68_2(Element::Er, 2);
-   //const NISTMottRS NMRS69_2(Element::Tm, 2);
-   //const NISTMottRS NMRS70_2(Element::Yb, 2);
-   //const NISTMottRS NMRS71_2(Element::Lu, 2);
-   //const NISTMottRS NMRS72_2(Element::Hf, 2);
-   //const NISTMottRS NMRS73_2(Element::Ta, 2);
-   //const NISTMottRS NMRS74_2(Element::W, 2);
-   //const NISTMottRS NMRS75_2(Element::Re, 2);
-   //const NISTMottRS NMRS76_2(Element::Os, 2);
-   //const NISTMottRS NMRS77_2(Element::Ir, 2);
-   //const NISTMottRS NMRS78_2(Element::Pt, 2);
-   //const NISTMottRS NMRS79_2(Element::Au, 2);
-   //const NISTMottRS NMRS80_2(Element::Hg, 2);
-   //const NISTMottRS NMRS81_2(Element::Tl, 2);
-   //const NISTMottRS NMRS82_2(Element::Pb, 2);
-   //const NISTMottRS NMRS83_2(Element::Bi, 2);
-   //const NISTMottRS NMRS84_2(Element::Po, 2);
-   //const NISTMottRS NMRS85_2(Element::At, 2);
-   //const NISTMottRS NMRS86_2(Element::Rn, 2);
-   //const NISTMottRS NMRS87_2(Element::Fr, 2);
-   //const NISTMottRS NMRS88_2(Element::Ra, 2);
-   //const NISTMottRS NMRS89_2(Element::Ac, 2);
-   //const NISTMottRS NMRS90_2(Element::Th, 2);
-   //const NISTMottRS NMRS91_2(Element::Pa, 2);
-   //const NISTMottRS NMRS92_2(Element::U, 2);
-   //const NISTMottRS NMRS93_2(Element::Np, 2);
-   //const NISTMottRS NMRS94_2(Element::Pu, 2);
-   //const NISTMottRS NMRS95_2(Element::Am, 2);
-   //const NISTMottRS NMRS96_2(Element::Cm, 2);
-
    const NISTMottRS* mScatter2[113];
-
-   //const NISTMottRS NMRS1_3(Element::H, 3);
-   //const NISTMottRS NMRS2_3(Element::He, 3);
-   //const NISTMottRS NMRS3_3(Element::Li, 3);
-   //const NISTMottRS NMRS4_3(Element::Be, 3);
-   //const NISTMottRS NMRS5_3(Element::B, 3);
-   //const NISTMottRS NMRS6_3(Element::C, 3);
-   //const NISTMottRS NMRS7_3(Element::N, 3);
-   //const NISTMottRS NMRS8_3(Element::O, 3);
-   //const NISTMottRS NMRS9_3(Element::F, 3);
-   //const NISTMottRS NMRS10_3(Element::Ne, 3);
-   //const NISTMottRS NMRS11_3(Element::Na, 3);
-   //const NISTMottRS NMRS12_3(Element::Mg, 3);
-   //const NISTMottRS NMRS13_3(Element::Al, 3);
-   //const NISTMottRS NMRS14_3(Element::Si, 3);
-   //const NISTMottRS NMRS15_3(Element::P, 3);
-   //const NISTMottRS NMRS16_3(Element::S, 3);
-   //const NISTMottRS NMRS17_3(Element::Cl, 3);
-   //const NISTMottRS NMRS18_3(Element::Ar, 3);
-   //const NISTMottRS NMRS19_3(Element::K, 3);
-   //const NISTMottRS NMRS20_3(Element::Ca, 3);
-   //const NISTMottRS NMRS21_3(Element::Sc, 3);
-   //const NISTMottRS NMRS22_3(Element::Ti, 3);
-   //const NISTMottRS NMRS23_3(Element::V, 3);
-   //const NISTMottRS NMRS24_3(Element::Cr, 3);
-   //const NISTMottRS NMRS25_3(Element::Mn, 3);
-   //const NISTMottRS NMRS26_3(Element::Fe, 3);
-   //const NISTMottRS NMRS27_3(Element::Co, 3);
-   //const NISTMottRS NMRS28_3(Element::Ni, 3);
-   //const NISTMottRS NMRS29_3(Element::Cu, 3);
-   //const NISTMottRS NMRS30_3(Element::Zn, 3);
-   //const NISTMottRS NMRS31_3(Element::Ga, 3);
-   //const NISTMottRS NMRS32_3(Element::Ge, 3);
-   //const NISTMottRS NMRS33_3(Element::As, 3);
-   //const NISTMottRS NMRS34_3(Element::Se, 3);
-   //const NISTMottRS NMRS35_3(Element::Br, 3);
-   //const NISTMottRS NMRS36_3(Element::Kr, 3);
-   //const NISTMottRS NMRS37_3(Element::Rb, 3);
-   //const NISTMottRS NMRS38_3(Element::Sr, 3);
-   //const NISTMottRS NMRS39_3(Element::Y, 3);
-   //const NISTMottRS NMRS40_3(Element::Zr, 3);
-   //const NISTMottRS NMRS41_3(Element::Nb, 3);
-   //const NISTMottRS NMRS42_3(Element::Mo, 3);
-   //const NISTMottRS NMRS43_3(Element::Tc, 3);
-   //const NISTMottRS NMRS44_3(Element::Ru, 3);
-   //const NISTMottRS NMRS45_3(Element::Rh, 3);
-   //const NISTMottRS NMRS46_3(Element::Pd, 3);
-   //const NISTMottRS NMRS47_3(Element::Ag, 3);
-   //const NISTMottRS NMRS48_3(Element::Cd, 3);
-   //const NISTMottRS NMRS49_3(Element::In, 3);
-   //const NISTMottRS NMRS50_3(Element::Sn, 3);
-   //const NISTMottRS NMRS51_3(Element::Sb, 3);
-   //const NISTMottRS NMRS52_3(Element::Te, 3);
-   //const NISTMottRS NMRS53_3(Element::I, 3);
-   //const NISTMottRS NMRS54_3(Element::Xe, 3);
-   //const NISTMottRS NMRS55_3(Element::Cs, 3);
-   //const NISTMottRS NMRS56_3(Element::Ba, 3);
-   //const NISTMottRS NMRS57_3(Element::La, 3);
-   //const NISTMottRS NMRS58_3(Element::Ce, 3);
-   //const NISTMottRS NMRS59_3(Element::Pr, 3);
-   //const NISTMottRS NMRS60_3(Element::Nd, 3);
-   //const NISTMottRS NMRS61_3(Element::Pm, 3);
-   //const NISTMottRS NMRS62_3(Element::Sm, 3);
-   //const NISTMottRS NMRS63_3(Element::Eu, 3);
-   //const NISTMottRS NMRS64_3(Element::Gd, 3);
-   //const NISTMottRS NMRS65_3(Element::Tb, 3);
-   //const NISTMottRS NMRS66_3(Element::Dy, 3);
-   //const NISTMottRS NMRS67_3(Element::Ho, 3);
-   //const NISTMottRS NMRS68_3(Element::Er, 3);
-   //const NISTMottRS NMRS69_3(Element::Tm, 3);
-   //const NISTMottRS NMRS70_3(Element::Yb, 3);
-   //const NISTMottRS NMRS71_3(Element::Lu, 3);
-   //const NISTMottRS NMRS72_3(Element::Hf, 3);
-   //const NISTMottRS NMRS73_3(Element::Ta, 3);
-   //const NISTMottRS NMRS74_3(Element::W, 3);
-   //const NISTMottRS NMRS75_3(Element::Re, 3);
-   //const NISTMottRS NMRS76_3(Element::Os, 3);
-   //const NISTMottRS NMRS77_3(Element::Ir, 3);
-   //const NISTMottRS NMRS78_3(Element::Pt, 3);
-   //const NISTMottRS NMRS79_3(Element::Au, 3);
-   //const NISTMottRS NMRS80_3(Element::Hg, 3);
-   //const NISTMottRS NMRS81_3(Element::Tl, 3);
-   //const NISTMottRS NMRS82_3(Element::Pb, 3);
-   //const NISTMottRS NMRS83_3(Element::Bi, 3);
-   //const NISTMottRS NMRS84_3(Element::Po, 3);
-   //const NISTMottRS NMRS85_3(Element::At, 3);
-   //const NISTMottRS NMRS86_3(Element::Rn, 3);
-   //const NISTMottRS NMRS87_3(Element::Fr, 3);
-   //const NISTMottRS NMRS88_3(Element::Ra, 3);
-   //const NISTMottRS NMRS89_3(Element::Ac, 3);
-   //const NISTMottRS NMRS90_3(Element::Th, 3);
-   //const NISTMottRS NMRS91_3(Element::Pa, 3);
-   //const NISTMottRS NMRS92_3(Element::U, 3);
-   //const NISTMottRS NMRS93_3(Element::Np, 3);
-   //const NISTMottRS NMRS94_3(Element::Pu, 3);
-   //const NISTMottRS NMRS95_3(Element::Am, 3);
-   //const NISTMottRS NMRS96_3(Element::Cm, 3);
-
    const NISTMottRS* mScatter3[113];
 
    const NISTMottRS& getNMRS1(int an)

@@ -60,14 +60,15 @@ namespace BackscatterStats
    StringT Datum::toString() const
    {
       StringT sb = 
-         std::to_string(electronID) + "\t" + 
-         std::to_string(trajStep) + "\t" + 
-         std::to_string(mkEeV) + "\t" +
-         std::to_string(mPosition[0]) + "\t" +
-         std::to_string(mPosition[1]) + "\t" +
-         std::to_string(mPosition[2]) + "\t" +
-         std::to_string(mTheta) + "\t" +
-         std::to_string(mPhi);
+         "BackscatterStats: " +
+         amp::to_string(electronID) + "\t" + 
+         amp::to_string(trajStep) + "\t" +
+         amp::to_string(mkEeV) + "\t" +
+         amp::to_string(mPosition[0]) + "\t" +
+         amp::to_string(mPosition[1]) + "\t" +
+         amp::to_string(mPosition[2]) + "\t" +
+         amp::to_string(mTheta) + "\t" +
+         amp::to_string(mPhi);
       //sb.append(electronID);
       //sb.append("\t");
       //sb.append(trajStep);

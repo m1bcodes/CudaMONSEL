@@ -36,7 +36,7 @@ namespace NISTMottRS
       double MottXSatMinEnergy;
       double sfBrowning;
 
-      char name[100];
+      StringT name;
    };
 
    class NISTMottRSFactory : public RandomizedScatterFactoryT

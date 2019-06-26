@@ -14,7 +14,7 @@
 namespace Strategy
 {
    typedef std::map<StringT, const AlgorithmClassT*> AlgorithmMap;
-   typedef std::set<StringT> AlgorithmNames;
+   //typedef std::set<StringT> AlgorithmNames;
    typedef std::set<const AlgorithmClassT*> Algorithms;
 
    //struct CompareFcn
@@ -41,7 +41,7 @@ namespace Strategy
    {
    public:
       const AlgorithmMap& getStrategyMap() const;
-      const AlgorithmNames listAlgorithmClasses() const;
+      //const AlgorithmNames listAlgorithmClasses() const;
 
       Strategy();
 

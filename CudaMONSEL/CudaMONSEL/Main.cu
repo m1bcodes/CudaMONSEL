@@ -26,6 +26,7 @@
 
 #include "gov\nist\microanalysis\EPQLibrary\EdgeEnergy.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\MaterialFactory.cuh"
+#include "gov\nist\microanalysis\EPQLibrary\ScreenedRutherfordScatteringAngle.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\CzyzewskiMottScatteringAngle.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\GasScatteringCrossSection.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\NISTMottScatteringAngle.cuh"
@@ -152,6 +153,7 @@ void CPUTests()
    Element::init();
    MaterialFactory::init();
 
+   ScreenedRutherfordScatteringAngle::init();
    CzyzewskiMottScatteringAngle::init();
    NISTMottScatteringAngle::init();
    GasScatteringCrossSection::init();
@@ -225,6 +227,10 @@ void CPUTests()
 
 int main()
 {
+   //testKernel1 << <1, 1 >> >();
+   //checkCudaErrors(cudaDeviceSynchronize());
+   //checkCudaErrors(cudaGetLastError());
+
    CPUTests();
    GPUTest();
 

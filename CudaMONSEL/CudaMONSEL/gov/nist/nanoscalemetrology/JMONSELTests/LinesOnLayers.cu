@@ -40,7 +40,7 @@ namespace LinesOnLayers
       //new File(dest).mkdirs();
       //String filename = DefaultOutput + PathSep + "output.txt";
 
-      StringT output = "Output will be to file: ";
+      std::string output = "Output will be to file: ";
 
       const int seed = rand();
       srand(seed);
@@ -304,12 +304,8 @@ namespace LinesOnLayers
       const double xstop = xbottom + 100.5;
       const double xfinestart = xtop - 20.5;
       double xfinestop;
-      if (thetar < 0.) {
-         xfinestop = xtop + 20.5;
-      }
-      else {
-         xfinestop = wnm / 2. + 20.5;
-      }
+      if (thetar < 0.) xfinestop = xtop + 20.5;
+      else xfinestop = wnm / 2. + 20.5;
 
       VectorXd xvals;
       double deltax = 5.;
@@ -394,7 +390,7 @@ namespace LinesOnLayers
                double bsf = back.backscatterFraction() - SEf;
                output += "\n" + std::to_string(beamEeV) + " " + std::to_string(xnm) + " " + std::to_string(ynm) + " " + std::to_string(bsf) + " " + std::to_string(SEf);
 
-               StringT tmp("\n" + std::to_string(beamEeV) + " " + std::to_string(xnm) + " " + std::to_string(ynm) + " " + std::to_string(bsf) + " " + std::to_string(SEf));
+               std::string tmp("\n" + std::to_string(beamEeV) + " " + std::to_string(xnm) + " " + std::to_string(ynm) + " " + std::to_string(bsf) + " " + std::to_string(SEf));
                printf("%s", tmp.c_str());
 
                monte.removeActionListener(back);

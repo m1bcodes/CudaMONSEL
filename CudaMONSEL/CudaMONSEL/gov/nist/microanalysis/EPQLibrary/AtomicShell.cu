@@ -624,7 +624,7 @@ namespace AtomicShell
    {
       StringT str(s);
       for (int i = 0; i < str.size(); i++) {
-         str.at(i) = toupper(str.at(i));
+         str[i] = toupper(str.at(i));
       }
       if (str == "K")
          return KFamily;

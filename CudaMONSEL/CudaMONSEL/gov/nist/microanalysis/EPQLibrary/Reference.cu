@@ -2,50 +2,54 @@
 
 namespace Reference
 {
-   Author::Author(StringT first, StringT last, StringT affiliation) : mFirst(first), mLast(last), mAffiliation(affiliation)
+   __host__ __device__ Reference::Reference()
    {
    }
 
-   Author::Author(StringT first, StringT last) : mFirst(first), mLast(last)
+   __host__ __device__ Author::Author(StringT first, StringT last, StringT affiliation) : mFirst(first), mLast(last), mAffiliation(affiliation)
    {
    }
 
-   Author::Author(const Author& other) : mFirst(other.mFirst), mLast(other.mLast), mAffiliation(other.mAffiliation)
+   __host__ __device__ Author::Author(StringT first, StringT last) : mFirst(first), mLast(last)
    {
    }
 
-   StringT Author::getAuthor() const
+   __host__ __device__ Author::Author(const Author& other) : mFirst(other.mFirst), mLast(other.mLast), mAffiliation(other.mAffiliation)
+   {
+   }
+
+   __host__ __device__ StringT Author::getAuthor() const
    {
       return mLast + " " + mFirst.substr(0, 1);
    }
 
-   StringT Author::getAffiliation() const
+   __host__ __device__ StringT Author::getAffiliation() const
    {
       return mAffiliation;
    }
 
-   StringT Author::getFirst() const
+   __host__ __device__ StringT Author::getFirst() const
    {
       return mFirst;
    }
 
-   StringT Author::getLast() const
+   __host__ __device__ StringT Author::getLast() const
    {
       return mLast;
    }
 
-   StringT toString(const AuthorList& authors)
+   __host__ __device__ StringT toString(const AuthorList& authors)
    {
       StringT ret;
       for (int i = 0; i < authors.size(); ++i) {
          if (i != 0)
-            ret.append(i == authors.size() - 1 ? " & " : ", ");
-         ret.append(authors.at(i)->getAuthor());
+            ret += (i == authors.size() - 1 ? " & " : ", ");
+         ret += (authors.at(i)->getAuthor());
       }
       return ret;
    }
 
-   StringT toAbbrev(const AuthorList& authors)
+   __host__ __device__ StringT toAbbrev(const AuthorList& authors)
    {
       if (authors.size() > 1)
          return authors.at(0)->getLast() + " et al";
@@ -55,16 +59,14 @@ namespace Reference
          return "";
    }
 
-   Reference::Reference()
-   {
-   }
-
    // Some prolific establishments
-   const StringT ONERA = "Office National d'Etudes et de Recherche Aerospatiales";
-   const StringT NIST = "National Institute of Standards & Technology";
-   const StringT NBS = "National Bureau of Standards";
-   const StringT LehighU = "Lehigh University";
-   const StringT Eindhoven = "University of Technology, Eindhoven";
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+#else
+   const StringT ONERA("Office National d'Etudes et de Recherche Aerospatiales");
+   const StringT NIST("National Institute of Standards & Technology");
+   const StringT NBS("National Bureau of Standards");
+   const StringT LehighU("Lehigh University");
+   const StringT Eindhoven("University of Technology, Eindhoven");
 
    // Some prolific authors
    const Author DNewbury("Dale", "Newbury", NIST);
@@ -117,21 +119,22 @@ namespace Reference
    const Author Czyzewski("", "Czyzewski", "");
    const Author MacCallum("", "MacCallum", "");
    const Author Bote("David", "Bote", "Facultat de Física (ECM), Universitat de Barcelona, Diagonal 647, 08028 Barcelona, Spain");
+#endif
 
-   Journal::Journal(StringT name, StringT abbrev, StringT publisher) : mName(name), mAbbreviation(abbrev), mPublisher(publisher)
+   __host__ __device__ Journal::Journal(StringT name, StringT abbrev, StringT publisher) : mName(name), mAbbreviation(abbrev), mPublisher(publisher)
    {
    }
 
-   Journal::Journal(const Journal& other) : mName(other.mName), mAbbreviation(other.mAbbreviation), mPublisher(other.mPublisher)
+   __host__ __device__ Journal::Journal(const Journal& other) : mName(other.mName), mAbbreviation(other.mAbbreviation), mPublisher(other.mPublisher)
    {
    }
 
-   StringT Journal::getName()
+   __host__ __device__ StringT Journal::getName()
    {
       return mName;
    }
 
-   StringT Journal::getPublisher()
+   __host__ __device__ StringT Journal::getPublisher()
    {
       return mPublisher;
    }
@@ -149,25 +152,28 @@ namespace Reference
    const Journal PhysRevA("Physical Review A", "Phys. Rev. A", "American Physical Society");
    const Journal ApplPhysLett("Applied Physics Letters", "Appl. Phys. Let.", "American Physical Society");
 
-
-   JournalArticle::JournalArticle(StringT title, const Journal& journal, StringT vol, StringT pages, int year, const Author* authors[], int len) : Reference(), mAuthors(authors, authors + len), mJournal(journal), mTitle(title), mVolume(vol), mPages(pages), mYear(year)
+   __host__ __device__ JournalArticle::JournalArticle(StringT title, const Journal& journal, StringT vol, StringT pages, int year, const Author* authors[], int len) : Reference(), mAuthors(authors, authors + len), mJournal(journal), mTitle(title), mVolume(vol), mPages(pages), mYear(year)
    {
    }
 
-   JournalArticle::JournalArticle(const Journal& journal, StringT vol, StringT pages, int year, const Author* authors[], int len) : mJournal(journal), mAuthors(authors, authors + len), mVolume(vol), mPages(pages), mYear(year)
+   __host__ __device__ JournalArticle::JournalArticle(const Journal& journal, StringT vol, StringT pages, int year, const Author* authors[], int len) : mJournal(journal), mAuthors(authors, authors + len), mVolume(vol), mPages(pages), mYear(year)
    {
    }
 
-   StringT JournalArticle::getShortForm() const
+   __host__ __device__ StringT JournalArticle::getShortForm() const
    {
       //return String.format("%s. %s %s p%s (%d)", Author.toAbbrev(mAuthors), mJournal.mAbbreviation, mVolume, mPages, mYear);
-      return toAbbrev(mAuthors) + " " + mVolume + " " + mPages + " " + std::to_string(mYear); //missing abbrev
+      char yearstr[8];
+      amp::IToA(mYear, yearstr);
+      return toAbbrev(mAuthors) + " " + mVolume + " " + mPages + " " + yearstr; //missing abbrev
    }
 
-   StringT JournalArticle::getLongForm() const
+   __host__ __device__ StringT JournalArticle::getLongForm() const
    {
       //return Author::toString(mAuthors) + " " + mTitle + " " + mJournal.mAbbreviation + " " + mVolume + std::to_string(mPages) + " " + std::to_string(mYear);
-      return toString(mAuthors) + " " + mTitle + " " + mVolume + mPages + " " + std::to_string(mYear);
+      char yearstr[8];
+      amp::IToA(mYear, yearstr);
+      return toString(mAuthors) + " " + mTitle + " " + mVolume + mPages + " " + yearstr;
    }
 
    const Author* auLoveScott1978[] = { &GLove, &VScott };
@@ -179,50 +185,54 @@ namespace Reference
    const Author* alProza96Extended[] = { &GBastin, &Oberndorff, &JDijkstra, &HHeijligers };
    JournalArticle Proza96Extended(XRaySpec, "30", "p 382-387", 2001, alProza96Extended, 4);
 
-   Book::Book(StringT title, StringT publisher, int year, const Author* authors[], int len) : mTitle(title), mPublisher(publisher), mYear(year), mAuthors(authors, authors + len)
+   __host__ __device__ Book::Book(StringT title, StringT publisher, int year, const Author* authors[], int len) : mTitle(title), mPublisher(publisher), mYear(year), mAuthors(authors, authors + len)
    {
    }
 
-   StringT Book::GetTitle() const
+   __host__ __device__ StringT Book::GetTitle() const
    {
       return mTitle;
    }
 
-   StringT Book::GetPublisher() const
+   __host__ __device__ StringT Book::GetPublisher() const
    {
       return mPublisher;
    }
 
-   int Book::GetYear() const
+   __host__ __device__ int Book::GetYear() const
    {
       return mYear;
    }
 
-   const AuthorList& Book::GetAuthors() const
+   __host__ __device__ const AuthorList& Book::GetAuthors() const
    {
       return mAuthors;
    }
 
-   StringT Book::getShortForm() const
+   __host__ __device__ StringT Book::getShortForm() const
    {
-      return toAbbrev(mAuthors) + mTitle + mPublisher + std::to_string(mYear);
+      char yearstr[8];
+      amp::IToA(mYear, yearstr);
+      return toAbbrev(mAuthors) + mTitle + mPublisher + yearstr;
    }
 
-   StringT Book::getLongForm() const
+   __host__ __device__ StringT Book::getLongForm() const
    {
-      return toString(mAuthors) + mTitle + mPublisher + std::to_string(mYear);
+      char yearstr[8];
+      amp::IToA(mYear, yearstr);
+      return toString(mAuthors) + mTitle + mPublisher + yearstr;
    }
 
-   Program::Program(StringT title, StringT version, const Author* authors[], int len) : mTitle(title), mVersion(version), mAuthors(authors, authors + len)
+   __host__ __device__ Program::Program(StringT title, StringT version, const Author* authors[], int len) : mTitle(title), mVersion(version), mAuthors(authors, authors + len)
    {
    }
 
-   StringT Program::getShortForm() const
+   __host__ __device__ StringT Program::getShortForm() const
    {
       return toAbbrev(mAuthors) + mTitle + mVersion;
    }
 
-   StringT Program::getLongForm() const
+   __host__ __device__ StringT Program::getLongForm() const
    {
       return toString(mAuthors) + mTitle + mVersion;
    }
@@ -266,27 +276,31 @@ namespace Reference
    const Author* alHenke1993[] { &BHenke, &EGullikson, &JDavis };
    const JournalArticle Henke1993("X-ray interactions: photoabsorption, scattering, transmission, and reflection at E=50-30000 eV, Z=1-92", AtDatNucData, "54", "181-342", 1993, alHenke1993, 3);
 
-   BookChapter::BookChapter(const Book& book, StringT pages, const Author* authors[], int len) : mBook(book), mPages(pages), mAuthors(authors, authors + len)
+   __host__ __device__ BookChapter::BookChapter(const Book& book, StringT pages, const Author* authors[], int len) : mBook(book), mPages(pages), mAuthors(authors, authors + len)
    {
    }
 
-   BookChapter::BookChapter(const Book& book, const Author* authors[], int len) : mBook(book), mAuthors(authors, authors + len)
+   __host__ __device__ BookChapter::BookChapter(const Book& book, const Author* authors[], int len) : mBook(book), mAuthors(authors, authors + len)
    {
    }
 
-   StringT BookChapter::getPages() const
+   __host__ __device__ StringT BookChapter::getPages() const
    {
       return mPages;
    }
 
-   StringT BookChapter::getShortForm() const
+   __host__ __device__ StringT BookChapter::getShortForm() const
    {
-      return toAbbrev(mAuthors) + mBook.GetTitle() + toAbbrev(mBook.GetAuthors()) + mBook.GetPublisher() + std::to_string(mBook.GetYear());
+      char yearstr[8];
+      amp::IToA(mBook.GetYear(), yearstr);
+      return toAbbrev(mAuthors) + mBook.GetTitle() + toAbbrev(mBook.GetAuthors()) + mBook.GetPublisher() + yearstr;
    }
 
-   StringT BookChapter::getLongForm() const
+   __host__ __device__ StringT BookChapter::getLongForm() const
    {
-      return toString(mAuthors) + mBook.GetTitle() + toString(mBook.GetAuthors()) + mBook.GetPublisher() + std::to_string(mBook.GetYear());
+      char yearstr[8];
+      amp::IToA(mBook.GetYear(), yearstr);
+      return toString(mAuthors) + mBook.GetTitle() + toString(mBook.GetAuthors()) + mBook.GetPublisher() + yearstr;
    }
 
    const Author* AuthorPAPinEPQ[] = { &JPouchou, &FPichoir };
@@ -302,33 +316,41 @@ namespace Reference
    //   return cal.getTime();
    //}
 
-   WebSite::WebSite(StringT url, StringT title, StringT date, const Author* authors[], int len) : mUrl(url), mTitle(title), mDate(date), mAuthors(authors, authors + len)
+   __host__ __device__ WebSite::WebSite(StringT url, StringT title, StringT date, const Author* authors[], int len) : mUrl(url), mTitle(title), mDate(date), mAuthors(authors, authors + len)
    {
    }
 
-   StringT WebSite::getShortForm() const
+   __host__ __device__ StringT WebSite::getShortForm() const
    {
       return mUrl;
    }
 
-   StringT WebSite::getLongForm() const
+   __host__ __device__ StringT WebSite::getLongForm() const
    {
       return toString(mAuthors) + ". " + mTitle + "[" + mUrl + " on " + mDate + "]";
    }
 
-   CrudeReference::CrudeReference(StringT ref) : mReference(ref)
+   __host__ __device__ CrudeReference::CrudeReference()
    {
    }
 
-   StringT CrudeReference::getShortForm() const
+   __host__ __device__ CrudeReference::CrudeReference(StringT ref) : mReference(ref)
+   {
+   }
+
+   __host__ __device__ StringT CrudeReference::getShortForm() const
    {
       return mReference;
    }
 
-   StringT CrudeReference::getLongForm() const
+   __host__ __device__ StringT CrudeReference::getLongForm() const
    {
       return mReference;
    }
 
-   const CrudeReference NullReference("-");
+//#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+//   __device__ const CrudeReference NullReference();
+//#else
+//   const CrudeReference NullReference;
+//#endif
 }

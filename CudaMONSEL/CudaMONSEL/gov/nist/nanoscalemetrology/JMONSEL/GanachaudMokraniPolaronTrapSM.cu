@@ -35,6 +35,6 @@ namespace GanachaudMokraniPolaronTrapSM
 
    StringT GanachaudMokraniPolaronTrapSM::toString() const
    {
-      return "FittedInelSM(" + std::to_string(prefactor) + "," + std::to_string(extinction) + "," + std::to_string(CUTOFF) + ")";
+      return "FittedInelSM(" + amp::to_string(prefactor) + "," + amp::to_string(extinction) + "," + amp::to_string(CUTOFF) + ")";
    }
 }

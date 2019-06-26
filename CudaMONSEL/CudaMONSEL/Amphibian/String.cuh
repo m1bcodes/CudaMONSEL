@@ -39,9 +39,12 @@ namespace amp
 
       // element access
       __host__ __device__ const char& at(unsigned int) const;
+      __host__ __device__ char& operator[](unsigned int);
+      __host__ __device__ char* data();
 
       // modifiers
       __host__ __device__ string& operator+=(const string&);
+      __host__ __device__ string& operator+=(const char*);
       __host__ __device__ string& operator+=(const char);
 
       // string op
@@ -96,6 +99,9 @@ namespace amp
       return res*mult;
    }
 
+   __host__ __device__ string to_string(int d);
+   __host__ __device__ string to_string(double d);
+
    typedef bool(*pStrCmp)(string&, string&);
    __host__ __device__ bool equal(const string&, const string&);
    __host__ __device__ bool equal(char const * const a, char const * const b);
@@ -119,6 +125,7 @@ namespace amp
 
    __host__ __device__ string operator+(const string&, const string&);
    __host__ __device__ string operator+(const string&, const char *);
+   __host__ __device__ string operator+(const char *, const string&);
 }
 
 //__global__ void kernel(int n)

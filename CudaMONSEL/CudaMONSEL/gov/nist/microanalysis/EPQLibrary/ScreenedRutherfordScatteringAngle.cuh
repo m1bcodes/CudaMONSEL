@@ -39,7 +39,7 @@ namespace ScreenedRutherfordScatteringAngle
 
    extern const ScreenedRutherfordScatteringAngle& getSRSA(int an);
 
-   //extern void init();
+   extern void init();
 }
 
 #endif

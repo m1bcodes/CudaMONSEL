@@ -219,7 +219,7 @@ namespace amp
       unsigned int i = 0;
       while (vec[i]) {
          if (i == cap) {
-            printf("vector<T>::size(): over\n");
+            //printf("vector<T>::size(): over\n");
             break;
          }
          ++i;
@@ -247,7 +247,7 @@ namespace amp
       unsigned int i = 0;
       while (vec[i]) {
          if (i == cap) {
-            printf("vector<T>::clear(): over\n");
+            //printf("vector<T>::clear(): over\n");
             break;
          }
          delete vec[i];

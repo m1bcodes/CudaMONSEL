@@ -75,7 +75,7 @@ namespace RegionBase
    {
       const RegionBase* base = this;
       double t = mShape->getFirstIntersection(p0, p1);
-      if (t < 0.0) printf("%s\n", StringT(StringT(mShape->toString()) + " " + std::to_string(t)).c_str());
+      if (t < 0.0) printf("%s %lf\n", mShape->toString().c_str(), t);
       if ((t <= 1.0) && mParent != NULL)
          base = mParent;
 
@@ -89,7 +89,7 @@ namespace RegionBase
       const RegionBase* res = this;
       for (auto subRegion : mSubRegions) {
          double candidate = subRegion->mShape->getFirstIntersection(p0, p1);
-         if (candidate <= 0.0) printf("%s\n", (std::string(subRegion->mShape->toString()) + " " + std::to_string(candidate)).c_str());
+         if (candidate <= 0.0) printf("%s %lf\n", subRegion->mShape->toString().c_str(), candidate);
          if ((candidate <= 1.0) && (candidate < t)) {
             //printf("%s, %s, %.10e\n", subRegion->toString().c_str(), subRegion->mShape->toString().c_str(), candidate);
             t = candidate;

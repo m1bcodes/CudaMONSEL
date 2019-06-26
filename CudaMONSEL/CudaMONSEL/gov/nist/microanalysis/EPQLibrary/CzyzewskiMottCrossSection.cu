@@ -158,8 +158,6 @@ namespace CzyzewskiMottCrossSection
       return d;
    }
 
-   // https://github.com/martinmoene/EngFormat-Cpp.git
-   // checked with JMONSEL version
    void CzyzewskiMottCrossSection::loadTables(int atomicNo)
    {
       std::string name(".\\gov\\nist\\microanalysis\\EPQLibrary\\CzyzewskiXSec/" + (atomicNo < 10 ? "0" + std::to_string(atomicNo) : std::to_string(atomicNo)) + ".dat");
@@ -172,7 +170,7 @@ namespace CzyzewskiMottCrossSection
          char* tok = NULL;
          char* next_token = NULL;
 
-         mValues.resize(SpecialEnergyCount, std::vector<float>(kMeanFreePathIndex + 1, 0));
+         mValues.resize(SpecialEnergyCount, VectorXd(kMeanFreePathIndex + 1, 0));
          std::getline(t, line);
          tok = strtok_s((char*)line.c_str(), delim, &next_token);
          // ensure

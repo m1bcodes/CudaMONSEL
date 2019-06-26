@@ -4,8 +4,12 @@
 #include "gov\nist\microanalysis\EPQLibrary\Material.cuh"
 #include "gov\nist\microanalysis\NISTMonte\Declarations.cuh"
 
+#include "Amphibian\unordered_set.cuh"
+
 namespace SEmaterial
 {
+   typedef amp::unordered_set<double, Hasher::DoubleHashFcn, Comparator::DoubleCompareFcn> Setd;
+
    class SEmaterial : public Material::Material
    {
    protected:

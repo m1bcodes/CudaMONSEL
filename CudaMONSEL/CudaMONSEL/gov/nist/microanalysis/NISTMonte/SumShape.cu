@@ -54,10 +54,10 @@ namespace SumShape
                   if ((ui != INFINITY) && ((uInc == INFINITY) || (ui > uInc))) {
                      double ptbtw0[3];
                      Math2::pointBetween3d(start, pos1, 0.99 * ui, ptbtw0);
-                     if (!shape->contains(ptbtw0)) printf("SumShape::getFirstIntersection1 %s", (shape->toString() + ", " + "(" + std::to_string(pos0[0]) + ", " + std::to_string(start[1]) + ", " + std::to_string(pos1[2]) + ")" + ", " + std::to_string(ui)).c_str());
+                     if (!shape->contains(ptbtw0)) printf("SumShape::getFirstIntersection1 %s%s%s%lf%s%lf%s%lf%s%s%lf\n", shape->toString().c_str(), ", ", "(", pos0[0], ", ", start[1], ", ", pos1[2], ")", ", ", ui);
                      double ptbtw1[3];
                      Math2::pointBetween3d(start, pos1, 1.01 * (ui + 1.0e-3), ptbtw1);
-                     if (shape->contains(ptbtw1)) printf("SumShape::getFirstIntersection2: %s\n", (shape->toString() + ", " + "(" + std::to_string(pos0[0]) + ", " + std::to_string(start[1]) + ", " + std::to_string(pos1[2]) + ")" + ", " + std::to_string(ui)).c_str());
+                     if (shape->contains(ptbtw1)) printf("SumShape::getFirstIntersection2: %s%s%s%lf%s%lf%s%lf%s%s%lf\n", shape->toString().c_str(), ", ", "(", pos0[0], ", ", start[1], ", ", pos1[2], ")", ", ", ui);
                      Math2::pointBetween3d(start, pos1, ui, end);
                      uInc = ui;
                      u = Math2::distance3d(end, pos0) / Math2::distance3d(pos1, pos0);
@@ -125,11 +125,11 @@ namespace SumShape
       bool first = true;
       for (auto shape : mShapes) {
          if (!first)
-            res.append(", ");
-         res.append(shape->toString());
+            res += ", ";
+         res += shape->toString();
          first = false;
       }
-      res.append("]");
+      res += "]";
       return res;
    }
 };

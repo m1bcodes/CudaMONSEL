@@ -12,7 +12,7 @@ namespace RandomizedScatter
       RandomizedScatter(StringT name, const ReferenceT& ref);
 
       void initializeDefaultStrategy() override;
-      AlgorithmClass const * const * RandomizedScatter::getAllImplementations() const;
+      AlgorithmClass const * const * getAllImplementations() const override;
 
    public:
       virtual double randomScatteringAngle(double energy) const = 0;

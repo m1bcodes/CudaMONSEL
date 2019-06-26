@@ -200,11 +200,11 @@ namespace MaterialFactory
       return c >= 48&& c <= 57;
    }
 
-   ElementMap parseCompound(StringT str)
+   ElementMap parseCompound(std::string str)
    {
       ElementMap elMap;
 
-      StringT elStr;
+      std::string elStr;
       char c = (str.length() > 0 ? str.at(0) : INT_MIN);
       for (int i = 0; c != NULL; ++i) {
          c = (i < str.length() ? str.at(i) : NULL);

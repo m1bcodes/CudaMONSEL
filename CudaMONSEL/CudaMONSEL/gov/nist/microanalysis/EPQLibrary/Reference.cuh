@@ -5,28 +5,30 @@
 
 #include "Amphibian\vector.cuh"
 
+#include <cuda_runtime.h>
+
 namespace Reference
 {
    class Reference
    {
    protected:
-      Reference::Reference();
+      __host__ __device__ Reference::Reference();
 
    public:
-      virtual StringT getShortForm() const = 0;
-      virtual StringT getLongForm() const = 0;
+      __host__ __device__ virtual StringT getShortForm() const = 0;
+      __host__ __device__ virtual StringT getLongForm() const = 0;
    };
 
    class Author
    {
    public:
-      Author(StringT first, StringT last, StringT affiliation);
-      Author(StringT first, StringT last);
-      Author(const Author&);
-      StringT getAuthor() const;
-      StringT getAffiliation() const;
-      StringT getFirst() const;
-      StringT getLast() const;
+      __host__ __device__ Author(StringT first, StringT last, StringT affiliation);
+      __host__ __device__ Author(StringT first, StringT last);
+      __host__ __device__ Author(const Author&);
+      __host__ __device__ StringT getAuthor() const;
+      __host__ __device__ StringT getAffiliation() const;
+      __host__ __device__ StringT getFirst() const;
+      __host__ __device__ StringT getLast() const;
 
    private:
       StringT mFirst;
@@ -39,10 +41,10 @@ namespace Reference
    class Journal
    {
    public:
-      Journal(StringT name, StringT abbrev, StringT publisher);
-      Journal(const Journal&);
-      StringT getName();
-      StringT getPublisher();
+      __host__ __device__ Journal(StringT name, StringT abbrev, StringT publisher);
+      __host__ __device__ Journal(const Journal&);
+      __host__ __device__ StringT getName();
+      __host__ __device__ StringT getPublisher();
 
    private:
       StringT mName;
@@ -53,10 +55,10 @@ namespace Reference
    class JournalArticle : public Reference
    {
    public:
-      JournalArticle(StringT title, const Journal& journal, StringT vol, StringT pages, int year, const Author* authors[], int len);
-      JournalArticle(const Journal& journal, StringT vol, StringT pages, int year, const Author* authors[], int len);
-      StringT getShortForm() const override;
-      StringT getLongForm() const override;
+      __host__ __device__ JournalArticle(StringT title, const Journal& journal, StringT vol, StringT pages, int year, const Author* authors[], int len);
+      __host__ __device__ JournalArticle(const Journal& journal, StringT vol, StringT pages, int year, const Author* authors[], int len);
+      __host__ __device__ StringT getShortForm() const override;
+      __host__ __device__ StringT getLongForm() const override;
 
    private:
       StringT mTitle;
@@ -69,75 +71,76 @@ namespace Reference
 
    class Book : public Reference
    {
+   public:
+      __host__ __device__ Book(StringT title, StringT publisher, int year, const Author* authors[], int len);
+      __host__ __device__ StringT GetTitle() const;
+      __host__ __device__ StringT GetPublisher() const;
+      __host__ __device__ int GetYear() const;
+      __host__ __device__ const AuthorList& GetAuthors() const;
+
+      __host__ __device__ StringT getShortForm() const override;
+      __host__ __device__ StringT getLongForm() const override;
+
    private:
       StringT mTitle;
       StringT mPublisher;
       int mYear;
       AuthorList mAuthors;
-
-   public:
-      Book(StringT title, StringT publisher, int year, const Author* authors[], int len);
-      StringT GetTitle() const;
-      StringT GetPublisher() const;
-      int GetYear() const;
-      const AuthorList& GetAuthors() const;
-
-      StringT getShortForm() const override;
-      StringT getLongForm() const override;
    };
 
    class Program : public Reference
    {
+   public:
+      __host__ __device__ Program(StringT title, StringT version, const Author* authors[], int len);
+
+      __host__ __device__ StringT getShortForm() const override;
+      __host__ __device__ StringT getLongForm() const override;
+
    private:
       StringT mTitle;
       StringT mVersion;
       AuthorList mAuthors;
-
-   public:
-      Program(StringT title, StringT version, const Author* authors[], int len);
-
-      StringT getShortForm() const override;
-      StringT getLongForm() const override;
    };
 
    class BookChapter : public Reference
    {
+   public:
+      __host__ __device__ BookChapter(const Book& book, StringT pages, const Author* authors[], int len);
+      __host__ __device__ BookChapter(const Book& book, const Author* authors[], int len);
+
+      __host__ __device__ StringT getPages() const;
+      __host__ __device__ StringT getShortForm() const override;
+      __host__ __device__ StringT getLongForm() const override;
+
    private:
       Book mBook;
       StringT mPages;
       AuthorList mAuthors;
-
-   public:
-      BookChapter(const Book& book, StringT pages, const Author* authors[], int len);
-      BookChapter(const Book& book, const Author* authors[], int len);
-
-      StringT getPages() const;
-      StringT getShortForm() const override;
-      StringT getLongForm() const override;
    };
 
    class WebSite : public Reference
    {
+   public:
+      __host__ __device__ WebSite(StringT url, StringT title, StringT date, const Author* authors[], int len);
+
+      __host__ __device__ StringT getShortForm() const override;
+      __host__ __device__ StringT getLongForm() const override;
+
    private:
       const StringT mUrl;
       const StringT mTitle;
       const StringT mDate;
       const AuthorList mAuthors;
-
-   public:
-      WebSite(StringT url, StringT title, StringT date, const Author* authors[], int len);
-
-      StringT getShortForm() const override;
-      StringT getLongForm() const override;
    };
 
    class CrudeReference : public Reference
    {
    public:
-      CrudeReference(StringT ref);
+      __host__ __device__ CrudeReference();
+      __host__ __device__ CrudeReference(StringT ref);
 
-      StringT getShortForm() const override;
-      StringT getLongForm() const override;
+      __host__ __device__ StringT getShortForm() const override;
+      __host__ __device__ StringT getLongForm() const override;
 
    private:
       StringT mReference;
@@ -227,7 +230,11 @@ namespace Reference
    extern const Book HandbookOfXRaySpectrometry;
 
    // default
-   extern const CrudeReference NullReference;
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+   __device__ const CrudeReference NullReference();
+#else
+   const CrudeReference NullReference;
+#endif
 }
 
 #endif

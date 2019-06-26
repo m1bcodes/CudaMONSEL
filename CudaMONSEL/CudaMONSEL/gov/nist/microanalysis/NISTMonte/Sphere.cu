@@ -114,6 +114,6 @@ namespace Sphere
 
    StringT Sphere::toString() const
    {
-      return "Sphere[" + std::to_string(mCenter[0]) + std::to_string(mCenter[1]) + std::to_string(mCenter[2]) + ", r=" + std::to_string(mRadius) + "]";
+      return "Sphere[" + amp::to_string(mCenter[0]) + amp::to_string(mCenter[1]) + amp::to_string(mCenter[2]) + ", r=" + amp::to_string(mRadius) + "]";
    }
 }

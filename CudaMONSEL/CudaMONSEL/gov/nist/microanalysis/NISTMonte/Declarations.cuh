@@ -1,22 +1,21 @@
 #ifndef _DECLARATIONS_CUH_
 #define _DECLARATIONS_CUH_
 
-#include <string>
+//#include <string>
 #include <set>
 #include <map>
 #include <unordered_map>
 #include <stack>
 
-typedef std::string StringT;
-typedef std::vector<float> VectorXf;
-typedef std::vector<VectorXf> MatrixXf;
+#include "Amphibian\String.cuh"
+
+typedef amp::string StringT;
 typedef std::vector<double> VectorXd;
 typedef std::vector<VectorXd> MatrixXd;
 typedef std::vector<MatrixXd> Matrix3DXd;
 typedef std::vector<Matrix3DXd> Matrix4DXd;
 typedef std::vector<int> VectorXi;
 typedef std::vector<VectorXi> MatrixXi;
-typedef std::set<double> Setd;
 
 namespace Element
 {

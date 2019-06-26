@@ -1,28 +1,3 @@
-Output will be to file: 
- Random number seed: 18281
- 0.823023
- 0.683859
- 0.923734
- 0.800897
- 0.687216
- 0.050600
- 0.666341
- 0.882504
- 0.000488
- 0.977386
-# Trajectories at each landing position: 100
-# Pitch of lines (nm): 180.000000
-# lines: 3
-Line height (nm): 120.000000
-Line bottom width (nm): 80.000000
-Line length (nm): 1000.000000
-Left and right sidewall angles (deg): 3.000000 3.000000
-Left and right top corner radii (nm): 20.000000 20.000000
-Thicknesses of 1st and second layers (nm): 80.000000 200.000000
-Beam landing energies (eV): 500.000000
-Beam size (standard deviation, in nm): 0.500000
-
-beamE (eV)	x(nm)	y (nm)	BSE yield	SE yield
 500.000000 -60.500000 -64.000000 0.030000 2.150000
 500.000000 -55.500000 -64.000000 0.100000 1.890000
 500.000000 -50.500000 -64.000000 0.100000 1.750000
@@ -10263,4 +10238,3 @@ beamE (eV)	x(nm)	y (nm)	BSE yield	SE yield
 500.000000 130.500000 63.000000 0.100000 1.920000
 500.000000 135.500000 63.000000 0.090000 1.980000
 500.000000 140.500000 63.000000 0.090000 2.050000
-865.609423

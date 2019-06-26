@@ -201,9 +201,9 @@ namespace CylindricalShape
    StringT CylindricalShape::toString() const
    {
       StringT res = "Cylinder([";
-      res += std::to_string(mEnd0[0]) + "," + std::to_string(mEnd0[1]) + "," + std::to_string(mEnd0[2]) + "],[";
-      res += std::to_string(mEnd1[0]) + "," + std::to_string(mEnd1[1]) + "," + std::to_string(mEnd1[2]) + "],";
-      res += std::to_string(getRadius()) + ")";
+      res += amp::to_string(mEnd0[0]) + "," + amp::to_string(mEnd0[1]) + "," + amp::to_string(mEnd0[2]) + "],[";
+      res += amp::to_string(mEnd1[0]) + "," + amp::to_string(mEnd1[1]) + "," + amp::to_string(mEnd1[2]) + "],";
+      res += amp::to_string(getRadius()) + ")";
       return res.c_str();
    }
 

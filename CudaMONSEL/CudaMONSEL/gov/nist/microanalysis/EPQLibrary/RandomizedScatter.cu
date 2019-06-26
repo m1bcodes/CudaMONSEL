@@ -12,6 +12,6 @@ namespace RandomizedScatter
 
    AlgorithmClassT const * const * RandomizedScatter::getAllImplementations() const
    {
-      return NULL;
+      return nullptr;
    }
 }

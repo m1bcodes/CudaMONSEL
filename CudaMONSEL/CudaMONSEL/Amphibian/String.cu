@@ -59,23 +59,30 @@ namespace amp
 
    __host__ __device__ string& string::operator+=(const string& other)
    {
-      int i = 0;
-      while (str[i]) ++i;
-      if (i >= MAX_LEN) printf("string too long\n");
-      unsigned int otherlen = other.size();
-      if (i + otherlen + 1 > MAX_LEN) printf("new string too long\n");
-      memcpy(str + i, other.str, sizeof(char) * otherlen);
+      unsigned int len = size(), otherlen = other.size();
+      if (len + otherlen + 1 > MAX_LEN) printf("new string too long\n");
+      memcpy(str + len, other.str, sizeof(char) * otherlen);
+
+      return *this;
+   }
+   
+   __host__ __device__ string& string::operator+=(const char* other)
+   {
+      unsigned int otherlen = 0, len = size();
+      while (other[otherlen]) ++otherlen;
+      if (otherlen >= MAX_LEN) printf("string too long\n");
+
+      if (len + otherlen + 1 > MAX_LEN) printf("new string too long\n");
+      memcpy(str + len, other, sizeof(char) * otherlen);
 
       return *this;
    }
 
    __host__ __device__ string& string::operator+=(const char ch)
    {
-      int i = 0;
-      while (str[i]) ++i;
-      if (i >= MAX_LEN) printf("string too long\n");
-      if (i + 1 + 1 > MAX_LEN) printf("new string too long\n");
-      memcpy(str + i, &ch, sizeof(char));
+      unsigned int len = size();
+      if (len + 2 > MAX_LEN) printf("new string too long\n");
+      memcpy(str + len, &ch, sizeof(char));
 
       return *this;
    }
@@ -103,6 +110,7 @@ namespace amp
    __host__ __device__ string string::substr(size_t pos, size_t len) const
    {
       string newstr;
+      len = len == npos ? size() - pos : len;
       memcpy(newstr.str, str + pos, sizeof(char) * len);
       return newstr;
    }
@@ -110,7 +118,7 @@ namespace amp
    __host__ __device__ int string::size() const
    {
       int c = 0;
-      while (str[c++] != NULL_CHAR);
+      while (str[c]) ++c;
       return c;
    }
 
@@ -122,6 +130,16 @@ namespace amp
    __host__ __device__ const char& string::at(unsigned int i) const
    {
       return str[i];
+   }
+
+   __host__ __device__ char& string::operator[](unsigned int i)
+   {
+      return str[i];
+   }
+
+   __host__ __device__ char* string::data()
+   {
+      return str;
    }
 
    __host__ __device__ void string::copy(char const * s)
@@ -238,6 +256,18 @@ namespace amp
       return res;
    }
 
+   __host__ __device__ string to_string(int d)
+   {
+      string res;
+      IToA(d, res.data());
+      return res;
+   }
+
+   __host__ __device__ string to_string(double d)
+   {
+      return "(double)";
+   }
+
    __host__ __device__ bool equal(const string& a, const string& b)
    {
       if (&a == &b) return true;
@@ -287,6 +317,13 @@ namespace amp
    }
 
    __host__ __device__ string operator+(const string& lhs, const char * rhs)
+   {
+      string newstr(lhs);
+      newstr += rhs;
+      return newstr;
+   }
+
+   __host__ __device__ string operator+(const char * lhs, const string& rhs)
    {
       string newstr(lhs);
       newstr += rhs;

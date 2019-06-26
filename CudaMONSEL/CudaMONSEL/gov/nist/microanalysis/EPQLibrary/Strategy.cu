@@ -7,15 +7,15 @@ namespace Strategy
       return mMap;
    }
 
-   const AlgorithmNames Strategy::listAlgorithmClasses() const
-   {
-      AlgorithmNames ret;
-      for (auto p : mMap) {
-         ret.insert(p.first);
-      }
+   //const AlgorithmNames Strategy::listAlgorithmClasses() const
+   //{
+   //   AlgorithmNames ret;
+   //   for (auto p : mMap) {
+   //      ret.insert(p.first);
+   //   }
 
-      return ret;
-   }
+   //   return ret;
+   //}
 
    Strategy::Strategy()
    {

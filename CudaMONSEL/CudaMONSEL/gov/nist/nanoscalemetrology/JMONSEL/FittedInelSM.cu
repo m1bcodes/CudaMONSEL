@@ -34,6 +34,6 @@ namespace FittedInelSM
 
    StringT FittedInelSM::toString() const
    {
-      return "FittedInelSM(" + std::to_string(eFermi) + "," + std::to_string(energySEgen) + "," + StringT(sdAlg.toString()) + ")";
+      return "FittedInelSM(" + amp::to_string(eFermi) + "," + amp::to_string(energySEgen) + "," + sdAlg.toString() + ")";
    }
 }

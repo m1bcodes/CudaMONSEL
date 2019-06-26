@@ -32,6 +32,6 @@ namespace NUTableInterpolation
       // double[] xmin; // Array of minimum x values
       StringT tableFileName;
 
-      static std::unordered_map<StringT, const NUTableInterpolationT*> instanceMap;
+      static std::unordered_map<StringT, const NUTableInterpolationT*, amp::string_hash, amp::string_cmp> instanceMap;
    };
 }

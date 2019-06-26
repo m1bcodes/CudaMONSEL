@@ -6,7 +6,7 @@
 
 namespace NUTableInterpolation
 {
-   static std::unordered_map<StringT, const NUTableInterpolationT*> instanceMap;
+   static std::unordered_map<StringT, const NUTableInterpolationT*, amp::string_hash, amp::string_cmp> instanceMap;
 
    /**
    * getInstance - Returns an instance of a RegularTableInterpolation object

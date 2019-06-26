@@ -97,7 +97,7 @@ namespace SimpleBlock
    
    StringT SimpleBlock::toString() const
    {
-      return "Block(" + std::to_string(mCorner1[0]) + " " + std::to_string(mCorner1[1]) + " " + std::to_string(mCorner1[2]) + "," +
-         std::to_string(mCorner1[0]) + " " + std::to_string(mCorner1[1]) + " " + std::to_string(mCorner1[2]) + ")";
+      return "Block(" + amp::to_string(mCorner1[0]) + " " + amp::to_string(mCorner1[1]) + " " + amp::to_string(mCorner1[2]) + "," +
+         amp::to_string(mCorner1[0]) + " " + amp::to_string(mCorner1[1]) + " " + amp::to_string(mCorner1[2]) + ")";
    }
 }

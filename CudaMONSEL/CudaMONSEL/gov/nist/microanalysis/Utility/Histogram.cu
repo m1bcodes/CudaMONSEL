@@ -12,8 +12,8 @@ namespace Histogram
 
    StringT BinName::toString() const
    {
-      StringT first = mBin < 0 ? "-inf" : mFormat + std::to_string(mEnclosingClass.minValue(mBin));
-      StringT second = mBin >= mEnclosingClass.binCount() ? "inf" : mFormat + std::to_string(mEnclosingClass.maxValue(mBin));
+      StringT first = mBin < 0 ? "-inf" : mFormat + amp::to_string(mEnclosingClass.minValue(mBin));
+      StringT second = mBin >= mEnclosingClass.binCount() ? "inf" : mFormat + amp::to_string(mEnclosingClass.maxValue(mBin));
       return "[" + first + "-" + second  + ")";
    }
 
@@ -74,7 +74,7 @@ namespace Histogram
    {
       int i = Algorithm::binarySearch(mBinMin.data(), 0, mBinMin.size() - 1, val);
       i = (i >= 0 ? i : -i - 2);
-      if (!(i >= -1)) printf("Histogram::bin: index is %s for %s\n", std::to_string(i).c_str(), std::to_string(val).c_str());
+      if (!(i >= -1)) printf("Histogram::bin: index is %d for %lf\n", i, val);
       if (!(i < mCounts.size())) printf("Histogram::bin: !(i < mCounts.size())\n");
       return i;
    }

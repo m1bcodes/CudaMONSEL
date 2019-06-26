@@ -27,7 +27,7 @@ namespace CzyzewskiMottCrossSection
       void loadTables(int atomicNo);
 
       const ElementT& mElement;
-      MatrixXf mValues;
+      MatrixXd mValues;
    };
 
    double getSpecialEnergy(int index);
