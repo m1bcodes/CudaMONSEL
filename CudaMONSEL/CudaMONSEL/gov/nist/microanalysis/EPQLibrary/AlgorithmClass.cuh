@@ -5,12 +5,14 @@
 #include "gov\nist\microanalysis\EPQLibrary\AlgorithmUser.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\Reference.cuh"
 
+#include <cuda_runtime.h>
+
 namespace AlgorithmClass
 {
    class AlgorithmClass : public AlgorithmUserT
    {
    protected:
-      AlgorithmClass(StringT, StringT, const ReferenceT&);
+      __host__ __device__ AlgorithmClass(StringT, StringT, const ReferenceT&);
       //AlgorithmClass(StringT clss, StringT name, StringT ref);
 
    public:

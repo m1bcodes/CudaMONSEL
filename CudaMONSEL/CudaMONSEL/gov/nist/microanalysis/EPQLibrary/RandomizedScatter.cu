@@ -2,7 +2,7 @@
 
 namespace RandomizedScatter
 {
-   RandomizedScatter::RandomizedScatter(StringT name, const ReferenceT& ref) : AlgorithmClassT("Elastic cross-section", name, ref)
+   __host__ __device__ RandomizedScatter::RandomizedScatter(StringT name, const ReferenceT& ref) : AlgorithmClassT("Elastic cross-section", name, ref)
    {
    }
    

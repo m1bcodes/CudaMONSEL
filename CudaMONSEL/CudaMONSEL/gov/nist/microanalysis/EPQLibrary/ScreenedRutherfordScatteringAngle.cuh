@@ -12,7 +12,7 @@ namespace ScreenedRutherfordScatteringAngle
    class ScreenedRutherfordScatteringAngle : public RandomizedScatterT
    {
    public:
-      ScreenedRutherfordScatteringAngle(const ElementT& elm);
+      __host__ __device__ ScreenedRutherfordScatteringAngle(const ElementT& elm);
 
       StringT toString() const;
 

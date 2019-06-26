@@ -2,7 +2,7 @@
 
 namespace AlgorithmClass
 {
-   AlgorithmClass::AlgorithmClass(StringT cls, StringT name, const ReferenceT& ref) : mClass(cls), mName(name), mReference(ref)
+   __host__ __device__ AlgorithmClass::AlgorithmClass(StringT cls, StringT name, const ReferenceT& ref) : mClass(cls), mName(name), mReference(ref)
    {
    }
 

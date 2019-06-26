@@ -330,10 +330,6 @@ namespace Reference
       return toString(mAuthors) + ". " + mTitle + "[" + mUrl + " on " + mDate + "]";
    }
 
-   __host__ __device__ CrudeReference::CrudeReference()
-   {
-   }
-
    __host__ __device__ CrudeReference::CrudeReference(StringT ref) : mReference(ref)
    {
    }
@@ -348,9 +344,16 @@ namespace Reference
       return mReference;
    }
 
+   __host__ __device__ void CrudeReference::wew()
+   {
+      mReference = "Wew";
+   }
+
 //#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
 //   __device__ const CrudeReference NullReference();
 //#else
 //   const CrudeReference NullReference;
 //#endif
+   const CrudeReference NullReference("-");
+   __device__  CrudeReference *dNullReference;
 }

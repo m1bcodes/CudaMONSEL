@@ -4,9 +4,11 @@
 
 namespace ScreenedRutherfordScatteringAngle
 {
-   static Reference::CrudeReference REFERENCE(Reference::CrudeReference("NBSMONTE.FOR"));
+   static const Reference::CrudeReference REFERENCE("NBSMONTE.FOR");
 
-   ScreenedRutherfordScatteringAngle::ScreenedRutherfordScatteringAngle(const ElementT& elm) : RandomizedScatterT("Screened Rutherford", REFERENCE), mElement(elm)
+   ScreenedRutherfordScatteringAngle::ScreenedRutherfordScatteringAngle(const ElementT& elm) :
+      RandomizedScatterT("Screened Rutherford", REFERENCE),
+      mElement(elm)
    {
    }
 
