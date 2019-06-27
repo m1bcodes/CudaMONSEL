@@ -227,6 +227,10 @@ void CPUTests()
 
 __device__ int n = 0;
 
+__device__ float *dA;
+
+__device__ Reference::CrudeReference *cr;
+
 __global__ void printKernel(const float *a, int numElements)
 {
    for (int i = 0; i < numElements; ++i) {
@@ -250,13 +254,45 @@ __global__ void vectorAdd(const float *A, const float *B, float *C, int numEleme
    }
 }
 
+__global__ void ker()
+{
+   printf("%lf %lf %lf %lf %lf %lf %lf %lf\n", dA[0], dA[1], dA[2], dA[3], dA[4], dA[5], dA[6], dA[7]);
+}
+
+__global__ void wewKernel(Reference::CrudeReference *t)
+{
+   printf("%s\n", t->getLongForm().c_str());
+   //Reference::dNullReference->wew();
+   //printf("%s\n", Reference::dNullReference->getLongForm().c_str());
+}
+
 __global__ void wewKernel()
 {
-   //Reference::dNullReference = new Reference::CrudeReference("WEW");
-   //memcpy(Reference::dNullReference, tmp, sizeof(Reference::CrudeReference));
-   printf("123\n");
-   //printf("%s\n", tmp->getLongForm().c_str());
+   printf("%s\n", cr->getLongForm().c_str());
+   //Reference::dNullReference->wew();
+   //printf("%s\n", Reference::dNullReference->getLongForm().c_str());
 }
+
+class CudaClass
+{
+public:
+   __host__ __device__ CudaClass(int x) {
+      data = new int[1];
+      data[0] = x;
+   }
+
+   __host__ __device__ int* get_data() {
+      return data;
+   }
+
+private:
+   int* data;
+};
+
+__global__ void useClass(CudaClass *cudaClass)
+{
+   printf("%d\n", cudaClass->get_data()[0]);
+};
 
 int main()
 {
@@ -287,15 +323,8 @@ int main()
    float *d_C = NULL;
    checkCudaErrors(cudaMalloc((void **)&d_C, size));
 
-   printKernel << <1, 1 >> >(d_A, 8);
-   checkCudaErrors(cudaGetLastError());
-   printKernel << <1, 1 >> >(d_B, 8);
-   checkCudaErrors(cudaGetLastError());
-   printKernel << <1, 1 >> >(d_C, 8);
-   checkCudaErrors(cudaGetLastError());
-
-   //checkCudaErrors(cudaMemcpy(d_A, h_A, size, cudaMemcpyHostToDevice));
-   //checkCudaErrors(cudaMemcpy(d_B, h_B, size, cudaMemcpyHostToDevice));
+   checkCudaErrors(cudaMemcpy(d_A, h_A, size, cudaMemcpyHostToDevice));
+   checkCudaErrors(cudaMemcpy(d_B, h_B, size, cudaMemcpyHostToDevice));
 
    //int threadsPerBlock = 4;
    //int blocksPerGrid = (numElements + threadsPerBlock - 1) / threadsPerBlock;
@@ -311,6 +340,17 @@ int main()
    //}
    //printf("Test PASSED\n");
 
+   checkCudaErrors(cudaMemcpyToSymbol(dA, &d_A, sizeof(float*)));
+
+   printKernel << <1, 1 >> >(d_A, 8);
+   checkCudaErrors(cudaGetLastError());
+   printKernel << <1, 1 >> >(d_B, 8);
+   checkCudaErrors(cudaGetLastError());
+   printKernel << <1, 1 >> >(d_C, 8);
+   checkCudaErrors(cudaGetLastError());
+   ker << <1, 1 >> >();
+   checkCudaErrors(cudaGetLastError());
+
    checkCudaErrors(cudaFree(d_A));
    checkCudaErrors(cudaFree(d_B));
    checkCudaErrors(cudaFree(d_C));
@@ -322,21 +362,25 @@ int main()
 
    printf("Done\n");
 
-   //Reference::CrudeReference hcr("ABCDEFG"), hcr1("");
-   //Reference::CrudeReference *tmp = nullptr;
+   CudaClass c(1);
+   CudaClass *d_c;
+   checkCudaErrors(cudaMalloc((void **)&d_c, sizeof(CudaClass)));
+   checkCudaErrors(cudaMemcpy(d_c, &c, sizeof(CudaClass), cudaMemcpyHostToDevice));
+   int *hostdata;
+   checkCudaErrors(cudaMalloc((void **)&hostdata, sizeof(int)));
+   checkCudaErrors(cudaMemcpy(hostdata, c.get_data(), sizeof(int), cudaMemcpyHostToDevice));
+   checkCudaErrors(cudaMemcpy(d_c->get_data(), &hostdata, sizeof(int *), cudaMemcpyHostToDevice));
+   useClass << <1, 1 >> >(d_c);
+   checkCudaErrors(cudaDeviceSynchronize());
+
+   //Reference::CrudeReference hcr("ABCDEFG");
+   //Reference::CrudeReference *tmp = NULL;
    //checkCudaErrors(cudaMalloc((void **)&tmp, sizeof(Reference::CrudeReference)));
-   //checkCudaErrors(cudaMemcpy(tmp, &hcr, sizeof(Reference::CrudeReference), cudaMemcpyHostToDevice));
-   //checkCudaErrors(cudaMemcpyToSymbol(Reference::dNullReference, tmp, sizeof(Reference::CrudeReference)));
-   wewKernel<<<1, 1>>>();
-   checkCudaErrors(cudaGetLastError());
-   //checkCudaErrors(cudaMemcpy(&hcr1, Reference::dNullReference, sizeof(Reference::CrudeReference), cudaMemcpyDeviceToHost));
+   ////checkCudaErrors(cudaMemcpy(tmp, &hcr, sizeof(Reference::CrudeReference), cudaMemcpyHostToDevice));
+   ////checkCudaErrors(cudaMemcpyToSymbol(cr, &tmp, sizeof(Reference::CrudeReference*)));
+   //wewKernel << <1, 1 >> >(tmp);
+   //checkCudaErrors(cudaGetLastError());
    //checkCudaErrors(cudaFree(tmp));
-   //printf("%s\n", hcr1.getLongForm().c_str());
-   //tmp = (Reference::CrudeReference*)malloc(sizeof(Reference::CrudeReference));
-   //checkCudaErrors(cudaMemcpy(tmp, &hcr, sizeof(Reference::CrudeReference), cudaMemcpyDeviceToHost));
-   //checkCudaErrors(cudaMemcpyFromSymbol((void**)&tmp, "dNullReference", sizeof(Reference::CrudeReference), 0, cudaMemcpyDeviceToHost));
-   //printf("%s\n", tmp->getLongForm().c_str());
-   //free(tmp);
 
    CPUTests();
    GPUTest();

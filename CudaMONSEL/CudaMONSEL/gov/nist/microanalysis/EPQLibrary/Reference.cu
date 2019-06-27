@@ -73,7 +73,7 @@ namespace Reference
    const Author KHeinrich("Kurt", "Heinrich", NIST);
    const Author JPouchou("Jean-Louis", "Pouchou", ONERA);
    const Author FPichoir("Franï¿½iose", "Pichoir", ONERA);
-   const Author RCastaing("R", "Castaing", "Universitï¿½ de Paris-Sud");
+   const Author RCastaing("R", "Castaing", "Universitï¿?de Paris-Sud");
    const Author RMyklebust("Robert", "Myklebust", NIST);
    const Author DBright("David", "Bright", NIST);
    const Author CFiori("Chuck", "Fiori", NBS);
