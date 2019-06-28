@@ -1,4 +1,5 @@
 #include "gov\nist\microanalysis\EPQLibrary\Reference.cuh"
+#include "CudaUtil.h"
 
 namespace Reference
 {
@@ -344,16 +345,21 @@ namespace Reference
       return mReference;
    }
 
-   __host__ __device__ void CrudeReference::wew()
+   __host__ __device__ const StringT &CrudeReference::getReference() const
    {
-      mReference = "Wew";
+      return mReference;
    }
 
-//#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-//   __device__ const CrudeReference NullReference();
-//#else
-//   const CrudeReference NullReference;
-//#endif
+   __host__ __device__ void CrudeReference::setReference(const StringT& newref)
+   {
+      mReference = newref;
+   }
+
    const CrudeReference NullReference("-");
-   __device__  CrudeReference *dNullReference;
+   __device__ CrudeReference *dNullReference;
+
+   __global__ void initCuda(char *d_data)
+   {
+      dNullReference = new CrudeReference(d_data);
+   }
 }

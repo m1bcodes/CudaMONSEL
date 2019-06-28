@@ -225,162 +225,81 @@ void CPUTests()
    sumShapeTest.testAll();
 }
 
-__device__ int n = 0;
-
-__device__ float *dA;
-
-__device__ Reference::CrudeReference *cr;
-
-__global__ void printKernel(const float *a, int numElements)
+__global__ void print()
 {
-   for (int i = 0; i < numElements; ++i) {
-      printf("%lf ", a[i]);
+   printf("%s\n", Reference::dNullReference->getLongForm().c_str());
+}
+
+__device__ float *d_arr;
+
+__global__ void initArr(float *d_tmp)
+{
+   d_arr = new float[8];
+   memcpy(d_arr, d_tmp, sizeof(float) * 8);
+}
+
+__global__ void printArr()
+{
+   for (int i = 0; i < 8; ++i) {
+      printf("%lf ", d_arr[i]);
    }
-   printf("done\n");
-
-   n += 1;
-   printf("%d\n", n);
-
-   __syncthreads();
+   printf("\n");
 }
 
-__global__ void vectorAdd(const float *A, const float *B, float *C, int numElements)
+void GPUInit()
 {
-   int i = blockDim.x * blockIdx.x + threadIdx.x;
+   printf("------------GPUInit------------------\n");
+   //StringT *d_data = nullptr;
+   //checkCudaErrors(cudaMalloc((void **)&d_data, sizeof(StringT)));
+   //checkCudaErrors(cudaMemcpy(d_data, &Reference::NullReference.getReference(), sizeof(StringT), cudaMemcpyHostToDevice));
+   //init<< <1, 1 >> >(d_data);
+   //checkCudaErrors(cudaGetLastError());
+   //print << <1, 1 >> >();
+   //checkCudaErrors(cudaGetLastError());
+   //checkCudaErrors(cudaFree(d_data));
 
-   if (i < numElements)
-   {
-      C[i] = A[i] + B[i];
-   }
+   char *d_data;
+   checkCudaErrors(cudaMalloc((void **)&d_data, sizeof(char) * 128));
+   checkCudaErrors(cudaMemcpy(d_data, Reference::NullReference.getReference().c_str(), sizeof(char) * 128, cudaMemcpyHostToDevice));
+   Reference::initCuda << <1, 1 >> >(d_data);
+   checkCudaErrors(cudaGetLastError());
+   checkCudaErrors(cudaFree(d_data));
+   print << <1, 1 >> >();
+   checkCudaErrors(cudaGetLastError());
+
+   float tmp[] = { 0, 1, 2, 3, 4, 5, 6, 7 };
+   float *d_tmp;
+   checkCudaErrors(cudaMalloc((void**)&d_tmp, sizeof(float) * 8));
+   checkCudaErrors(cudaMemcpy(d_tmp, tmp, sizeof(float) * 8, cudaMemcpyHostToDevice));
+   initArr << <1, 1 >> >(d_tmp);
+   checkCudaErrors(cudaGetLastError());
+   checkCudaErrors(cudaFree(d_tmp));
+   printArr << <1, 1 >> >();
+   checkCudaErrors(cudaGetLastError());
 }
-
-__global__ void ker()
-{
-   printf("%lf %lf %lf %lf %lf %lf %lf %lf\n", dA[0], dA[1], dA[2], dA[3], dA[4], dA[5], dA[6], dA[7]);
-}
-
-__global__ void wewKernel(Reference::CrudeReference *t)
-{
-   printf("%s\n", t->getLongForm().c_str());
-   //Reference::dNullReference->wew();
-   //printf("%s\n", Reference::dNullReference->getLongForm().c_str());
-}
-
-__global__ void wewKernel()
-{
-   printf("%s\n", cr->getLongForm().c_str());
-   //Reference::dNullReference->wew();
-   //printf("%s\n", Reference::dNullReference->getLongForm().c_str());
-}
-
-class CudaClass
-{
-public:
-   __host__ __device__ CudaClass(int x) {
-      data = new int[1];
-      data[0] = x;
-   }
-
-   __host__ __device__ int* get_data() {
-      return data;
-   }
-
-private:
-   int* data;
-};
-
-__global__ void useClass(CudaClass *cudaClass)
-{
-   printf("%d\n", cudaClass->get_data()[0]);
-};
 
 int main()
 {
-   int numElements = 8;
-   size_t size = numElements * sizeof(float);
-   printf("[Vector addition of %d elements]\n", numElements);
+   //CudaClass c;
+   //CudaClass *d_c = nullptr;
+   //checkCudaErrors(cudaMalloc((void **)&d_c, sizeof(CudaClass)));
+   //checkCudaErrors(cudaMemcpy(d_c, &c, sizeof(CudaClass), cudaMemcpyHostToDevice));
+   ////int *hdata;
+   ////checkCudaErrors(cudaMalloc((void **)&hdata, sizeof(int)));
+   ////checkCudaErrors(cudaMemcpy(hdata, c.get_data(), sizeof(int), cudaMemcpyHostToDevice));
+   ////checkCudaErrors(cudaMemcpy(d_c->get_data(), hdata, sizeof(int), cudaMemcpyDeviceToDevice));
+   ////checkCudaErrors(cudaMemcpy(d_c->get_data(), c.get_data(), sizeof(int) * 8, cudaMemcpyHostToDevice));
+   //checkCudaErrors(cudaMemcpyToSymbol(d_ptr, &d_c, sizeof(CudaClass*)));
+   //useClass<<<1, 1>>>();
+   //checkCudaErrors(cudaDeviceSynchronize());
+   //checkCudaErrors(cudaFree(d_c));
 
-   float *h_A = (float *)malloc(size);
-   float *h_B = (float *)malloc(size);
-   float *h_C = (float *)malloc(size);
-
-   if (h_A == NULL || h_B == NULL || h_C == NULL) {
-      fprintf(stderr, "Failed to allocate host vectors!\n");
-      exit(EXIT_FAILURE);
-   }
-
-   for (int i = 0; i < numElements; ++i) {
-      h_A[i] = i;
-      h_B[i] = i;
-   }
-
-   float *d_A = NULL;
-   checkCudaErrors(cudaMalloc((void **)&d_A, size));
-
-   float *d_B = NULL;
-   checkCudaErrors(cudaMalloc((void **)&d_B, size));
-
-   float *d_C = NULL;
-   checkCudaErrors(cudaMalloc((void **)&d_C, size));
-
-   checkCudaErrors(cudaMemcpy(d_A, h_A, size, cudaMemcpyHostToDevice));
-   checkCudaErrors(cudaMemcpy(d_B, h_B, size, cudaMemcpyHostToDevice));
-
-   //int threadsPerBlock = 4;
-   //int blocksPerGrid = (numElements + threadsPerBlock - 1) / threadsPerBlock;
-   //vectorAdd<<<blocksPerGrid, threadsPerBlock>>>(d_A, d_B, d_C, numElements);
+   //Reference::init();
+   //print << <1, 1 >> >();
    //checkCudaErrors(cudaGetLastError());
-   //checkCudaErrors(cudaMemcpy(h_C, d_C, size, cudaMemcpyDeviceToHost));
+   //Reference::cleanup();
 
-   //for (int i = 0; i < numElements; ++i) {
-   //   if (fabs(h_A[i] + h_B[i] - h_C[i]) > 1e-5) {
-   //      fprintf(stderr, "Result verification failed at element %d!\n", i);
-   //      exit(EXIT_FAILURE);
-   //   }
-   //}
-   //printf("Test PASSED\n");
-
-   checkCudaErrors(cudaMemcpyToSymbol(dA, &d_A, sizeof(float*)));
-
-   printKernel << <1, 1 >> >(d_A, 8);
-   checkCudaErrors(cudaGetLastError());
-   printKernel << <1, 1 >> >(d_B, 8);
-   checkCudaErrors(cudaGetLastError());
-   printKernel << <1, 1 >> >(d_C, 8);
-   checkCudaErrors(cudaGetLastError());
-   ker << <1, 1 >> >();
-   checkCudaErrors(cudaGetLastError());
-
-   checkCudaErrors(cudaFree(d_A));
-   checkCudaErrors(cudaFree(d_B));
-   checkCudaErrors(cudaFree(d_C));
-
-   // Free host memory
-   free(h_A);
-   free(h_B);
-   free(h_C);
-
-   printf("Done\n");
-
-   CudaClass c(1);
-   CudaClass *d_c;
-   checkCudaErrors(cudaMalloc((void **)&d_c, sizeof(CudaClass)));
-   checkCudaErrors(cudaMemcpy(d_c, &c, sizeof(CudaClass), cudaMemcpyHostToDevice));
-   int *hostdata;
-   checkCudaErrors(cudaMalloc((void **)&hostdata, sizeof(int)));
-   checkCudaErrors(cudaMemcpy(hostdata, c.get_data(), sizeof(int), cudaMemcpyHostToDevice));
-   checkCudaErrors(cudaMemcpy(d_c->get_data(), &hostdata, sizeof(int *), cudaMemcpyHostToDevice));
-   useClass << <1, 1 >> >(d_c);
-   checkCudaErrors(cudaDeviceSynchronize());
-
-   //Reference::CrudeReference hcr("ABCDEFG");
-   //Reference::CrudeReference *tmp = NULL;
-   //checkCudaErrors(cudaMalloc((void **)&tmp, sizeof(Reference::CrudeReference)));
-   ////checkCudaErrors(cudaMemcpy(tmp, &hcr, sizeof(Reference::CrudeReference), cudaMemcpyHostToDevice));
-   ////checkCudaErrors(cudaMemcpyToSymbol(cr, &tmp, sizeof(Reference::CrudeReference*)));
-   //wewKernel << <1, 1 >> >(tmp);
-   //checkCudaErrors(cudaGetLastError());
-   //checkCudaErrors(cudaFree(tmp));
+   GPUInit();
 
    CPUTests();
    GPUTest();

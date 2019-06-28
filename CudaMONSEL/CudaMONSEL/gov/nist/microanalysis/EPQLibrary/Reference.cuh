@@ -137,11 +137,12 @@ namespace Reference
    {
    public:
       __host__ __device__ CrudeReference(StringT ref);
-      
-      __host__ __device__ void wew();
 
       __host__ __device__ StringT getShortForm() const override;
       __host__ __device__ StringT getLongForm() const override;
+
+      __host__ __device__ const StringT &getReference() const;
+      __host__ __device__ void setReference(const StringT& newref);
 
    private:
       StringT mReference;
@@ -231,13 +232,11 @@ namespace Reference
    extern const Book HandbookOfXRaySpectrometry;
 
    // default
-//#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-//   __device__ CrudeReference NullReference;
-//#else
-//   CrudeReference NullReference;
-//#endif
    extern const CrudeReference NullReference;
-   __device__  extern CrudeReference *dNullReference;
+   extern __device__ CrudeReference *dNullReference;
+
+   extern __global__ void initCuda(char *d_data);
+
 }
 
 #endif
