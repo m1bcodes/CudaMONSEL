@@ -6,7 +6,8 @@ namespace VectorTest
 {
    struct IntCmp
    {
-      __host__ __device__ inline bool operator() (const int a, const int b) {
+      __host__ __device__ inline bool operator() (const int a, const int b)
+      {
          return a == b;
       }
    };

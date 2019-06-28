@@ -27,6 +27,7 @@
 #include "gov\nist\microanalysis\EPQLibrary\EdgeEnergy.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\MaterialFactory.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\ScreenedRutherfordScatteringAngle.cuh"
+#include "gov\nist\microanalysis\EPQLibrary\ScreenedRutherfordScatteringAngle1.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\CzyzewskiMottScatteringAngle.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\GasScatteringCrossSection.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\NISTMottScatteringAngle.cuh"
@@ -231,6 +232,7 @@ __global__ void print()
 }
 
 __device__ float *d_arr;
+__device__ float d_arr1[8];
 
 __global__ void initArr(float *d_tmp)
 {
@@ -238,27 +240,32 @@ __global__ void initArr(float *d_tmp)
    memcpy(d_arr, d_tmp, sizeof(float) * 8);
 }
 
-__global__ void printArr()
+__global__ void cpyker()
 {
+   memcpy(d_arr1, d_arr, sizeof(float) * 8);
    for (int i = 0; i < 8; ++i) {
-      printf("%lf ", d_arr[i]);
+      printf("%lf ", d_arr1[i]);
    }
    printf("\n");
 }
 
+__global__ void ScreenedRutherfordScatteringAngleKernel()
+{
+   ElementT elm(1);
+   printf("%d\n", elm.getAtomicNumber());
+   ScreenedRutherfordScatteringAngleT *srsa = new ScreenedRutherfordScatteringAngleT(elm);
+   printf("%d\n", srsa->get());
+   delete srsa;
+
+   //B *b = new B(elm);
+   //printf("%d\n", b->get());
+   //delete b;
+}
+
 void GPUInit()
 {
-   printf("------------GPUInit------------------\n");
-   //StringT *d_data = nullptr;
-   //checkCudaErrors(cudaMalloc((void **)&d_data, sizeof(StringT)));
-   //checkCudaErrors(cudaMemcpy(d_data, &Reference::NullReference.getReference(), sizeof(StringT), cudaMemcpyHostToDevice));
-   //init<< <1, 1 >> >(d_data);
-   //checkCudaErrors(cudaGetLastError());
-   //print << <1, 1 >> >();
-   //checkCudaErrors(cudaGetLastError());
-   //checkCudaErrors(cudaFree(d_data));
-
-   char *d_data;
+   printf("-----------------GPUInit-----------------------------\n");
+   char *d_data = nullptr;
    checkCudaErrors(cudaMalloc((void **)&d_data, sizeof(char) * 128));
    checkCudaErrors(cudaMemcpy(d_data, Reference::NullReference.getReference().c_str(), sizeof(char) * 128, cudaMemcpyHostToDevice));
    Reference::initCuda << <1, 1 >> >(d_data);
@@ -267,15 +274,26 @@ void GPUInit()
    print << <1, 1 >> >();
    checkCudaErrors(cudaGetLastError());
 
+   ScreenedRutherfordScatteringAngleKernel << <1, 1 >> >();
+   checkCudaErrors(cudaGetLastError());
+
    float tmp[] = { 0, 1, 2, 3, 4, 5, 6, 7 };
    float *d_tmp;
    checkCudaErrors(cudaMalloc((void**)&d_tmp, sizeof(float) * 8));
    checkCudaErrors(cudaMemcpy(d_tmp, tmp, sizeof(float) * 8, cudaMemcpyHostToDevice));
    initArr << <1, 1 >> >(d_tmp);
    checkCudaErrors(cudaGetLastError());
+   cpyker << <1, 1 >> >();
    checkCudaErrors(cudaFree(d_tmp));
-   printArr << <1, 1 >> >();
-   checkCudaErrors(cudaGetLastError());
+
+   //char *d_data;
+   //checkCudaErrors(cudaMalloc((void **)&d_data, sizeof(char) * 128));
+   //checkCudaErrors(cudaMemcpy(d_data, Reference::NullReference.getReference().c_str(), sizeof(char) * 128, cudaMemcpyHostToDevice));
+   //Reference::initCuda << <1, 1 >> >(d_data);
+   //checkCudaErrors(cudaGetLastError());
+   //checkCudaErrors(cudaFree(d_data));
+   //print << <1, 1 >> >();
+   //checkCudaErrors(cudaGetLastError());
 }
 
 int main()

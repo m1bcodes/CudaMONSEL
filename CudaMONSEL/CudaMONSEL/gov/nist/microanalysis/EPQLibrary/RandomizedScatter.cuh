@@ -9,7 +9,7 @@ namespace RandomizedScatter
    class RandomizedScatter : public AlgorithmClassT
    {
    protected:
-      RandomizedScatter(StringT name, const ReferenceT& ref);
+      __host__ __device__ RandomizedScatter(StringT name, const ReferenceT& ref);
 
       void initializeDefaultStrategy() override;
       AlgorithmClass const * const * getAllImplementations() const override;

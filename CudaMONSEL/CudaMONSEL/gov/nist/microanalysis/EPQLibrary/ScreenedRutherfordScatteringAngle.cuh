@@ -1,5 +1,4 @@
 // file: gov\nist\microanalysis\EPQLibrary\ScreenedRutherfordScatteringAngle.cuh
-
 #ifndef _SCREENED_RUTHERFORD_SCATTERING_ANGLE_CUH_
 #define _SCREENED_RUTHERFORD_SCATTERING_ANGLE_CUH_
 
@@ -19,6 +18,8 @@ namespace ScreenedRutherfordScatteringAngle
       const ElementT& getElement() const override;
       double totalCrossSection(double energy) const override;
       double randomScatteringAngle(double energy) const override;
+
+      __host__ __device__ int get();
 
    private:
       const ElementT& mElement;

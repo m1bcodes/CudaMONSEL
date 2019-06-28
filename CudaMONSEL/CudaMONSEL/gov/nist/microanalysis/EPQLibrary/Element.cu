@@ -9,10 +9,126 @@ namespace Element
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
    __device__ static const int numIonizationEnergy = 104;
    __device__ static const int numAtomicWeight = 112;
+   
+   __device__ const long long serialVersionUID = 0x987360133793L;
+
+   __device__ const int elmNone = 0;
+   __device__ const int elmH = 1;
+   __device__ const int elmHe = 2;
+   __device__ const int elmLi = 3;
+   __device__ const int elmBe = 4;
+   __device__ const int elmB = 5;
+   __device__ const int elmC = 6;
+   __device__ const int elmN = 7;
+   __device__ const int elmO = 8;
+   __device__ const int elmF = 9;
+   __device__ const int elmNe = 10;
+   __device__ const int elmNa = 11;
+   __device__ const int elmMg = 12;
+   __device__ const int elmAl = 13;
+   __device__ const int elmSi = 14;
+   __device__ const int elmP = 15;
+   __device__ const int elmS = 16;
+   __device__ const int elmCl = 17;
+   __device__ const int elmAr = 18;
+   __device__ const int elmK = 19;
+   __device__ const int elmCa = 20;
+   __device__ const int elmSc = 21;
+   __device__ const int elmTi = 22;
+   __device__ const int elmV = 23;
+   __device__ const int elmCr = 24;
+   __device__ const int elmMn = 25;
+   __device__ const int elmFe = 26;
+   __device__ const int elmCo = 27;
+   __device__ const int elmNi = 28;
+   __device__ const int elmCu = 29;
+   __device__ const int elmZn = 30;
+   __device__ const int elmGa = 31;
+   __device__ const int elmGe = 32;
+   __device__ const int elmAs = 33;
+   __device__ const int elmSe = 34;
+   __device__ const int elmBr = 35;
+   __device__ const int elmKr = 36;
+   __device__ const int elmRb = 37;
+   __device__ const int elmSr = 38;
+   __device__ const int elmY = 39;
+   __device__ const int elmZr = 40;
+   __device__ const int elmNb = 41;
+   __device__ const int elmMo = 42;
+   __device__ const int elmTc = 43;
+   __device__ const int elmRu = 44;
+   __device__ const int elmRh = 45;
+   __device__ const int elmPd = 46;
+   __device__ const int elmAg = 47;
+   __device__ const int elmCd = 48;
+   __device__ const int elmIn = 49;
+   __device__ const int elmSn = 50;
+   __device__ const int elmSb = 51;
+   __device__ const int elmTe = 52;
+   __device__ const int elmI = 53;
+   __device__ const int elmXe = 54;
+   __device__ const int elmCs = 55;
+   __device__ const int elmBa = 56;
+   __device__ const int elmLa = 57;
+   __device__ const int elmCe = 58;
+   __device__ const int elmPr = 59;
+   __device__ const int elmNd = 60;
+   __device__ const int elmPm = 61;
+   __device__ const int elmSm = 62;
+   __device__ const int elmEu = 63;
+   __device__ const int elmGd = 64;
+   __device__ const int elmTb = 65;
+   __device__ const int elmDy = 66;
+   __device__ const int elmHo = 67;
+   __device__ const int elmEr = 68;
+   __device__ const int elmTm = 69;
+   __device__ const int elmYb = 70;
+   __device__ const int elmLu = 71;
+   __device__ const int elmHf = 72;
+   __device__ const int elmTa = 73;
+   __device__ const int elmW = 74;
+   __device__ const int elmRe = 75;
+   __device__ const int elmOs = 76;
+   __device__ const int elmIr = 77;
+   __device__ const int elmPt = 78;
+   __device__ const int elmAu = 79;
+   __device__ const int elmHg = 80;
+   __device__ const int elmTl = 81;
+   __device__ const int elmPb = 82;
+   __device__ const int elmBi = 83;
+   __device__ const int elmPo = 84;
+   __device__ const int elmAt = 85;
+   __device__ const int elmRn = 86;
+   __device__ const int elmFr = 87;
+   __device__ const int elmRa = 88;
+   __device__ const int elmAc = 89;
+   __device__ const int elmTh = 90;
+   __device__ const int elmPa = 91;
+   __device__ const int elmU = 92;
+   __device__ const int elmNp = 93;
+   __device__ const int elmPu = 94;
+   __device__ const int elmAm = 95;
+   __device__ const int elmCm = 96;
+   __device__ const int elmBk = 97;
+   __device__ const int elmCf = 98;
+   __device__ const int elmEs = 99;
+   __device__ const int elmFm = 100;
+   __device__ const int elmMd = 101;
+   __device__ const int elmNo = 102;
+   __device__ const int elmLr = 103;
+   __device__ const int elmRf = 104;
+   __device__ const int elmDb = 105;
+   __device__ const int elmSg = 106;
+   __device__ const int elmBh = 107;
+   __device__ const int elmHs = 108;
+   __device__ const int elmMt = 109;
+   __device__ const int elmUun = 110;
+   __device__ const int elmUuu = 111;
+   __device__ const int elmUub = 112;
+   __device__ const int elmEndOfElements = 113;
 #else
    static const int numIonizationEnergy = 104;
    static const int numAtomicWeight = 112;
-#endif
 
    const long long serialVersionUID = 0x987360133793L;
 
@@ -130,6 +246,7 @@ namespace Element
    const int elmUuu = 111;
    const int elmUub = 112;
    const int elmEndOfElements = 113;
+#endif
 
    const Element None(0);
    const Element H(1);
@@ -688,7 +805,7 @@ namespace Element
       printf("InitializeElements() completed: %d bytes\n", sizeof(mAllElements));
    }
 
-   Element::Element(int atomicNo)
+   __host__ __device__ Element::Element(int atomicNo)
    {
       if (atomicNo >= elmNone && atomicNo < elmEndOfElements) {
          mAtomicNumber = atomicNo;
@@ -803,7 +920,7 @@ namespace Element
    //   }
    //}
 
-   int Element::getAtomicNumber() const
+   __host__ __device__ int Element::getAtomicNumber() const
    {
       return mAtomicNumber;
    }

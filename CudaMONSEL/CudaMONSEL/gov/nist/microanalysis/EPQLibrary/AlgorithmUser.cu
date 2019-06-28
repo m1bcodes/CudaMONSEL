@@ -23,7 +23,7 @@ namespace AlgorithmUser
 
    // TODO: figure out what to do with this, only need to call when it is overriden
    // https://stackoverflow.com/questions/8630160/call-to-pure-virtual-function-from-base-class-constructor
-   AlgorithmUser::AlgorithmUser()
+   __host__ __device__ AlgorithmUser::AlgorithmUser()
    {
       //initializeDefaultStrategy();
    }

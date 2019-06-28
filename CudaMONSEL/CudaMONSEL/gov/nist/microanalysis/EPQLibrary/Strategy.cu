@@ -2,7 +2,7 @@
 
 namespace Strategy
 {
-   const AlgorithmMap& Strategy::getStrategyMap() const
+   __host__ __device__ const AlgorithmMap& Strategy::getStrategyMap() const
    {
       return mMap;
    }
@@ -17,17 +17,17 @@ namespace Strategy
    //   return ret;
    //}
 
-   Strategy::Strategy()
+   __host__ __device__ Strategy::Strategy()
    {
    }
 
-   Strategy& Strategy::operator=(const Strategy& strat)
+   __host__ __device__ Strategy& Strategy::operator=(const Strategy& strat)
    {
       mMap = strat.mMap;
       return *this;
    }
 
-   void Strategy::apply(const Strategy& st)
+   __host__ __device__ void Strategy::apply(const Strategy& st)
    {
       for (auto me : st.mMap) {
          auto k = me.first;
@@ -37,28 +37,29 @@ namespace Strategy
       }
    }
 
-   void Strategy::addAll(const Strategy& st)
+   __host__ __device__ void Strategy::addAll(const Strategy& st)
    {
       for (auto me : st.mMap) {
          mMap[me.first] = me.second;
       }
    }
 
-   void Strategy::addAlgorithm(StringT cls, AlgorithmClassT const * const value)
+   __host__ __device__ void Strategy::addAlgorithm(StringT cls, AlgorithmClassT const * const value)
    {
       //if (!cls.isAssignableFrom(value.getClass()))
       //   throw new IllegalArgumentException(value.toString() + " is not derived from " + cls.toString());
       mMap[cls] = value;
    }
 
-   const AlgorithmClassT* Strategy::getAlgorithm(StringT cls) const
+   __host__ __device__ const AlgorithmClassT* Strategy::getAlgorithm(StringT cls) const
    {
       //return mMap.at(cls);
       auto itr = mMap.find(cls);
-      return (itr != mMap.end()) ? itr->second : nullptr;
+      if (itr != mMap.end()) return itr->second;
+      else return nullptr;
    }
 
-   Algorithms Strategy::getAlgorithms() const
+   __host__ __device__ Algorithms Strategy::getAlgorithms() const
    {
       Algorithms ret;
       for (auto e : mMap) {
@@ -67,12 +68,12 @@ namespace Strategy
       return ret;
    }
 
-   void Strategy::clear()
+   __host__ __device__ void Strategy::clear()
    {
       mMap.clear();
    }
 
-   bool Strategy::empty() const
+   __host__ __device__ bool Strategy::empty() const
    {
       return mMap.empty();
    }

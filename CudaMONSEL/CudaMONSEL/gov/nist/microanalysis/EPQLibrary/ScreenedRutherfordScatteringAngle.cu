@@ -6,8 +6,12 @@ namespace ScreenedRutherfordScatteringAngle
 {
    static const Reference::CrudeReference REFERENCE("NBSMONTE.FOR");
 
-   ScreenedRutherfordScatteringAngle::ScreenedRutherfordScatteringAngle(const ElementT& elm) :
+   __host__ __device__ ScreenedRutherfordScatteringAngle::ScreenedRutherfordScatteringAngle(const ElementT& elm) :
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+      RandomizedScatterT("Screened Rutherford", *Reference::dNullReference),
+#else
       RandomizedScatterT("Screened Rutherford", REFERENCE),
+#endif
       mElement(elm)
    {
    }
@@ -17,10 +21,14 @@ namespace ScreenedRutherfordScatteringAngle
       return "CrossSection[Screened-Rutherford," + StringT(mElement.toAbbrev()) + "]";
    }
 
-   
    const ElementT& ScreenedRutherfordScatteringAngle::getElement() const
    {
       return mElement;
+   }
+
+   __host__ __device__ int ScreenedRutherfordScatteringAngle::get()
+   {
+      return mElement.getAtomicNumber();
    }
 
    double ScreenedRutherfordScatteringAngle::totalCrossSection(double energy) const

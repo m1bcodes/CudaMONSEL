@@ -9,7 +9,7 @@ namespace AlgorithmUser
    class AlgorithmUser
    {
    protected:
-      AlgorithmUser();
+      __host__ __device__ AlgorithmUser();
 
       void addDefaultAlgorithm(char cls[], const AlgorithmClassT* ac);
       const AlgorithmClassT* getAlgorithm(char clsName[]) const;

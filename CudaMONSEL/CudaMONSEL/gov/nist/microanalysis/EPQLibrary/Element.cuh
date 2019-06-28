@@ -137,7 +137,7 @@ namespace Element
    class Element
    {
    public:
-      Element(int atomicNo);
+      __host__ __device__ Element(int atomicNo);
       Element(const Element& atomicNo);
       Element();
 
@@ -146,7 +146,7 @@ namespace Element
       bool operator==(const Element&) const;
       bool operator<(const Element&) const;
 
-      int getAtomicNumber() const;
+      __host__ __device__ int getAtomicNumber() const;
       double getAtomicWeight() const;
       double getMass() const;
       char const * toAbbrev() const;
