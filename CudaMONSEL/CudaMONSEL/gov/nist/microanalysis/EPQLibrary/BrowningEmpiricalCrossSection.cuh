@@ -10,7 +10,7 @@ namespace BrowningEmpiricalCrossSection
    class BrowningEmpiricalCrossSection
    {
    public:
-      BrowningEmpiricalCrossSection(const ElementT& elm);
+      __host__ __device__ BrowningEmpiricalCrossSection(const ElementT& elm);
 
       const ElementT& getElement() const;
       double totalCrossSection(double energy) const;

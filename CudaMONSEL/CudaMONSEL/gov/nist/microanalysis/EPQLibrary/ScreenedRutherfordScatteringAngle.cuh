@@ -19,7 +19,7 @@ namespace ScreenedRutherfordScatteringAngle
       double totalCrossSection(double energy) const override;
       double randomScatteringAngle(double energy) const override;
 
-      __host__ __device__ int get();
+      __host__ __device__ int get() const;
 
    private:
       const ElementT& mElement;
@@ -38,9 +38,10 @@ namespace ScreenedRutherfordScatteringAngle
 
    extern const RandomizedScatterFactoryT& Factory;
 
-   extern const ScreenedRutherfordScatteringAngle& getSRSA(int an);
+   __host__ __device__ extern const ScreenedRutherfordScatteringAngle& getSRSA(int an);
 
    extern void init();
+   extern __global__ void initCuda();
 }
 
 #endif

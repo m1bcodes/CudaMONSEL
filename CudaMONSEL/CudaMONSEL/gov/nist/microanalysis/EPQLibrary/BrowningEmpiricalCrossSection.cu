@@ -8,7 +8,7 @@
 
 namespace BrowningEmpiricalCrossSection
 {
-   BrowningEmpiricalCrossSection::BrowningEmpiricalCrossSection(const ElementT& elm) :
+   __host__ __device__ BrowningEmpiricalCrossSection::BrowningEmpiricalCrossSection(const ElementT& elm) :
       mElement(elm),
       mZp17(::pow(elm.getAtomicNumber(), 1.7)),
       mZp2(::pow(elm.getAtomicNumber(), 2.0)),
@@ -241,8 +241,211 @@ namespace BrowningEmpiricalCrossSection
       &BECS96
    };
 
+   __device__ const BrowningEmpiricalCrossSection *dBECS1;
+   __device__ const BrowningEmpiricalCrossSection *dBECS2;
+   __device__ const BrowningEmpiricalCrossSection *dBECS3;
+   __device__ const BrowningEmpiricalCrossSection *dBECS4;
+   __device__ const BrowningEmpiricalCrossSection *dBECS5;
+   __device__ const BrowningEmpiricalCrossSection *dBECS6;
+   __device__ const BrowningEmpiricalCrossSection *dBECS7;
+   __device__ const BrowningEmpiricalCrossSection *dBECS8;
+   __device__ const BrowningEmpiricalCrossSection *dBECS9;
+   __device__ const BrowningEmpiricalCrossSection *dBECS10;
+   __device__ const BrowningEmpiricalCrossSection *dBECS11;
+   __device__ const BrowningEmpiricalCrossSection *dBECS12;
+   __device__ const BrowningEmpiricalCrossSection *dBECS13;
+   __device__ const BrowningEmpiricalCrossSection *dBECS14;
+   __device__ const BrowningEmpiricalCrossSection *dBECS15;
+   __device__ const BrowningEmpiricalCrossSection *dBECS16;
+   __device__ const BrowningEmpiricalCrossSection *dBECS17;
+   __device__ const BrowningEmpiricalCrossSection *dBECS18;
+   __device__ const BrowningEmpiricalCrossSection *dBECS19;
+   __device__ const BrowningEmpiricalCrossSection *dBECS20;
+   __device__ const BrowningEmpiricalCrossSection *dBECS21;
+   __device__ const BrowningEmpiricalCrossSection *dBECS22;
+   __device__ const BrowningEmpiricalCrossSection *dBECS23;
+   __device__ const BrowningEmpiricalCrossSection *dBECS24;
+   __device__ const BrowningEmpiricalCrossSection *dBECS25;
+   __device__ const BrowningEmpiricalCrossSection *dBECS26;
+   __device__ const BrowningEmpiricalCrossSection *dBECS27;
+   __device__ const BrowningEmpiricalCrossSection *dBECS28;
+   __device__ const BrowningEmpiricalCrossSection *dBECS29;
+   __device__ const BrowningEmpiricalCrossSection *dBECS30;
+   __device__ const BrowningEmpiricalCrossSection *dBECS31;
+   __device__ const BrowningEmpiricalCrossSection *dBECS32;
+   __device__ const BrowningEmpiricalCrossSection *dBECS33;
+   __device__ const BrowningEmpiricalCrossSection *dBECS34;
+   __device__ const BrowningEmpiricalCrossSection *dBECS35;
+   __device__ const BrowningEmpiricalCrossSection *dBECS36;
+   __device__ const BrowningEmpiricalCrossSection *dBECS37;
+   __device__ const BrowningEmpiricalCrossSection *dBECS38;
+   __device__ const BrowningEmpiricalCrossSection *dBECS39;
+   __device__ const BrowningEmpiricalCrossSection *dBECS40;
+   __device__ const BrowningEmpiricalCrossSection *dBECS41;
+   __device__ const BrowningEmpiricalCrossSection *dBECS42;
+   __device__ const BrowningEmpiricalCrossSection *dBECS43;
+   __device__ const BrowningEmpiricalCrossSection *dBECS44;
+   __device__ const BrowningEmpiricalCrossSection *dBECS45;
+   __device__ const BrowningEmpiricalCrossSection *dBECS46;
+   __device__ const BrowningEmpiricalCrossSection *dBECS47;
+   __device__ const BrowningEmpiricalCrossSection *dBECS48;
+   __device__ const BrowningEmpiricalCrossSection *dBECS49;
+   __device__ const BrowningEmpiricalCrossSection *dBECS50;
+   __device__ const BrowningEmpiricalCrossSection *dBECS51;
+   __device__ const BrowningEmpiricalCrossSection *dBECS52;
+   __device__ const BrowningEmpiricalCrossSection *dBECS53;
+   __device__ const BrowningEmpiricalCrossSection *dBECS54;
+   __device__ const BrowningEmpiricalCrossSection *dBECS55;
+   __device__ const BrowningEmpiricalCrossSection *dBECS56;
+   __device__ const BrowningEmpiricalCrossSection *dBECS57;
+   __device__ const BrowningEmpiricalCrossSection *dBECS58;
+   __device__ const BrowningEmpiricalCrossSection *dBECS59;
+   __device__ const BrowningEmpiricalCrossSection *dBECS60;
+   __device__ const BrowningEmpiricalCrossSection *dBECS61;
+   __device__ const BrowningEmpiricalCrossSection *dBECS62;
+   __device__ const BrowningEmpiricalCrossSection *dBECS63;
+   __device__ const BrowningEmpiricalCrossSection *dBECS64;
+   __device__ const BrowningEmpiricalCrossSection *dBECS65;
+   __device__ const BrowningEmpiricalCrossSection *dBECS66;
+   __device__ const BrowningEmpiricalCrossSection *dBECS67;
+   __device__ const BrowningEmpiricalCrossSection *dBECS68;
+   __device__ const BrowningEmpiricalCrossSection *dBECS69;
+   __device__ const BrowningEmpiricalCrossSection *dBECS70;
+   __device__ const BrowningEmpiricalCrossSection *dBECS71;
+   __device__ const BrowningEmpiricalCrossSection *dBECS72;
+   __device__ const BrowningEmpiricalCrossSection *dBECS73;
+   __device__ const BrowningEmpiricalCrossSection *dBECS74;
+   __device__ const BrowningEmpiricalCrossSection *dBECS75;
+   __device__ const BrowningEmpiricalCrossSection *dBECS76;
+   __device__ const BrowningEmpiricalCrossSection *dBECS77;
+   __device__ const BrowningEmpiricalCrossSection *dBECS78;
+   __device__ const BrowningEmpiricalCrossSection *dBECS79;
+   __device__ const BrowningEmpiricalCrossSection *dBECS80;
+   __device__ const BrowningEmpiricalCrossSection *dBECS81;
+   __device__ const BrowningEmpiricalCrossSection *dBECS82;
+   __device__ const BrowningEmpiricalCrossSection *dBECS83;
+   __device__ const BrowningEmpiricalCrossSection *dBECS84;
+   __device__ const BrowningEmpiricalCrossSection *dBECS85;
+   __device__ const BrowningEmpiricalCrossSection *dBECS86;
+   __device__ const BrowningEmpiricalCrossSection *dBECS87;
+   __device__ const BrowningEmpiricalCrossSection *dBECS88;
+   __device__ const BrowningEmpiricalCrossSection *dBECS89;
+   __device__ const BrowningEmpiricalCrossSection *dBECS90;
+   __device__ const BrowningEmpiricalCrossSection *dBECS91;
+   __device__ const BrowningEmpiricalCrossSection *dBECS92;
+   __device__ const BrowningEmpiricalCrossSection *dBECS93;
+   __device__ const BrowningEmpiricalCrossSection *dBECS94;
+   __device__ const BrowningEmpiricalCrossSection *dBECS95;
+   __device__ const BrowningEmpiricalCrossSection *dBECS96;
+
+   __device__ BrowningEmpiricalCrossSection const * dScatter[113];
+
+   __global__ void initCuda()
+   {
+      dScatter[1] = new BrowningEmpiricalCrossSection(1);
+      dScatter[2] = new BrowningEmpiricalCrossSection(2);
+      dScatter[3] = new BrowningEmpiricalCrossSection(3);
+      dScatter[4] = new BrowningEmpiricalCrossSection(4);
+      dScatter[5] = new BrowningEmpiricalCrossSection(5);
+      dScatter[6] = new BrowningEmpiricalCrossSection(6);
+      dScatter[7] = new BrowningEmpiricalCrossSection(7);
+      dScatter[8] = new BrowningEmpiricalCrossSection(8);
+      dScatter[9] = new BrowningEmpiricalCrossSection(9);
+      dScatter[10] = new BrowningEmpiricalCrossSection(10);
+      dScatter[11] = new BrowningEmpiricalCrossSection(11);
+      dScatter[12] = new BrowningEmpiricalCrossSection(12);
+      dScatter[13] = new BrowningEmpiricalCrossSection(13);
+      dScatter[14] = new BrowningEmpiricalCrossSection(14);
+      dScatter[15] = new BrowningEmpiricalCrossSection(15);
+      dScatter[16] = new BrowningEmpiricalCrossSection(16);
+      dScatter[17] = new BrowningEmpiricalCrossSection(17);
+      dScatter[18] = new BrowningEmpiricalCrossSection(18);
+      dScatter[19] = new BrowningEmpiricalCrossSection(19);
+      dScatter[20] = new BrowningEmpiricalCrossSection(20);
+      dScatter[21] = new BrowningEmpiricalCrossSection(21);
+      dScatter[22] = new BrowningEmpiricalCrossSection(22);
+      dScatter[23] = new BrowningEmpiricalCrossSection(23);
+      dScatter[24] = new BrowningEmpiricalCrossSection(24);
+      dScatter[25] = new BrowningEmpiricalCrossSection(25);
+      dScatter[26] = new BrowningEmpiricalCrossSection(26);
+      dScatter[27] = new BrowningEmpiricalCrossSection(27);
+      dScatter[28] = new BrowningEmpiricalCrossSection(28);
+      dScatter[29] = new BrowningEmpiricalCrossSection(29);
+      dScatter[30] = new BrowningEmpiricalCrossSection(30);
+      dScatter[31] = new BrowningEmpiricalCrossSection(31);
+      dScatter[32] = new BrowningEmpiricalCrossSection(32);
+      dScatter[33] = new BrowningEmpiricalCrossSection(33);
+      dScatter[34] = new BrowningEmpiricalCrossSection(34);
+      dScatter[35] = new BrowningEmpiricalCrossSection(35);
+      dScatter[36] = new BrowningEmpiricalCrossSection(36);
+      dScatter[37] = new BrowningEmpiricalCrossSection(37);
+      dScatter[38] = new BrowningEmpiricalCrossSection(38);
+      dScatter[39] = new BrowningEmpiricalCrossSection(39);
+      dScatter[40] = new BrowningEmpiricalCrossSection(40);
+      dScatter[41] = new BrowningEmpiricalCrossSection(41);
+      dScatter[42] = new BrowningEmpiricalCrossSection(42);
+      dScatter[43] = new BrowningEmpiricalCrossSection(43);
+      dScatter[44] = new BrowningEmpiricalCrossSection(44);
+      dScatter[45] = new BrowningEmpiricalCrossSection(45);
+      dScatter[46] = new BrowningEmpiricalCrossSection(46);
+      dScatter[47] = new BrowningEmpiricalCrossSection(47);
+      dScatter[48] = new BrowningEmpiricalCrossSection(48);
+      dScatter[49] = new BrowningEmpiricalCrossSection(49);
+      dScatter[50] = new BrowningEmpiricalCrossSection(50);
+      dScatter[51] = new BrowningEmpiricalCrossSection(51);
+      dScatter[52] = new BrowningEmpiricalCrossSection(52);
+      dScatter[53] = new BrowningEmpiricalCrossSection(53);
+      dScatter[54] = new BrowningEmpiricalCrossSection(54);
+      dScatter[55] = new BrowningEmpiricalCrossSection(55);
+      dScatter[56] = new BrowningEmpiricalCrossSection(56);
+      dScatter[57] = new BrowningEmpiricalCrossSection(57);
+      dScatter[58] = new BrowningEmpiricalCrossSection(58);
+      dScatter[59] = new BrowningEmpiricalCrossSection(59);
+      dScatter[60] = new BrowningEmpiricalCrossSection(60);
+      dScatter[61] = new BrowningEmpiricalCrossSection(61);
+      dScatter[62] = new BrowningEmpiricalCrossSection(62);
+      dScatter[63] = new BrowningEmpiricalCrossSection(63);
+      dScatter[64] = new BrowningEmpiricalCrossSection(64);
+      dScatter[65] = new BrowningEmpiricalCrossSection(65);
+      dScatter[66] = new BrowningEmpiricalCrossSection(66);
+      dScatter[67] = new BrowningEmpiricalCrossSection(67);
+      dScatter[68] = new BrowningEmpiricalCrossSection(68);
+      dScatter[69] = new BrowningEmpiricalCrossSection(69);
+      dScatter[70] = new BrowningEmpiricalCrossSection(70);
+      dScatter[71] = new BrowningEmpiricalCrossSection(71);
+      dScatter[72] = new BrowningEmpiricalCrossSection(72);
+      dScatter[73] = new BrowningEmpiricalCrossSection(73);
+      dScatter[74] = new BrowningEmpiricalCrossSection(74);
+      dScatter[75] = new BrowningEmpiricalCrossSection(75);
+      dScatter[76] = new BrowningEmpiricalCrossSection(76);
+      dScatter[77] = new BrowningEmpiricalCrossSection(77);
+      dScatter[78] = new BrowningEmpiricalCrossSection(78);
+      dScatter[79] = new BrowningEmpiricalCrossSection(79);
+      dScatter[80] = new BrowningEmpiricalCrossSection(80);
+      dScatter[81] = new BrowningEmpiricalCrossSection(81);
+      dScatter[82] = new BrowningEmpiricalCrossSection(82);
+      dScatter[83] = new BrowningEmpiricalCrossSection(83);
+      dScatter[84] = new BrowningEmpiricalCrossSection(84);
+      dScatter[85] = new BrowningEmpiricalCrossSection(85);
+      dScatter[86] = new BrowningEmpiricalCrossSection(86);
+      dScatter[87] = new BrowningEmpiricalCrossSection(87);
+      dScatter[88] = new BrowningEmpiricalCrossSection(88);
+      dScatter[89] = new BrowningEmpiricalCrossSection(89);
+      dScatter[90] = new BrowningEmpiricalCrossSection(90);
+      dScatter[91] = new BrowningEmpiricalCrossSection(91);
+      dScatter[92] = new BrowningEmpiricalCrossSection(92);
+      dScatter[93] = new BrowningEmpiricalCrossSection(93);
+      dScatter[94] = new BrowningEmpiricalCrossSection(94);
+      dScatter[95] = new BrowningEmpiricalCrossSection(95);
+      dScatter[96] = new BrowningEmpiricalCrossSection(96);
+   }
+
    const BrowningEmpiricalCrossSection& getBECS(int an)
    {
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+      return *dScatter[an];
+#else
       return *mScatter[an];
+#endif
    }
 }

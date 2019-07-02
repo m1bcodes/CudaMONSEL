@@ -26,11 +26,6 @@ namespace ScreenedRutherfordScatteringAngle
       return mElement;
    }
 
-   __host__ __device__ int ScreenedRutherfordScatteringAngle::get()
-   {
-      return mElement.getAtomicNumber();
-   }
-
    double ScreenedRutherfordScatteringAngle::totalCrossSection(double energy) const
    {
       // Ref: Heinrich 1981 p 459 convert to SI units
@@ -46,6 +41,11 @@ namespace ScreenedRutherfordScatteringAngle
       double alpha = (5.44968e-19 * ::pow(mElement.getAtomicNumber(), 2.0 / 3.0)) / energy;
       double r = Math2::random();
       return ::acos(1 - 2.0 * alpha * r / (1 + alpha - r));
+   }
+
+   __host__ __device__ int ScreenedRutherfordScatteringAngle::get() const
+   {
+      return mElement.getAtomicNumber();
    }
 
    //const ScreenedRutherfordScatteringAngle SRSA1(Element::H);
@@ -347,9 +347,116 @@ namespace ScreenedRutherfordScatteringAngle
       mScatter[96] = new ScreenedRutherfordScatteringAngle(Element::Cm);
    }
 
-   const ScreenedRutherfordScatteringAngle& getSRSA(int an)
+   __device__ ScreenedRutherfordScatteringAngle const * dScatter[113];
+
+   __global__ void initCuda()
    {
+      dScatter[0] = nullptr;
+      dScatter[1] = new ScreenedRutherfordScatteringAngle(*Element::dH);
+      dScatter[2] = new ScreenedRutherfordScatteringAngle(*Element::dHe);
+      dScatter[3] = new ScreenedRutherfordScatteringAngle(*Element::dLi);
+      dScatter[4] = new ScreenedRutherfordScatteringAngle(*Element::dBe);
+      dScatter[5] = new ScreenedRutherfordScatteringAngle(*Element::dB);
+      dScatter[6] = new ScreenedRutherfordScatteringAngle(*Element::dC);
+      dScatter[7] = new ScreenedRutherfordScatteringAngle(*Element::dN);
+      dScatter[8] = new ScreenedRutherfordScatteringAngle(*Element::dO);
+      dScatter[9] = new ScreenedRutherfordScatteringAngle(*Element::dF);
+      dScatter[10] = new ScreenedRutherfordScatteringAngle(*Element::dNe);
+      dScatter[11] = new ScreenedRutherfordScatteringAngle(*Element::dNa);
+      dScatter[12] = new ScreenedRutherfordScatteringAngle(*Element::dMg);
+      dScatter[13] = new ScreenedRutherfordScatteringAngle(*Element::dAl);
+      dScatter[14] = new ScreenedRutherfordScatteringAngle(*Element::dSi);
+      dScatter[15] = new ScreenedRutherfordScatteringAngle(*Element::dP);
+      dScatter[16] = new ScreenedRutherfordScatteringAngle(*Element::dS);
+      dScatter[17] = new ScreenedRutherfordScatteringAngle(*Element::dCl);
+      dScatter[18] = new ScreenedRutherfordScatteringAngle(*Element::dAr);
+      dScatter[19] = new ScreenedRutherfordScatteringAngle(*Element::dK);
+      dScatter[20] = new ScreenedRutherfordScatteringAngle(*Element::dCa);
+      dScatter[21] = new ScreenedRutherfordScatteringAngle(*Element::dSc);
+      dScatter[22] = new ScreenedRutherfordScatteringAngle(*Element::dTi);
+      dScatter[23] = new ScreenedRutherfordScatteringAngle(*Element::dV);
+      dScatter[24] = new ScreenedRutherfordScatteringAngle(*Element::dCr);
+      dScatter[25] = new ScreenedRutherfordScatteringAngle(*Element::dMn);
+      dScatter[26] = new ScreenedRutherfordScatteringAngle(*Element::dFe);
+      dScatter[27] = new ScreenedRutherfordScatteringAngle(*Element::dCo);
+      dScatter[28] = new ScreenedRutherfordScatteringAngle(*Element::dNi);
+      dScatter[29] = new ScreenedRutherfordScatteringAngle(*Element::dCu);
+      dScatter[30] = new ScreenedRutherfordScatteringAngle(*Element::dZn);
+      dScatter[31] = new ScreenedRutherfordScatteringAngle(*Element::dGa);
+      dScatter[32] = new ScreenedRutherfordScatteringAngle(*Element::dGe);
+      dScatter[33] = new ScreenedRutherfordScatteringAngle(*Element::dAs);
+      dScatter[34] = new ScreenedRutherfordScatteringAngle(*Element::dSe);
+      dScatter[35] = new ScreenedRutherfordScatteringAngle(*Element::dBr);
+      dScatter[36] = new ScreenedRutherfordScatteringAngle(*Element::dKr);
+      dScatter[37] = new ScreenedRutherfordScatteringAngle(*Element::dRb);
+      dScatter[38] = new ScreenedRutherfordScatteringAngle(*Element::dSr);
+      dScatter[39] = new ScreenedRutherfordScatteringAngle(*Element::dY);
+      dScatter[40] = new ScreenedRutherfordScatteringAngle(*Element::dZr);
+      dScatter[41] = new ScreenedRutherfordScatteringAngle(*Element::dNb);
+      dScatter[42] = new ScreenedRutherfordScatteringAngle(*Element::dMo);
+      dScatter[43] = new ScreenedRutherfordScatteringAngle(*Element::dTc);
+      dScatter[44] = new ScreenedRutherfordScatteringAngle(*Element::dRu);
+      dScatter[45] = new ScreenedRutherfordScatteringAngle(*Element::dRh);
+      dScatter[46] = new ScreenedRutherfordScatteringAngle(*Element::dPd);
+      dScatter[47] = new ScreenedRutherfordScatteringAngle(*Element::dAg);
+      dScatter[48] = new ScreenedRutherfordScatteringAngle(*Element::dCd);
+      dScatter[49] = new ScreenedRutherfordScatteringAngle(*Element::dIn);
+      dScatter[50] = new ScreenedRutherfordScatteringAngle(*Element::dSn);
+      dScatter[51] = new ScreenedRutherfordScatteringAngle(*Element::dSb);
+      dScatter[52] = new ScreenedRutherfordScatteringAngle(*Element::dTe);
+      dScatter[53] = new ScreenedRutherfordScatteringAngle(*Element::dI);
+      dScatter[54] = new ScreenedRutherfordScatteringAngle(*Element::dXe);
+      dScatter[55] = new ScreenedRutherfordScatteringAngle(*Element::dCs);
+      dScatter[56] = new ScreenedRutherfordScatteringAngle(*Element::dBa);
+      dScatter[57] = new ScreenedRutherfordScatteringAngle(*Element::dLa);
+      dScatter[58] = new ScreenedRutherfordScatteringAngle(*Element::dCe);
+      dScatter[59] = new ScreenedRutherfordScatteringAngle(*Element::dPr);
+      dScatter[60] = new ScreenedRutherfordScatteringAngle(*Element::dNd);
+      dScatter[61] = new ScreenedRutherfordScatteringAngle(*Element::dPm);
+      dScatter[62] = new ScreenedRutherfordScatteringAngle(*Element::dSm);
+      dScatter[63] = new ScreenedRutherfordScatteringAngle(*Element::dEu);
+      dScatter[64] = new ScreenedRutherfordScatteringAngle(*Element::dGd);
+      dScatter[65] = new ScreenedRutherfordScatteringAngle(*Element::dTb);
+      dScatter[66] = new ScreenedRutherfordScatteringAngle(*Element::dDy);
+      dScatter[67] = new ScreenedRutherfordScatteringAngle(*Element::dHo);
+      dScatter[68] = new ScreenedRutherfordScatteringAngle(*Element::dEr);
+      dScatter[69] = new ScreenedRutherfordScatteringAngle(*Element::dTm);
+      dScatter[70] = new ScreenedRutherfordScatteringAngle(*Element::dYb);
+      dScatter[71] = new ScreenedRutherfordScatteringAngle(*Element::dLu);
+      dScatter[72] = new ScreenedRutherfordScatteringAngle(*Element::dHf);
+      dScatter[73] = new ScreenedRutherfordScatteringAngle(*Element::dTa);
+      dScatter[74] = new ScreenedRutherfordScatteringAngle(*Element::dW);
+      dScatter[75] = new ScreenedRutherfordScatteringAngle(*Element::dRe);
+      dScatter[76] = new ScreenedRutherfordScatteringAngle(*Element::dOs);
+      dScatter[77] = new ScreenedRutherfordScatteringAngle(*Element::dIr);
+      dScatter[78] = new ScreenedRutherfordScatteringAngle(*Element::dPt);
+      dScatter[79] = new ScreenedRutherfordScatteringAngle(*Element::dAu);
+      dScatter[80] = new ScreenedRutherfordScatteringAngle(*Element::dHg);
+      dScatter[81] = new ScreenedRutherfordScatteringAngle(*Element::dTl);
+      dScatter[82] = new ScreenedRutherfordScatteringAngle(*Element::dPb);
+      dScatter[83] = new ScreenedRutherfordScatteringAngle(*Element::dBi);
+      dScatter[84] = new ScreenedRutherfordScatteringAngle(*Element::dPo);
+      dScatter[85] = new ScreenedRutherfordScatteringAngle(*Element::dAt);
+      dScatter[86] = new ScreenedRutherfordScatteringAngle(*Element::dRn);
+      dScatter[87] = new ScreenedRutherfordScatteringAngle(*Element::dFr);
+      dScatter[88] = new ScreenedRutherfordScatteringAngle(*Element::dRa);
+      dScatter[89] = new ScreenedRutherfordScatteringAngle(*Element::dAc);
+      dScatter[90] = new ScreenedRutherfordScatteringAngle(*Element::dTh);
+      dScatter[91] = new ScreenedRutherfordScatteringAngle(*Element::dPa);
+      dScatter[92] = new ScreenedRutherfordScatteringAngle(*Element::dU);
+      dScatter[93] = new ScreenedRutherfordScatteringAngle(*Element::dNp);
+      dScatter[94] = new ScreenedRutherfordScatteringAngle(*Element::dPu);
+      dScatter[95] = new ScreenedRutherfordScatteringAngle(*Element::dAm);
+      dScatter[96] = new ScreenedRutherfordScatteringAngle(*Element::dCm);
+   }
+
+   __host__ __device__ const ScreenedRutherfordScatteringAngle& getSRSA(int an)
+   {
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+      return *dScatter[an];
+#else
       return *mScatter[an];
+#endif
    }
 
    ScreenedRutherfordRandomizedScatterFactory::ScreenedRutherfordRandomizedScatterFactory() : RandomizedScatterFactoryT("Screened Rutherford elastic cross-section", REFERENCE)

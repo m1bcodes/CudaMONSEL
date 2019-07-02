@@ -57,6 +57,7 @@ namespace NISTMottScatteringAngle
    extern const NISTMottScatteringAngle& getNISTMSA(int an);
 
    extern void init();
+   extern __global__ void initCuda();
 }
 
 #endif
