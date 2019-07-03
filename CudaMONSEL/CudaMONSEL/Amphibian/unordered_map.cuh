@@ -125,12 +125,21 @@ namespace amp
       __host__ __device__ const_iterator cbegin() const;
       __host__ __device__ const_iterator cend() const;
 
+      //class Wrapper
+      //{
+      //public:
+      //   __host__ __device__ First(unordered_map& refMap) : refMap(refMap) {}
+      //   __host__ __device__ operator V&() const { return (KeyT&)node.key; }
+      //private:
+      //   unordered_map& refMap;
+      //} first;
+
    private:
       __host__ __device__ int unsigned GetBucketIdx(const K& k) const;
       __host__ __device__ LinkedListKVPtr GetBucket(int); // DEBUGGING PURPOSES
 
       LinkedListKVPtr buckets[NUM_MAP_BUCKETS];
-      V defaultv;
+      V defaultv; // relies on default constrtor
    };
 
    template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
@@ -679,6 +688,7 @@ namespace amp
       return h;
    }
 
+   // TODO: fix map[key] = val not working
    template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
    __host__ __device__ V& unordered_map<K, V, KCompare, VCompare, KHasher, VHasher>::operator[](const K& k)
    {

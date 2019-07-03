@@ -30,9 +30,8 @@ namespace Strategy
    __host__ __device__ void Strategy::apply(const Strategy& st)
    {
       for (auto me : st.mMap) {
-         auto k = me.first;
-         if (mMap.find(k) != mMap.end()) {
-            mMap[k] = me.second;
+         if (mMap.find(me.first) != mMap.end()) {
+            mMap.Put(me.first, me.second); // mMap[k] = me.second;
          }
       }
    }
@@ -40,7 +39,7 @@ namespace Strategy
    __host__ __device__ void Strategy::addAll(const Strategy& st)
    {
       for (auto me : st.mMap) {
-         mMap[me.first] = me.second;
+         mMap.Put(me.first, me.second); // mMap[me.first] = me.second;
       }
    }
 
@@ -48,7 +47,7 @@ namespace Strategy
    {
       //if (!cls.isAssignableFrom(value.getClass()))
       //   throw new IllegalArgumentException(value.toString() + " is not derived from " + cls.toString());
-      mMap[cls] = value;
+      mMap.Put(cls, value); //mMap[cls] = value;
    }
 
    __host__ __device__ const AlgorithmClassT* Strategy::getAlgorithm(StringT cls) const

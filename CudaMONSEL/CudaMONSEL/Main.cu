@@ -233,7 +233,7 @@ void testsCPU()
 
 __global__ void print()
 {
-   //printf("%lf\n", ::pow(5.0, 2.0));
+   //printf("%lf\n", ::powf(5.0, 2.0));
    printf("%s\n", Reference::dNullReference->getLongForm().c_str());
 }
 
