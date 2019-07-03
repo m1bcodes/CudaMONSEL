@@ -41,19 +41,17 @@ namespace Transform3D
       return r;
    }
 
-   static MatrixXd times(const MatrixXd& a, const MatrixXd b)
+   static MatrixXd times(const MatrixXd& a, const MatrixXd& b)
    {
       if (a[0].size() != b.size()) {
          printf("matrix multiplicatino failed: %d, %d\n", a[0].size(), b.size());
          return MatrixXd();
       }
-      MatrixXd mult(a.size(), VectorXd(b[0].size()));
+      MatrixXd mult(a.size(), VectorXd(b[0].size(), 0));
       for (int i = 0; i < a.size(); ++i)
          for (int j = 0; j < b[0].size(); ++j)
             for (int k = 0; k < b.size(); ++k)
-            {
                mult[i][j] += a[i][k] * b[k][j];
-            }
       return mult;
    }
 
@@ -103,7 +101,7 @@ namespace Transform3D
 
    VectorXd translate(const double point[], const double distance[], bool negate)
    {
-      VectorXd res(3);
+      VectorXd res(3, 0);
       if (negate) {
          res[0] = point[0] - distance[0];
          res[1] = point[1] - distance[1];

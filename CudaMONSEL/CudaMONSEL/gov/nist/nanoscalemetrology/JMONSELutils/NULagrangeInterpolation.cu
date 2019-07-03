@@ -181,7 +181,7 @@ namespace NULagrangeInterpolation
       int index0 = locate(x[0], xsamp[0].data(), xsamp[0].size(), order)[0];
 
       /* Generate and populate an array of function values at x2 */
-      VectorXd y(order + 1);
+      VectorXd y(order + 1, 0);
       for (int i = 0; i <= order; i++)
          y[i] = d1(f[index0 + i].data(), f[index0 + i].size(), xsamp[1].data(), xsamp[1].size(), order, x[1])[0];
       /* Make corresponding x array */
@@ -227,9 +227,9 @@ namespace NULagrangeInterpolation
       int index0 = locate(x[0], xsamp[0].data(), xsamp[0].size(), order)[0];
 
       /* Generate and populate an array of function values at x2,x3 */
-      VectorXd y(order + 1);
+      VectorXd y(order + 1, 0);
       double reducedx[] = { x[1], x[2] };
-      MatrixXd reducedxsamp({ xsamp[1], xsamp[2] });
+      MatrixXd reducedxsamp(2, VectorXd()); reducedxsamp[0] = xsamp[1]; reducedxsamp[1] = xsamp[2];
       for (int i = 0; i <= order; i++)
          y[i] = d2(f[index0 + i], reducedxsamp, order, reducedx, 2)[0];
       /* Make corresponding x array */
@@ -293,9 +293,9 @@ namespace NULagrangeInterpolation
       int index0 = locate(x[0], xsamp[0].data(), xsamp[0].size(), order)[0];
 
       /* Generate and populate an array of function values at x2,x3,x4 */
-      VectorXd y(order + 1);
+      VectorXd y(order + 1, 0);
       double reducedx[] = { x[1], x[2], x[3] };
-      MatrixXd reducedxsamp = { xsamp[1], xsamp[2], xsamp[3] };
+      MatrixXd reducedxsamp(3, VectorXd()); reducedxsamp[0] = xsamp[1]; reducedxsamp[1] = xsamp[2]; reducedxsamp[2] = xsamp[3];
       for (int i = 0; i <= order; i++)
          y[i] = d3(f[index0 + i], reducedxsamp, order, reducedx, 3)[0];
       /* Make corresponding x array */

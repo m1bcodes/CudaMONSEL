@@ -15,11 +15,11 @@ namespace TabulatedInelasticSM
       tableIIMFP(NUTableInterpolation::getInstance(tables[0])),
       tableReducedDeltaE(NUTableInterpolation::getInstance(tables[1])),
       tableTheta(NUTableInterpolation::getInstance(tables[2])),
-      tableSEE0((methodSE == 2) || (methodSE == 3) ? NUTableInterpolation::getInstance(tables[3]) : NULL),
+      tableSEE0((methodSE == 2) || (methodSE == 3) ? NUTableInterpolation::getInstance(tables[3]) : nullptr),
       rateMult(1.),
       E0fromDispersion(false),
-      kEa(VectorXd(1)),
-      interpInput(VectorXd(3)),
+      kEa(VectorXd(1, 0)),
+      interpInput(VectorXd(3, 0)),
       defaultRatios(true)
    {
       setMaterial(&mat);
@@ -32,12 +32,12 @@ namespace TabulatedInelasticSM
       tableIIMFP(NUTableInterpolation::getInstance(tables[0])),
       tableReducedDeltaE(NUTableInterpolation::getInstance(tables[1])),
       tableTheta(NUTableInterpolation::getInstance(tables[2])),
-      tableSEE0((methodSE == 2) || (methodSE == 3) ? NUTableInterpolation::getInstance(tables[3]) : NULL),
+      tableSEE0((methodSE == 2) || (methodSE == 3) ? NUTableInterpolation::getInstance(tables[3]) : nullptr),
       energyRangeSE0((methodSE == 2) || (methodSE == 3) ? tableSEE0->getRange() : VectorXd()),
       rateMult(1.), 
       E0fromDispersion(false),
-      kEa(VectorXd(1)), 
-      interpInput(VectorXd(3)),
+      kEa(VectorXd(1, 0)), 
+      interpInput(VectorXd(3, 0)),
       defaultRatios(true)
    {
       ///* Read interpolation tables into memory */

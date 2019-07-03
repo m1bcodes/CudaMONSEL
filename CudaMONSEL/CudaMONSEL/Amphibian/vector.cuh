@@ -64,12 +64,14 @@ namespace amp
       __host__ __device__ unsigned int capacity() const;
 
       // modifiers
-      __host__ __device__ void clear();
+      __host__ __device__ void clear(const unsigned int c = VECTOR_INITIAL_SIZE);
       //__host__ __device__ void insert(const int&, const T&);
       __host__ __device__ void erase(const const_iterator&);
       __host__ __device__ void push_back(const T&);
-      __host__ __device__ void resize(const int);
-      __host__ __device__ void resize(const int, const T&);
+      __host__ __device__ void resize(const unsigned int);
+      __host__ __device__ void resize(const unsigned int, const T&);
+      __host__ __device__ void assign(const T[], const T[]);
+      __host__ __device__ void reserve(const unsigned int);
 
       // comparison
       __host__ __device__ bool operator==(const vector<T>&) const;
@@ -111,7 +113,8 @@ namespace amp
    template<typename T>
    __host__ __device__ const T& vector<T>::const_iterator::operator*() const
    {
-      if (i < 0 || i > refvec.size()) printf("vector<T>::vector::const_iterator::operator*: out of range\n");
+      if (i < 0 || i > refvec.size())
+         printf("vector<T>::vector::const_iterator::operator*: out of range\n");
       return refvec.vec[i];
    }
 
@@ -158,32 +161,24 @@ namespace amp
    __host__ __device__ vector<T>::vector(int cap, const T& v) : cap(cap), sz(0)
    {
       vec = new T[cap];
-      for (int i = 0; i < cap; ++i) push_back(v); // note: assignment op needed
+      for (int i = 0; i < cap; ++i)
+         push_back(v); // note: assignment op needed
    }
 
    template<typename T>
    __host__ __device__ vector<T>::vector(const vector& v) : cap(v.cap), sz(0)
    {
       vec = new T[cap];
-      for (int i = 0; i < v.size(); ++i) {
+      for (int i = 0; i < v.size(); ++i)
          push_back(v.vec[i]);
-      }
    }
 
    template<typename T>
    __host__ __device__ void vector<T>::operator=(const vector& other)
    {
-      if (other.sz > cap) {
-         delete[] vec;
-         vec = new T[other.cap];
-         cap = other.cap;
-      }
-      sz = 0;
-
-      for (int i = 0; i < other.sz; ++i) {
-         vec[i].~T();
+      clear(other.cap);
+      for (int i = 0; i < other.sz; ++i)
          push_back(other.vec[i]);
-      }
    }
 
    template<typename T>
@@ -191,9 +186,8 @@ namespace amp
    {
       vec = new T[cap];
       const unsigned int numelem = finish - start;
-      for (int i = 0; i < numelem; ++i) {
+      for (int i = 0; i < numelem; ++i)
          push_back(*(start + i));
-      }
    }
 
    template<typename T>
@@ -212,14 +206,16 @@ namespace amp
    template<typename T>
    __host__ __device__ T& vector<T>::operator[] (const int i)
    {
-      if (!(i >= 0 && i < size())) printf("vector<T>::operator[]: out of range\n");
+      if (!(i >= 0 && i < size()))
+         printf("T& vector<T>::operator[%d]: out of range\n", i);
       return vec[i];
    }
 
    template<typename T>
    __host__ __device__ const T& vector<T>::operator[] (const int i) const
    {
-      if (!(i >= 0 && i < size())) printf("vector<T>::operator[]: out of range\n");
+      if (!(i >= 0 && i < size()))
+         printf("const T& vector<T>::operator[%d]: out of range\n", i);
       return vec[i];
    }
 
@@ -268,19 +264,10 @@ namespace amp
    }
 
    template<typename T>
-   __host__ __device__ void vector<T>::clear()
+   __host__ __device__ void vector<T>::clear(const unsigned int c)
    {
-      //unsigned int i = 0;
-      //while (vec[i]) {
-      //   if (i == cap) {
-      //      //printf("vector<T>::clear(): over\n");
-      //      break;
-      //   }
-      //   delete vec[i];
-      //   vec[i] = nullptr;
-      //   ++i;
-      //}
       delete[] vec;
+      cap = c;
       vec = new T[cap];
       sz = 0;
    }
@@ -298,7 +285,8 @@ namespace amp
       else {
          const unsigned int idx = itr.index();
          vec[idx].~T();
-         for (int i = idx + 1; i < sz; ++i) vec[i - 1] = vec[i];
+         for (int i = idx + 1; i < sz; ++i)
+            vec[i - 1] = vec[i];
          --sz;
       }
    }
@@ -306,42 +294,51 @@ namespace amp
    template<typename T>
    __host__ __device__ void vector<T>::push_back(const T& t)
    {
-      if (sz >= cap) printf("void vector<T>::push_back: out of range\n");
-      else vec[sz++] = t; // note: relies on assignment op
+      if (sz >= cap)
+         printf("void vector<T>::push_back: out of range\n");
+      else
+         vec[sz++] = t; // note: relies on assignment op
    }
 
+   // TODO: if newsz < sz?
    template<typename T>
-   __host__ __device__ void vector<T>::resize(const int newsz)
+   __host__ __device__ void vector<T>::resize(const unsigned int newsz)
    {
       if (cap < newsz) {
          T* tmp = new T[newsz];
-         for (int i = 0; i < sz; ++i) tmp[i] = vec[i];
-         delete[] vec;
-         vec = tmp;
-         cap = newsz;
-      }
-      else {
-         if (newsz < sz) {
-            for (int i = newsz; i < sz; ++i) {
-               vec[i].~T();
-            }
+         for (int i = 0; i < sz; ++i) {
+            tmp[i] = vec[i];
          }
-         sz = newsz;
+         clear(newsz);
+      }
+      sz = newsz;
+   }
+
+   template<typename T>
+   __host__ __device__ void vector<T>::resize(const unsigned int newsz, const T& v)
+   {
+      clear(newsz);
+      for (int i = 0; i < newsz; ++i) {
+         push_back(v); // note: need assignment op
       }
    }
 
    template<typename T>
-   __host__ __device__ void vector<T>::resize(const int newsz, const T& v)
+   __host__ __device__ void vector<T>::assign(const T start[], const T end[])
    {
+      const unsigned int n = end - start;
+      resize(n);
       clear();
-      if (cap != newsz) {
-         delete[] vec;
-         vec = new T[newsz];
-         cap = newsz;
+
+      for (int i = 0; i < n; ++i) {
+         push_back(*(start + i));
       }
-      for (int i = 0; i < newsz; ++i) {
-         push_back(v); // note: need assignment op
-      }
+   }
+
+   template<typename T>
+   __host__ __device__ void vector<T>::reserve(const unsigned int newcap)
+   {
+      clear(newcap);
    }
 
    template<typename T>

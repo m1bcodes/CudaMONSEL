@@ -290,7 +290,7 @@ namespace LinesOnLayers
       RegionT lineRegion(&chamber, &PMMAMSM, line);
 
       //VectorXd yvals = { 0. };
-      VectorXd yvals;
+      VectorXd yvals(128);
       //for (int i = -100; i < 100; ++i) {
       //   yvals.push_back(i);
       //}
@@ -307,7 +307,7 @@ namespace LinesOnLayers
       if (thetar < 0.) xfinestop = xtop + 20.5;
       else xfinestop = wnm / 2. + 20.5;
 
-      VectorXd xvals;
+      VectorXd xvals(128);
       double deltax = 5.;
       double x = xstart;
       while (x < xfinestart) {

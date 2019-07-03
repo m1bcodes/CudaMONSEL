@@ -141,6 +141,14 @@ namespace VectorTest
          }
          printf("\n");
       }
+
+      const int tmp[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+      v[0].assign(tmp, tmp + 11);
+      for (auto i : v[0]) {
+         printf("%d, ", i);
+      }
+      printf("\n");
+
       printf("VectorTest::testFour() completed.\n");
    }
 }

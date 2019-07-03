@@ -29,7 +29,8 @@ namespace ULagrangeInterpolation
       }
       delete[] c;
       delete[] d;
-      return { y, dy };
+      VectorXd res(2, 0); res[0] = y; res[1] = dy;
+      return res;
    }
 
    VectorXd d1(double const * const f, int len, double x0, double xinc, int order, double x)

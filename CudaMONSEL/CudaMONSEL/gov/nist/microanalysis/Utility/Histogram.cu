@@ -22,7 +22,7 @@ namespace Histogram
       return mBin < rhs.mBin;
    }
    
-   Histogram::Histogram(double min, double max, int nBins) : mCounts(nBins + 2), mBinMin(nBins + 1)
+   Histogram::Histogram(double min, double max, int nBins) : mCounts(nBins + 2, 0), mBinMin(nBins + 1, 0)
    {
       if (max < min) {
          const double tmp = min;
@@ -41,7 +41,7 @@ namespace Histogram
       Algorithm::quicksort(mBinMin.data(), 0, mBinMin.size() - 1);
    }
 
-   Histogram::Histogram(double min, double max, double ratio) : mCounts((int)(::log(max / min) / ::log(ratio)) + 2), mBinMin((int)(::log(max / min) / ::log(ratio)) + 1)
+   Histogram::Histogram(double min, double max, double ratio) : mCounts((int)(::log(max / min) / ::log(ratio)) + 2, 0), mBinMin((int)(::log(max / min) / ::log(ratio)) + 1, 0)
    {
       if (ratio <= 1.0) printf("Histogram: ration must be greater than 1.0\n");
       if (min >= max) printf("Histogram: min must be less than max\n");
@@ -49,7 +49,7 @@ namespace Histogram
       for (int i = 0; i < mBinMin.size(); ++i, min *= ratio) mBinMin[i] = min;
    }
 
-   Histogram::Histogram(double binMins[], int len, double max) : mBinMin(len + 1), mCounts(len + 2)
+   Histogram::Histogram(double binMins[], int len, double max) : mBinMin(len + 1, 0), mCounts(len + 2, 0)
    {
       for (int i = 0; i < len; ++i) mBinMin[i] = binMins[i];
       mBinMin[len] = max;

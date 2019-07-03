@@ -12,12 +12,12 @@
 //#include "Amphibian\String.cuh"
 
 typedef amp::string StringT;
-typedef std::vector<double> VectorXd;
-typedef std::vector<VectorXd> MatrixXd;
-typedef std::vector<MatrixXd> Matrix3DXd;
-typedef std::vector<Matrix3DXd> Matrix4DXd;
-typedef std::vector<int> VectorXi;
-typedef std::vector<VectorXi> MatrixXi;
+typedef amp::vector<double> VectorXd;
+typedef amp::vector<VectorXd> MatrixXd;
+typedef amp::vector<MatrixXd> Matrix3DXd;
+typedef amp::vector<Matrix3DXd> Matrix4DXd;
+typedef amp::vector<int> VectorXi;
+typedef amp::vector<VectorXi> MatrixXi;
 
 namespace Element
 {

@@ -161,6 +161,7 @@ namespace EdgeEnergy
          ChantlerEdgeEnergies.resize(92);
          int idx = 0;
          for (CSVIterator loop(file); loop != CSVIterator(); ++loop) {
+            ChantlerEdgeEnergies[idx].reserve((*loop).size());
             for (int k = 0; k < (*loop).size(); ++k) {
                double cur = sciToDub((*loop)[k]);
                if (cur) ChantlerEdgeEnergies[idx].push_back(ToSI::eV(cur));
@@ -264,6 +265,7 @@ namespace EdgeEnergy
          int idx = 0;
          for (CSVIterator loop(file); loop != CSVIterator(); ++loop) {
             if ((*loop).size()) {
+               DTSAEdgeEnergies[idx].reserve((*loop).size());
                for (int k = 0; k < (*loop).size(); ++k) {
                   double cur = sciToDub((*loop)[k]);
                   if (cur) DTSAEdgeEnergies[idx].push_back(cur);

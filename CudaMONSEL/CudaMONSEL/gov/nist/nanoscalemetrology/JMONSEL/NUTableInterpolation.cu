@@ -39,8 +39,10 @@ namespace NUTableInterpolation
    * @param tableFileName - A String providing the name of the resource (data
    *           file) that stores the table to be interpolated.
    */
-   NUTableInterpolation::NUTableInterpolation(char const * tableFileName) : tableFileName(tableFileName), range({ INFINITY, -INFINITY })
+   NUTableInterpolation::NUTableInterpolation(char const * tableFileName) : tableFileName(tableFileName), range(2, 0)
    {
+      range[0] = INFINITY;
+      range[1] = -INFINITY;
       ReadTable(tableFileName);
    }
 
@@ -55,7 +57,7 @@ namespace NUTableInterpolation
    MatrixXd NUTableInterpolation::getDomain() const
    {
       // Return a deep copy
-      MatrixXd domainCopy(dim, VectorXd(2));
+      MatrixXd domainCopy(dim, VectorXd(2, 0));
       for (int i = 0; i < dim; i++)
          for (int j = 0; j < 2; j++)
             domainCopy[i][j] = domain[i][j];
@@ -73,10 +75,9 @@ namespace NUTableInterpolation
    VectorXd NUTableInterpolation::getRange() const
    {
       // Return a copy
-      VectorXd rangeCopy = {
-         range[0],
-         range[1]
-      };
+      VectorXd rangeCopy(2, 0);
+      rangeCopy[0] = range[0];
+      rangeCopy[1] = range[1];
       return rangeCopy;
    }
 
@@ -130,10 +131,10 @@ namespace NUTableInterpolation
             * using techniques similar to Mick Flanagan's PolyCubicSpline
             * algorithm.
             */
-            VectorXi nPoints(dim);
+            VectorXi nPoints(dim, 0);
             x.resize(dim);
 
-            domain.resize(dim, VectorXd(2));
+            domain.resize(dim, VectorXd(2, 0));
 
             for (int i = 0; i < dim; i++) {
                myfile >> a;
@@ -173,7 +174,7 @@ namespace NUTableInterpolation
                }
                break;
             case 2:
-               table2d.resize(nPoints[0], VectorXd(nPoints[1]));
+               table2d.resize(nPoints[0], VectorXd(nPoints[1], 0));
                for (int i = 0; i < nPoints[0]; i++)
                   for (int j = 0; j < nPoints[1]; j++) {
                      double tmp;
@@ -186,7 +187,7 @@ namespace NUTableInterpolation
                   }
                break;
             case 3:
-               table3d.resize(nPoints[0], MatrixXd(nPoints[1], VectorXd(nPoints[2])));
+               table3d.resize(nPoints[0], MatrixXd(nPoints[1], VectorXd(nPoints[2], 0)));
                for (int i = 0; i < nPoints[0]; i++)
                   for (int j = 0; j < nPoints[1]; j++)
                      for (int k = 0; k < nPoints[2]; k++) {
@@ -200,7 +201,7 @@ namespace NUTableInterpolation
                      }
                break;
             case 4:
-               table4d.resize(nPoints[0], Matrix3DXd(nPoints[1], MatrixXd(nPoints[1], VectorXd(nPoints[2]))));
+               table4d.resize(nPoints[0], Matrix3DXd(nPoints[1], MatrixXd(nPoints[1], VectorXd(nPoints[2], 0))));
                for (int i = 0; i < nPoints[0]; i++) {
                   for (int j = 0; j < nPoints[1]; j++) {
                      for (int k = 0; k < nPoints[2]; k++) {

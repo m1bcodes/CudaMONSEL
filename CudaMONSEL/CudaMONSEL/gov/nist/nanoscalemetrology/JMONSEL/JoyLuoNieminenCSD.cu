@@ -62,7 +62,7 @@ namespace JoyLuoNieminenCSD
 
       // Determine the proportionality constant
       gamma = 0.;
-      for (int i = 0; i < nce; i++)
+      for (int i = 0; i < nce; i++) 
          gamma += coef[i] * ::log((recipJ[i] * breakE) + beta[i]);
       gamma /= ::pow(breakE, 3.5);
    }

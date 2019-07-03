@@ -400,6 +400,7 @@ namespace AtomicShell
                }
                int z = std::stoi((*loop)[0]);
                int sum = 0;
+               mOccupancy[idx].reserve((*loop).size());
                for (int k = 1; k < (*loop).size(); ++k) {
                   int cur = std::stoi((*loop)[k]);
                   mOccupancy[idx].push_back(cur);

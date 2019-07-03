@@ -179,9 +179,10 @@ namespace MeanIonizationPotential
       try {
          std::ifstream file(name);
          if (!file.good()) throw 0;
+         mMeasured.reserve(92);
          for (CSVIterator loop(file); loop != CSVIterator(); ++loop) {
-            if ((*loop)[0][0] == '/') { continue; }
-            mMeasured.push_back(ToSI::eV(sciToDub((*loop)[0])));
+            if ((*loop)[0][0] != '/')
+               mMeasured.push_back(ToSI::eV(sciToDub((*loop)[0])));
          }
          file.close();
       }
@@ -213,9 +214,10 @@ namespace MeanIonizationPotential
       try {
          std::ifstream file(name);
          if (!file.good()) throw 0;
+         mMeasured.reserve(100);
          for (CSVIterator loop(file); loop != CSVIterator(); ++loop) {
-            if ((*loop)[0][0] == '/') { continue; }
-            mMeasured.push_back(ToSI::eV(sciToDub((*loop)[0])));
+            if ((*loop)[0][0] != '/')
+               mMeasured.push_back(ToSI::eV(sciToDub((*loop)[0])));
          }
          file.close();
       }
