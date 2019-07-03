@@ -21,7 +21,7 @@ namespace MONSEL_MaterialScatterModel
       SlowingDownAlgT* getCSD();
       __host__ __device__ bool addScatterMechanism(ScatterMechanismT* mech);
       //bool removeScatterMechanism(const ScatterMechanismT* mech);
-      bool removeScatterMechanism(ScatterMechanismT* mech);
+      //bool removeScatterMechanism(ScatterMechanismT* mech);
 
       const MaterialT& getMaterial() const override;
       double getMinEforTracking() const override;

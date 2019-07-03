@@ -32,6 +32,10 @@ namespace Math2
    __host__ extern double generateGaussianNoise(const double mean, const double stdDev);
    __device__ extern double generateGaussianNoise(const double mean, const double stdDev, curandState&);
    
+   //__host__ __device__ float EXP(float y);
+   //__host__ __device__ float LOG(float y);
+   //__host__ __device__ float POW(float b, float p);
+
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
    extern __constant__ const double PI;
 #else

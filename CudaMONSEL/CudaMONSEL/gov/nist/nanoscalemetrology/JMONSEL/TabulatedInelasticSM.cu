@@ -85,7 +85,10 @@ namespace TabulatedInelasticSM
 
       theta = ::atan2(::sqrt((dx * dx) + (dy * dy)), dz);
       phi = ::atan2(dy, dx);
-      return VectorXd ({ theta, phi });
+      VectorXd res(2);
+      res[0] = theta;
+      res[1] = phi;
+      return res;
    }
 
    VectorXd TabulatedInelasticSM::simESEf(double Eq, double deltaE, double r)
@@ -101,7 +104,10 @@ namespace TabulatedInelasticSM
       double Exy = (minE * (1. - r)) + (maxE * r);
       double ESEf = Exy + Ezq;
       double theta = ::acos(kzf / ::sqrt(ESEf));
-      return VectorXd({ ESEf, theta });
+      VectorXd res(2);
+      res[0] = ESEf;
+      res[1] = theta;
+      return res;
    }
 
    static double computeE0fromDispersion(double Eq, double deltaE)

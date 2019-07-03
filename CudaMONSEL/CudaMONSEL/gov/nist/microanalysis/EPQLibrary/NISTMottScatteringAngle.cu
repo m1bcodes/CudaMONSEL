@@ -65,7 +65,12 @@ namespace NISTMottScatteringAngle
       }
    }
 
-   NISTMottScatteringAngle::NISTMottScatteringAngle(const ElementT& elm) : RandomizedScatterT("NIST Elastic cross-section", REFERENCE), mElement(elm), mSpwem(SPWEM_LEN, 0), mX1(SPWEM_LEN, VectorXd(X1_LEN, 0)), mRutherford(ScreenedRutherfordScatteringAngle::getSRSA(elm.getAtomicNumber()))
+   NISTMottScatteringAngle::NISTMottScatteringAngle(const ElementT& elm) :
+      RandomizedScatterT("NIST Elastic cross-section", REFERENCE),
+      mElement(elm),
+      mSpwem(SPWEM_LEN, 0),
+      mX1(SPWEM_LEN, VectorXd(X1_LEN, 0)),
+      mRutherford(ScreenedRutherfordScatteringAngle::getSRSA(elm.getAtomicNumber()))
    {
       loadData(elm.getAtomicNumber());
    }

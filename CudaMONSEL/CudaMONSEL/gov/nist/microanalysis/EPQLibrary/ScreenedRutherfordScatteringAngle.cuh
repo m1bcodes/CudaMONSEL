@@ -11,15 +11,13 @@ namespace ScreenedRutherfordScatteringAngle
    class ScreenedRutherfordScatteringAngle : public RandomizedScatterT
    {
    public:
-      __host__ __device__ ScreenedRutherfordScatteringAngle(const ElementT& elm);
+      __host__ __device__ explicit ScreenedRutherfordScatteringAngle(const ElementT& elm);
 
       StringT toString() const;
 
       const ElementT& getElement() const override;
       double totalCrossSection(double energy) const override;
       double randomScatteringAngle(double energy) const override;
-
-      __host__ __device__ int get() const;
 
    private:
       const ElementT& mElement;

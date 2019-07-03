@@ -117,4 +117,30 @@ namespace VectorTest
 
       printf("VectorTest::testThree() completed.\n");
    }
+
+   __host__ __device__ void testFour()
+   {
+      amp::vector<int> v0(5, 8);
+      for (auto i : v0) {
+         printf("%d, ", i);
+      }
+      printf("\n");
+
+      amp::vector<amp::vector<int>> v(5, amp::vector<int>(5, 8));
+      for (auto u : v) {
+         for (auto i : u) {
+            printf("%d, ", i);
+         }
+         printf("\n");
+      }
+
+      v.resize(7, amp::vector<int>(9, 1));
+      for (auto u : v) {
+         for (auto i : u) {
+            printf("%d, ", i);
+         }
+         printf("\n");
+      }
+      printf("VectorTest::testFour() completed.\n");
+   }
 }

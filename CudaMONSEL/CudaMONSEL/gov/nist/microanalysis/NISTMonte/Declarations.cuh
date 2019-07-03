@@ -8,6 +8,8 @@
 #include <stack>
 
 #include "Amphibian\String.cuh"
+#include "Amphibian\vector.cuh"
+//#include "Amphibian\String.cuh"
 
 typedef amp::string StringT;
 typedef std::vector<double> VectorXd;

@@ -43,11 +43,6 @@ namespace ScreenedRutherfordScatteringAngle
       return ::acos(1 - 2.0 * alpha * r / (1 + alpha - r));
    }
 
-   __host__ __device__ int ScreenedRutherfordScatteringAngle::get() const
-   {
-      return mElement.getAtomicNumber();
-   }
-
    //const ScreenedRutherfordScatteringAngle SRSA1(Element::H);
    //const ScreenedRutherfordScatteringAngle SRSA2(Element::He);
    //const ScreenedRutherfordScatteringAngle SRSA3(Element::Li);
@@ -351,7 +346,6 @@ namespace ScreenedRutherfordScatteringAngle
 
    __global__ void initCuda()
    {
-      dScatter[0] = nullptr;
       dScatter[1] = new ScreenedRutherfordScatteringAngle(*Element::dH);
       dScatter[2] = new ScreenedRutherfordScatteringAngle(*Element::dHe);
       dScatter[3] = new ScreenedRutherfordScatteringAngle(*Element::dLi);
@@ -459,7 +453,8 @@ namespace ScreenedRutherfordScatteringAngle
 #endif
    }
 
-   ScreenedRutherfordRandomizedScatterFactory::ScreenedRutherfordRandomizedScatterFactory() : RandomizedScatterFactoryT("Screened Rutherford elastic cross-section", REFERENCE)
+   ScreenedRutherfordRandomizedScatterFactory::ScreenedRutherfordRandomizedScatterFactory() :
+      RandomizedScatterFactoryT("Screened Rutherford elastic cross-section", REFERENCE)
    {
    }
 

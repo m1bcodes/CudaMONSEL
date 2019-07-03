@@ -195,17 +195,17 @@ namespace MONSEL_MaterialScatterModel
    //   */
    //}
 
-   bool MONSEL_MaterialScatterModel::removeScatterMechanism(ScatterMechanismT* mech)
-   {
-      ScatterMechanismList::const_iterator itr = amp::find(scatterArray.begin(), scatterArray.end(), mech); // TODO: fix slow find
-      if (itr == scatterArray.end()) return false;
+   //bool MONSEL_MaterialScatterModel::removeScatterMechanism(ScatterMechanismT* mech)
+   //{
+   //   ScatterMechanismList::const_iterator itr = amp::find(scatterArray.begin(), scatterArray.end(), mech); // TODO: fix slow find
+   //   if (itr == scatterArray.end()) return false;
 
-      scatterArray.erase(itr);
-      nscattermech = scatterArray.size();
-      cached_cumulativeScatterRate.resize(nscattermech);
-      cached_eK = -1.; // Force recompute of cache on next call
-      return true;
-   }
+   //   scatterArray.erase(itr);
+   //   nscattermech = scatterArray.size();
+   //   cached_cumulativeScatterRate.resize(nscattermech);
+   //   cached_eK = -1.; // Force recompute of cache on next call
+   //   return true;
+   //}
 
    double MONSEL_MaterialScatterModel::getMinEforTracking() const
    {

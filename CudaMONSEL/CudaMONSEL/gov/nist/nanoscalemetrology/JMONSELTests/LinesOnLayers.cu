@@ -289,7 +289,7 @@ namespace LinesOnLayers
       NormalIntersectionShapeT* line = (NormalIntersectionShapeT*)NShapes::createLine(-h, w, linelength, thetal, thetar, radl, radr);
       RegionT lineRegion(&chamber, &PMMAMSM, line);
 
-      //      VectorXd yvals = { 0. };
+      //VectorXd yvals = { 0. };
       VectorXd yvals;
       //for (int i = -100; i < 100; ++i) {
       //   yvals.push_back(i);

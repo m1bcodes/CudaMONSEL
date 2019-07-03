@@ -65,7 +65,7 @@ namespace CzyzewskiMottScatteringAngle
 
    double CzyzewskiMottScatteringAngle::scatteringAngleForSpecialEnergy(int ei, double rand) const
    {
-      VectorXd r = mCummulativeDF[ei];
+      VectorXd r(mCummulativeDF[ei]);
       int ai = Algorithm::binarySearch(r.data(), 0, r.size() - 1, rand);
       if (ai >= 0)
          return CzyzewskiMottCrossSection::getSpecialAngle(ai);

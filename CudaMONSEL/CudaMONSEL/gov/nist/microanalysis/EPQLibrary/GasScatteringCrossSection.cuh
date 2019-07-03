@@ -10,7 +10,7 @@ namespace GasScatteringCrossSection
    class GasScatteringCrossSection : public RandomizedScatterT
    {
    public:
-      GasScatteringCrossSection(const ElementT& elm);
+      explicit GasScatteringCrossSection(const ElementT& elm);
       //GasScatteringCrossSection(const GasScatteringCrossSection& gscs);
 
       const RandomizedScatterT& getElasticModel();

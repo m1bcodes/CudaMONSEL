@@ -107,8 +107,8 @@ namespace NULagrangeInterpolation
          dy = ((2 * ns) < (order - 1 - m)) ? c[ns + 1] : d[ns--];
          y += dy;
       }
-
-      return VectorXd ({ y, dy });
+      VectorXd res(2, 0); res[0] = y; res[1] = dy;
+      return res;
    }
 
    /**

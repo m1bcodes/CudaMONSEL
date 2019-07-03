@@ -93,7 +93,11 @@ namespace Transform3D
       m[2][1] = v[2];
       m[2][2] = v[2];
       MatrixXd res = times(rotation(phi, th, psi), m);
-      VectorXd ret = { res[0][0], res[1][0], res[2][0] };
+      VectorXd ret(3, 0);
+      ret[0] = res[0][0];
+      ret[1] = res[1][0];
+      ret[2] = res[2][0];
+
       return ret;
    }
 

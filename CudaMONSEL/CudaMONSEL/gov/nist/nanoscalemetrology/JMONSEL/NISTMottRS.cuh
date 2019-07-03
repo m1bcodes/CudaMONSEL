@@ -10,7 +10,7 @@ namespace NISTMottRS
    class NISTMottRS : public RandomizedScatterT
    {
    public:
-      NISTMottRS(const ElementT& elm, int method);
+      explicit NISTMottRS(const ElementT& elm, int method);
 
       double randomScatteringAngle(double energy) const override;
       double totalCrossSection(double energy) const override;

@@ -17,7 +17,7 @@ namespace NISTMottScatteringAngle
    class NISTMottScatteringAngle : public RandomizedScatterT
    {
    public:
-      NISTMottScatteringAngle(const ElementT& elm);
+      explicit NISTMottScatteringAngle(const ElementT& elm);
 
       StringT toString() const;
 

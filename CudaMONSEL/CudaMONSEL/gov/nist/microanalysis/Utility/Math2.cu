@@ -4,6 +4,46 @@
 
 namespace Math2
 {
+//#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+//   __constant__ const double EXP_A = 184;
+//   __constant__ const double EXP_C = 16249;
+//#else
+//   const double EXP_A = 184;
+//   const double EXP_C = 16249;
+//#endif
+//
+//   __host__ __device__ float EXP(float y)
+//   {
+//      union
+//      {
+//         float d;
+//         struct
+//         {
+////#ifdef LITTLE_ENDIAN
+////            short j, i;
+////#else
+////            short i, j;
+////#endif
+//            short j, i;
+//         } n;
+//      } eco;
+//      eco.n.i = EXP_A*(y)+(EXP_C);
+//      eco.n.j = 0;
+//      return eco.d;
+//   }
+//
+//   __host__ __device__ float LOG(float y)
+//   {
+//      int * nTemp = (int*)&y;
+//      y = (*nTemp) >> 16;
+//      return (y - EXP_C) / EXP_A;
+//   }
+//
+//   __host__ __device__ float POW(float b, float p)
+//   {
+//      return EXP(LOG(b) * p);
+//   }
+
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
    __constant__ const double PI = 3.14159265358979323846;
 #else

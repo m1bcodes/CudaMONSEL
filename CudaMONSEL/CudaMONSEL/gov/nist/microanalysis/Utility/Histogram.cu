@@ -63,7 +63,7 @@ namespace Histogram
 
    void Histogram::addBin(double binMin)
    {
-      VectorXd newBinMin(mBinMin.begin(), mBinMin.end());
+      VectorXd newBinMin(mBinMin);
       newBinMin.push_back(binMin);
       Algorithm::quicksort(newBinMin.data(), 0, newBinMin.size() - 1);
       mCounts.resize(newBinMin.size() + 2);
@@ -117,7 +117,7 @@ namespace Histogram
 
    void Histogram::clear()
    {
-      mCounts.assign(mCounts.size(), 0);
+      mCounts.resize(mCounts.size(), 0);
    }
 
    int Histogram::overrange() const
