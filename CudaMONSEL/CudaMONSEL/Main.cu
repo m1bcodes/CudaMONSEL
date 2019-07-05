@@ -268,6 +268,16 @@ __global__ void ScreenedRutherfordScatteringAngleKernel()
    //delete b;
 }
 
+__global__ void printSpwem()
+{
+   printf("CPU: %d\n", NISTMottScatteringAngle::getNISTMSA(59).getSpwem().size());
+   for (auto a : NISTMottScatteringAngle::getNISTMSA(59).getSpwem()) {
+      printf("%.10e ", a);
+   }
+   printf("GPU end\n");
+   //printf("%.10 %de\n", NISTMottScatteringAngle::getNISTMSA(1).getSpwem()[0], NISTMottScatteringAngle::getNISTMSA(1).getSpwem().size());
+}
+
 void initCuda()
 {
    printf("-----------------initCuda-----------------------------\n");
@@ -290,13 +300,24 @@ void initCuda()
    //ScreenedRutherfordScatteringAngleKernel << <1, 1 >> >();
    //checkCudaErrors(cudaGetLastError());
 
+   NISTMottScatteringAngle::initCuda << <1, 1 >> >();
+   checkCudaErrors(cudaGetLastError());
+   NISTMottScatteringAngle::copyDataToCuda();
+   printSpwem << <1, 1 >> >();
+   checkCudaErrors(cudaGetLastError());
+   printf("GPU: %d\n", NISTMottScatteringAngle::getNISTMSA(59).getSpwem().size());
+   for (auto a : NISTMottScatteringAngle::getNISTMSA(59).getSpwem()) {
+      printf("%.10e ", a);
+   }
+   printf("CPU end\n");
+
    float tmp[] = { 0, 1, 2, 3, 4, 5, 6, 7 };
    float *d_tmp;
    checkCudaErrors(cudaMalloc((void**)&d_tmp, sizeof(float) * 8));
    checkCudaErrors(cudaMemcpy(d_tmp, tmp, sizeof(float) * 8, cudaMemcpyHostToDevice));
-   initArr << <1, 1 >> >(d_tmp);
+   initArr<<<1, 1>>>(d_tmp);
    checkCudaErrors(cudaGetLastError());
-   cpyker << <1, 1 >> >();
+   cpyker<<<1, 1>>>();
    checkCudaErrors(cudaFree(d_tmp));
 
    //char *d_data;
@@ -325,10 +346,10 @@ int main()
    //checkCudaErrors(cudaDeviceSynchronize());
    //checkCudaErrors(cudaFree(d_c));
 
-   initCuda();
-
    testsCPU();
    testGPU();
+
+   initCuda();
 
    LinesOnLayers::run();
 

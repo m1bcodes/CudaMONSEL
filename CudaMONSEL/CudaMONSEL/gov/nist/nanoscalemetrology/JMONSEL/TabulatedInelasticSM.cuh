@@ -29,7 +29,7 @@ namespace TabulatedInelasticSM
       StringT toString() const;
 
    private:
-      VectorXd simESEf(double Eq, double deltaE, double r);
+      void simESEf(double Eq, double deltaE, double r, double[2]);
       double pickBE(double Eq, double deltaE);
 
       const int methodSE;

@@ -89,6 +89,9 @@ namespace RegionBase
       const RegionBase* res = this;
       for (auto subRegion : mSubRegions) {
          double candidate = subRegion->mShape->getFirstIntersection(p0, p1);
+         if (p1[0] != p1[0] || p1[1] != p1[1] || p1[2] != p1[2]) {
+            printf("wtf\n");
+         }
          if (candidate <= 0.0) printf("%s %lf\n", subRegion->mShape->toString().c_str(), candidate);
          if ((candidate <= 1.0) && (candidate < t)) {
             //printf("%s, %s, %.10e\n", subRegion->toString().c_str(), subRegion->mShape->toString().c_str(), candidate);

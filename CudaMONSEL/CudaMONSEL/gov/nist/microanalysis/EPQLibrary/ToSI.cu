@@ -41,7 +41,7 @@ namespace ToSI
       return MEV * e;
    }
 
-   double keV(double e)
+   __host__ __device__ double keV(double e)
    {
       return KEV * e;
    }

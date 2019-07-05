@@ -101,7 +101,7 @@ namespace MonteCarloSS
 
    void MonteCarloSS::takeStep()
    {
-      auto pos0 = mElectron->getPosition();
+      const double *pos0 = mElectron->getPosition();
 
       auto currentRegion = mElectron->getCurrentRegion();
       if ((currentRegion == nullptr) || !(currentRegion->getShape()->contains(pos0))) {

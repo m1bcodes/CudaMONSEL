@@ -42,6 +42,7 @@ namespace JoyLuoNieminenCSD
    void JoyLuoNieminenCSD::init()
    {
       nce = mat.getElementCount();
+      printf("%d\n", nce);
       if (nce == 0)
          return;
       recipJ.resize(nce);
@@ -74,7 +75,7 @@ namespace JoyLuoNieminenCSD
       return compute(len, pe->getEnergy());
    }
 
-   double JoyLuoNieminenCSD::compute(double len, double kE) const
+   double JoyLuoNieminenCSD::compute(const double len, const double kE) const
    {
       if ((nce == 0) || (kE < minEforTracking) || (kE <= 0.))
          return 0.;
@@ -89,7 +90,9 @@ namespace JoyLuoNieminenCSD
 
       if (loss <= (maxlossfraction * kE))
          return -loss;
-
+      //if (::fabs(kE - 7.5500619306e-018) < 0.01e-018)
+      //   printf("%d %.10e %.10e %.10e %.10e %.10e\n", nce, minEforTracking, breakE, len, kE, loss);
+      //printf("%d %.10e %.10e %.10e %.10e %.10e\n", nce, minEforTracking, breakE, len, kE, loss);
       loss = compute(len / 2., kE); // loss from 1st half of step
       return loss + compute(len / 2., kE + loss); // add loss from second half
    }

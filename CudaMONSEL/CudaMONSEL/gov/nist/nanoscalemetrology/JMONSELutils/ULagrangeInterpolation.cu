@@ -171,4 +171,80 @@ namespace ULagrangeInterpolation
       delete[] y;
       return ret;
    }
+
+   static VectorXf uNeville(const float f[], const int offset, const int order, const float x)
+   {
+      int ns = (int)::round(x); // Nearest grid point
+      if (ns < 0)
+         ns = 0;
+      else if (ns > order)
+         ns = order;
+      float* c = new float[order + 1];
+      float* d = new float[order + 1];
+      memcpy(c, f + offset, sizeof(float) * (order + 1));
+      memcpy(d, f + offset, sizeof(float) * (order + 1));
+
+      float y = c[ns--];
+      float ho, hp, w, dy = 0;
+      for (int m = 1; m <= order; m++) {
+         for (int i = 0; i <= order - m; i++) {
+            ho = i - x;
+            hp = i + m - x;
+            w = c[i + 1] - d[i];
+            d[i] = -hp * w / m;
+            c[i] = -ho * w / m;
+         }
+         dy = (2 * ns < (order - 1 - m)) ? c[ns + 1] : d[ns--];
+         y += dy;
+      }
+      delete[] c;
+      delete[] d;
+      VectorXf res(2, 0); res[0] = y; res[1] = dy;
+      return res;
+   }
+
+   VectorXf d1(float const * const f, const int len, const float x0, const float xinc, const int order, const float x)
+   {
+      if (xinc == 0.)
+         printf("ULagrangeInterpolation::d1: Interval spacing must be nonzero.\n");
+      if ((order < 1) || (len < order + 1))
+         printf("ULagrangeInterpolation::d1: 0 < order <= table.length-1 is required.\n");
+      const float reducedx = (x - x0) / xinc;
+      int index0 = (int)reducedx - order / 2;
+      if (index0 < 0)
+         index0 = 0;
+      else if (index0 > len - order - 1)
+         index0 = len - order - 1;
+      return uNeville(f, index0, order, reducedx - index0);
+   }
+
+   VectorXf d1(const VectorXf& f, const float x0, const float xinc, const int order, const float x)
+   {
+      return d1(f.data(), f.size(), x0, xinc, order, x);
+   }
+
+   VectorXf d2(const MatrixXf& f, const float x0[], int x0len, const float xinc[], int xinclen, int order, const float x[], int xlen)
+   {
+      if ((x0len < 2) || (xinclen < 2) || (xlen < 2))
+         printf("ULagrangeInterpolation d2: Input array is too short: %d, %d, %d\n", x0len, xinclen, xlen);
+      if (xinc[0] == 0.)
+         printf("ULagrangeInterpolation d2: Interval spacing must be nonzero.\n");
+      if (f.size() < order + 1)
+         printf("ULagrangeInterpolation d2: 0 < order <= table.length-1 is required.\n");
+      const float reducedx1 = (x[0] - x0[0]) / xinc[0];
+      int index0 = (int)reducedx1 - order / 2;
+      if (index0 < 0)
+         index0 = 0;
+      else if (index0 > f.size() - order - 1)
+         index0 = f.size() - order - 1;
+      float* y = new float[order + 1];
+      for (int i = 0; i <= order; i++) {
+         VectorXf temp = d1(f[index0 + i].data(), f[index0 + i].size(), x0[1], xinc[1], order, x[1]);
+         y[i] = temp[0];
+      }
+
+      VectorXf ret = d1(y, order + 1, x0[0] + index0 * xinc[0], xinc[0], order, x[0]);
+      delete[] y;
+      return ret;
+   }
 }

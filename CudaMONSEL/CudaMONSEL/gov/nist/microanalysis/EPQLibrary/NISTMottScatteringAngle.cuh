@@ -17,7 +17,7 @@ namespace NISTMottScatteringAngle
    class NISTMottScatteringAngle : public RandomizedScatterT
    {
    public:
-      explicit NISTMottScatteringAngle(const ElementT& elm);
+      __host__ __device__ explicit NISTMottScatteringAngle(const ElementT& elm);
 
       StringT toString() const;
 
@@ -25,15 +25,18 @@ namespace NISTMottScatteringAngle
       double totalCrossSection(const double) const override;
       double randomScatteringAngle(const double) const override;
 
-      const VectorXd& getSpwem() const;
-      const MatrixXd& getX1() const;
+      __host__ __device__ const VectorXf& getSpwem() const;
+      __host__ __device__ const MatrixXf& getX1() const;
+
+      __device__ void copySpwem(float *, unsigned int);
+      __device__ void copyX1j(unsigned int, float *, unsigned int);
 
    private:
       void loadData(int an);
 
       const ElementT& mElement;
-      VectorXd mSpwem;
-      MatrixXd mX1;
+      VectorXf mSpwem;
+      MatrixXf mX1;
       const ScreenedRutherfordScatteringAngleT& mRutherford;
    };
 
@@ -54,10 +57,11 @@ namespace NISTMottScatteringAngle
 
    extern const RandomizedScatterFactoryT& Factory;
 
-   extern const NISTMottScatteringAngle& getNISTMSA(int an);
+   __host__ __device__ extern const NISTMottScatteringAngle& getNISTMSA(int an);
 
    extern void init();
    extern __global__ void initCuda();
+   extern void copyDataToCuda();
 }
 
 #endif

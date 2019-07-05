@@ -35,7 +35,7 @@ namespace ToSI
 
    double Torr(double torr);
    double MeV(double e);
-   double keV(double e);
+   __host__ __device__ double keV(double e);
    __host__ __device__ double eV(double e);
    double AMU(double amu);
    double dyne(double f);

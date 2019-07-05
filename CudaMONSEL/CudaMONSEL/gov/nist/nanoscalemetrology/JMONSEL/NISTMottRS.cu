@@ -133,15 +133,15 @@ namespace NISTMottRS
 
       }
       else if (energy < MAX_NISTMOTT) {
-         const double x0[] =  {
+         const float x0[] =  {
             DL50,
                0.
          };
-         const double xinc[] = {
+         const float xinc[] = {
             PARAM,
             0.005
          };
-         const double x[] = {
+         const float x[] = {
             ::log(energy),
             Math2::random()
          };

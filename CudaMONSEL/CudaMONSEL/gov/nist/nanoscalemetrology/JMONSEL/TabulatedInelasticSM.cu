@@ -70,7 +70,7 @@ namespace TabulatedInelasticSM
       setMaterial(&mat);
    }
 
-   VectorXd updateDirection(double theta, double phi, double dTheta, double dPhi)
+   void updateDirection(double theta, double phi, double dTheta, double dPhi, double res[2])
    {
       double ct = ::cos(theta), st = ::sin(theta);
       double cp = ::cos(phi), sp = ::sin(phi);
@@ -85,13 +85,11 @@ namespace TabulatedInelasticSM
 
       theta = ::atan2(::sqrt((dx * dx) + (dy * dy)), dz);
       phi = ::atan2(dy, dx);
-      VectorXd res(2);
       res[0] = theta;
       res[1] = phi;
-      return res;
    }
 
-   VectorXd TabulatedInelasticSM::simESEf(double Eq, double deltaE, double r)
+   void TabulatedInelasticSM::simESEf(double Eq, double deltaE, double r, double res[2])
    {
       double q = ::sqrt(Eq);
       double kz = (deltaE - Eq) / 2. / q;
@@ -104,10 +102,8 @@ namespace TabulatedInelasticSM
       double Exy = (minE * (1. - r)) + (maxE * r);
       double ESEf = Exy + Ezq;
       double theta = ::acos(kzf / ::sqrt(ESEf));
-      VectorXd res(2);
       res[0] = ESEf;
       res[1] = theta;
-      return res;
    }
 
    static double computeE0fromDispersion(double Eq, double deltaE)
@@ -218,8 +214,8 @@ namespace TabulatedInelasticSM
 
    ElectronT* TabulatedInelasticSM::scatter(ElectronT* pe)
    {
-      double kE0 = pe->getEnergy(); // PE initial energy rel to CB bottom
-      double kE = kE0 + energyOffset; // PE initial energy rel to
+      const double kE0 = pe->getEnergy(); // PE initial energy rel to CB bottom
+      const double kE = kE0 + energyOffset; // PE initial energy rel to
       // scattering band bottom
       if (kE < tableEiDomain[0])
          /*
@@ -236,7 +232,7 @@ namespace TabulatedInelasticSM
       double phi = 0.; // PE trajectory parameters
       double energySE, thetaSE, phiSE; // SE trajectory parameters
       // TODO Do I need to check that kE>offsetFermiEnergy?
-      double randoms[] = { Math2::random(), Math2::random(), Math2::random(), Math2::random() };
+      const double randoms[] = { Math2::random(), Math2::random(), Math2::random(), Math2::random() };
       interpInput[0] = kE;
       interpInput[1] = randoms[0];
       // Energy loss by PE
@@ -259,8 +255,8 @@ namespace TabulatedInelasticSM
       * return after we deal with the PE energy loss.
       */
 
-      double theta0PE = pe->getTheta(); // Remember original direction;
-      double phi0PE = pe->getPhi(); // to use for SE
+      const double theta0PE = pe->getTheta(); // Remember original direction;
+      const double phi0PE = pe->getPhi(); // to use for SE
       if (deltaE >= bandgap) {
          // Determine theta and phi here
          /*
@@ -390,7 +386,8 @@ namespace TabulatedInelasticSM
             double Eqmax = sum + root;
             if ((Eqmin <= Eq) && (Eq <= Eqmax)) { // single-electron
                // scattering
-               auto energytheta = simESEf(Eq, deltaE, randoms[3]);
+               double energytheta[2];
+               simESEf(Eq, deltaE, randoms[3], energytheta);
                energySE = energytheta[0] - energyOffset;
                if ((energySE + energyCBbottom) < minEgenSE)
                   return NULL;
@@ -400,7 +397,8 @@ namespace TabulatedInelasticSM
                thetaSE = Math2::PI / 2. - theta;
                phiSE = phi + Math2::PI;
                // Combine with adjustment for additional simESEf deflection
-               auto newdir = updateDirection(thetaSE, phiSE, energytheta[1], 2. * Math2::PI * Math2::random());
+               double newdir[2];
+               updateDirection(thetaSE, phiSE, energytheta[1], 2. * Math2::PI * Math2::random(), newdir);
                //Update SE direction by this combined amount
                se->updateDirection(newdir[0], newdir[1]);
 

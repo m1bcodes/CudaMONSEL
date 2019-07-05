@@ -327,8 +327,7 @@ namespace amp
    __host__ __device__ void vector<T>::assign(const T start[], const T end[])
    {
       const unsigned int n = end - start;
-      resize(n);
-      clear();
+      clear(n);
 
       for (int i = 0; i < n; ++i) {
          push_back(*(start + i));

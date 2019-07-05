@@ -24,8 +24,8 @@ namespace NISTMottRS
       //void loadData(int an); // same as NISTMottScatteringAngle
 
       const ElementT& mElement;
-      const VectorXd& mSpwem;
-      const MatrixXd& mX1;
+      const VectorXf& mSpwem;
+      const MatrixXf& mX1;
 
       const ScreenedRutherfordScatteringAngleT& mRutherford;
       const BrowningEmpiricalCrossSectionT& mBrowning;

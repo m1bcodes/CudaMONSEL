@@ -12,6 +12,8 @@
 //#include "Amphibian\String.cuh"
 
 typedef amp::string StringT;
+typedef amp::vector<float> VectorXf;
+typedef amp::vector<VectorXf> MatrixXf;
 typedef amp::vector<double> VectorXd;
 typedef amp::vector<VectorXd> MatrixXd;
 typedef amp::vector<MatrixXd> Matrix3DXd;

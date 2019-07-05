@@ -19,7 +19,7 @@ namespace JoyLuoNieminenCSD
       void setMaterial(const SEmaterialT* mat) override;
       double compute(double d, const ElectronT* pe) const override;
 
-      double compute(double len, double kE) const;
+      double compute(const double len, const double kE) const;
 
       double getBreakE() const;
       void setBreakE(double breakE);
