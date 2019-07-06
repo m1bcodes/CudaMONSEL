@@ -1273,12 +1273,16 @@ namespace Math2
 
    __host__ double random()
    {
-      return (double)rand() / RAND_MAX;
+      //return (double)rand() / RAND_MAX;
+      // http://c-faq.com/lib/randrange.html
+      // like Java, does not include 1
+      return (double)rand() / ((double)RAND_MAX + 1);
    }
 
    __device__ double random(curandState& state)
    {
-      return curand_uniform_double(&state); // excludes 0.0 but includes 1.0.
+      // curand_uniform() can return between 0.0 (exclusive) and 1.0 (inclusive).
+      return 1 - curand_uniform_double(&state); // excludes 1.0 but includes 0.0.
    }
 
    __host__ int randomInt(int mod)

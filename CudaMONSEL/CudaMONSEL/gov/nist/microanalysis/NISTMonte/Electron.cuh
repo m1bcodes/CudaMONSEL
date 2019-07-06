@@ -24,8 +24,8 @@ namespace Electron
       double getPreviousEnergy() const;
       int getStepCount() const;
       double stepLength() const;
-      __host__ __device__ void candidatePoint(double dS, double res[]) const;
-      __host__ __device__ void updateDirection(double dTheta, double dPhi);
+      __host__ __device__ void candidatePoint(const double dS, double res[]) const;
+      __host__ __device__ void updateDirection(const double dTheta, const double dPhi);
       __host__ __device__ void move(const double newPoint[], double dE);
       __host__ __device__ void setEnergy(double newEnergy);
       __host__ __device__ void setPreviousEnergy(double newPreviousEnergy);

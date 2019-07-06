@@ -39,9 +39,10 @@ namespace BrowningEmpiricalCrossSection
          const double alpha = 7.0e-3 / e;
          return ::acos(1.0 - ((2.0 * alpha * r2) / (alpha - r2 + 1)));
       }
-      else
+      else {
          // Isotropic scattering
          return ::acos(1 - 2.0 * r2);
+      }
    }
 
    //const BrowningEmpiricalCrossSection BECS1(1);

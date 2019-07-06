@@ -103,8 +103,9 @@ namespace CzyzewskiMottScatteringAngle
 
    double CzyzewskiMottScatteringAngle::randomScatteringAngle(double energy) const
    {
-      if (energy < MAX_CZYZEWSKI)
+      if (energy < MAX_CZYZEWSKI) {
          return randomScatteringAngle(energy, Math2::random());
+      }
       else {
          return mRutherford.randomScatteringAngle(energy);
       }

@@ -100,21 +100,16 @@ namespace Electron
       return Math2::distance3d(mPrevPosition, mPosition);
    }
 
-   __host__ __device__ void Electron::candidatePoint(double dS, double res[]) const
+   __host__ __device__ void Electron::candidatePoint(const double dS, double res[]) const
    {
       double st = ::sin(mTheta);
       // Calculate the new point as dS distance from mPosition
       res[0] = mPosition[0] + dS * ::cos(mPhi) * st;
       res[1] = mPosition[1] + dS * ::sin(mPhi) * st;
       res[2] = mPosition[2] + dS * ::cos(mTheta);
-
-      if (res[0] != res[0] || res[1] != res[1] || res[2] != res[2]) {
-         printf("wtf\n");
-         printf("%.10e %.10e %.10e\n", dS, mPhi, mTheta);
-      }
    }
 
-   __host__ __device__ void Electron::updateDirection(double dTheta, double dPhi)
+   __host__ __device__ void Electron::updateDirection(const double dTheta, const double dPhi)
    {
       // The candidate point is computed by rotating the current trajectory back
       // to the z-axis, deflecting the z-axis by dTheta down from the z-axis and

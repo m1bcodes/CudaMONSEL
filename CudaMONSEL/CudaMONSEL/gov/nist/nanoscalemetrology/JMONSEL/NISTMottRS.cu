@@ -74,7 +74,7 @@ namespace NISTMottRS
    //}
 
    NISTMottRS::NISTMottRS(const ElementT& elm, int method) :
-      RandomizedScatterT("NIST Elastic cross-section", mReferenceWebsite),
+      RandomizedScatterT("NIST-Mott Elastic cross-section", mReferenceWebsite),
       mElement(elm),
       method(method >= 1 && method <= 3 ? method : 1),
       mRutherford(ScreenedRutherfordScatteringAngle::getSRSA(elm.getAtomicNumber())),
