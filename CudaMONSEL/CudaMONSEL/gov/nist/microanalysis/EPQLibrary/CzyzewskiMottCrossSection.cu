@@ -6,6 +6,14 @@
 
 namespace CzyzewskiMottCrossSection
 {
+//#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+//   __constant__ const int SpecialEnergyCount = 26;
+//   __constant__ const int SpecialAngleCount = 96;
+//   __constant__ const double MaxEnergy = 4.8065296e-15;
+//
+//   __constant__ static const int kTotalIndex = 96;
+//   __constant__ static const int kMeanFreePathIndex = 97;
+//#else
    const int SpecialEnergyCount = 26;
    const int SpecialAngleCount = 96;
    const double MaxEnergy = ToSI::keV(30.0);
@@ -140,6 +148,7 @@ namespace CzyzewskiMottCrossSection
       Math2::toRadians(178),
       Math2::toRadians(180)
    };
+//#endif
 
    // https://www.oreilly.com/library/view/c-cookbook/0596007612/ch03s06.html
    static double sciToDub(const std::string& str)
@@ -228,7 +237,7 @@ namespace CzyzewskiMottCrossSection
 
    int getEnergyIndex(double energy)
    {
-      int ei = Algorithm::binarySearch(kEnergy, 0, sizeof(kEnergy)/sizeof(double), energy);
+      const int ei = Algorithm::binarySearch(kEnergy, 0, sizeof(kEnergy)/sizeof(double), energy);
       return ei >= 0 ? ei : -(ei + 1);
    }
 

@@ -86,7 +86,7 @@ namespace ToSI
       return MICROMETER * m;
    }
 
-   double sqrAngstrom(double a2)
+   __host__ __device__ double sqrAngstrom(double a2)
    {
       return ANGSTROM * ANGSTROM * a2;
    }

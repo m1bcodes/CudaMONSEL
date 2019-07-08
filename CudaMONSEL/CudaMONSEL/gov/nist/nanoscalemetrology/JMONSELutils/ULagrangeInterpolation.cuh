@@ -13,8 +13,8 @@ namespace ULagrangeInterpolation
    extern VectorXd d1(const VectorXd& f, double x0, double xinc, int order, double x);
    extern VectorXd d2(const MatrixXd& f, const double x0[], int x0len, const double xinc[], int xinclen, int order, const double x[], int xlen);
 
-   extern VectorXf d1(const VectorXf& f, const float x0, const float xinc, const int order, const float x);
-   extern VectorXf d2(const MatrixXf& f, const float x0[], int x0len, const float xinc[], int xinclen, int order, const float x[], int xlen);
+   __host__ __device__ extern VectorXf d1(const VectorXf& f, const float x0, const float xinc, const int order, const float x);
+   __host__ __device__ extern VectorXf d2(const MatrixXf& f, const float x0[], int x0len, const float xinc[], int xinclen, int order, const float x[], int xlen);
 }
 
 #endif

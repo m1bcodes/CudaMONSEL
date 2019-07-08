@@ -85,15 +85,15 @@ namespace CzyzewskiMottScatteringAngle
       if (!(rand < 1.0)) printf("CzyzewskiMottScatteringAngle::randomScatteringAngle 2: %lf\n", rand);
       if (!(energy <= ToSI::keV(30.0))) printf("CzyzewskiMottScatteringAngle::randomScatteringAngle 3: %lf\n", energy);
       if (!(energy > 0.0)) printf("CzyzewskiMottScatteringAngle::randomScatteringAngle 4: %lf\n", energy);
-      int e = CzyzewskiMottCrossSection::getEnergyIndex(energy);
-      double e0 = CzyzewskiMottCrossSection::getSpecialEnergy(e);
+      const int e = CzyzewskiMottCrossSection::getEnergyIndex(energy);
+      const double e0 = CzyzewskiMottCrossSection::getSpecialEnergy(e);
       if (!(energy <= e0)) printf("CzyzewskiMottScatteringAngle::randomScatteringAngle 5: %lf\n", energy);
-      double a0 = scatteringAngleForSpecialEnergy(e, rand);
+      const double a0 = scatteringAngleForSpecialEnergy(e, rand);
       if (energy == e0)
          return a0;
       else {
-         double a1 = scatteringAngleForSpecialEnergy(e - 1, rand);
-         double e1 = CzyzewskiMottCrossSection::getSpecialEnergy(e - 1);
+         const double a1 = scatteringAngleForSpecialEnergy(e - 1, rand);
+         const double e1 = CzyzewskiMottCrossSection::getSpecialEnergy(e - 1);
          if (!(energy > e1)) printf("CzyzewskiMottScatteringAngle::randomScatteringAngle 6: %lf\n", energy);
          if (!(a1 >= 0.0)) printf("CzyzewskiMottScatteringAngle::randomScatteringAngle 7: %lf\n", energy);
          if (!(a0 >= 0.0)) printf("CzyzewskiMottScatteringAngle::randomScatteringAngle 8: %lf\n", energy);
@@ -116,8 +116,8 @@ namespace CzyzewskiMottScatteringAngle
       int e = CzyzewskiMottCrossSection::getEnergyIndex(energy);
       if (e == 0)
          e = 1;
-      double e0 = CzyzewskiMottCrossSection::getSpecialEnergy(e - 1);
-      double e1 = CzyzewskiMottCrossSection::getSpecialEnergy(e);
+      const double e0 = CzyzewskiMottCrossSection::getSpecialEnergy(e - 1);
+      const double e1 = CzyzewskiMottCrossSection::getSpecialEnergy(e);
       if (!(energy >= e0)) printf("CzyzewskiMottScatteringAngle::meanFreePath 1: %lf\n", energy);
       if (!(energy <= e1)) printf("CzyzewskiMottScatteringAngle::meanFreePath 2: %lf\n", energy);
       return mMeanFreePath[e - 1] + ((mMeanFreePath[e] - mMeanFreePath[e - 1]) * ((energy - e0) / (e1 - e0)));
@@ -129,8 +129,8 @@ namespace CzyzewskiMottScatteringAngle
          int e = CzyzewskiMottCrossSection::getEnergyIndex(energy);
          if (e == 0)
             e = 1;
-         double e0 = CzyzewskiMottCrossSection::getSpecialEnergy(e - 1);
-         double e1 = CzyzewskiMottCrossSection::getSpecialEnergy(e);
+         const double e0 = CzyzewskiMottCrossSection::getSpecialEnergy(e - 1);
+         const double e1 = CzyzewskiMottCrossSection::getSpecialEnergy(e);
          if (!(energy >= e0)) printf("CzyzewskiMottScatteringAngle::totalCrossSection 1: %lf\n", energy);
          if (!(energy <= e1)) printf("CzyzewskiMottScatteringAngle::totalCrossSection 2: %lf\n", energy);
          return mTotalCrossSection[e - 1] + ((mTotalCrossSection[e] - mTotalCrossSection[e - 1]) * ((energy - e0) / (e1 - e0)));

@@ -13,6 +13,19 @@
 
 namespace NISTMottRS
 {
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+   __constant__ static const double MAX_NISTMOTT = 3.2043531e-15;
+   __constant__ static const double MIN_NISTMOTT = 8.0108827e-18;
+
+   __constant__ static const int qINTERPOLATIONORDER = 3;
+   __constant__ static const int sigmaINTERPOLATIONORDER = 3;
+   __constant__ static const double scale = 2.8002852e-21;
+
+   __constant__ static const int SPWEM_LEN = 61;
+   __constant__ static const int X1_LEN = 201;
+   __constant__ static const double DL50 = -17.0963196301;
+   __constant__ static const double PARAM = 0.04336766652;
+#else
    static const double MAX_NISTMOTT = ToSI::keV(20.0);
    static const double MIN_NISTMOTT = ToSI::keV(0.050);
 
@@ -24,6 +37,7 @@ namespace NISTMottRS
    static const int X1_LEN = 201;
    static const double DL50 = ::log(MIN_NISTMOTT);
    static const double PARAM = (::log(MAX_NISTMOTT) - DL50) / 60.0;
+#endif
 
    static const Reference::Author* al[] = {
       &Reference::FSalvat,
@@ -112,7 +126,7 @@ namespace NISTMottRS
          }
       }
       else if (energy < MAX_NISTMOTT) {
-         return scale * ULagrangeInterpolation::d1(mSpwem, DL50, PARAM, sigmaINTERPOLATIONORDER, ::log(energy))[0];
+         return scale * ULagrangeInterpolation::d1(mSpwem, DL50, PARAM, sigmaINTERPOLATIONORDER, ::logf(energy))[0];
       }
       else {
          return mRutherford.totalCrossSection(energy);

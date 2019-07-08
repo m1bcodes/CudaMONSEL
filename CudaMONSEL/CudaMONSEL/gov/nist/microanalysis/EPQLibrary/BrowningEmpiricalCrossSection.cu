@@ -21,14 +21,14 @@ namespace BrowningEmpiricalCrossSection
       return mElement;
    }
 
-   double BrowningEmpiricalCrossSection::totalCrossSection(double energy) const
+   __host__ __device__ double BrowningEmpiricalCrossSection::totalCrossSection(const double energy) const
    {
       const double e = FromSI::keV(energy);
       const double re = ::sqrt(e);
       return 3.0e-22 * mZp17 / (e + 0.005 * mZp17 * re + 0.0007 * mZp2 / re);
    }
 
-   double BrowningEmpiricalCrossSection::randomScatteringAngle(double energy) const
+   double BrowningEmpiricalCrossSection::randomScatteringAngle(const double energy) const
    {
       const double r1 = Math2::random(), r2 = Math2::random();
       const double z = mElement.getAtomicNumber();

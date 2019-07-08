@@ -37,11 +37,11 @@ namespace FromSI
       return TORR * pascal;
    }
 
-   double keV(double e) {
+   __host__ __device__ double keV(const double e) {
       return e * KEV;
    }
 
-   __host__ __device__ double eV(double e) {
+   __host__ __device__ double eV(const double e) {
       return e * EV;
    }
 

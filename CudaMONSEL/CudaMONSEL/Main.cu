@@ -234,6 +234,8 @@ void testsCPU()
 __global__ void print()
 {
    //printf("%lf\n", ::powf(5.0, 2.0));
+   //printf("%.10e\n", ::sqrt(25.0));
+   //printf("%.10e\n", 25.0);
    printf("%s\n", Reference::dNullReference->getLongForm().c_str());
 }
 

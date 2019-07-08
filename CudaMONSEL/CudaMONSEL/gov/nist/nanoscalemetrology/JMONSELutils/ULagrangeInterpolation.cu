@@ -172,7 +172,7 @@ namespace ULagrangeInterpolation
       return ret;
    }
 
-   static VectorXf uNeville(const float f[], const int offset, const int order, const float x)
+   __host__ __device__ static VectorXf uNeville(const float f[], const int offset, const int order, const float x)
    {
       int ns = (int)::round(x); // Nearest grid point
       if (ns < 0)
@@ -203,7 +203,7 @@ namespace ULagrangeInterpolation
       return res;
    }
 
-   VectorXf d1(float const * const f, const int len, const float x0, const float xinc, const int order, const float x)
+   __host__ __device__ VectorXf d1(float const * const f, const int len, const float x0, const float xinc, const int order, const float x)
    {
       if (xinc == 0.)
          printf("ULagrangeInterpolation::d1: Interval spacing must be nonzero.\n");
@@ -218,12 +218,12 @@ namespace ULagrangeInterpolation
       return uNeville(f, index0, order, reducedx - index0);
    }
 
-   VectorXf d1(const VectorXf& f, const float x0, const float xinc, const int order, const float x)
+   __host__ __device__ VectorXf d1(const VectorXf& f, const float x0, const float xinc, const int order, const float x)
    {
       return d1(f.data(), f.size(), x0, xinc, order, x);
    }
 
-   VectorXf d2(const MatrixXf& f, const float x0[], int x0len, const float xinc[], int xinclen, int order, const float x[], int xlen)
+   __host__ __device__ VectorXf d2(const MatrixXf& f, const float x0[], int x0len, const float xinc[], int xinclen, int order, const float x[], int xlen)
    {
       if ((x0len < 2) || (xinclen < 2) || (xlen < 2))
          printf("ULagrangeInterpolation d2: Input array is too short: %d, %d, %d\n", x0len, xinclen, xlen);

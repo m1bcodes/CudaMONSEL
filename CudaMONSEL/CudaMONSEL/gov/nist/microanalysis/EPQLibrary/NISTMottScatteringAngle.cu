@@ -381,7 +381,7 @@ namespace NISTMottScatteringAngle
 
    void copyDataToCuda()
    {
-      for (int i = 1; i <= 59; ++i) {
+      for (int i = 1; i <= 96; ++i) {
          float *dSpwem = nullptr;
          const VectorXf& spwem = mScatter[i]->getSpwem();
          checkCudaErrors(cudaMalloc((void **)&dSpwem, sizeof(float) * spwem.size()));

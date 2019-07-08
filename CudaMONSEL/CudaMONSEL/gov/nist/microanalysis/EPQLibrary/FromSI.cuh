@@ -36,8 +36,8 @@ namespace FromSI
 #endif
 
    double Torr(double pascal);
-   double keV(double e);
-   __host__ __device__ double eV(double e);
+   __host__ __device__ double keV(const double e);
+   __host__ __device__ double eV(const double e);
    double AMU(double kg);
    double dyne(double f);
    double gPerCC(double d);

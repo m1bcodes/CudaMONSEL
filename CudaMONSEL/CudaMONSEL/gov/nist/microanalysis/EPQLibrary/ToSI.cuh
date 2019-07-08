@@ -44,7 +44,7 @@ namespace ToSI
    double percm(double d);
    double angstrom(double a);
    double micrometer(double m);
-   double sqrAngstrom(double a2);
+   __host__ __device__ double sqrAngstrom(double a2);
    double barn(double a2);
    double cmSqrPerg(double x);
    double cm(double x);
