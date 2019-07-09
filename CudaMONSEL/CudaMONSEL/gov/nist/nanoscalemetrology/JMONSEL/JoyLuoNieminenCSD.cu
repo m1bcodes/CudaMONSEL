@@ -32,17 +32,16 @@ namespace JoyLuoNieminenCSD
       init();
    }
 
-   void JoyLuoNieminenCSD::setMaterial(const SEmaterialT* mat)
+   __host__ __device__ void JoyLuoNieminenCSD::setMaterial(const SEmaterialT* mat)
    {
       this->mat = *mat;
       bh = -mat->getEnergyCBbottom();
       init();
    }
 
-   void JoyLuoNieminenCSD::init()
+   __host__ __device__ void JoyLuoNieminenCSD::init()
    {
       nce = mat.getElementCount();
-      printf("%d\n", nce);
       if (nce == 0)
          return;
       recipJ.resize(nce);
@@ -51,10 +50,16 @@ namespace JoyLuoNieminenCSD
       bhplus1eV = bh + ToSI::eV(1.);
       if (breakE < bhplus1eV)
          breakE = bhplus1eV;
-      
+
       int i = 0;
-      for (auto el : mat.getElementSet()) {
-         recipJ[i] = 1.166 / (el->getAtomicNumber() < 13 ? MeanIonizationPotential::Wilson41.compute(*el) : MeanIonizationPotential::Sternheimer64.compute(*el));
+      for (const auto &el : mat.getElementSet()) {
+         //#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+         //         recipJ[i] = 1.166 / (el->getAtomicNumber() < 13 ? MeanIonizationPotential::computeWilson41(*el) : MeanIonizationPotential::computeSternheimer64(*el));
+         //#else
+         //         recipJ[i] = 1.166 / (el->getAtomicNumber() < 13 ? MeanIonizationPotential::Wilson41.compute(*el) : MeanIonizationPotential::Sternheimer64.compute(*el));
+         //#endif
+         recipJ[i] = 1.166 / (el->getAtomicNumber() < 13 ? MeanIonizationPotential::computeWilson41(*el) : MeanIonizationPotential::computeSternheimer64(*el));
+         
          beta[i] = 1. - (recipJ[i] * bhplus1eV);
          coef[i] = 2.01507E-28 * mat.getDensity() * mat.weightFraction(*el, true) * el->getAtomicNumber() / el->getAtomicWeight();
          ++i;
@@ -63,19 +68,26 @@ namespace JoyLuoNieminenCSD
 
       // Determine the proportionality constant
       gamma = 0.;
-      for (int i = 0; i < nce; i++) 
+      for (int i = 0; i < nce; i++)
          gamma += coef[i] * ::log((recipJ[i] * breakE) + beta[i]);
-      gamma /= ::pow(breakE, 3.5);
+      gamma /= ::pow(breakE, 3.5); // note: breaks if powf is used instead of pow (gamma becomes #1.ind due to division by 0)
+#ifdef _DEBUG
+      if (gamma != gamma) pritnf("JoyLuoNieminenCSD::init(): gamma is NaN");
+#endif
    }
 
-   static double maxlossfraction = 0.1;
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+   __constant__ static double MaxLossFraction = 0.1;
+#else
+   static double MaxLossFraction = 0.1;
+#endif
 
-   double JoyLuoNieminenCSD::compute(double len, const ElectronT* pe) const
+   __host__ __device__ double JoyLuoNieminenCSD::compute(double len, const ElectronT *pe) const
    {
       return compute(len, pe->getEnergy());
    }
 
-   double JoyLuoNieminenCSD::compute(const double len, const double kE) const
+   __host__ __device__ double JoyLuoNieminenCSD::compute(const double len, const double kE) const
    {
       if ((nce == 0) || (kE < minEforTracking) || (kE <= 0.))
          return 0.;
@@ -88,12 +100,15 @@ namespace JoyLuoNieminenCSD
          loss += coef[i] * ::log((recipJ[i] * kE) + beta[i]);
       loss *= len / kE;
 
-      if (loss <= (maxlossfraction * kE))
+      if (loss <= (MaxLossFraction * kE))
          return -loss;
       //if (::fabs(kE - 7.5500619306e-018) < 0.01e-018)
       //   printf("%d %.10e %.10e %.10e %.10e %.10e\n", nce, minEforTracking, breakE, len, kE, loss);
       //printf("%d %.10e %.10e %.10e %.10e %.10e\n", nce, minEforTracking, breakE, len, kE, loss);
       loss = compute(len / 2., kE); // loss from 1st half of step
+#ifdef _DEBUG
+      if (loss != loss) pritnf("JoyLuoNieminenCSD::compute(): loss is NaN");
+#endif
       return loss + compute(len / 2., kE + loss); // add loss from second half
    }
 
@@ -108,7 +123,7 @@ namespace JoyLuoNieminenCSD
       setMaterial(mat, bh);
    }
 
-   StringT JoyLuoNieminenCSD::toString() const
+   __host__ __device__ StringT JoyLuoNieminenCSD::toString() const
    {
       return "JoyLuoNieminenCSD(" + StringT(mat.toString()) + "," + amp::to_string(bh) + "," + amp::to_string(breakE) + ")";
    }

@@ -8,10 +8,10 @@ namespace SlowingDownAlg
    class SlowingDownAlg
    {
    public:
-      virtual void setMaterial(const SEmaterialT* mat) = 0;
-      virtual double compute(double d, const ElectronT* pe) const = 0;
+      __host__ __device__ virtual void setMaterial(const SEmaterialT* mat) = 0;
+      __host__ __device__ virtual double compute(double d, const ElectronT* pe) const = 0;
 
-      virtual StringT toString() const { return "class SlowingDownAlg"; }
+      __host__ __device__ virtual StringT toString() const { return "class SlowingDownAlg"; }
    };
 }
 

@@ -67,32 +67,32 @@ namespace UncertainValue2
       typedef amp::unordered_set<StringT, amp::string_hash, amp::string_cmp> KeySetT;
       //typedef std::vector<UncertainValue2> ResultT;
 
-      UncertainValue2();
+      __host__ __device__ UncertainValue2();
       //~UncertainValue2();
       UncertainValue2(double v, const char source[], double dv);
-      UncertainValue2(double v);
-      UncertainValue2(double v, double dv);
-      UncertainValue2(double v, const ComponentMapT&);
-      UncertainValue2(const UncertainValue2&);
-      UncertainValue2& operator=(const UncertainValue2&);
-      unsigned int hashCode() const;
+      __host__ __device__ UncertainValue2(const double v);
+      __host__ __device__ UncertainValue2(const double v, const double dv);
+      __host__ __device__ UncertainValue2(double v, const ComponentMapT&);
+      __host__ __device__ UncertainValue2(const UncertainValue2&);
+      __host__ __device__ UncertainValue2& operator=(const UncertainValue2&);
+      __host__ __device__ unsigned int hashCode() const;
 
       bool operator==(const UncertainValue2&) const;
       bool equals(const UncertainValue2& uv) const;
 
-      void assignComponent(const StringT&, double sigma);
-      double getComponent(const StringT&) const;
+      __host__ __device__ void assignComponent(const StringT&, double sigma);
+      __host__ __device__ double getComponent(const StringT&) const;
       ComponentMapT& getComponents();
-      const ComponentMapT& getComponentsConst() const;
-      ComponentMapT::const_iterator getComponentsItrBegin() const;
-      ComponentMapT::const_iterator getComponentsItrEnd() const;
+      __host__ __device__ const ComponentMapT& getComponents() const;
+      __host__ __device__ ComponentMapT::const_iterator getComponentsItrBegin() const;
+      __host__ __device__ ComponentMapT::const_iterator getComponentsItrEnd() const;
       bool hasComponent(const StringT&) const;
       void renameComponent(const StringT& oldName, const StringT& newName);
 
-      double doubleValue() const;
+      __host__ __device__ double doubleValue() const;
       bool isUncertain() const;
-      double uncertainty() const;
-      double variance() const;
+      __host__ __device__ double uncertainty() const;
+      __host__ __device__ double variance() const;
       double fractionalUncertainty() const;
 
       int compareTo(const UncertainValue2& o);
@@ -111,14 +111,14 @@ namespace UncertainValue2
       double mValue;
    };
 
-   UncertainValue2 ONE();
-   UncertainValue2 NaN();
+   __host__ __device__ UncertainValue2 ONE();
+   __host__ __device__ UncertainValue2 NaN();
    UncertainValue2 POSITIVE_INFINITY();
    UncertainValue2 NEGATIVE_INFINITY();
-   UncertainValue2 ZERO();
+   __host__ __device__ UncertainValue2 ZERO();
 
    UncertainValue2 add(const UncertainValue2 uvs[], int uvsLen);
-   UncertainValue2 add(double a, const UncertainValue2& uva, double b, const UncertainValue2& uvb);
+   __host__ __device__ UncertainValue2 add(const double a, const UncertainValue2& uva, const double b, const UncertainValue2& uvb);
    UncertainValue2 subtract(const UncertainValue2& uva, const UncertainValue2& uvb);
    UncertainValue2 mean(const UncertainValue2 uvs[], int uvsLen);
    UncertainValue2 weightedMean(const UncertainValue2 uvs[], int uvsLen);
@@ -126,12 +126,12 @@ namespace UncertainValue2
    UncertainValue2 uvmax(const UncertainValue2 uvs[], int uvsLen);
    UncertainValue2 add(const UncertainValue2& v1, double v2);
    UncertainValue2 add(double v1, const UncertainValue2& v2);
-   UncertainValue2 add(const UncertainValue2& v1, const UncertainValue2& v2);
-   UncertainValue2 multiply(double v1, const UncertainValue2& v2);
+   __host__ __device__ UncertainValue2 add(const UncertainValue2& v1, const UncertainValue2& v2);
+   __host__ __device__ UncertainValue2 multiply(double v1, const UncertainValue2& v2);
    UncertainValue2 multiply(const UncertainValue2& v1, const UncertainValue2& v2);
    UncertainValue2 invert(const UncertainValue2& v);
-   UncertainValue2 divide(const UncertainValue2& a, const UncertainValue2& b);
-   void divide(const UncertainValue2& a, const UncertainValue2& b, UncertainValue2&);
+   __host__ __device__ UncertainValue2 divide(const UncertainValue2& a, const UncertainValue2& b);
+   __host__ __device__ void divide(const UncertainValue2& a, const UncertainValue2& b, UncertainValue2&);
    UncertainValue2 divide(double a, const UncertainValue2& b);
    UncertainValue2 divide(const UncertainValue2& a, double b);
    UncertainValue2 exp(const UncertainValue2& x);
@@ -143,7 +143,7 @@ namespace UncertainValue2
    UncertainValue2 negate(const UncertainValue2& uv);
    UncertainValue2 atan(const UncertainValue2& uv);
    UncertainValue2 atan2(const UncertainValue2& y, const UncertainValue2& x);
-   UncertainValue2 positiveDefinite(const UncertainValue2& uv);
+   __host__ __device__ UncertainValue2 positiveDefinite(const UncertainValue2& uv);
 
    struct CompareFcn
    {

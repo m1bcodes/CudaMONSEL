@@ -12,9 +12,9 @@ namespace ZeroCSD
    public:
       __host__ __device__ ZeroCSD();
 
-      double compute(double d, const ElectronT* pe) const override;
-      void setMaterial(const SEmaterialT* mat) override;
+      __host__ __device__ double compute(double d, const ElectronT* pe) const override;
+      __host__ __device__ void setMaterial(const SEmaterialT* mat) override;
 
-      StringT toString() const override;
+      __host__ __device__ StringT toString() const override;
    };
 }

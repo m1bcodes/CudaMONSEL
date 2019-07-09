@@ -26,11 +26,11 @@ namespace ScreenedRutherfordScatteringAngle
       return mElement;
    }
 
-   double ScreenedRutherfordScatteringAngle::totalCrossSection(double energy) const
+   __host__ __device__ double ScreenedRutherfordScatteringAngle::totalCrossSection(double energy) const
    {
       // Ref: Heinrich 1981 p 459 convert to SI units
-      double z = mElement.getAtomicNumber();
-      double zp = ::pow(z, 1.0 / 3.0);
+      const double z = mElement.getAtomicNumber();
+      const double zp = ::powf(z, 1.0 / 3.0);
       return (7.670843088080456e-38 * zp * (1.0 + z)) / ((energy + ((5.44967975966321e-19 * zp * zp))));
    }
 
@@ -38,8 +38,8 @@ namespace ScreenedRutherfordScatteringAngle
    {
       // This method for calculating the scattering angle is taken from
       // NBSMONTE.FOR
-      double alpha = (5.44968e-19 * ::pow(mElement.getAtomicNumber(), 2.0 / 3.0)) / energy;
-      double r = Math2::random();
+      const double alpha = (5.44968e-19 * ::powf(mElement.getAtomicNumber(), 2.0 / 3.0)) / energy;
+      const double r = Math2::random();
       return ::acos(1 - 2.0 * alpha * r / (1 + alpha - r));
    }
 

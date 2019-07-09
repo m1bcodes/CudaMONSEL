@@ -60,7 +60,7 @@ namespace MONSEL_MaterialScatterModel
       if (scatterArray.empty())
          return;
       int index = 0;
-      for (auto mech : scatterArray) {
+      for (auto &mech : scatterArray) {
          totalScatterRate += mech->scatterRate(pe);
          // Cache cumulative scatterRate
          cached_cumulativeScatterRate[index++] = totalScatterRate;

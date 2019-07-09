@@ -13,100 +13,104 @@ namespace MeanIonizationPotential
       AlgorithmClassT const * const * getAllImplementations() const;
 
       double computeLn(const CompositionT& comp) const;
-      virtual double compute(const ElementT& el) const = 0;
+      __host__ __device__ virtual double compute(const ElementT& el) const = 0;
 
    protected:
-      MeanIonizationPotential(StringT name, const ReferenceT& reference);
+      __host__ __device__ MeanIonizationPotential(StringT name, const ReferenceT& reference);
    };
 
    class Sternheimer64MeanIonizationPotential : public MeanIonizationPotential
    {
    public:
-      Sternheimer64MeanIonizationPotential();
-      double compute(const ElementT& el) const override;
+      __host__ __device__ Sternheimer64MeanIonizationPotential();
+      __host__ __device__ double compute(const ElementT& el) const override;
    };
+   extern __host__ __device__ double computeSternheimer64(const ElementT& el);
 
    class BergerAndSeltzerCITZAFMeanIonizationPotential : public MeanIonizationPotential
    {
    public:
-      BergerAndSeltzerCITZAFMeanIonizationPotential();
-      double compute(const ElementT& el) const override;
+      __host__ __device__ BergerAndSeltzerCITZAFMeanIonizationPotential();
+      __host__ __device__ double compute(const ElementT& el) const override;
    };
 
    class Bloch33MeanIonizationPotential : public MeanIonizationPotential
    {
    public:
-      Bloch33MeanIonizationPotential();
-      double compute(const ElementT& el) const override;
+      __host__ __device__ Bloch33MeanIonizationPotential();
+      __host__ __device__ double compute(const ElementT& el) const override;
    };
 
    class Wilson41MeanIonizationPotential : public MeanIonizationPotential
    {
    public:
-      Wilson41MeanIonizationPotential();
-      double compute(const ElementT& el) const override;
+      __host__ __device__ Wilson41MeanIonizationPotential();
+      __host__ __device__ double compute(const ElementT& el) const override;
    };
+   extern __host__ __device__ double computeWilson41(const ElementT& el);
 
    class Springer67MeanIonizationPotential : public MeanIonizationPotential
    {
    public:
-      Springer67MeanIonizationPotential();
-      double compute(const ElementT& el) const override;
+      __host__ __device__ Springer67MeanIonizationPotential();
+      __host__ __device__ double compute(const ElementT& el) const override;
    };
 
    class Heinrich70MeanIonizationPotential : public MeanIonizationPotential
    {
    public:
-      Heinrich70MeanIonizationPotential();
-      double compute(const ElementT& el) const override;
+      __host__ __device__ Heinrich70MeanIonizationPotential();
+      __host__ __device__ double compute(const ElementT& el) const override;
    };
 
    class Duncumb69MeanIonizationPotential : public MeanIonizationPotential
    {
    public:
-      Duncumb69MeanIonizationPotential();
-      double compute(const ElementT& el) const override;
+      __host__ __device__ Duncumb69MeanIonizationPotential();
+      __host__ __device__ double compute(const ElementT& el) const override;
    };
 
    class Zeller75MeanIonizationPotential : public MeanIonizationPotential
    {
    public:
-      Zeller75MeanIonizationPotential();
-      double compute(const ElementT& el) const override;
+      __host__ __device__ Zeller75MeanIonizationPotential();
+      __host__ __device__ double compute(const ElementT& el) const override;
    };
 
    class Berger64MeanIonizationPotential : public MeanIonizationPotential
    {
    public:
-      Berger64MeanIonizationPotential();
-      double compute(const ElementT& el) const override;
-      static void readTabulatedValues();
+      __host__ __device__ Berger64MeanIonizationPotential();
+      __host__ __device__ double compute(const ElementT& el) const override;
+      void readTabulatedValues();
+      //__device__ void copyData(double *data);
 
    private:
-      static VectorXd mMeasured; // nominal, in Joules
+      VectorXd mMeasured; // nominal, in Joules
    };
 
    class Berger83MeanIonizationPotential : public MeanIonizationPotential
    {
    public:
-      Berger83MeanIonizationPotential();
-      double compute(const ElementT& el) const override;
-      static void readTabulatedValues();
+      __host__ __device__ Berger83MeanIonizationPotential();
+      __host__ __device__ double compute(const ElementT& el) const override;
+      void readTabulatedValues();
+      //__device__ void copyData(double *data);
 
    private:
-      static VectorXd mMeasured; // nominal, in Joules
+      VectorXd mMeasured; // nominal, in Joules
    };
 
-   extern const MeanIonizationPotential& Berger64;
-   extern const MeanIonizationPotential& Berger83;
-   extern const MeanIonizationPotential& Bloch33;
-   extern const MeanIonizationPotential& Duncumb69;
-   extern const MeanIonizationPotential& BergerAndSeltzerCITZAF;
-   extern const MeanIonizationPotential& Heinrich70;
-   extern const MeanIonizationPotential& Springer67;
-   extern const MeanIonizationPotential& Sternheimer64;
-   extern const MeanIonizationPotential& Wilson41;
-   extern const MeanIonizationPotential& Zeller75;
+   extern Berger64MeanIonizationPotential &Berger64;
+   extern Berger83MeanIonizationPotential &Berger83;
+   extern const MeanIonizationPotential &Bloch33;
+   extern const MeanIonizationPotential &Duncumb69;
+   extern const MeanIonizationPotential &BergerAndSeltzerCITZAF;
+   extern const MeanIonizationPotential &Heinrich70;
+   extern const MeanIonizationPotential &Springer67;
+   extern const MeanIonizationPotential &Sternheimer64;
+   extern const MeanIonizationPotential &Wilson41;
+   extern const MeanIonizationPotential &Zeller75;
 }
 
 #endif

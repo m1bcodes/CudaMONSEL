@@ -6,16 +6,16 @@ namespace ZeroCSD
    {
    }
 
-   double ZeroCSD::compute(double d, const ElectronT* pe) const
+   __host__ __device__ double ZeroCSD::compute(double d, const ElectronT* pe) const
    {
       return 0.;
    }
 
-   void ZeroCSD::setMaterial(const SEmaterialT* mat)
+   __host__ __device__ void ZeroCSD::setMaterial(const SEmaterialT* mat)
    {
    }
 
-   StringT ZeroCSD::toString() const
+   __host__ __device__ StringT ZeroCSD::toString() const
    {
       return "ZeroCSD()";
    }

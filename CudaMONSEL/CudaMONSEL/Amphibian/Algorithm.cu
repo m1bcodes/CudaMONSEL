@@ -2,10 +2,10 @@
 
 namespace Algorithm
 {
-   __host__ __device__ int binarySearch(const double a[], int l, int r, double t)
+   __host__ __device__ int binarySearch(const double a[], int l, int r, const double t)
    {
       while (l <= r) {
-         int mid = l + (r - l) / 2;
+         const int mid = l + (r - l) / 2;
          if (a[mid] == t) return mid;
          if (a[mid] < t) l = mid + 1;
          else r = mid - 1;

@@ -13,7 +13,11 @@ namespace CzyzewskiMottScatteringAngle
    static const Reference::Author* alRef[] = { &Reference::Czyzewski, &Reference::MacCallum, &Reference::DJoy };
    static const Reference::JournalArticle REFERENCE(Reference::JApplPhys, "68, No. 7", "", 1990, alRef, 3);
 
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+   __constant__ const double MAX_CZYZEWSKI = 4.8065296e-15;
+#else
    const double MAX_CZYZEWSKI = ToSI::keV(30.0);
+#endif
 
    void CzyzewskiMottScatteringAngle::init(int an)
    {
@@ -32,13 +36,13 @@ namespace CzyzewskiMottScatteringAngle
       // [0,1.00) onto a scattering angle.
       mCummulativeDF.resize(CzyzewskiMottCrossSection::SpecialEnergyCount, VectorXd(CzyzewskiMottCrossSection::SpecialAngleCount, 0));
       for (int r = 0; r < CzyzewskiMottCrossSection::SpecialEnergyCount; ++r) {
-         double energy = CzyzewskiMottCrossSection::getSpecialEnergy(r);
+         const double energy = CzyzewskiMottCrossSection::getSpecialEnergy(r);
          mCummulativeDF[r][0] = 0.0;
          for (int c = 1; c < CzyzewskiMottCrossSection::SpecialAngleCount; ++c) {
-            double cm = mcs.partialCrossSection(CzyzewskiMottCrossSection::getSpecialAngle(c - 1), energy);
-            double cp = mcs.partialCrossSection(CzyzewskiMottCrossSection::getSpecialAngle(c), energy);
-            double am = CzyzewskiMottCrossSection::getSpecialAngle(c - 1);
-            double ap = CzyzewskiMottCrossSection::getSpecialAngle(c);
+            const double cm = mcs.partialCrossSection(CzyzewskiMottCrossSection::getSpecialAngle(c - 1), energy);
+            const double cp = mcs.partialCrossSection(CzyzewskiMottCrossSection::getSpecialAngle(c), energy);
+            const double am = CzyzewskiMottCrossSection::getSpecialAngle(c - 1);
+            const double ap = CzyzewskiMottCrossSection::getSpecialAngle(c);
             mCummulativeDF[r][c] = mCummulativeDF[r][c - 1] + ((cp + cm) * (ap - am)) / 2.0;
          }
          // Normalize to 1.0
@@ -123,7 +127,7 @@ namespace CzyzewskiMottScatteringAngle
       return mMeanFreePath[e - 1] + ((mMeanFreePath[e] - mMeanFreePath[e - 1]) * ((energy - e0) / (e1 - e0)));
    }
 
-   double CzyzewskiMottScatteringAngle::totalCrossSection(double energy) const
+   __host__ __device__ double CzyzewskiMottScatteringAngle::totalCrossSection(double energy) const
    {
       if (energy < MAX_CZYZEWSKI) {
          int e = CzyzewskiMottCrossSection::getEnergyIndex(energy);

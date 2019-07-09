@@ -5,7 +5,7 @@
 
 namespace Algorithm
 {
-   __host__ __device__ int binarySearch(const double a[], int l, int r, double t);
+   __host__ __device__ int binarySearch(const double a[], int l, int r, const double t);
    __host__ __device__ void quicksort(double a[], int l, int r);
 }
 

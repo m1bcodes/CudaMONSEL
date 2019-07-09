@@ -32,20 +32,20 @@ namespace Composition
       bool operator==(const Composition&) const;
       void operator=(const Composition&);
 
-      Element::UnorderedSetT getElementSet() const;
+      __host__ __device__ Element::UnorderedSetT getElementSet() const;
       Element::OrderedSetT getSortedElements() const;
       __host__ __device__ int getElementCount() const;
       void addElement(int atomicNo, double massFrac);
       void addElement(int atomicNo, const UncertainValue2::UncertainValue2 massFrac);
       void addElement(const Element::Element& elm, double massFrac);
-      double weightFraction(const Element::Element& elm, bool normalized) const;
+      __host__ __device__ double weightFraction(const Element::Element& elm, const bool normalized) const;
       void addElement(const Element::Element& elm, const UncertainValue2::UncertainValue2& massFrac);
       UncertainValue2::UncertainValue2 weightFractionU(const Element::Element&, bool normalized) const;
       UncertainValue2::UncertainValue2 weightFractionU(const Element::Element&, bool normalized, bool positiveOnly) const;
       void addElementByStoiciometry(const Element::Element&, const UncertainValue2::UncertainValue2&);
       void addElementByStoiciometry(const Element::Element& elm, double moleFrac);
-      UncertainValue2::UncertainValue2 atomicPercentU(const Element::Element&) const;
-      UncertainValue2::UncertainValue2 atomicPercentU(const Element::Element&, bool positiveOnly) const;
+      __host__ __device__ UncertainValue2::UncertainValue2 atomicPercentU(const Element::Element&) const;
+      __host__ __device__ UncertainValue2::UncertainValue2 atomicPercentU(const Element::Element&, const bool positiveOnly) const;
       void defineByWeightFraction(const Element::Element* elms[], int elmsLen, double wgtFracs[], int wgtFracsLen);
       void defineByWeightFraction(const Element::Element* elms[], int elmsLen, const UncertainValue2::UncertainValue2 wgtFracs[], int wgtFracsLen);
       //void defineByWeightFraction(ConstituentsMapT map);
@@ -110,7 +110,7 @@ namespace Composition
       double weightAvgAtomicNumber() const;
       double sumWeightFraction() const;
       UncertainValue2::UncertainValue2 sumWeightFractionU() const;
-      const char* toString() const;
+      __host__ __device__ const char* toString() const;
       //String::String stoichiometryString();
       //String::String weightPercentString(bool normalize);
       //String::String descriptiveString(bool normalize);
@@ -157,12 +157,12 @@ namespace Composition
 
    protected:
       __host__ __device__ void renormalize();
-      void replicate(const Composition& comp);
-      void clear();
+      __host__ __device__ void replicate(const Composition& comp);
+      __host__ __device__ void clear();
    };
 
    Composition positiveDefinite(const Composition& comp);
-   UncertainValue2::UncertainValue2 normalize(const UncertainValue2::UncertainValue2& val, const UncertainValue2::UncertainValue2& norm, bool positive);
+   __host__ __device__ UncertainValue2::UncertainValue2 normalize(const UncertainValue2::UncertainValue2& val, const UncertainValue2::UncertainValue2& norm, const bool positive);
    Composition parseGlass(char str[], int numlines);
    void createProjectors(long seed);
 }

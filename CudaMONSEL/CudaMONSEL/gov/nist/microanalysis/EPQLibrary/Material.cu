@@ -38,7 +38,7 @@ namespace Material
       renormalize();
    }
 
-   Material& Material::operator=(const Material& other)
+   __host__ __device__ Material& Material::operator=(const Material& other)
    {
       Composition::replicate(other);
       mDensity = other.mDensity;
@@ -53,7 +53,7 @@ namespace Material
       }
    }
 
-   double Material::getDensity() const
+   __host__ __device__ double Material::getDensity() const
    {
       return mDensity;
    }
@@ -165,7 +165,7 @@ namespace Material
       return Composition::almostEquals(other, tol) && (abs(getDensity() - otherMat.getDensity()) / fmax(getDensity(), otherMat.getDensity()) < tol);
    }
 
-   bool Material::isSEmaterial() const
+   __host__ __device__ bool Material::isSEmaterial() const
    {
       return false;
    }

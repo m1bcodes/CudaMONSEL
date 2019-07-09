@@ -59,13 +59,13 @@ namespace SEmaterial
       void setEplasmon(double eplasmon);
       void setEstimatedCoreEnergy();
       void setEstimatedCoreEnergy(double cutoff);
-      void setKEtoDefault();
+      __host__ __device__ void setKEtoDefault();
       //void setKineticEnergy(int index, double energy);
       __host__ __device__ void setWorkfunction(double workfunction);
       void setEpsr(double epsr);
       void setDielectricBreakdownField(double breakdownField);
 
-      bool isSEmaterial() const override;
+      __host__ __device__ bool isSEmaterial() const override;
 
    private:
       double workfunction; // work function

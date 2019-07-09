@@ -16,11 +16,11 @@ namespace Material
       Material(const Element::Element* elm[], const double density[]);
       Material(const Element::Element* elms[], int elmsLen, const double massFracs[], int massFracsLen, double density, const char* name);
 
-      Material& operator=(const Material&);
+      __host__ __device__ Material& operator=(const Material&);
       bool operator==(const Material&) const;
 
       void setDensity(double den);
-      double getDensity() const;
+      __host__ __device__ double getDensity() const;
 
       //template<typename T>
       //void defineByWeightFraction(LinkedListKV::Node<T, double>* map, double den)
@@ -42,7 +42,7 @@ namespace Material
       bool equals(const Material& obj) const;
       bool almostEquals(const Material& other, double tol) const;
 
-      virtual bool isSEmaterial() const;
+      __host__ __device__ virtual bool isSEmaterial() const;
 
    private:
       double mDensity;

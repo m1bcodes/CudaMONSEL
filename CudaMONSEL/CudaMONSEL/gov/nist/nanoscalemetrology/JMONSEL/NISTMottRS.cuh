@@ -10,10 +10,10 @@ namespace NISTMottRS
    class NISTMottRS : public RandomizedScatterT
    {
    public:
-      explicit NISTMottRS(const ElementT& elm, int method);
+      __host__ __device__ explicit NISTMottRS(const ElementT& elm, int method);
 
       double randomScatteringAngle(double energy) const override;
-      double totalCrossSection(double energy) const override;
+      __host__ __device__ double totalCrossSection(double energy) const override;
       const ElementT& getElement() const override;
 
       const char* toString();

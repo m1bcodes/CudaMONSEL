@@ -9,17 +9,25 @@
 
 namespace UncertainValue2
 {
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+   __constant__ const char DEFAULT[] = "Default";
+   __device__ int sDefIndex = 0;
+
+   __constant__ const long long serialVersionUID = 119495064970078787L;
+   __constant__ const int MAX_LEN = 32;
+#else
    const char DEFAULT[] = "Default";
    int sDefIndex = 0;
 
    const long long serialVersionUID = 119495064970078787L;
    const int MAX_LEN = 32;
+#endif
 
-   UncertainValue2::UncertainValue2()
+   __host__ __device__ UncertainValue2::UncertainValue2()
    {
    }
 
-   UncertainValue2::UncertainValue2(double v, double dv) : mValue(v)
+   __host__ __device__ UncertainValue2::UncertainValue2(const double v, const double dv) : mValue(v)
    {
       char tmpName[MAX_LEN];
       memcpy(tmpName, DEFAULT, sizeof(DEFAULT));
@@ -28,7 +36,7 @@ namespace UncertainValue2
       assignComponent(tmpName, dv);
    }
 
-   UncertainValue2::UncertainValue2(double v) : mValue(v)
+   __host__ __device__ UncertainValue2::UncertainValue2(const double v) : mValue(v)
    {
    }
 
@@ -37,15 +45,15 @@ namespace UncertainValue2
       assignComponent(source, dv);
    }
 
-   UncertainValue2::UncertainValue2(double v, const ComponentMapT& sigmas) : mValue(v), mSigmas(sigmas)
+   __host__ __device__ UncertainValue2::UncertainValue2(double v, const ComponentMapT& sigmas) : mValue(v), mSigmas(sigmas)
    {
    }
 
-   UncertainValue2::UncertainValue2(const UncertainValue2& other) : mValue(other.doubleValue()),  mSigmas(other.mSigmas)
+   __host__ __device__ UncertainValue2::UncertainValue2(const UncertainValue2& other) : mValue(other.doubleValue()), mSigmas(other.mSigmas)
    {
    }
 
-   UncertainValue2 ONE()
+   __host__ __device__ UncertainValue2 ONE()
    {
       return UncertainValue2(1.0);
    }
@@ -65,12 +73,12 @@ namespace UncertainValue2
       return UncertainValue2(-INFINITY);
    }
 
-   UncertainValue2 ZERO()
+   __host__ __device__ UncertainValue2 ZERO()
    {
       return UncertainValue2(0.0);
    }
 
-   UncertainValue2& UncertainValue2::operator=(const UncertainValue2& other)
+   __host__ __device__ UncertainValue2& UncertainValue2::operator=(const UncertainValue2& other)
    {
       mValue = other.doubleValue();
       mSigmas = other.mSigmas;
@@ -78,7 +86,7 @@ namespace UncertainValue2
       return *this;
    }
 
-   unsigned int UncertainValue2::hashCode() const
+   __host__ __device__ unsigned int UncertainValue2::hashCode() const
    {
       // https://docs.oracle.com/javase/8/docs/api/java/util/Arrays.html#hashCode-java.lang.Object:A-
       unsigned int res = 1;
@@ -91,7 +99,7 @@ namespace UncertainValue2
       return res;
    }
 
-   void UncertainValue2::assignComponent(const StringT& name, double sigma)
+   __host__ __device__ void UncertainValue2::assignComponent(const StringT& name, double sigma)
    {
       if (sigma != 0.0) {
          mSigmas.insert(amp::make_pair(name, sigma));
@@ -101,7 +109,7 @@ namespace UncertainValue2
       }
    }
 
-   double UncertainValue2::getComponent(const StringT& src) const
+   __host__ __device__ double UncertainValue2::getComponent(const StringT& src) const
    {
       auto itr = mSigmas.find(src);
       return itr == mSigmas.end() ? 0 : (double)itr->second;
@@ -112,17 +120,17 @@ namespace UncertainValue2
       return mSigmas;
    }
 
-   const UncertainValue2::ComponentMapT& UncertainValue2::getComponentsConst() const
+   __host__ __device__ const UncertainValue2::ComponentMapT& UncertainValue2::getComponents() const
    {
       return mSigmas;
    }
 
-   UncertainValue2::ComponentMapT::const_iterator UncertainValue2::getComponentsItrBegin() const
+   __host__ __device__ UncertainValue2::ComponentMapT::const_iterator UncertainValue2::getComponentsItrBegin() const
    {
       return mSigmas.cbegin();
    }
 
-   UncertainValue2::ComponentMapT::const_iterator UncertainValue2::getComponentsItrEnd() const
+   __host__ __device__ UncertainValue2::ComponentMapT::const_iterator UncertainValue2::getComponentsItrEnd() const
    {
       return mSigmas.cend();
    }
@@ -170,7 +178,7 @@ namespace UncertainValue2
       return res;
    }
 
-   UncertainValue2 add(double a, const UncertainValue2& uva, double b, const UncertainValue2& uvb)
+   __host__ __device__ UncertainValue2 add(const double a, const UncertainValue2& uva, const double b, const UncertainValue2& uvb)
    {
       UncertainValue2::KeySetT keys;
       UncertainValue2 res(a * uva.doubleValue() + b * uvb.doubleValue());
@@ -278,12 +286,12 @@ namespace UncertainValue2
       return add(1.0, tmp, 1.0, v2);
    }
 
-   UncertainValue2 add(const UncertainValue2& v1, const UncertainValue2& v2)
+   __host__ __device__ UncertainValue2 add(const UncertainValue2& v1, const UncertainValue2& v2)
    {
       return add(1.0, v1, 1.0, v2);
    }
 
-   UncertainValue2 multiply(double v1, const UncertainValue2& v2)
+   __host__ __device__ UncertainValue2 multiply(double v1, const UncertainValue2& v2)
    {
       if (v2.uncertainty() < 0.0) {
          printf("Error: v2.uncertainty() < 0.0");
@@ -325,9 +333,9 @@ namespace UncertainValue2
       return divide(1.0, v);
    }
 
-   UncertainValue2 divide(const UncertainValue2& v1, const UncertainValue2& v2)
+   __host__ __device__ UncertainValue2 divide(const UncertainValue2& v1, const UncertainValue2& v2)
    {
-      double v = v1.doubleValue() / v2.doubleValue();
+      const double v = v1.doubleValue() / v2.doubleValue();
       if (isnan(v) || isinf(v)) {
          printf("UncertainValue2::divide: isnan(v) || isinf(v) (%.10e)\n");
          return v;
@@ -345,12 +353,12 @@ namespace UncertainValue2
          keys.insert(itr->first);
       }
 
-      const double ua = fabs(1.0 / v2.doubleValue());
-      const double ub = fabs(v1.doubleValue() / (v2.doubleValue() * v2.doubleValue()));
+      const double ua = ::fabs(1.0 / v2.doubleValue());
+      const double ub = ::fabs(v1.doubleValue() / (v2.doubleValue() * v2.doubleValue()));
 
       UncertainValue2 res(v);
       for (auto itr = keys.begin(); itr != keys.end(); ++itr) {
-         auto src = *itr;
+         const auto &src = *itr;
          res.assignComponent(src, ua * v1.getComponent(src) + ub * v2.getComponent(src));
       }
 
@@ -358,9 +366,9 @@ namespace UncertainValue2
       return res;
    }
 
-   void divide(const UncertainValue2& v1, const UncertainValue2& v2, UncertainValue2& res)
+   __host__ __device__ void divide(const UncertainValue2& v1, const UncertainValue2& v2, UncertainValue2& res)
    {
-      double v = res.doubleValue(); // v1.doubleValue() / v2.doubleValue();
+      const double v = res.doubleValue(); // v1.doubleValue() / v2.doubleValue();
       if (isnan(v) || isinf(v)) {
          printf("UncertainValue2::divide: isnan(v) || isinf(v) (%.10e)\n");
       }
@@ -381,7 +389,7 @@ namespace UncertainValue2
       const double ub = fabs(v1.doubleValue() / (v2.doubleValue() * v2.doubleValue()));
 
       for (auto itr = keys.begin(); itr != keys.end(); ++itr) {
-         auto src = *itr;
+         const auto &src = *itr;
          res.assignComponent(src, ua * v1.getComponent(src) + ub * v2.getComponent(src));
       }
       //std::transform(keys.begin(), keys.end(), std::inserter(res.getComponents(), res.getComponents().end()), [&](StringT name){ return amp::make_pair(name, ua * v1.getComponent(name) + ub * v2.getComponent(name)); });
@@ -500,7 +508,7 @@ namespace UncertainValue2
    //   return head;
    //}
 
-   double UncertainValue2::doubleValue() const
+   __host__ __device__ double UncertainValue2::doubleValue() const
    {
       return mValue;
    }
@@ -510,15 +518,15 @@ namespace UncertainValue2
       return !mSigmas.empty();
    }
 
-   double UncertainValue2::uncertainty() const
+   __host__ __device__ double UncertainValue2::uncertainty() const
    {
       return ::sqrt(variance());
    }
 
-   double UncertainValue2::variance() const
+   __host__ __device__ double UncertainValue2::variance() const
    {
       double sigma2 = 0.0;
-      for (auto s : mSigmas) {
+      for (auto &s : mSigmas) {
          //printf("%.10e, ", (double)s.second);
          sigma2 += (double)s.second * (double)s.second;
       }
@@ -633,9 +641,9 @@ namespace UncertainValue2
       return res;
    }
 
-   UncertainValue2 positiveDefinite(const UncertainValue2& uv)
+   __host__ __device__ UncertainValue2 positiveDefinite(const UncertainValue2& uv)
    {
-      return uv.doubleValue() >= 0.0 ? uv : UncertainValue2(0, uv.getComponentsConst());
+      return uv.doubleValue() >= 0.0 ? uv : UncertainValue2(0, uv.getComponents());
    }
 
    Key::Key(const StringT& src1, const StringT& src2)

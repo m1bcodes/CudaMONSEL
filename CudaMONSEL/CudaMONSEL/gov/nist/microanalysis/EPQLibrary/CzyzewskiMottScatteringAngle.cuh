@@ -20,7 +20,7 @@ namespace CzyzewskiMottScatteringAngle
       double randomScatteringAngle(double energy, double rand) const;
 
       double randomScatteringAngle(double energy) const override;
-      double totalCrossSection(double energy) const override;
+      __host__ __device__ double totalCrossSection(double energy) const override;
       const ElementT& getElement() const override;
 
       double meanFreePath(double energy) const;

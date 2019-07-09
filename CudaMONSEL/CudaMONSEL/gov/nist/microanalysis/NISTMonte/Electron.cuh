@@ -20,7 +20,7 @@ namespace Electron
       __host__ __device__ const double * getPrevPosition() const;
       const RegionBaseT* getCurrentRegion() const;
       const RegionBaseT* getPreviousRegion() const;
-      double getEnergy() const;
+      __host__ __device__ double getEnergy() const;
       double getPreviousEnergy() const;
       int getStepCount() const;
       double stepLength() const;

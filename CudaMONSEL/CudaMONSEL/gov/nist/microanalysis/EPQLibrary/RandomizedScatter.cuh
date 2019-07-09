@@ -16,7 +16,7 @@ namespace RandomizedScatter
 
    public:
       virtual double randomScatteringAngle(double energy) const = 0;
-      virtual double totalCrossSection(double energy) const = 0;
+      __host__ __device__ virtual double totalCrossSection(double energy) const = 0;
       virtual const ElementT& getElement() const = 0;
    };
 }

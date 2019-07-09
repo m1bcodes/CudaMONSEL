@@ -281,7 +281,8 @@ namespace amp
    template<typename T>
    __host__ __device__ void vector<T>::erase(const vector<T>::const_iterator& itr)
    {
-      if (itr.index() >= sz) printf("void vector<T>::erase: out of range\n");
+      if (itr.index() >= sz)
+         printf("void vector<T>::erase: out of range\n");
       else {
          const unsigned int idx = itr.index();
          vec[idx].~T();

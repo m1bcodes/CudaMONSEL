@@ -63,14 +63,14 @@ namespace GanachaudMokraniPhononInelasticSM
       */
       double result;
       if (x < 0.1) {
-         result = prefactor * x * ::log(4. / x);
+         result = prefactor * x * ::logf(4. / x);
          return result;
       }
       else if (x >= 1.) // phonon energy >= PE energy: no scattering possible
          return 0.;
       else {
-         double temp = ::sqrt(1. - x);
-         result = prefactor * x * ::log((1. + temp) / (1. - temp));
+         const double temp = ::sqrt(1. - x);
+         result = prefactor * x * ::logf((1. + temp) / (1. - temp));
          return result;
       }
    }

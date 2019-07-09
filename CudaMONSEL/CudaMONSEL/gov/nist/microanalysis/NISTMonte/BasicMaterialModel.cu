@@ -82,7 +82,7 @@ namespace BasicMaterialModel
       // See Heinrich 1981 pp 226-227
       const double kE = pe.getEnergy();
       double res = 0.0;
-      for (auto el : mMaterial.getElementSet())
+      for (const auto &el : mMaterial.getElementSet())
          res += ::AlgorithmUser::getDefaultBetheEnergyLoss()->compute(*el, kE) * mMaterial.weightFraction(*el, true);
       return res * mMaterial.getDensity() * len;
    }

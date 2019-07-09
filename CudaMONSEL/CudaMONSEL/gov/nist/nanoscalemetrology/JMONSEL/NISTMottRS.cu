@@ -87,8 +87,12 @@ namespace NISTMottRS
    //   }
    //}
 
-   NISTMottRS::NISTMottRS(const ElementT& elm, int method) :
+   __host__ __device__ NISTMottRS::NISTMottRS(const ElementT& elm, int method) :
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+      RandomizedScatterT("NIST-Mott Elastic cross-section", *Reference::dNullReference),
+#else
       RandomizedScatterT("NIST-Mott Elastic cross-section", mReferenceWebsite),
+#endif
       mElement(elm),
       method(method >= 1 && method <= 3 ? method : 1),
       mRutherford(ScreenedRutherfordScatteringAngle::getSRSA(elm.getAtomicNumber())),
@@ -115,7 +119,7 @@ namespace NISTMottRS
       return mElement;
    }
 
-   double NISTMottRS::totalCrossSection(double energy) const
+   __host__ __device__ double NISTMottRS::totalCrossSection(double energy) const
    {
       if (energy < extrapolateBelowEnergy) {
          if (method == 3) { // linear interpolation

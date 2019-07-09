@@ -119,7 +119,7 @@ namespace MonteCarloSS
       mElectron->candidatePoint(msm->randomMeanPathLength(*mElectron), pos1);
       auto nextRegion = currentRegion->findEndOfStep(pos0, pos1);
       mElectron->move(pos1, msm->calculateEnergyLoss(Math2::distance3d(pos0, pos1), *mElectron));
-      bool tc = (mElectron->getEnergy() < msm->getMinEforTracking()) || mElectron->isTrajectoryComplete();
+      const bool tc = (mElectron->getEnergy() < msm->getMinEforTracking()) || mElectron->isTrajectoryComplete();
       mElectron->setTrajectoryComplete(tc);
       if (!tc) {
          if (nextRegion == currentRegion) {
@@ -209,12 +209,14 @@ namespace MonteCarloSS
    {
       initializeTrajectory();
       fireEvent(TrajectoryStartEvent);
-      //int i = 0;
+      //unsigned int i = 0;
       while (!allElectronsComplete()) {
          //if (i == 19)
          //   printf("%d\n", i++);
          takeStep();
+         //++i;
       }
+      //printf("num steps: %d\n", i);
       fireEvent(TrajectoryEndEvent);
    }
 

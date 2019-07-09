@@ -16,7 +16,7 @@ namespace ScreenedRutherfordScatteringAngle
       StringT toString() const;
 
       const ElementT& getElement() const override;
-      double totalCrossSection(double energy) const override;
+      __host__ __device__ double totalCrossSection(double energy) const override;
       double randomScatteringAngle(double energy) const override;
 
    private:

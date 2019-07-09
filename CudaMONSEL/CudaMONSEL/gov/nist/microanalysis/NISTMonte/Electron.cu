@@ -80,7 +80,7 @@ namespace Electron
       return mPrevRegion;
    }
 
-   double Electron::getEnergy() const
+   __host__ __device__ double Electron::getEnergy() const
    {
       return mEnergy;
    }

@@ -133,7 +133,7 @@ namespace Element
    extern const int elmUuu;
    extern const int elmUub;
    extern const int elmEndOfElements;
-   
+
    class Element
    {
    public:
@@ -143,17 +143,17 @@ namespace Element
 
       const Element& operator=(const Element&);
 
-      bool operator==(const Element&) const;
+      __host__ __device__ bool operator==(const Element&) const;
       bool operator<(const Element&) const;
 
       __host__ __device__ int getAtomicNumber() const;
-      double getAtomicWeight() const;
+      __host__ __device__ double getAtomicWeight() const;
       double getMass() const;
-      char const * toAbbrev() const;
+      __host__ __device__ char const * toAbbrev() const;
 
       bool isValid() const;
       int compareTo(const Element& e) const;
-      unsigned int hashCode() const;
+      __host__ __device__ unsigned int hashCode() const;
       bool equals(const Element& el);
       char const * toString() const;
       double getIonizationEnergy() const;
@@ -397,13 +397,13 @@ namespace Element
    int atomicNumberForName(char const *);
    const Element& byName(char const *);
    const Element& byAtomicNumber(int);
-   double getAtomicWeight(int);
-   __device__ double getAtomicWeightDevice(int);
+   __host__ __device__ double getAtomicWeight(int);
+   //__device__ double getAtomicWeightDevice(int);
    Element const * const * allElements();
    //std::vector<const Element*> range(const Element& min, const Element& max);
    //double meanIonizationPotential(int atomicNo);
 
-   char const * toAbbrev(int atomicNo);
+   __host__ __device__ char const * toAbbrev(int atomicNo);
    char const * toString(int el);
    bool isValid(int atomicNo);
 
@@ -417,7 +417,7 @@ namespace Element
 
    struct HashFcn
    {
-      inline unsigned int operator()(const Element* e) const
+      __host__ __device__ inline unsigned int operator()(const Element* e) const
       {
          return e->hashCode();
       }
@@ -425,7 +425,7 @@ namespace Element
 
    struct CompareFcn
    {
-      inline bool operator()(const Element* e0, const Element* e1) const
+      __host__ __device__ inline bool operator()(const Element* e0, const Element* e1) const
       {
          return *e0 == *e1;
       }

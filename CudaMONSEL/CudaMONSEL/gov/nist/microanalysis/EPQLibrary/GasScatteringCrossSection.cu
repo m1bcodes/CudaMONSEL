@@ -21,7 +21,7 @@ namespace GasScatteringCrossSection
       return mElastic;
    }
 
-   double GasScatteringCrossSection::ratioInelasticOverElastic() const
+   __host__ __device__ double GasScatteringCrossSection::ratioInelasticOverElastic() const
    {
       return 20.0 / mElement.getAtomicNumber();
    }
@@ -31,7 +31,7 @@ namespace GasScatteringCrossSection
       return mElement;
    }
 
-   double GasScatteringCrossSection::totalCrossSection(double energy) const
+   __host__ __device__ double GasScatteringCrossSection::totalCrossSection(double energy) const
    {
       return (1.0 + ratioInelasticOverElastic()) * mElastic.totalCrossSection(energy);
    }

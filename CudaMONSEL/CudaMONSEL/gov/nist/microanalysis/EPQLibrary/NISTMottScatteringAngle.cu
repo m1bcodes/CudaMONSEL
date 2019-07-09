@@ -30,7 +30,7 @@ namespace NISTMottScatteringAngle
    static const double MAX_NISTMOTT = ToSI::keV(20.0);
 #endif
 
-   static double value(double a, double b, double c, double y0, double y1, double y2, double x)
+   __host__ __device__ static double value(double a, double b, double c, double y0, double y1, double y2, double x)
    {
       return (x - b) * (x - c) * y0 / ((a - b) * (a - c)) + (x - a) * (x - c) * y1 / ((b - a) * (b - c)) + (x - a) * (x - b) * y2 / ((c - a) * (c - b));
    }
@@ -103,17 +103,16 @@ namespace NISTMottScatteringAngle
       return mElement;
    }
    
-   double NISTMottScatteringAngle::totalCrossSection(const double energy) const
+   __host__ __device__ double NISTMottScatteringAngle::totalCrossSection(const double energy) const
    {
       if (energy < MAX_NISTMOTT) {
-         double scale = PhysicalConstants::BohrRadius * PhysicalConstants::BohrRadius;
-         double logE = ::log(FromSI::eV(energy));
+         const double scale = PhysicalConstants::BohrRadius * PhysicalConstants::BohrRadius;
+         const double logE = ::logf(FromSI::eV(energy));
          int j = 1 + (int)((logE - DL50) / PARAM);
          if (j == 1)
             return value(DL50, DL50 + PARAM, DL50 + 2.0 * PARAM, mSpwem[0], mSpwem[1], mSpwem[2], logE) * scale;
          else if (j == SPWEM_LEN)
-            return value(DL50 + 58.0 * PARAM, DL50 + 59.0 * PARAM, DL50 + 60.0 * PARAM, mSpwem[SPWEM_LEN - 3], mSpwem[SPWEM_LEN - 2], mSpwem[SPWEM_LEN - 1], logE)
-            * scale;
+            return value(DL50 + 58.0 * PARAM, DL50 + 59.0 * PARAM, DL50 + 60.0 * PARAM, mSpwem[SPWEM_LEN - 3], mSpwem[SPWEM_LEN - 2], mSpwem[SPWEM_LEN - 1], logE) * scale;
          else {
             double e0 = DL50 + (j - 2) * PARAM;
             return value(e0, e0 + PARAM, e0 + 2.0 * PARAM, mSpwem[j - 2], mSpwem[j - 1], mSpwem[j], logE) * scale;

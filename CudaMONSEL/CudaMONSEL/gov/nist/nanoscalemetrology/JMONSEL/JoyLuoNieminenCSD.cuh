@@ -14,17 +14,17 @@ namespace JoyLuoNieminenCSD
 
       void setMaterial(const MaterialT& mat, double bh);
 
-      void init();
+      __host__ __device__ void init();
 
-      void setMaterial(const SEmaterialT* mat) override;
-      double compute(double d, const ElectronT* pe) const override;
+      __host__ __device__ void setMaterial(const SEmaterialT* mat) override;
+      __host__ __device__ double compute(double d, const ElectronT* pe) const override;
 
-      double compute(const double len, const double kE) const;
+      __host__ __device__ double compute(const double len, const double kE) const;
 
       double getBreakE() const;
       void setBreakE(double breakE);
 
-      StringT toString() const override;
+      __host__ __device__ StringT toString() const override;
 
    private:
       MaterialT& mat;

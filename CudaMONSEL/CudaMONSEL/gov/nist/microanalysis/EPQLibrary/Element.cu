@@ -9,7 +9,7 @@ namespace Element
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
    __device__ static const int numIonizationEnergy = 104;
    __device__ static const int numAtomicWeight = 112;
-   
+
    __device__ const long long serialVersionUID = 0x987360133793L;
 
    __device__ const int elmNone = 0;
@@ -593,6 +593,124 @@ namespace Element
       "End-of-elements"
    };
 
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+   __constant__ char const * const mAbbreviations[] = {
+      "",
+      "H",
+      "He",
+      "Li",
+      "Be",
+      "B",
+      "C",
+      "N",
+      "O",
+      "F",
+      "Ne",
+      "Na",
+      "Mg",
+      "Al",
+      "Si",
+      "P",
+      "S",
+      "Cl",
+      "Ar",
+      "K",
+      "Ca",
+      "Sc",
+      "Ti",
+      "V",
+      "Cr",
+      "Mn",
+      "Fe",
+      "Co",
+      "Ni",
+      "Cu",
+      "Zn",
+      "Ga",
+      "Ge",
+      "As",
+      "Se",
+      "Br",
+      "Kr",
+      "Rb",
+      "Sr",
+      "Y",
+      "Zr",
+      "Nb",
+      "Mo",
+      "Tc",
+      "Ru",
+      "Rh",
+      "Pd",
+      "Ag",
+      "Cd",
+      "In",
+      "Sn",
+      "Sb",
+      "Te",
+      "I",
+      "Xe",
+      "Cs",
+      "Ba",
+      "La",
+      "Ce",
+      "Pr",
+      "Nd",
+      "Pm",
+      "Sm",
+      "Eu",
+      "Gd",
+      "Tb",
+      "Dy",
+      "Ho",
+      "Er",
+      "Tm",
+      "Yb",
+      "Lu",
+      "Hf",
+      "Ta",
+      "W",
+      "Re",
+      "Os",
+      "Ir",
+      "Pt",
+      "Au",
+      "Hg",
+      "Tl",
+      "Pb",
+      "Bi",
+      "Po",
+      "At",
+      "Rn",
+      "Fr",
+      "Ra",
+      "Ac",
+      "Th",
+      "Pa",
+      "U",
+      "Np",
+      "Pu",
+      "Am",
+      "Cm",
+      "Bk",
+      "Cf",
+      "Es",
+      "Fm",
+      "Md",
+      "No",
+      "Lr",
+      "Rf",
+      "Db",
+      "Sg",
+      "Bh",
+      "Hs",
+      "Mt",
+      "Uun",
+      "Uuu",
+      "Uub",
+      "EOE"
+   };
+#else
    char const * const mAbbreviations[] = {
       "",
       "H",
@@ -709,6 +827,7 @@ namespace Element
       "Uub",
       "EOE"
    };
+#endif
 
    Element const * mAllElements[numAtomicWeight] = {
       &H,
@@ -926,7 +1045,14 @@ namespace Element
       }
       else {
          printf("Wrong atomic number %d\n", atomicNo);
+         mAtomicNumber = elmNone;
       }
+   }
+
+   Element::Element(const Element& other)
+   {
+      if (*this == other) return;
+      mAtomicNumber = other.mAtomicNumber;
    }
 
    Element::Element()
@@ -934,15 +1060,9 @@ namespace Element
       mAtomicNumber = elmNone;
    }
 
-   bool Element::operator==(const Element& other) const
+   __host__ __device__ bool Element::operator==(const Element& other) const
    {
       return mAtomicNumber == other.mAtomicNumber;
-   }
-
-   Element::Element(const Element& other)
-   {
-      if (*this == other) return;
-      mAtomicNumber = other.mAtomicNumber;
    }
 
    const Element& Element::operator=(const Element& other)
@@ -979,32 +1099,39 @@ namespace Element
    }
 
    const Element& byAtomicNumber(int an)
-   {      
+   {
       return (an > 0) && (an <= numAtomicWeight) ? *mAllElements[an - 1] : None;
    }
 
-   double getAtomicWeight(int atomicNo)
+   __host__ __device__ double getAtomicWeight(int atomicNo)
    {
-      //printf("atomicNo: %d\n", atomicNo);
       if (atomicNo <= 0 || atomicNo >= numAtomicWeight) {
-         //printf("invalid atmoic number: %d\n", atomicNo);
-         return -1;
+         printf("invalid atmoic number: %d\n", atomicNo);
+         return elmNone;
       }
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+      else if (!dAtomicWeight || !dAtomicWeight[atomicNo - 1]) {
+         printf("need to load dAtomicWeight on to device first\n");
+         return elmNone;
+      }
+      return dAtomicWeight[atomicNo - 1];
+#else
       else if (!mAtomicWeight.size() || !mAtomicWeight[atomicNo - 1]) {
          readAtomicWeights();
          printf("need to load mAtomicWeight array by calling readAtomicWeights first\n");
       }
       return mAtomicWeight[atomicNo - 1];
+#endif
    }
 
-   __device__ double getAtomicWeightDevice(int atomicNo)
-   {
-      if (atomicNo <= 0 || atomicNo >= numAtomicWeight) {
-         printf("invalid atmoic number: %d\n", atomicNo);
-         return -1;
-      }
-      return dAtomicWeight[atomicNo - 1];
-   }
+   //__device__ double getAtomicWeightDevice(int atomicNo)
+   //{
+   //   if (atomicNo <= 0 || atomicNo >= numAtomicWeight) {
+   //      printf("invalid atmoic number: %d\n", atomicNo);
+   //      return -1;
+   //   }
+   //   return dAtomicWeight[atomicNo - 1];
+   //}
 
    Element const * const * allElements()
    {
@@ -1039,7 +1166,7 @@ namespace Element
       return mAtomicNumber;
    }
 
-   double Element::getAtomicWeight() const
+   __host__ __device__ double Element::getAtomicWeight() const
    {
       return ::Element::getAtomicWeight(mAtomicNumber);
    }
@@ -1049,12 +1176,12 @@ namespace Element
       return ToSI::AMU(::Element::getAtomicWeight(mAtomicNumber));
    }
 
-   char const * Element::toAbbrev() const
+   __host__ __device__ char const * Element::toAbbrev() const
    {
       return mAbbreviations[mAtomicNumber];
    }
 
-   char const * toAbbrev(int atomicNo)
+   __host__ __device__ char const * toAbbrev(int atomicNo)
    {
       return mAbbreviations[atomicNo];
    }
@@ -1110,7 +1237,7 @@ namespace Element
       }
    }
 
-   unsigned int Element::hashCode() const
+   __host__ __device__ unsigned int Element::hashCode() const
    {
       // mAtomicNumber is always less than 128 (1<<7). Int has 31 + 1 bits. 31-7
       // = 24

@@ -6,14 +6,142 @@
 
 namespace CzyzewskiMottCrossSection
 {
-//#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-//   __constant__ const int SpecialEnergyCount = 26;
-//   __constant__ const int SpecialAngleCount = 96;
-//   __constant__ const double MaxEnergy = 4.8065296e-15;
-//
-//   __constant__ static const int kTotalIndex = 96;
-//   __constant__ static const int kMeanFreePathIndex = 97;
-//#else
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+   __constant__ const int SpecialEnergyCount = 26;
+   __constant__ const int SpecialAngleCount = 96;
+   __constant__ const double MaxEnergy = 4.8065296e-15;
+
+   __constant__ static const int kTotalIndex = 96;
+   __constant__ static const int kMeanFreePathIndex = 97;
+
+   __constant__ static const double kEnergy[] = {
+      3.2043530600e-018,
+      8.0108826500e-018,
+      1.2016323975e-017,
+      1.6021765300e-017,
+      3.2043530600e-017,
+      4.8065295900e-017,
+      6.4087061200e-017,
+      8.0108826500e-017,
+      9.6130591800e-017,
+      1.1215235710e-016,
+      1.2817412240e-016,
+      1.4419588770e-016,
+      1.6021765300e-016,
+      3.2043530600e-016,
+      4.8065295900e-016,
+      6.4087061200e-016,
+      8.0108826500e-016,
+      9.6130591800e-016,
+      1.1215235710e-015,
+      1.2817412240e-015,
+      1.4419588770e-015,
+      1.6021765300e-015,
+      2.4032647950e-015,
+      3.2043530600e-015,
+      4.0054413250e-015,
+      4.8065295900e-015
+   };
+
+   __constant__ static const double kAngle[] = {
+      0.0000000000e+000,
+      1.7453292520e-002,
+      3.4906585040e-002,
+      5.2359877560e-002,
+      6.9813170080e-002,
+      8.7266462600e-002,
+      1.0471975512e-001,
+      1.2217304764e-001,
+      1.3962634016e-001,
+      1.5707963268e-001,
+      1.7453292520e-001,
+      2.0943951024e-001,
+      2.4434609528e-001,
+      2.7925268032e-001,
+      3.1415926536e-001,
+      3.4906585040e-001,
+      3.8397243544e-001,
+      4.1887902048e-001,
+      4.5378560552e-001,
+      4.8869219056e-001,
+      5.2359877560e-001,
+      5.5850536064e-001,
+      5.9341194568e-001,
+      6.2831853072e-001,
+      6.6322511576e-001,
+      6.9813170080e-001,
+      7.3303828584e-001,
+      7.6794487088e-001,
+      8.0285145592e-001,
+      8.3775804096e-001,
+      8.7266462600e-001,
+      9.0757121104e-001,
+      9.4247779608e-001,
+      9.7738438112e-001,
+      1.0122909662e+000,
+      1.0471975512e+000,
+      1.0821041362e+000,
+      1.1170107213e+000,
+      1.1519173063e+000,
+      1.1868238914e+000,
+      1.2217304764e+000,
+      1.2566370614e+000,
+      1.2915436465e+000,
+      1.3264502315e+000,
+      1.3613568166e+000,
+      1.3962634016e+000,
+      1.4311699866e+000,
+      1.4660765717e+000,
+      1.5009831567e+000,
+      1.5358897418e+000,
+      1.5707963268e+000,
+      1.6057029118e+000,
+      1.6406094969e+000,
+      1.6755160819e+000,
+      1.7104226670e+000,
+      1.7453292520e+000,
+      1.7802358370e+000,
+      1.8151424221e+000,
+      1.8500490071e+000,
+      1.8849555922e+000,
+      1.9198621772e+000,
+      1.9547687622e+000,
+      1.9896753473e+000,
+      2.0245819323e+000,
+      2.0594885174e+000,
+      2.0943951024e+000,
+      2.1293016874e+000,
+      2.1642082725e+000,
+      2.1991148575e+000,
+      2.2340214426e+000,
+      2.2689280276e+000,
+      2.3038346126e+000,
+      2.3387411977e+000,
+      2.3736477827e+000,
+      2.4085543678e+000,
+      2.4434609528e+000,
+      2.4783675378e+000,
+      2.5132741229e+000,
+      2.5481807079e+000,
+      2.5830872930e+000,
+      2.6179938780e+000,
+      2.6529004630e+000,
+      2.6878070481e+000,
+      2.7227136331e+000,
+      2.7576202182e+000,
+      2.7925268032e+000,
+      2.8274333882e+000,
+      2.8623399733e+000,
+      2.8972465583e+000,
+      2.9321531434e+000,
+      2.9670597284e+000,
+      3.0019663134e+000,
+      3.0368728985e+000,
+      3.0717794835e+000,
+      3.1066860685e+000,
+      3.1415926536e+000
+   };
+#else
    const int SpecialEnergyCount = 26;
    const int SpecialAngleCount = 96;
    const double MaxEnergy = ToSI::keV(30.0);
@@ -148,7 +276,7 @@ namespace CzyzewskiMottCrossSection
       Math2::toRadians(178),
       Math2::toRadians(180)
    };
-//#endif
+#endif
 
    // https://www.oreilly.com/library/view/c-cookbook/0596007612/ch03s06.html
    static double sciToDub(const std::string& str)
@@ -225,23 +353,23 @@ namespace CzyzewskiMottCrossSection
       return mElement;
    }
 
-   double getSpecialEnergy(int index)
+   __host__ __device__ double getSpecialEnergy(const int index)
    {
       return kEnergy[index];
    }
 
-   double getSpecialAngle(int index)
+   __host__ __device__ double getSpecialAngle(const int index)
    {
       return kAngle[index];
    }
 
-   int getEnergyIndex(double energy)
+   __host__ __device__ int getEnergyIndex(const double energy)
    {
       const int ei = Algorithm::binarySearch(kEnergy, 0, sizeof(kEnergy)/sizeof(double), energy);
       return ei >= 0 ? ei : -(ei + 1);
    }
 
-   double CzyzewskiMottCrossSection::totalCrossSection(double energy) const
+   __host__ __device__ double CzyzewskiMottCrossSection::totalCrossSection(const double energy) const
    {
       int ei = Algorithm::binarySearch(kEnergy, 0, sizeof(kEnergy) / sizeof(double), energy);
       if (ei >= 0)
@@ -269,8 +397,8 @@ namespace CzyzewskiMottCrossSection
       if (!((ai == 0) || (elevation >= getSpecialAngle(ai - 1)))) printf("CzyzewskiMottCrossSection::partialCrossSection 4: %lf, %lf\n", elevation, getSpecialAngle(ai-1));
       if (ai == 0)
          ai = 1;
-      double t = (energy - kEnergy[ei - 1]) / (kEnergy[ei] - kEnergy[ei - 1]);
-      double u = (elevation - kAngle[ai - 1]) / (kAngle[ai] - kAngle[ai - 1]);
+      const double t = (energy - kEnergy[ei - 1]) / (kEnergy[ei] - kEnergy[ei - 1]);
+      const double u = (elevation - kAngle[ai - 1]) / (kAngle[ai] - kAngle[ai - 1]);
       return ToSI::sqrAngstrom((1.0 - t) * (1.0 - u) * mValues[ei - 1][ai - 1] + t * (1.0 - u) * mValues[ei][ai - 1] + t * u
          * mValues[ei][ai] + (1.0 - t) * u * mValues[ei - 1][ai]);
    }

@@ -107,7 +107,7 @@ __global__ void testKernel()
 void testGPU()
 {
    printf("-----------------GPU-----------------------------\n");
-   testKernel<<<1, 1>>>();
+   testKernel << <1, 1 >> >();
    checkCudaErrors(cudaDeviceSynchronize());
    checkCudaErrors(cudaGetLastError());
 }
@@ -164,8 +164,10 @@ void testsCPU()
    NISTMottScatteringAngle::init();
    GasScatteringCrossSection::init();
    NISTMottRS::init();
-   MeanIonizationPotential::Berger64MeanIonizationPotential::readTabulatedValues();
-   MeanIonizationPotential::Berger83MeanIonizationPotential::readTabulatedValues();
+   MeanIonizationPotential::Berger64.readTabulatedValues();
+   MeanIonizationPotential::Berger83.readTabulatedValues();
+   //MeanIonizationPotential::Berger64MeanIonizationPotential::readTabulatedValues();
+   //MeanIonizationPotential::Berger83MeanIonizationPotential::readTabulatedValues();
 
    Math2Test::testRandom1();
    Math2Test::testRandom2();
@@ -287,17 +289,17 @@ void initCuda()
    char *d_data = nullptr;
    checkCudaErrors(cudaMalloc((void **)&d_data, sizeof(char) * 128));
    checkCudaErrors(cudaMemcpy(d_data, Reference::NullReference.getReference().c_str(), sizeof(char) * 128, cudaMemcpyHostToDevice));
-   Reference::initCuda<<<1, 1>>>(d_data);
+   Reference::initCuda << <1, 1 >> >(d_data);
    checkCudaErrors(cudaGetLastError());
    checkCudaErrors(cudaFree(d_data));
-   print<<<1, 1>>>();
+   print << <1, 1 >> >();
    checkCudaErrors(cudaGetLastError());
 
-   Element::initCuda<<<1, 1>>>();
+   Element::initCuda << <1, 1 >> >();
    checkCudaErrors(cudaGetLastError());
-   BrowningEmpiricalCrossSection::initCuda<<<1, 1>>>();
+   BrowningEmpiricalCrossSection::initCuda << <1, 1 >> >();
    checkCudaErrors(cudaGetLastError());
-   ScreenedRutherfordScatteringAngle::initCuda<<<1, 1>>>();
+   ScreenedRutherfordScatteringAngle::initCuda << <1, 1 >> >();
    checkCudaErrors(cudaGetLastError());
    //ScreenedRutherfordScatteringAngleKernel << <1, 1 >> >();
    //checkCudaErrors(cudaGetLastError());
@@ -317,9 +319,9 @@ void initCuda()
    float *d_tmp;
    checkCudaErrors(cudaMalloc((void**)&d_tmp, sizeof(float) * 8));
    checkCudaErrors(cudaMemcpy(d_tmp, tmp, sizeof(float) * 8, cudaMemcpyHostToDevice));
-   initArr<<<1, 1>>>(d_tmp);
+   initArr << <1, 1 >> >(d_tmp);
    checkCudaErrors(cudaGetLastError());
-   cpyker<<<1, 1>>>();
+   cpyker << <1, 1 >> >();
    checkCudaErrors(cudaFree(d_tmp));
 
    //char *d_data;
@@ -331,6 +333,8 @@ void initCuda()
    //print << <1, 1 >> >();
    //checkCudaErrors(cudaGetLastError());
 }
+
+#include "gov\nist\microanalysis\Utility\Math2.cuh"
 
 int main()
 {

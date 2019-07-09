@@ -18,7 +18,7 @@ namespace CzyzewskiMottCrossSection
       StringT toString() const;
       const ElementT& getElement() const;
 
-      double totalCrossSection(double energy) const;
+      __host__ __device__ double totalCrossSection(const double energy) const;
       double partialCrossSection(double elevation, double azimuth, double energy) const;
       double partialCrossSection(double elevation, double energy) const;
       double meanFreePath(double energy) const;
@@ -30,9 +30,9 @@ namespace CzyzewskiMottCrossSection
       MatrixXd mValues;
    };
 
-   double getSpecialEnergy(int index);
-   double getSpecialAngle(int index);
-   int getEnergyIndex(double energy);
+   __host__ __device__ double getSpecialEnergy(const int index);
+   __host__ __device__ double getSpecialAngle(const int index);
+   __host__ __device__ int getEnergyIndex(const double energy);
 
    extern const int SpecialEnergyCount;
    extern const int SpecialAngleCount;

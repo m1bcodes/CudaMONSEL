@@ -382,7 +382,7 @@ namespace SEmaterial
       }
    }
 
-   void SEmaterial::setKEtoDefault()
+   __host__ __device__ void SEmaterial::setKEtoDefault()
    {
       //for (int i = 0; i < kineticEnergy.size(); i++) {
       //   if (-bindingEnergy[i] > energyCBbottom) {
@@ -427,7 +427,7 @@ namespace SEmaterial
       version = (version == _UI32_MAX) ? 0L : version + 1L;
    }
 
-   bool SEmaterial::isSEmaterial() const
+   __host__ __device__ bool SEmaterial::isSEmaterial() const
    {
       return true;
    }

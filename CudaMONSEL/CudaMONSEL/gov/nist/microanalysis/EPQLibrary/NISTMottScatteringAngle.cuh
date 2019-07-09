@@ -22,7 +22,7 @@ namespace NISTMottScatteringAngle
       StringT toString() const;
 
       const ElementT& getElement() const override;
-      double totalCrossSection(const double) const override;
+      __host__ __device__ double totalCrossSection(const double) const override;
       double randomScatteringAngle(const double) const override;
 
       __host__ __device__ const VectorXf& getSpwem() const;
