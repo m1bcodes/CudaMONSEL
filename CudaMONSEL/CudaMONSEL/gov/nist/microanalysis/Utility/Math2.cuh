@@ -21,16 +21,12 @@ namespace Math2
    __host__ __device__ extern double sqr(double x);
    __host__ __device__ extern double magnitude3d(const double p[]);
    __host__ __device__ extern void pointBetween3d(const double a[], const double b[], double f, double res[]);
-   __host__ __device__ extern double toRadians(double deg);
+   __host__ __device__ extern double toRadians(const double deg);
 
-   __host__ extern double random();
-   __device__ extern double random(curandState&);
-   __host__ extern int randomInt(int mod);
-   __device__ extern int randomInt(int mod, curandState&);
-   __host__ extern double expRand();
-   __device__ extern double expRand(curandState&);
-   __host__ extern double generateGaussianNoise(const double mean, const double stdDev);
-   __device__ extern double generateGaussianNoise(const double mean, const double stdDev, curandState&);
+   __host__ __device__ extern double random();
+   __host__ __device__ extern int randomInt(int mod);
+   __host__ __device__ extern double expRand();
+   __host__ __device__ extern double generateGaussianNoise(const double mean, const double stdDev);
    
    //__host__ __device__ float EXP(float y);
    //__host__ __device__ float LOG(float y);
@@ -49,6 +45,9 @@ namespace Math2
    extern const double MINUS_X_AXIS[];
    extern const double MINUS_Y_AXIS[];
    extern const double MINUS_Z_AXIS[];
+
+   extern __global__ void initCudaStates(const unsigned int n);
+   extern __global__ void destroyCudaState();
 }
 
 #endif

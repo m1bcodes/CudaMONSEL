@@ -1,4 +1,4 @@
-#include "Math2.cuh"
+#include "gov\nist\microanalysis\Utility\Math2.cuh"
 
 #include <math.h>
 
@@ -1266,53 +1266,66 @@ namespace Math2
    //      throw new EPQException("Maximum iteration count exceeded in Math2.rootFind");
    //   }
 
-   __host__ __device__ double toRadians(double deg)
+   __device__ curandState *states;
+
+   __global__ void initCudaStates(const unsigned int n)
+   {
+      states = new curandState[n];
+      for (int i = 0; i < n; ++i) {
+         curand_init(0, i, i, &states[i]);
+      }
+   }
+
+   __global__ void destroyCudaState()
+   {
+      delete[] states;
+   }
+
+   __host__ __device__ double toRadians(const double deg)
    {
       return deg * PI / 180.0;
    }
 
-   __host__ double random()
+   __host__ __device__ double random()
    {
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+      // curand_uniform() can return between 0.0 (exclusive) and 1.0 (inclusive).
+      return 1 - curand_uniform_double(&states[threadIdx.x + blockDim.x * blockIdx.x]); // excludes 1.0 but includes 0.0.
+#else
       //return (double)rand() / RAND_MAX;
       // http://c-faq.com/lib/randrange.html
       // like Java, does not include 1
       return (double)rand() / ((double)RAND_MAX + 1);
+#endif
    }
 
-   __device__ double random(curandState& state)
+   __host__ __device__ int randomInt(int mod)
    {
-      // curand_uniform() can return between 0.0 (exclusive) and 1.0 (inclusive).
-      return 1 - curand_uniform_double(&state); // excludes 1.0 but includes 0.0.
-   }
-
-   __host__ int randomInt(int mod)
-   {
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+      return (int)truncf((1 - curand_uniform_double(&states[threadIdx.x + blockDim.x * blockIdx.x])) * mod);
+#else
       return rand() % mod;
+#endif
    }
 
-   __device__ int randomInt(int mod, curandState& curandstate)
+   __host__ __device__ double expRand()
    {
-      return (int)truncf((1 - curand_uniform_double(&curandstate)) * mod);;
-   }
-
-   __host__ double expRand()
-   {
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+      double r = curand_uniform_double(&states[threadIdx.x + blockDim.x * blockIdx.x]); // excludes 0.0 but includes 1.0.
+      if (r >= 1) r = 1 - r;
+      return -::log(r);
+#else
       double r = (double)rand() / RAND_MAX;
       while (r <= 0 || r >= 1) r = (double)rand() / RAND_MAX;
       return -::log(r);
+#endif
    }
 
-   __device__ double expRand(curandState& state)
+   __host__ __device__ double generateGaussianNoise(const double mean, const double stdDev)
    {
-      double r = 0;
-      do {
-         r = curand_uniform_double(&state); // excludes 0.0 but includes 1.0.
-      } while (r <= 0 || r >= 1);
-      return -::log(r);
-   }
-
-   __host__ double generateGaussianNoise(const double mean, const double stdDev)
-   {
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+      return curand_normal_double(&states[threadIdx.x + blockDim.x * blockIdx.x]) * stdDev + mean;
+#else
       static bool hasSpare = false;
       static double spare;
 
@@ -1328,13 +1341,9 @@ namespace Math2
          v = (rand() / ((double)RAND_MAX)) * 2.0 - 1.0;
          s = u * u + v * v;
       } while ((s >= 1.0) || (s == 0.0));
-      s = sqrt(-2.0 * log(s) / s);
+      s = ::sqrt(-2.0 * ::log(s) / s);
       spare = v * s;
       return mean + stdDev * u * s;
-   }
-
-   __device__ double generateGaussianNoise(const double mean, const double stdDev, curandState& state)
-   {
-      return curand_normal_double(&state) * stdDev + mean;
+#endif
    }
 }

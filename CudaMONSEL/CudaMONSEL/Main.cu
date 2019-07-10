@@ -20,6 +20,8 @@
 #include <curand.h>
 #include <curand_kernel.h>
 
+#include "gov\nist\microanalysis\Utility\Math2.cuh"
+
 #include "gov\nist\microanalysis\Utility\UncertainValue2.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\Element.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\Material.cuh"
@@ -63,11 +65,9 @@ __global__ void testKernel()
    printf("%d, %d, %d, %d, %d, %d\n", threadIdx.x, blockIdx.x, threadIdx.y, blockIdx.y, threadIdx.z, blockIdx.z);
    printf("%d, %d, %d\n", gridDim.x, gridDim.y, gridDim.z);
 
-   curandState state;
-   int i = threadIdx.x + blockDim.x * blockIdx.x;
-   curand_init(1234, i, 0, &state);
-   Math2Test::testRandom1CUDA(state);
-   Math2Test::testRandom2CUDA(state);
+   //int i = threadIdx.x + blockDim.x * blockIdx.x;
+   Math2Test::testRandom1Cuda();
+   Math2Test::testRandom2Cuda();
 
    HasherTest::TestOne();
 
@@ -104,9 +104,26 @@ __global__ void testKernel()
    StackTest::testOne();
 }
 
+const unsigned int NUM_ROWS = 1;
+const unsigned int NUM_COLS = 16;
+
+__global__ void printRand()
+{
+   const unsigned int i = threadIdx.x + blockDim.x * blockIdx.x;
+   printf("thread id %d: %.10e\n", i, Math2::random());
+}
+
 void testGPU()
 {
    printf("-----------------GPU-----------------------------\n");
+   Math2::initCudaStates << <1, 1 >> >(NUM_ROWS * NUM_COLS);
+   checkCudaErrors(cudaDeviceSynchronize());
+   checkCudaErrors(cudaGetLastError());
+
+   printRand << <1, 16 >> >();
+   checkCudaErrors(cudaDeviceSynchronize());
+   checkCudaErrors(cudaGetLastError());
+
    testKernel << <1, 1 >> >();
    checkCudaErrors(cudaDeviceSynchronize());
    checkCudaErrors(cudaGetLastError());
@@ -233,11 +250,8 @@ void testsCPU()
    sumShapeTest.testAll();
 }
 
-__global__ void print()
+__global__ void printNullReference()
 {
-   //printf("%lf\n", ::powf(5.0, 2.0));
-   //printf("%.10e\n", ::sqrt(25.0));
-   //printf("%.10e\n", 25.0);
    printf("%s\n", Reference::dNullReference->getLongForm().c_str());
 }
 
@@ -257,19 +271,6 @@ __global__ void cpyker()
       printf("%lf ", d_arr1[i]);
    }
    printf("\n");
-}
-
-__global__ void ScreenedRutherfordScatteringAngleKernel()
-{
-   //printf("%d\n", Element::dNone->getAtomicNumber());
-   //ScreenedRutherfordScatteringAngleT *srsa = new ScreenedRutherfordScatteringAngleT(Element::dNone->getAtomicNumber());
-   //printf("%d done\n", ScreenedRutherfordScatteringAngle::getSRSA(5).get());
-   //printf("%d\n", srsa->get());
-   //delete srsa;
-
-   //B *b = new B(elm);
-   //printf("%d\n", b->get());
-   //delete b;
 }
 
 __global__ void printSpwem()
@@ -305,36 +306,46 @@ void initCuda()
    checkCudaErrors(cudaMalloc((void **)&d_data, sizeof(char) * 128));
    checkCudaErrors(cudaMemcpy(d_data, Reference::NullReference.getReference().c_str(), sizeof(char) * 128, cudaMemcpyHostToDevice));
    Reference::initCuda << <1, 1 >> >(d_data);
+   checkCudaErrors(cudaDeviceSynchronize());
    checkCudaErrors(cudaGetLastError());
    checkCudaErrors(cudaFree(d_data));
-   print << <1, 1 >> >();
+   printNullReference << <1, 1 >> >();
+   checkCudaErrors(cudaDeviceSynchronize());
    checkCudaErrors(cudaGetLastError());
 
    Element::copyDataToDevice();
    Element::initCuda << <1, 1 >> >();
+   checkCudaErrors(cudaDeviceSynchronize());
    checkCudaErrors(cudaGetLastError());
    BrowningEmpiricalCrossSection::initCuda << <1, 1 >> >();
+   checkCudaErrors(cudaDeviceSynchronize());
    checkCudaErrors(cudaGetLastError());
    ScreenedRutherfordScatteringAngle::initCuda << <1, 1 >> >();
+   checkCudaErrors(cudaDeviceSynchronize());
    checkCudaErrors(cudaGetLastError());
    
    NISTMottScatteringAngle::initCuda << <1, 1 >> >();
+   checkCudaErrors(cudaDeviceSynchronize());
    checkCudaErrors(cudaGetLastError());
    NISTMottScatteringAngle::copyDataToCuda();
    printSpwem << <1, 1 >> >();
+   checkCudaErrors(cudaDeviceSynchronize());
    checkCudaErrors(cudaGetLastError());
    printf("CPU: %d\n", NISTMottScatteringAngle::getNISTMSA(59).getSpwem().size());
    for (auto a : NISTMottScatteringAngle::getNISTMSA(59).getSpwem()) {
       printf("%.10e ", a);
    }
    printf("CPU end\n");
-   NISTMottRS::initCuda<<<1, 1>>>();
+   NISTMottRS::initCuda << <1, 1 >> >();
+   checkCudaErrors(cudaDeviceSynchronize());
    checkCudaErrors(cudaGetLastError());
 
    MeanIonizationPotential::initCuda << <1, 1 >> >();
+   checkCudaErrors(cudaDeviceSynchronize());
    checkCudaErrors(cudaGetLastError());
    MeanIonizationPotential::copyDataToCuda();
    printMeanIonizationPotential << <1, 1 >> >();
+   checkCudaErrors(cudaDeviceSynchronize());
    checkCudaErrors(cudaGetLastError());
    printf("CPU:\n");
    printf("Berger64: %d\n", MeanIonizationPotential::Berger64.getData().size());
@@ -354,6 +365,7 @@ void initCuda()
    checkCudaErrors(cudaMalloc((void**)&d_tmp, sizeof(float) * 8));
    checkCudaErrors(cudaMemcpy(d_tmp, tmp, sizeof(float) * 8, cudaMemcpyHostToDevice));
    initArr << <1, 1 >> >(d_tmp);
+   checkCudaErrors(cudaDeviceSynchronize());
    checkCudaErrors(cudaGetLastError());
    cpyker << <1, 1 >> >();
    checkCudaErrors(cudaFree(d_tmp));
@@ -362,10 +374,29 @@ void initCuda()
    //checkCudaErrors(cudaMalloc((void **)&d_data, sizeof(char) * 128));
    //checkCudaErrors(cudaMemcpy(d_data, Reference::NullReference.getReference().c_str(), sizeof(char) * 128, cudaMemcpyHostToDevice));
    //Reference::initCuda << <1, 1 >> >(d_data);
+   //checkCudaErrors(cudaDeviceSynchronize());
    //checkCudaErrors(cudaGetLastError());
    //checkCudaErrors(cudaFree(d_data));
    //print << <1, 1 >> >();
+   //checkCudaErrors(cudaDeviceSynchronize());
    //checkCudaErrors(cudaGetLastError());
+}
+
+__device__ curandState state[16];
+
+__device__ double generateRandomNumber()
+{
+   const unsigned int id = blockIdx.x * blockDim.x + threadIdx.x;
+   const double res = curand_uniform_double(&state[id]);
+   printf("thread no. %d: %.10e\n", id, res);
+   return res;
+}
+
+__global__ void printRandomNumbers()
+{
+   const unsigned int id = blockIdx.x * blockDim.x + threadIdx.x;
+   curand_init(0, id, id, &state[id]);
+   printf("thread no. %d: %.10e\n", id, generateRandomNumber());
 }
 
 int main()
@@ -383,6 +414,10 @@ int main()
    //useClass<<<1, 1>>>();
    //checkCudaErrors(cudaDeviceSynchronize());
    //checkCudaErrors(cudaFree(d_c));
+
+   printRandomNumbers << <1, 16 >> >();
+   checkCudaErrors(cudaDeviceSynchronize());
+   checkCudaErrors(cudaGetLastError());
 
    testsCPU();
    testGPU();

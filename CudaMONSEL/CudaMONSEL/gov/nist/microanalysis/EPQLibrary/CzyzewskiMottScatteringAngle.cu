@@ -487,6 +487,7 @@ namespace CzyzewskiMottScatteringAngle
          checkCudaErrors(cudaMalloc((void **)&dmfp, sizeof(double) * mfp.size()));
          checkCudaErrors(cudaMemcpy(dmfp, mfp.data(), sizeof(double) * mfp.size(), cudaMemcpyHostToDevice));
          copyMeanFreePath << <1, 1 >> >(i, dmfp, mfp.size());
+         checkCudaErrors(cudaDeviceSynchronize());
          checkCudaErrors(cudaGetLastError());
          checkCudaErrors(cudaFree(dmfp));
 
@@ -495,6 +496,7 @@ namespace CzyzewskiMottScatteringAngle
          checkCudaErrors(cudaMalloc((void **)&dtcs, sizeof(double) * tcs.size()));
          checkCudaErrors(cudaMemcpy(dtcs, tcs.data(), sizeof(double) * tcs.size(), cudaMemcpyHostToDevice));
          copyTotalCrossSection << <1, 1 >> >(i, dtcs, tcs.size());
+         checkCudaErrors(cudaDeviceSynchronize());
          checkCudaErrors(cudaGetLastError());
          checkCudaErrors(cudaFree(dtcs));
 
@@ -505,6 +507,7 @@ namespace CzyzewskiMottScatteringAngle
             checkCudaErrors(cudaMalloc((void **)&dcdf, sizeof(double) * cdf.size()));
             checkCudaErrors(cudaMemcpy(dcdf, cdf.data(), sizeof(double) * cdf.size(), cudaMemcpyHostToDevice));
             copyCummulativeDFRow << <1, 1 >> >(i, r, dcdf, cdf.size());
+            checkCudaErrors(cudaDeviceSynchronize());
             checkCudaErrors(cudaGetLastError());
             checkCudaErrors(cudaFree(dcdf));
          }

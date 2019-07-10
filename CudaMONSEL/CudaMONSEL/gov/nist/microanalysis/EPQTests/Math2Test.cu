@@ -27,34 +27,34 @@ namespace Math2Test
       printf("Math2Test::testRandom2() completed.\n");
    }
 
-   __device__ void testRandom1CUDA(curandState& state)
+   __device__ void testRandom1Cuda()
    {
-      printf("%.10e\n", Math2::random(state));
-      printf("%.10e\n", Math2::random(state));
-      printf("%.10e\n", Math2::random(state));
-      printf("%.10e\n", Math2::random(state));
-      printf("%.10e\n", Math2::random(state));
-      printf("%.10e\n", Math2::random(state));
-      printf("%.10e\n", Math2::random(state));
-      printf("%.10e\n", Math2::random(state));
-      printf("%.10e\n", Math2::random(state));
-      printf("%.10e\n", Math2::random(state));
+      printf("%.10e\n", Math2::random());
+      printf("%.10e\n", Math2::random());
+      printf("%.10e\n", Math2::random());
+      printf("%.10e\n", Math2::random());
+      printf("%.10e\n", Math2::random());
+      printf("%.10e\n", Math2::random());
+      printf("%.10e\n", Math2::random());
+      printf("%.10e\n", Math2::random());
+      printf("%.10e\n", Math2::random());
+      printf("%.10e\n", Math2::random());
 
       printf("Math2Test::testRandom1CUDA() completed.\n");
    }
 
-   __device__ void testRandom2CUDA(curandState& state)
+   __device__ void testRandom2Cuda()
    {
-      printf("%.10e\n", Math2::random(state));
-      printf("%.10e\n", Math2::random(state));
-      printf("%.10e\n", Math2::random(state));
-      printf("%.10e\n", Math2::random(state));
-      printf("%.10e\n", Math2::random(state));
-      printf("%.10e\n", Math2::random(state));
-      printf("%.10e\n", Math2::random(state));
-      printf("%.10e\n", Math2::random(state));
-      printf("%.10e\n", Math2::random(state));
-      printf("%.10e\n", Math2::random(state));
+      printf("%.10e\n", Math2::random());
+      printf("%.10e\n", Math2::random());
+      printf("%.10e\n", Math2::random());
+      printf("%.10e\n", Math2::random());
+      printf("%.10e\n", Math2::random());
+      printf("%.10e\n", Math2::random());
+      printf("%.10e\n", Math2::random());
+      printf("%.10e\n", Math2::random());
+      printf("%.10e\n", Math2::random());
+      printf("%.10e\n", Math2::random());
 
       printf("Math2Test::testRandom2CUDA() completed.\n");
    }

@@ -386,6 +386,7 @@ namespace NISTMottScatteringAngle
          checkCudaErrors(cudaMalloc((void **)&dSpwem, sizeof(float) * spwem.size()));
          checkCudaErrors(cudaMemcpy(dSpwem, spwem.data(), sizeof(float) * spwem.size(), cudaMemcpyHostToDevice));
          copySpwem << <1, 1 >> >(i, dSpwem, spwem.size());
+         checkCudaErrors(cudaDeviceSynchronize());
          checkCudaErrors(cudaGetLastError());
          checkCudaErrors(cudaFree(dSpwem));
 
@@ -395,6 +396,7 @@ namespace NISTMottScatteringAngle
             checkCudaErrors(cudaMalloc((void **)&dX1r, x1[r].size() * sizeof(float)));
             checkCudaErrors(cudaMemcpy(dX1r, x1[r].data(), x1[r].size() * sizeof(float), cudaMemcpyHostToDevice));
             copyX1Row << <1, 1 >> >(i, r, dX1r, x1[r].size());
+            checkCudaErrors(cudaDeviceSynchronize());
             checkCudaErrors(cudaGetLastError());
             checkCudaErrors(cudaFree(dX1r));
          }

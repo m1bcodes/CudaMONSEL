@@ -10,8 +10,8 @@ namespace Math2Test
    extern void testRandom1();
    extern void testRandom2();
 
-   __device__ extern void testRandom1CUDA(curandState& state);
-   __device__ extern void testRandom2CUDA(curandState& state);
+   __device__ extern void testRandom1Cuda();
+   __device__ extern void testRandom2Cuda();
 }
 
 #endif
