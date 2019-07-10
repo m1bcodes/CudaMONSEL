@@ -1,9 +1,12 @@
-#include "gov\nist\microanalysis\Utility\Math2.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\GasScatteringCrossSection.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\Reference.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\PhysicalConstants.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\ScreenedRutherfordScatteringAngle.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\Element.cuh"
+
+#include "gov\nist\microanalysis\Utility\Math2.cuh"
+
+#include "Amphibian\random.cuh"
 
 namespace GasScatteringCrossSection
 {
@@ -43,7 +46,7 @@ namespace GasScatteringCrossSection
 
    double GasScatteringCrossSection::randomScatteringAngle(double energy) const
    {
-      if (Math2::random() * (1.0 + ratioInelasticOverElastic()) < 1.0)
+      if (Random::random() * (1.0 + ratioInelasticOverElastic()) < 1.0)
          return mElastic.randomScatteringAngle(energy);
       else {
          // Electron velocity from energy
@@ -59,7 +62,7 @@ namespace GasScatteringCrossSection
          double siInt = ::log((PhysicalConstants::PI * PhysicalConstants::PI + thE2) * (th02 + thE2) / (thE2 * (PhysicalConstants::PI * PhysicalConstants::PI + th02 + thE2)));
          if (!(siInt > 0.0)) printf("GasScatteringCrossSection::randomScatteringAngle siInt %lf\n", siInt);
          // Select a random integrated cross section
-         double exp_si = ::exp(Math2::random() * siInt);
+         double exp_si = ::exp(Random::random() * siInt);
          if (exp_si < 1.0) printf("GasScatteringCrossSection::randomScatteringAngle exp_si %lf\n", exp_si);
          // Solve for the angle that give us this (via Egerton 3.16)
          double beta = ::sqrt(((1 - exp_si) * thE2 * (th02 + thE2)) / ((exp_si - 1) * thE2 - th02));

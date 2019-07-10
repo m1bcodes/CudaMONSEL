@@ -8,6 +8,8 @@
 
 #include "CudaUtil.h"
 
+#include "Amphibian\random.cuh"
+
 namespace NISTMottScatteringAngle
 {
    static const Reference::Author* auRef[] = { &Reference::CPowell, &Reference::FSalvat, &Reference::AJablonski };
@@ -133,8 +135,8 @@ namespace NISTMottScatteringAngle
          int i = (logE - e1 < e2 - logE ? j : j + 1); // offset to zero-based
          if (!((i >= 0) && (i < SPWEM_LEN))) printf("%d %s %lf %s %lf %s %lf\n", i, "\t", FromSI::eV(energy), "\t", e1, "\t", e2);
          // via j
-         int k = Math2::randomInt(200); // offset to zero-based
-         double x = (mX1[i][k + 1] - mX1[i][k]) * Math2::random();
+         int k = Random::randomInt(200); // offset to zero-based
+         double x = (mX1[i][k + 1] - mX1[i][k]) * Random::random();
          double q = mX1[i][k] + x;
          double com = 1.0 - 2.0 * q * q;
          return com > -1.0 ? (com < 1.0 ? ::acos(com) : 0.0) : PhysicalConstants::PI;

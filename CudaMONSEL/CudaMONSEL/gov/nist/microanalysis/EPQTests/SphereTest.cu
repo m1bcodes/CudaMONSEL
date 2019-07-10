@@ -3,6 +3,8 @@
 #include "gov\nist\microanalysis\NISTMonte\Sphere.cuh"
 #include "gov\nist\microanalysis\Utility\Math2.cuh"
 
+#include "Amphibian\random.cuh"
+
 namespace SphereTest
 {
    static double SCALE = 1.0e-5;
@@ -10,14 +12,14 @@ namespace SphereTest
 
    static void makeCenter(double res[])
    {
-      res[0] = (Math2::random() - 0.5) * SCALE;
-      res[1] = (Math2::random() - 0.5) * SCALE;
-      res[2] = (Math2::random() - 0.5) * SCALE;
+      res[0] = (Random::random() - 0.5) * SCALE;
+      res[1] = (Random::random() - 0.5) * SCALE;
+      res[2] = (Random::random() - 0.5) * SCALE;
    }
 
    static void makeNormal(double res[])
    {
-      double norm[] = { Math2::random(), Math2::random(), Math2::random() };
+      double norm[] = { Random::random(), Random::random(), Random::random() };
       Math2::normalize3d(norm, res);
    }
 
@@ -35,13 +37,13 @@ namespace SphereTest
       for (int i = 0; i < ITERATIONS; ++i) {
          double center[3];
          makeCenter(center);
-         double r = Math2::random() * SCALE + SCALE / 100.0;
+         double r = Random::random() * SCALE + SCALE / 100.0;
          SphereT sphere(center, r);
          {
             double norm[3];
             makeNormal(norm);
             double mult[3];
-            Math2::multiply3d(0.99 * r * Math2::random(), norm, mult);
+            Math2::multiply3d(0.99 * r * Random::random(), norm, mult);
             double testPt[3];
             Math2::plus3d(center, mult, testPt);
             assertTrue(sphere.contains(testPt));
@@ -50,7 +52,7 @@ namespace SphereTest
             double norm[3];
             makeNormal(norm);
             double mult[3];
-            Math2::multiply3d(r * (1.01 + Math2::random()), norm, mult);
+            Math2::multiply3d(r * (1.01 + Random::random()), norm, mult);
             double testPt[3];
             Math2::plus3d(center, mult, testPt);
             assertTrue(!sphere.contains(testPt));
@@ -66,15 +68,15 @@ namespace SphereTest
       double mult[3];
       for (int i = 0; i < ITERATIONS; ++i) {
          makeCenter(center);
-         double r = Math2::random() * SCALE + SCALE / 100.0;
+         double r = Random::random() * SCALE + SCALE / 100.0;
          SphereT sphere(center, r);
          makeNormal(norm);
-         Math2::multiply3d(0.99 * r * Math2::random(), norm, mult);
+         Math2::multiply3d(0.99 * r * Random::random(), norm, mult);
          double inside[3];
          Math2::plus3d(center, mult, inside);
          assertTrue(sphere.contains(inside));
          makeNormal(norm);
-         Math2::multiply3d(r * (1.01 + Math2::random()), norm, mult);
+         Math2::multiply3d(r * (1.01 + Random::random()), norm, mult);
          double outside[3];
          Math2::plus3d(center, mult, outside);
          assertTrue(!sphere.contains(outside));

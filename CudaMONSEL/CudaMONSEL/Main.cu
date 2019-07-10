@@ -14,6 +14,7 @@
 #include "Amphibian\Tests\MapTest.cuh"
 #include "Amphibian\Tests\VectorTest.cuh"
 #include "Amphibian\Tests\StackTest.cuh"
+#include "Amphibian\random.cuh"
 
 #include "CudaUtil.h"
 #include "ImageUtil.h"
@@ -110,13 +111,13 @@ const unsigned int NUM_COLS = 16;
 __global__ void printRand()
 {
    const unsigned int i = threadIdx.x + blockDim.x * blockIdx.x;
-   printf("thread id %d: %.10e\n", i, Math2::random());
+   printf("thread id %d: %.10e\n", i, Random::random());
 }
 
 void testGPU()
 {
    printf("-----------------GPU-----------------------------\n");
-   Math2::initCudaStates << <1, 1 >> >(NUM_ROWS * NUM_COLS);
+   Random::initCudaStates << <1, 1 >> >(NUM_ROWS * NUM_COLS);
    checkCudaErrors(cudaDeviceSynchronize());
    checkCudaErrors(cudaGetLastError());
 
@@ -382,23 +383,6 @@ void initCuda()
    //checkCudaErrors(cudaGetLastError());
 }
 
-__device__ curandState state[16];
-
-__device__ double generateRandomNumber()
-{
-   const unsigned int id = blockIdx.x * blockDim.x + threadIdx.x;
-   const double res = curand_uniform_double(&state[id]);
-   printf("thread no. %d: %.10e\n", id, res);
-   return res;
-}
-
-__global__ void printRandomNumbers()
-{
-   const unsigned int id = blockIdx.x * blockDim.x + threadIdx.x;
-   curand_init(0, id, id, &state[id]);
-   printf("thread no. %d: %.10e\n", id, generateRandomNumber());
-}
-
 int main()
 {
    //CudaClass c;
@@ -414,10 +398,6 @@ int main()
    //useClass<<<1, 1>>>();
    //checkCudaErrors(cudaDeviceSynchronize());
    //checkCudaErrors(cudaFree(d_c));
-
-   printRandomNumbers << <1, 16 >> >();
-   checkCudaErrors(cudaDeviceSynchronize());
-   checkCudaErrors(cudaGetLastError());
 
    testsCPU();
    testGPU();

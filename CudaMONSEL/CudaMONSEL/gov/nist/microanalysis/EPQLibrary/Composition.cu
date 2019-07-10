@@ -1,4 +1,7 @@
 #include "gov\nist\microanalysis\EPQLibrary\Composition.cuh"
+
+#include "Amphibian\random.cuh"
+
 #include "gov\nist\microanalysis\Utility\Math2.cuh"
 
 #include <algorithm>
@@ -1043,7 +1046,7 @@ namespace Composition
       const Element::UnorderedSetT& elms = getElementSet();
       for (auto elm : elms) {
          double w = weightFraction(*elm, false);
-         double v = w + w * Math2::generateGaussianNoise(0, 1) * proportional + offset * Math2::generateGaussianNoise(0, 1);
+         double v = w + w * Random::generateGaussianNoise(0, 1) * proportional + offset * Random::generateGaussianNoise(0, 1);
          v = v > 0.0 ? v : 0.0;
          v = v < 1.1 ? v : 1.1;
          res.addElement(*elm, v);

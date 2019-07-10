@@ -1,5 +1,7 @@
 #include "gov\nist\microanalysis\EPQLibrary\BrowningEmpiricalCrossSection.cuh"
 
+#include "Amphibian\random.cuh"
+
 #include "gov\nist\microanalysis\EPQLibrary\ToSI.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\FromSI.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\Element.cuh"
@@ -30,7 +32,7 @@ namespace BrowningEmpiricalCrossSection
 
    double BrowningEmpiricalCrossSection::randomScatteringAngle(const double energy) const
    {
-      const double r1 = Math2::random(), r2 = Math2::random();
+      const double r1 = Random::random(), r2 = Random::random();
       const double z = mElement.getAtomicNumber();
       const double e = FromSI::keV(energy);
       const double r = (300.0 * e / z) + (mZp3 / (3.0e5 * e));

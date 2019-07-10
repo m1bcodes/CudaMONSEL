@@ -11,6 +11,8 @@
 
 #include "gov\nist\nanoscalemetrology\JMONSELutils\ULagrangeInterpolation.cuh"
 
+#include "Amphibian\random.cuh"
+
 namespace NISTMottRS
 {
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
@@ -161,7 +163,7 @@ namespace NISTMottRS
          };
          const float x[] = {
             ::log(energy),
-            Math2::random()
+            Random::random()
          };
          const double q = ULagrangeInterpolation::d2(mX1, x0, 2, xinc, 2, qINTERPOLATIONORDER, x, 2)[0];
          const double com = 1.0 - (2.0 * q * q);

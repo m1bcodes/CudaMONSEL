@@ -25,6 +25,8 @@
 #include "gov\nist\nanoscalemetrology\JMONSEL\NormalIntersectionShape.cuh"
 #include "gov\nist\nanoscalemetrology\JMONSEL\NShapes.cuh"
 
+#include "Amphibian\random.cuh"
+
 #include <fstream>
 
 #include <chrono>
@@ -47,7 +49,7 @@ namespace LinesOnLayers
       output += "\n Random number seed: ";
       output += std::to_string(seed);
       for (int i = 0; i < 10; ++i) {
-         output += "\n " + std::to_string(Math2::random());
+         output += "\n " + std::to_string(Random::random());
       }
 
       const int nTrajectories = 100;

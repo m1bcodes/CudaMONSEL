@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="Amphibian\Hasher.cu" />
+    <CudaCompile Include="Amphibian\random.cu" />
     <CudaCompile Include="Amphibian\String.cu" />
     <CudaCompile Include="Amphibian\Tests\HasherTest.cu" />
     <CudaCompile Include="Amphibian\Tests\LinkedListTest.cu" />
@@ -121,6 +122,7 @@
   <ItemGroup>
     <ClInclude Include="Amphibian\Hasher.cuh" />
     <ClInclude Include="Amphibian\LinkedList.cuh" />
+    <ClInclude Include="Amphibian\random.cuh" />
     <ClInclude Include="Amphibian\stack.cuh" />
     <ClInclude Include="Amphibian\Tests\StackTest.cuh" />
     <ClInclude Include="Amphibian\Tests\VectorTest.cuh" />

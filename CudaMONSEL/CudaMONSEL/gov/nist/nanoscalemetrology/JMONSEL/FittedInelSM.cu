@@ -3,6 +3,8 @@
 #include "gov\nist\microanalysis\NISTMonte\Electron.cuh"
 #include "gov\nist\nanoscalemetrology\JMONSEL\SEmaterial.cuh"
 
+#include "Amphibian\random.cuh"
+
 namespace FittedInelSM
 {
    FittedInelSM::FittedInelSM(const SEmaterialT& mat, double energySEgen, const SlowingDownAlgT& sdAlg) : sdAlg(sdAlg), energySEgen(energySEgen)
@@ -12,8 +14,8 @@ namespace FittedInelSM
 
    ElectronT* FittedInelSM::scatter(ElectronT* pe)
    {
-      const double phi = 2 * Math2::PI * Math2::random();
-      const double theta = ::acos(1. - (2. * Math2::random()));
+      const double phi = 2 * Math2::PI * Random::random();
+      const double theta = ::acos(1. - (2. * Random::random()));
       return new ElectronT(*pe, theta, phi, energySEgen + eFermi);
    }
 

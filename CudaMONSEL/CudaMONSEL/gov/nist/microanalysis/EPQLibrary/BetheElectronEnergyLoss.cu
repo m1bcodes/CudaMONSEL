@@ -1,10 +1,13 @@
 #include "gov\nist\microanalysis\EPQLibrary\BetheElectronEnergyLoss.cuh"
 
+#include "Amphibian\random.cuh"
+
 #include "gov\nist\microanalysis\EPQLibrary\Element.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\Reference.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\FromSI.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\ToSI.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\MeanIonizationPotential.cuh"
+
 #include "gov\nist\microanalysis\Utility\Math2.cuh"
 
 namespace BetheElectronEnergyLoss
@@ -111,7 +114,7 @@ namespace BetheElectronEnergyLoss
    double StragglingModified::compute(const ElementT& elm, double eB) const
    {
       const double bee = mBethe.compute(elm, eB);
-      return ::fmin(0.0, bee * (1.0 + Math2::generateGaussianNoise(0, 1) * mPercent));
+      return ::fmin(0.0, bee * (1.0 + Random::generateGaussianNoise(0, 1) * mPercent));
    }
 
    static const AlgorithmClassT* mAllImplementations[] = {

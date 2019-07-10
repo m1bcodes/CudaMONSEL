@@ -3,6 +3,8 @@
 #include "gov\nist\microanalysis\Utility\Math2.cuh"
 #include "gov\nist\microanalysis\Utility\Transform3D.cuh"
 
+#include "Amphibian\random.cuh"
+
 namespace CylindricalShapeTest
 {
    void transform3d(const double pts[], double phi, double theta, double psi, const double offset[], double res[])
@@ -12,12 +14,12 @@ namespace CylindricalShapeTest
       Transform3D::translate3d(rotated, offset, false, res);
    }
 
-   static const double scale = (Math2::random() + 1.0e-4) * 10.0e-6;
-   static const double radius = (Math2::random() + 1.0e-4) * 10.0e-6;
-   static const double phi = Math2::random() * Math2::PI;
-   static const double theta = Math2::random() * Math2::PI;
-   static const double psi = Math2::random() * Math2::PI;
-   static const double offset[] = { scale * Math2::random(), scale * Math2::random(), scale * Math2::random() };
+   static const double scale = (Random::random() + 1.0e-4) * 10.0e-6;
+   static const double radius = (Random::random() + 1.0e-4) * 10.0e-6;
+   static const double phi = Random::random() * Math2::PI;
+   static const double theta = Random::random() * Math2::PI;
+   static const double psi = Random::random() * Math2::PI;
+   static const double offset[] = { scale * Random::random(), scale * Random::random(), scale * Random::random() };
    static const double end0[] = { -scale, 0.0, 0.0 };
    static const double end1[] = { scale, 0.0, 0.0 };
 
@@ -420,18 +422,18 @@ namespace CylindricalShapeTest
 
       CylindricalShapeT shape(p0, p1, 0.5 * SCALE);
       for (int i = 0; i < ITERATIONS; ++i) {
-         double r = 0.49 * SCALE * Math2::random();
-         double th = Math2::random() * Math2::PI * 2.0;
+         double r = 0.49 * SCALE * Random::random();
+         double th = Random::random() * Math2::PI * 2.0;
          double inside[] = {
-            1.9 * SCALE * (Math2::random() - 0.5),
+            1.9 * SCALE * (Random::random() - 0.5),
             SCALE + ::cos(th) * r,
             SCALE + ::sin(th) * r
          };
          assertTrue(shape.contains(inside));
-         th = Math2::random() * Math2::PI * 2.0;
-         r = SCALE * Math2::random();
+         th = Random::random() * Math2::PI * 2.0;
+         r = SCALE * Random::random();
          double outside[] = {
-            3.0 * SCALE * (Math2::random() - 0.5),
+            3.0 * SCALE * (Random::random() - 0.5),
             SCALE + ::cos(th) * (0.501 * SCALE + r),
             SCALE + ::sin(th) * (0.501 * SCALE + r)
          };

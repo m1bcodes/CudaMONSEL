@@ -17,6 +17,7 @@
 
 #include "gov\nist\microanalysis\Utility\Math2.cuh"
 
+#include "Amphibian\random.cuh"
 
 namespace BasicMaterialModel
 {
@@ -43,7 +44,7 @@ namespace BasicMaterialModel
       const RandomizedScatterFactoryT* rsf = (RandomizedScatterFactoryT*)getAlgorithm("RandomizedScatterFactory");
       if (!(rsf != NULL)) printf("BasicMaterialModel::randomMeanPathLength: rsf == NULL\n");
       for (auto el : mMaterial.getElementSet()) {
-         const double mfp = (el->getMass() * Math2::expRand()) / (den * mMaterial.weightFraction(*el, true) * rsf->get(*el).totalCrossSection(kE));
+         const double mfp = (el->getMass() * Random::expRand()) / (den * mMaterial.weightFraction(*el, true) * rsf->get(*el).totalCrossSection(kE));
          if (mfp < minMfp) {
             minMfp = mfp;
             bestEl = el;
@@ -61,7 +62,7 @@ namespace BasicMaterialModel
          const RandomizedScatterFactoryT* rsf = (RandomizedScatterFactoryT*)getAlgorithm("RandomizedScatterFactory");
          if (rsf == nullptr) printf("BasicMaterialModel::scatter: rsf == NULL\n");
          const double alpha = rsf->get(*se).randomScatteringAngle(pe.getEnergy());
-         const double beta = 2.0 * Math2::PI * Math2::random();
+         const double beta = 2.0 * Math2::PI * Random::random();
          // Update the primary electron's direction angles
          // We could pe.setEnergy() here, but this is an elastic model
          // so it is not necessary.

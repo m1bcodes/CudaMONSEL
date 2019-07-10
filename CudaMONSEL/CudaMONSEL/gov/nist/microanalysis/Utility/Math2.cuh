@@ -10,27 +10,18 @@
 
 namespace Math2
 {
-   __host__ __device__ extern void minus3d(const double a[], const double b[], double res[]);
-   __host__ __device__ extern void divide3d(const double a[], double b, double res[]);
-   __host__ __device__ extern void plus3d(const double a[], const double b[], double res[]);
-   __host__ __device__ extern void normalize3d(const double p[], double[]);
-   __host__ __device__ extern void multiply3d(double a, const double b[], double[]);
-   __host__ __device__ extern double distance3d(const double p1[], const double p2[]);
-   __host__ __device__ extern double dot3d(const double a[], const double b[]);
-   __host__ __device__ extern void cross3d(const double* a, const double* b, double res[]);
-   __host__ __device__ extern double sqr(double x);
-   __host__ __device__ extern double magnitude3d(const double p[]);
-   __host__ __device__ extern void pointBetween3d(const double a[], const double b[], double f, double res[]);
-   __host__ __device__ extern double toRadians(const double deg);
-
-   __host__ __device__ extern double random();
-   __host__ __device__ extern int randomInt(int mod);
-   __host__ __device__ extern double expRand();
-   __host__ __device__ extern double generateGaussianNoise(const double mean, const double stdDev);
-   
-   //__host__ __device__ float EXP(float y);
-   //__host__ __device__ float LOG(float y);
-   //__host__ __device__ float POW(float b, float p);
+   extern __host__ __device__ void minus3d(const double a[], const double b[], double res[]);
+   extern __host__ __device__ void divide3d(const double a[], double b, double res[]);
+   extern __host__ __device__ void plus3d(const double a[], const double b[], double res[]);
+   extern __host__ __device__ void normalize3d(const double p[], double[]);
+   extern __host__ __device__ void multiply3d(double a, const double b[], double[]);
+   extern __host__ __device__ double distance3d(const double p1[], const double p2[]);
+   extern __host__ __device__ double dot3d(const double a[], const double b[]);
+   extern __host__ __device__ void cross3d(const double* a, const double* b, double res[]);
+   extern __host__ __device__ double sqr(double x);
+   extern __host__ __device__ double magnitude3d(const double p[]);
+   extern __host__ __device__ void pointBetween3d(const double a[], const double b[], double f, double res[]);
+   extern __host__ __device__ double toRadians(const double deg);
 
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
    extern __constant__ const double PI;
@@ -45,9 +36,6 @@ namespace Math2
    extern const double MINUS_X_AXIS[];
    extern const double MINUS_Y_AXIS[];
    extern const double MINUS_Z_AXIS[];
-
-   extern __global__ void initCudaStates(const unsigned int n);
-   extern __global__ void destroyCudaState();
 }
 
 #endif

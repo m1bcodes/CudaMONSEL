@@ -7,6 +7,7 @@
 #include "gov\nist\microanalysis\EPQLibrary\Element.cuh"
 
 #include "Amphibian\Algorithm.cuh"
+#include "Amphibian\random.cuh"
 
 #include "CudaUtil.h"
 
@@ -118,7 +119,7 @@ namespace CzyzewskiMottScatteringAngle
    double CzyzewskiMottScatteringAngle::randomScatteringAngle(double energy) const
    {
       if (energy < MAX_CZYZEWSKI) {
-         return randomScatteringAngle(energy, Math2::random());
+         return randomScatteringAngle(energy, Random::random());
       }
       else {
          return mRutherford.randomScatteringAngle(energy);

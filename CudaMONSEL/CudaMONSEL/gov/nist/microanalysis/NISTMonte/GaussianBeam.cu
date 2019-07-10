@@ -4,6 +4,8 @@
 #include "gov\nist\microanalysis\NISTMonte\Electron.cuh"
 #include "gov\nist\microanalysis\NISTMonte\MonteCarloSS.cuh"
 
+#include "Amphibian\random.cuh"
+
 namespace GaussianBeam
 {
    GaussianBeam::GaussianBeam(double width) :
@@ -58,8 +60,8 @@ namespace GaussianBeam
          mCenter[1],
          mCenter[2]
       };
-      double r = ::sqrt(-2. * ::log(Math2::random())) * mWidth;
-      double th = 2.0 * PhysicalConstants::PI * (Math2::random());
+      double r = ::sqrt(-2. * ::log(Random::random())) * mWidth;
+      double th = 2.0 * PhysicalConstants::PI * (Random::random());
       initialPos[0] += r * ::cos(th);
       initialPos[1] += r * ::sin(th);
 

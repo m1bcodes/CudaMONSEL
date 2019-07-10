@@ -8,6 +8,8 @@
 
 #include "gov\nist\microanalysis\Utility\Math2.cuh"
 
+#include "Amphibian\random.cuh"
+
 namespace SumShapeTest
 {
    static const ElementT* mat1Elements[] = {
@@ -140,11 +142,11 @@ namespace SumShapeTest
 
    void SumShapeTest::pointInside(double res[])
    {
-      switch (Math2::randomInt(3)) {
+      switch (Random::randomInt(3)) {
       case 0: {
-         const double r = radius * Math2::random();
-         const double th = Math2::random() * Math2::PI;
-         const double phi = 2.0 * Math2::random() * Math2::PI;
+         const double r = radius * Random::random();
+         const double th = Random::random() * Math2::PI;
+         const double phi = 2.0 * Random::random() * Math2::PI;
          res[0] = -length + r * ::cos(phi) * ::sin(th);
          res[1] = r * ::sin(phi) * ::sin(th);
          res[2] = 2.0 * radius + r * ::cos(th);
@@ -152,32 +154,32 @@ namespace SumShapeTest
       }
               break;
       case 1: {
-         const double phi = 2.0 * Math2::random() * Math2::PI;
-         const double r = radius * Math2::random();
-         res[0] = 2.0 * length * (Math2::random() - 0.5);
+         const double phi = 2.0 * Random::random() * Math2::PI;
+         const double r = radius * Random::random();
+         res[0] = 2.0 * length * (Random::random() - 0.5);
          res[1] = r * ::cos(phi);
          res[2] = 2.0 * radius + ::sin(phi) * r;
          assertTrue(mCylOuter.contains(res));
       }
               break;
       case 2: {
-         const double r = radius * Math2::random();
-         const double th = Math2::random() * Math2::PI;
-         const double phi = 2.0 * Math2::random() * Math2::PI;
+         const double r = radius * Random::random();
+         const double th = Random::random() * Math2::PI;
+         const double phi = 2.0 * Random::random() * Math2::PI;
          res[0] = length + r * ::cos(phi) * ::sin(th);
          res[1] = r * ::sin(phi) * ::sin(th);
          res[2] = 2.0 * radius + r * ::cos(th);
          assertTrue(mCap1Outer.contains(res));
       }
-            break;
+              break;
       }
    }
 
    static void pointOutside(double res[])
    {
-      const double phi = 2.0 * Math2::random() * Math2::PI;
-      const double r = radius * (1.00001 + 0.9 * Math2::random());
-      res[0] = 3.0 * length * (Math2::random() - 0.5);
+      const double phi = 2.0 * Random::random() * Math2::PI;
+      const double r = radius * (1.00001 + 0.9 * Random::random());
+      res[0] = 3.0 * length * (Random::random() - 0.5);
       res[1] = r * ::cos(phi);
       res[2] = 2.0 * radius + ::sin(phi) * r;
    }

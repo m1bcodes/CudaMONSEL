@@ -9,6 +9,8 @@
 #include "gov\nist\nanoscalemetrology\JMONSEL\SEMaterial.cuh"
 #include "gov\nist\nanoscalemetrology\JMONSEL\NormalShape.cuh"
 
+#include "Amphibian\random.cuh"
+
 namespace ExpQMBarrierSM
 {
    __host__ __device__ ExpQMBarrierSM::ExpQMBarrierSM(const MaterialT* mat) :
@@ -172,7 +174,7 @@ namespace ExpQMBarrierSM
             transmits = true; // Since we already know perpE>deltaU
          else {
             double transmissionProb = (lambda == 0.) ? sharpBarrierT(rootPerpE, rootDiff) : generalBarrierT(rootPerpE, rootDiff);
-            const double r = Math2::random();
+            const double r = Random::random();
             transmits = r < transmissionProb;
          }
       }

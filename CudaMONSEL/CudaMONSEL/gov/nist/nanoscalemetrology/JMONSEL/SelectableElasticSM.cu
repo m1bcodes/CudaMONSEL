@@ -5,6 +5,8 @@
 #include "gov\nist\microanalysis\EPQLibrary\Material.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\PhysicalConstants.cuh"
 
+#include "Amphibian\random.cuh"
+
 namespace SelectableElasticSM
 {
    SelectableElasticSM::SelectableElasticSM(const MaterialT& mat, const RandomizedScatterFactoryT& rsf) : rsf(rsf), cached_kE(-1.)
@@ -51,7 +53,7 @@ namespace SelectableElasticSM
       if (kE != cached_kE)
          setCache(kE);
       // Decide which element we scatter from
-      const double r = Math2::random() * totalScaledCrossSection;
+      const double r = Random::random() * totalScaledCrossSection;
       int index = 0; // Index is first index
 
       // Increment index and mechanism until cumulative scatter rate exceeds r
@@ -62,7 +64,7 @@ namespace SelectableElasticSM
       if (alpha != alpha) {
          printf("%s\n", rse[index]->toString().c_str());
       }
-      const double beta = 2 * Math2::PI * Math2::random();
+      const double beta = 2 * Math2::PI * Random::random();
       pe->updateDirection(alpha, beta);
       pe->setScatteringElement(&(rse[index]->getElement()));
       return NULL; // This mechanism is elastic. No SE.

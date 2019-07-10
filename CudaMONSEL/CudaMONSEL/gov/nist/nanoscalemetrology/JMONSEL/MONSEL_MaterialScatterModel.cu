@@ -8,6 +8,8 @@
 #include "gov\nist\nanoscalemetrology\JMONSEL\ScatterMechanism.cuh"
 #include "gov\nist\nanoscalemetrology\JMONSEL\BarrierScatterMechanism.cuh"
 
+#include "Amphibian\random.cuh"
+
 namespace MONSEL_MaterialScatterModel
 {
 //#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
@@ -81,7 +83,7 @@ namespace MONSEL_MaterialScatterModel
       */
       double maxFreePath = 2. * MonteCarloSS::ChamberRadius;
       if (totalScatterRate != 0.) {
-         double freepath = -::log(Math2::random()) / totalScatterRate;
+         double freepath = -::log(Random::random()) / totalScatterRate;
          return freepath > maxFreePath ? maxFreePath : freepath;
       }
       /*
@@ -129,7 +131,7 @@ namespace MONSEL_MaterialScatterModel
       // Find the scatter mechanism that produced this scattering event
       // Generate a random # between 0 and total cumulative scatter rate
 
-      double r = Math2::random() * totalScatterRate;
+      double r = Random::random() * totalScatterRate;
       int index = 0; // Index is first index
 
       // Increment index and mechanism until cumulative scatter rate exceeds r

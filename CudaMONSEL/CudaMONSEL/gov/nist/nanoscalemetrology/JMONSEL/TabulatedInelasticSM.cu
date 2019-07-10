@@ -5,6 +5,7 @@
 #include "gov\nist\microanalysis\Utility\Math2.cuh"
 
 #include "Amphibian\Algorithm.cuh"
+#include "Amphibian\random.cuh"
 
 namespace TabulatedInelasticSM
 {
@@ -188,7 +189,7 @@ namespace TabulatedInelasticSM
          return coreEnergies[i - 1];
       else {
          auto cprob = cumulativeBranchingProbabilities[i - 1];
-         double r = Math2::random();
+         double r = Random::random();
          int index = Algorithm::binarySearch(cprob.data(), 0, cprob.size()-1, r);
          /*
          * Above binary search returns a positive index in the rare case when r
@@ -232,7 +233,7 @@ namespace TabulatedInelasticSM
       double phi = 0.; // PE trajectory parameters
       double energySE, thetaSE, phiSE; // SE trajectory parameters
       // TODO Do I need to check that kE>offsetFermiEnergy?
-      const double randoms[] = { Math2::random(), Math2::random(), Math2::random(), Math2::random() };
+      const double randoms[] = { Random::random(), Random::random(), Random::random(), Random::random() };
       interpInput[0] = kE;
       interpInput[1] = randoms[0];
       // Energy loss by PE
@@ -373,8 +374,8 @@ namespace TabulatedInelasticSM
             * I'm going to approximate the angle distribution as isotropic
             * for now.
             */
-            thetaSE = ::acos(1. - (2. * Math2::random()));
-            phiSE = 2. * Math2::PI * Math2::random();
+            thetaSE = ::acos(1. - (2. * Random::random()));
+            phiSE = 2. * Math2::PI * Random::random();
             // Generate SE, apply energy loss and trajectory change to SE
             // here
             se = new ElectronT(*pe, thetaSE, phiSE, energySE);
@@ -398,7 +399,7 @@ namespace TabulatedInelasticSM
                phiSE = phi + Math2::PI;
                // Combine with adjustment for additional simESEf deflection
                double newdir[2];
-               updateDirection(thetaSE, phiSE, energytheta[1], 2. * Math2::PI * Math2::random(), newdir);
+               updateDirection(thetaSE, phiSE, energytheta[1], 2. * Math2::PI * Random::random(), newdir);
                //Update SE direction by this combined amount
                se->updateDirection(newdir[0], newdir[1]);
 
@@ -425,8 +426,8 @@ namespace TabulatedInelasticSM
                * it decays into an electron-hole pair. The angular
                * distribution is therefore isotropic.
                */
-               thetaSE = ::acos(1. - (2. * Math2::random()));
-               phiSE = 2 * Math2::PI * Math2::random();
+               thetaSE = ::acos(1. - (2. * Random::random()));
+               phiSE = 2 * Math2::PI * Random::random();
                // Generate SE, apply energy loss and trajectory change to SE
                // here
                se = new ElectronT(*pe, thetaSE, phiSE, energySE);

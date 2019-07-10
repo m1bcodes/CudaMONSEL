@@ -3,6 +3,8 @@
 #include "gov\nist\microanalysis\NISTMonte\Electron.cuh"
 #include "gov\nist\microanalysis\Utility\Math2.cuh"
 
+#include "Amphibian\random.cuh"
+
 namespace GanachaudMokraniPhononInelasticSM
 {
    GanachaudMokraniPhononInelasticSM::GanachaudMokraniPhononInelasticSM(double ratemultiplier, double phononE, double temperature, double eps0, double epsInfinity) : 
@@ -28,7 +30,7 @@ namespace GanachaudMokraniPhononInelasticSM
 
       const double x = phononE / kE0; // Energy ratio
 
-      const double randoms[] = { Math2::random(), Math2::random() };
+      const double randoms[] = { Random::random(), Random::random() };
 
       double costheta; // scattering angle
       if (x < 0.1)

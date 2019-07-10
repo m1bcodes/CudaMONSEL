@@ -1,6 +1,9 @@
 #include "gov\nist\microanalysis\EPQLibrary\ScreenedRutherfordScatteringAngle.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\Element.cuh"
+
 #include "gov\nist\microanalysis\Utility\Math2.cuh"
+
+#include "Amphibian\random.cuh"
 
 namespace ScreenedRutherfordScatteringAngle
 {
@@ -39,7 +42,7 @@ namespace ScreenedRutherfordScatteringAngle
       // This method for calculating the scattering angle is taken from
       // NBSMONTE.FOR
       const double alpha = (5.44968e-19 * ::powf(mElement.getAtomicNumber(), 2.0 / 3.0)) / energy;
-      const double r = Math2::random();
+      const double r = Random::random();
       return ::acos(1 - 2.0 * alpha * r / (1 + alpha - r));
    }
 
