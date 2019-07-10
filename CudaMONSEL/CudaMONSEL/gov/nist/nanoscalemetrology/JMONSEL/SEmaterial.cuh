@@ -18,7 +18,7 @@ namespace SEmaterial
    public:
       SEmaterial();
       SEmaterial(const SEmaterial&);
-      SEmaterial(const Composition& comp, double density);
+      __host__ __device__ SEmaterial(const Composition& comp, double density);
       SEmaterial(const Element::Element* elms[], int elemLen, const double weightFracs[], int wfLen, double density, char* name);
       SEmaterial(const Material& mat);
 

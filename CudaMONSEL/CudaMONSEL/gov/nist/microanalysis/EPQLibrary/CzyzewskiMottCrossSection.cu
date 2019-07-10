@@ -335,12 +335,19 @@ namespace CzyzewskiMottCrossSection
 
    CzyzewskiMottCrossSection::CzyzewskiMottCrossSection(const ElementT& el) : mElement(el)
    {
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+#else
       loadTables(el.getAtomicNumber());
+#endif
    }
 
    CzyzewskiMottCrossSection::CzyzewskiMottCrossSection(int an) : mElement(Element::byAtomicNumber(an))
    {
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+#else
       loadTables(an);
+#endif
+
    }
 
    StringT CzyzewskiMottCrossSection::toString() const
@@ -369,7 +376,7 @@ namespace CzyzewskiMottCrossSection
       return ei >= 0 ? ei : -(ei + 1);
    }
 
-   __host__ __device__ double CzyzewskiMottCrossSection::totalCrossSection(const double energy) const
+   double CzyzewskiMottCrossSection::totalCrossSection(const double energy) const
    {
       int ei = Algorithm::binarySearch(kEnergy, 0, sizeof(kEnergy) / sizeof(double), energy);
       if (ei >= 0)
@@ -399,8 +406,7 @@ namespace CzyzewskiMottCrossSection
          ai = 1;
       const double t = (energy - kEnergy[ei - 1]) / (kEnergy[ei] - kEnergy[ei - 1]);
       const double u = (elevation - kAngle[ai - 1]) / (kAngle[ai] - kAngle[ai - 1]);
-      return ToSI::sqrAngstrom((1.0 - t) * (1.0 - u) * mValues[ei - 1][ai - 1] + t * (1.0 - u) * mValues[ei][ai - 1] + t * u
-         * mValues[ei][ai] + (1.0 - t) * u * mValues[ei - 1][ai]);
+      return ToSI::sqrAngstrom((1.0 - t) * (1.0 - u) * mValues[ei - 1][ai - 1] + t * (1.0 - u) * mValues[ei][ai - 1] + t * u * mValues[ei][ai] + (1.0 - t) * u * mValues[ei - 1][ai]);
    }
 
    double CzyzewskiMottCrossSection::partialCrossSection(double elevation, double energy) const
@@ -415,8 +421,7 @@ namespace CzyzewskiMottCrossSection
          return ToSI::angstrom(mValues[ei][kTotalIndex]);
       else {
          ei = -(ei + 1);
-         return ToSI::angstrom(mValues[ei - 1][kMeanFreePathIndex] + (energy - kEnergy[ei - 1])
-            / (kEnergy[ei] - kEnergy[ei - 1]) * (mValues[ei - 1][kMeanFreePathIndex] - mValues[ei][kMeanFreePathIndex]));
+         return ToSI::angstrom(mValues[ei - 1][kMeanFreePathIndex] + (energy - kEnergy[ei - 1]) / (kEnergy[ei] - kEnergy[ei - 1]) * (mValues[ei - 1][kMeanFreePathIndex] - mValues[ei][kMeanFreePathIndex]));
       }
    }
 }

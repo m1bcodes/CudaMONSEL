@@ -358,24 +358,24 @@ namespace NISTMottScatteringAngle
       dScatter[96] = new NISTMottScatteringAngle(*Element::dCm);
    }
 
-   __device__ void NISTMottScatteringAngle::copySpwem(float *dSpwem, unsigned int size)
-   {
-      mSpwem.assign(dSpwem, dSpwem + size);
-   }
+   //__device__ void NISTMottScatteringAngle::copySpwem(float *dSpwem, unsigned int size)
+   //{
+   //   mSpwem.assign(dSpwem, dSpwem + size);
+   //}
 
-   __device__ void NISTMottScatteringAngle::copyX1j(unsigned int j, float *dSpwem, unsigned int size)
-   {
-      mX1[j].assign(dSpwem, dSpwem + size);
-   }
+   //__device__ void NISTMottScatteringAngle::copyX1j(unsigned int r, float *dSpwem, unsigned int size)
+   //{
+   //   mX1[r].assign(dSpwem, dSpwem + size);
+   //}
 
    __global__ void copySpwem(unsigned int i, float *dSpwem, unsigned int size)
    {
-      dScatter[i]->copySpwem(dSpwem, size);
+      dScatter[i]->copySpwem<float>(dSpwem, size);
    }
 
-   __global__ void copyX1j(unsigned int i, unsigned int j, float *dSX1j, unsigned int size)
+   __global__ void copyX1Row(unsigned int i, unsigned int r, float *dSX1r, unsigned int size)
    {
-      dScatter[i]->copyX1j(j, dSX1j, size);
+      dScatter[i]->copyX1Row<float>(r, dSX1r, size);
    }
 
    void copyDataToCuda()
@@ -390,13 +390,13 @@ namespace NISTMottScatteringAngle
          checkCudaErrors(cudaFree(dSpwem));
 
          const MatrixXf& x1 = mScatter[i]->getX1();
-         for (int j = 0; j < x1.size(); ++j) {
-            float *dX1j = nullptr;
-            checkCudaErrors(cudaMalloc((void **)&dX1j, x1[j].size() * sizeof(float)));
-            checkCudaErrors(cudaMemcpy(dX1j, x1[j].data(), x1[j].size() * sizeof(float), cudaMemcpyHostToDevice));
-            copyX1j << <1, 1 >> >(i, j, dX1j, x1[j].size());
+         for (int r = 0; r < x1.size(); ++r) {
+            float *dX1r = nullptr;
+            checkCudaErrors(cudaMalloc((void **)&dX1r, x1[r].size() * sizeof(float)));
+            checkCudaErrors(cudaMemcpy(dX1r, x1[r].data(), x1[r].size() * sizeof(float), cudaMemcpyHostToDevice));
+            copyX1Row << <1, 1 >> >(i, r, dX1r, x1[r].size());
             checkCudaErrors(cudaGetLastError());
-            checkCudaErrors(cudaFree(dX1j));
+            checkCudaErrors(cudaFree(dX1r));
          }
       }
    }
@@ -410,7 +410,12 @@ namespace NISTMottScatteringAngle
 #endif
    }
 
-   NISTMottRandomizedScatterFactory::NISTMottRandomizedScatterFactory() : RandomizedScatterFactoryT("NIST Mott Inelastic Cross-Section", REFERENCE)
+   __host__ __device__ NISTMottRandomizedScatterFactory::NISTMottRandomizedScatterFactory() :
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+      RandomizedScatterFactoryT("NIST Mott Inelastic Cross-Section", *Reference::dNullReference)
+#else
+      RandomizedScatterFactoryT("NIST Mott Inelastic Cross-Section", REFERENCE)
+#endif
    {
    }
 
@@ -418,7 +423,7 @@ namespace NISTMottScatteringAngle
    {
    }
 
-   const RandomizedScatterT& NISTMottRandomizedScatterFactory::get(const ElementT& elm) const
+   __host__ __device__ const RandomizedScatterT& NISTMottRandomizedScatterFactory::get(const ElementT& elm) const
    {
       return getNISTMSA(elm.getAtomicNumber());
    }

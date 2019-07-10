@@ -414,6 +414,7 @@ namespace Element
 
    extern void init();
    extern __global__ void initCuda();
+   extern void copyDataToDevice();
 
    struct HashFcn
    {

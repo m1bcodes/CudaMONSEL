@@ -11,10 +11,10 @@ namespace RandomizedScatterFactory
    public:
       AlgorithmClassT const * const * getAllImplementations() const override;
 
-      virtual const RandomizedScatterT& get(const ElementT& elm) const = 0;
+      __host__ __device__ virtual const RandomizedScatterT& get(const ElementT& elm) const = 0;
 
    protected:
-      RandomizedScatterFactory(StringT name, const ReferenceT& ref);
+      __host__ __device__ RandomizedScatterFactory(StringT name, const ReferenceT& ref);
    };
 }
 

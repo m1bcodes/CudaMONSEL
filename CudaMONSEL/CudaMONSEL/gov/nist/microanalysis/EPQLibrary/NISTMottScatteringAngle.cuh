@@ -28,8 +28,17 @@ namespace NISTMottScatteringAngle
       __host__ __device__ const VectorXf& getSpwem() const;
       __host__ __device__ const MatrixXf& getX1() const;
 
-      __device__ void copySpwem(float *, unsigned int);
-      __device__ void copyX1j(unsigned int, float *, unsigned int);
+      template<typename T>
+      __device__ void copySpwem(const T *dSpwem, const unsigned int size)
+      {
+         mSpwem.assign(dSpwem, dSpwem + size);
+      }
+
+      template<typename T>
+      __device__ void copyX1Row(const unsigned int r, const T * dSX1r, const unsigned int size)
+      {
+         mX1[r].assign(dSX1r, dSX1r + size);
+      }
 
    private:
       void loadData(int an);
@@ -45,9 +54,9 @@ namespace NISTMottScatteringAngle
    class NISTMottRandomizedScatterFactory : public RandomizedScatterFactoryT
    {
    public:
-      NISTMottRandomizedScatterFactory();
+      __host__ __device__ NISTMottRandomizedScatterFactory();
 
-      const RandomizedScatterT& get(const ElementT& elm) const override;
+      __host__ __device__ const RandomizedScatterT& get(const ElementT& elm) const override;
 
    protected:
       void initializeDefaultStrategy() override;

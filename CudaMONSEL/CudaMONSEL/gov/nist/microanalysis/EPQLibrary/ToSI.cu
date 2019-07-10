@@ -76,7 +76,7 @@ namespace ToSI
       return d * (1 / CM);
    }
 
-   double angstrom(double a)
+   __host__ __device__ double angstrom(double a)
    {
       return ANGSTROM * a;
    }

@@ -274,12 +274,27 @@ __global__ void ScreenedRutherfordScatteringAngleKernel()
 
 __global__ void printSpwem()
 {
-   printf("CPU: %d\n", NISTMottScatteringAngle::getNISTMSA(59).getSpwem().size());
+   printf("GPU: %d\n", NISTMottScatteringAngle::getNISTMSA(59).getSpwem().size());
    for (auto a : NISTMottScatteringAngle::getNISTMSA(59).getSpwem()) {
       printf("%.10e ", a);
    }
    printf("GPU end\n");
-   //printf("%.10 %de\n", NISTMottScatteringAngle::getNISTMSA(1).getSpwem()[0], NISTMottScatteringAngle::getNISTMSA(1).getSpwem().size());
+}
+
+__global__ void printMeanIonizationPotential()
+{
+   printf("GPU:\n");
+   printf("Berger64: %d\n", MeanIonizationPotential::dBerger64->getData().size());
+   for (auto a : MeanIonizationPotential::dBerger64->getData()) {
+      printf("%.10e ", a);
+   }
+   printf("Berger64 end\n");
+   printf("Berger83: %d\n", MeanIonizationPotential::dBerger83->getData().size());
+   for (auto a : MeanIonizationPotential::dBerger83->getData()) {
+      printf("%.10e ", a);
+   }
+   printf("Berger83 end\n");
+   printf("GPU end\n");
 }
 
 void initCuda()
@@ -295,24 +310,43 @@ void initCuda()
    print << <1, 1 >> >();
    checkCudaErrors(cudaGetLastError());
 
+   Element::copyDataToDevice();
    Element::initCuda << <1, 1 >> >();
    checkCudaErrors(cudaGetLastError());
    BrowningEmpiricalCrossSection::initCuda << <1, 1 >> >();
    checkCudaErrors(cudaGetLastError());
    ScreenedRutherfordScatteringAngle::initCuda << <1, 1 >> >();
    checkCudaErrors(cudaGetLastError());
-   //ScreenedRutherfordScatteringAngleKernel << <1, 1 >> >();
-   //checkCudaErrors(cudaGetLastError());
-
+   
    NISTMottScatteringAngle::initCuda << <1, 1 >> >();
    checkCudaErrors(cudaGetLastError());
    NISTMottScatteringAngle::copyDataToCuda();
    printSpwem << <1, 1 >> >();
    checkCudaErrors(cudaGetLastError());
-   printf("GPU: %d\n", NISTMottScatteringAngle::getNISTMSA(59).getSpwem().size());
+   printf("CPU: %d\n", NISTMottScatteringAngle::getNISTMSA(59).getSpwem().size());
    for (auto a : NISTMottScatteringAngle::getNISTMSA(59).getSpwem()) {
       printf("%.10e ", a);
    }
+   printf("CPU end\n");
+   NISTMottRS::initCuda<<<1, 1>>>();
+   checkCudaErrors(cudaGetLastError());
+
+   MeanIonizationPotential::initCuda << <1, 1 >> >();
+   checkCudaErrors(cudaGetLastError());
+   MeanIonizationPotential::copyDataToCuda();
+   printMeanIonizationPotential << <1, 1 >> >();
+   checkCudaErrors(cudaGetLastError());
+   printf("CPU:\n");
+   printf("Berger64: %d\n", MeanIonizationPotential::Berger64.getData().size());
+   for (auto a : MeanIonizationPotential::Berger64.getData()) {
+      printf("%.10e ", a);
+   }
+   printf("Berger64 end\n");
+   printf("Berger83: %d\n", MeanIonizationPotential::Berger83.getData().size());
+   for (auto a : MeanIonizationPotential::Berger83.getData()) {
+      printf("%.10e ", a);
+   }
+   printf("Berger83 end\n");
    printf("CPU end\n");
 
    float tmp[] = { 0, 1, 2, 3, 4, 5, 6, 7 };
@@ -333,8 +367,6 @@ void initCuda()
    //print << <1, 1 >> >();
    //checkCudaErrors(cudaGetLastError());
 }
-
-#include "gov\nist\microanalysis\Utility\Math2.cuh"
 
 int main()
 {

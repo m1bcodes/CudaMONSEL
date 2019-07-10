@@ -192,26 +192,47 @@ namespace NISTMottRS
    const NISTMottRS* mScatter2[113];
    const NISTMottRS* mScatter3[113];
 
-   const NISTMottRS& getNMRS1(int an)
+   __device__ const NISTMottRS* dScatter1[113];
+   __device__ const NISTMottRS* dScatter2[113];
+   __device__ const NISTMottRS* dScatter3[113];
+
+   __host__ __device__ const NISTMottRS& getNMRS1(int an)
    {
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+      return *dScatter1[an];
+#else
       return *mScatter1[an];
+#endif
    }
 
-   const NISTMottRS& getNMRS2(int an)
+   __host__ __device__ const NISTMottRS& getNMRS2(int an)
    {
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+      return *dScatter2[an];
+#else
       return *mScatter2[an];
+#endif
    }
 
-   const NISTMottRS& getNMRS3(int an)
+   __host__ __device__ const NISTMottRS& getNMRS3(int an)
    {
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+      return *dScatter3[an];
+#else
       return *mScatter3[an];
+#endif
    }
 
-   NISTMottRSFactory::NISTMottRSFactory(int method) : RandomizedScatterFactoryT("NIST Mott Inelastic Cross-Section", mReferenceWebsite), method(method >= 1 && method <= 3 ? method : 1)
+   __host__ __device__ NISTMottRSFactory::NISTMottRSFactory(int method) :
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+      RandomizedScatterFactoryT("NIST Mott Inelastic Cross-Section", *Reference::dNullReference), method(method >= 1 && method <= 3 ? method : 1)
+#else
+      RandomizedScatterFactoryT("NIST Mott Inelastic Cross-Section", mReferenceWebsite), method(method >= 1 && method <= 3 ? method : 1)
+#endif
    {
    }
 
-   const RandomizedScatterT& NISTMottRSFactory::get(const ElementT& elm) const
+   __host__ __device__ const RandomizedScatterT& NISTMottRSFactory::get(const ElementT& elm) const
    {
       switch (method) {
       case 1:
@@ -229,13 +250,21 @@ namespace NISTMottRS
    {
    }
 
-   const NISTMottRSFactory FactoryRef = NISTMottRSFactory(1);
-   const NISTMottRSFactory Factory100Ref = NISTMottRSFactory(2);
-   const NISTMottRSFactory Factory100LinRef = NISTMottRSFactory(3);
+   const NISTMottRSFactory FactoryRef(1);
+   const NISTMottRSFactory Factory100Ref(2);
+   const NISTMottRSFactory Factory100LinRef(3);
 
    const RandomizedScatterFactoryT& Factory = FactoryRef;
    const RandomizedScatterFactoryT& Factory100 = Factory100Ref;
    const RandomizedScatterFactoryT& Factory100Lin = Factory100LinRef;
+
+   //__device__ const RandomizedScatterFactoryT* dFactory;
+   //__device__ const RandomizedScatterFactoryT* dFactory100;
+   //__device__ const RandomizedScatterFactoryT* dFactory100Lin;
+
+   //__device__ const NISTMottRSFactory *dFactoryRef = new NISTMottRSFactory(1);
+   //__device__ const NISTMottRSFactory *dFactory100Ref = new NISTMottRSFactory(2);
+   //__device__ const NISTMottRSFactory *dFactory100LinRef = new NISTMottRSFactory(3);
 
    void init()
    {
@@ -529,5 +558,299 @@ namespace NISTMottRS
       mScatter3[94] = new NISTMottRS(Element::Pu, 3);
       mScatter3[95] = new NISTMottRS(Element::Am, 3);
       mScatter3[96] = new NISTMottRS(Element::Cm, 3);
+   }
+
+   __global__ void initCuda()
+   {
+      dScatter1[1] = new NISTMottRS(*Element::dH, 1);
+      dScatter1[2] = new NISTMottRS(*Element::dHe, 1);
+      dScatter1[3] = new NISTMottRS(*Element::dLi, 1);
+      dScatter1[4] = new NISTMottRS(*Element::dBe, 1);
+      dScatter1[5] = new NISTMottRS(*Element::dB, 1);
+      dScatter1[6] = new NISTMottRS(*Element::dC, 1);
+      dScatter1[7] = new NISTMottRS(*Element::dN, 1);
+      dScatter1[8] = new NISTMottRS(*Element::dO, 1);
+      dScatter1[9] = new NISTMottRS(*Element::dF, 1);
+      dScatter1[10] = new NISTMottRS(*Element::dNe, 1);
+      dScatter1[11] = new NISTMottRS(*Element::dNa, 1);
+      dScatter1[12] = new NISTMottRS(*Element::dMg, 1);
+      dScatter1[13] = new NISTMottRS(*Element::dAl, 1);
+      dScatter1[14] = new NISTMottRS(*Element::dSi, 1);
+      dScatter1[15] = new NISTMottRS(*Element::dP, 1);
+      dScatter1[16] = new NISTMottRS(*Element::dS, 1);
+      dScatter1[17] = new NISTMottRS(*Element::dCl, 1);
+      dScatter1[18] = new NISTMottRS(*Element::dAr, 1);
+      dScatter1[19] = new NISTMottRS(*Element::dK, 1);
+      dScatter1[20] = new NISTMottRS(*Element::dCa, 1);
+      dScatter1[21] = new NISTMottRS(*Element::dSc, 1);
+      dScatter1[22] = new NISTMottRS(*Element::dTi, 1);
+      dScatter1[23] = new NISTMottRS(*Element::dV, 1);
+      dScatter1[24] = new NISTMottRS(*Element::dCr, 1);
+      dScatter1[25] = new NISTMottRS(*Element::dMn, 1);
+      dScatter1[26] = new NISTMottRS(*Element::dFe, 1);
+      dScatter1[27] = new NISTMottRS(*Element::dCo, 1);
+      dScatter1[28] = new NISTMottRS(*Element::dNi, 1);
+      dScatter1[29] = new NISTMottRS(*Element::dCu, 1);
+      dScatter1[30] = new NISTMottRS(*Element::dZn, 1);
+      dScatter1[31] = new NISTMottRS(*Element::dGa, 1);
+      dScatter1[32] = new NISTMottRS(*Element::dGe, 1);
+      dScatter1[33] = new NISTMottRS(*Element::dAs, 1);
+      dScatter1[34] = new NISTMottRS(*Element::dSe, 1);
+      dScatter1[35] = new NISTMottRS(*Element::dBr, 1);
+      dScatter1[36] = new NISTMottRS(*Element::dKr, 1);
+      dScatter1[37] = new NISTMottRS(*Element::dRb, 1);
+      dScatter1[38] = new NISTMottRS(*Element::dSr, 1);
+      dScatter1[39] = new NISTMottRS(*Element::dY, 1);
+      dScatter1[40] = new NISTMottRS(*Element::dZr, 1);
+      dScatter1[41] = new NISTMottRS(*Element::dNb, 1);
+      dScatter1[42] = new NISTMottRS(*Element::dMo, 1);
+      dScatter1[43] = new NISTMottRS(*Element::dTc, 1);
+      dScatter1[44] = new NISTMottRS(*Element::dRu, 1);
+      dScatter1[45] = new NISTMottRS(*Element::dRh, 1);
+      dScatter1[46] = new NISTMottRS(*Element::dPd, 1);
+      dScatter1[47] = new NISTMottRS(*Element::dAg, 1);
+      dScatter1[48] = new NISTMottRS(*Element::dCd, 1);
+      dScatter1[49] = new NISTMottRS(*Element::dIn, 1);
+      dScatter1[50] = new NISTMottRS(*Element::dSn, 1);
+      dScatter1[51] = new NISTMottRS(*Element::dSb, 1);
+      dScatter1[52] = new NISTMottRS(*Element::dTe, 1);
+      dScatter1[53] = new NISTMottRS(*Element::dI, 1);
+      dScatter1[54] = new NISTMottRS(*Element::dXe, 1);
+      dScatter1[55] = new NISTMottRS(*Element::dCs, 1);
+      dScatter1[56] = new NISTMottRS(*Element::dBa, 1);
+      dScatter1[57] = new NISTMottRS(*Element::dLa, 1);
+      dScatter1[58] = new NISTMottRS(*Element::dCe, 1);
+      dScatter1[59] = new NISTMottRS(*Element::dPr, 1);
+      dScatter1[60] = new NISTMottRS(*Element::dNd, 1);
+      dScatter1[61] = new NISTMottRS(*Element::dPm, 1);
+      dScatter1[62] = new NISTMottRS(*Element::dSm, 1);
+      dScatter1[63] = new NISTMottRS(*Element::dEu, 1);
+      dScatter1[64] = new NISTMottRS(*Element::dGd, 1);
+      dScatter1[65] = new NISTMottRS(*Element::dTb, 1);
+      dScatter1[66] = new NISTMottRS(*Element::dDy, 1);
+      dScatter1[67] = new NISTMottRS(*Element::dHo, 1);
+      dScatter1[68] = new NISTMottRS(*Element::dEr, 1);
+      dScatter1[69] = new NISTMottRS(*Element::dTm, 1);
+      dScatter1[70] = new NISTMottRS(*Element::dYb, 1);
+      dScatter1[71] = new NISTMottRS(*Element::dLu, 1);
+      dScatter1[72] = new NISTMottRS(*Element::dHf, 1);
+      dScatter1[73] = new NISTMottRS(*Element::dTa, 1);
+      dScatter1[74] = new NISTMottRS(*Element::dW, 1);
+      dScatter1[75] = new NISTMottRS(*Element::dRe, 1);
+      dScatter1[76] = new NISTMottRS(*Element::dOs, 1);
+      dScatter1[77] = new NISTMottRS(*Element::dIr, 1);
+      dScatter1[78] = new NISTMottRS(*Element::dPt, 1);
+      dScatter1[79] = new NISTMottRS(*Element::dAu, 1);
+      dScatter1[80] = new NISTMottRS(*Element::dHg, 1);
+      dScatter1[81] = new NISTMottRS(*Element::dTl, 1);
+      dScatter1[82] = new NISTMottRS(*Element::dPb, 1);
+      dScatter1[83] = new NISTMottRS(*Element::dBi, 1);
+      dScatter1[84] = new NISTMottRS(*Element::dPo, 1);
+      dScatter1[85] = new NISTMottRS(*Element::dAt, 1);
+      dScatter1[86] = new NISTMottRS(*Element::dRn, 1);
+      dScatter1[87] = new NISTMottRS(*Element::dFr, 1);
+      dScatter1[88] = new NISTMottRS(*Element::dRa, 1);
+      dScatter1[89] = new NISTMottRS(*Element::dAc, 1);
+      dScatter1[90] = new NISTMottRS(*Element::dTh, 1);
+      dScatter1[91] = new NISTMottRS(*Element::dPa, 1);
+      dScatter1[92] = new NISTMottRS(*Element::dU, 1);
+      dScatter1[93] = new NISTMottRS(*Element::dNp, 1);
+      dScatter1[94] = new NISTMottRS(*Element::dPu, 1);
+      dScatter1[95] = new NISTMottRS(*Element::dAm, 1);
+      dScatter1[96] = new NISTMottRS(*Element::dCm, 1);
+
+      dScatter2[1] = new NISTMottRS(*Element::dH, 2);
+      dScatter2[2] = new NISTMottRS(*Element::dHe, 2);
+      dScatter2[3] = new NISTMottRS(*Element::dLi, 2);
+      dScatter2[4] = new NISTMottRS(*Element::dBe, 2);
+      dScatter2[5] = new NISTMottRS(*Element::dB, 2);
+      dScatter2[6] = new NISTMottRS(*Element::dC, 2);
+      dScatter2[7] = new NISTMottRS(*Element::dN, 2);
+      dScatter2[8] = new NISTMottRS(*Element::dO, 2);
+      dScatter2[9] = new NISTMottRS(*Element::dF, 2);
+      dScatter2[10] = new NISTMottRS(*Element::dNe, 2);
+      dScatter2[11] = new NISTMottRS(*Element::dNa, 2);
+      dScatter2[12] = new NISTMottRS(*Element::dMg, 2);
+      dScatter2[13] = new NISTMottRS(*Element::dAl, 2);
+      dScatter2[14] = new NISTMottRS(*Element::dSi, 2);
+      dScatter2[15] = new NISTMottRS(*Element::dP, 2);
+      dScatter2[16] = new NISTMottRS(*Element::dS, 2);
+      dScatter2[17] = new NISTMottRS(*Element::dCl, 2);
+      dScatter2[18] = new NISTMottRS(*Element::dAr, 2);
+      dScatter2[19] = new NISTMottRS(*Element::dK, 2);
+      dScatter2[20] = new NISTMottRS(*Element::dCa, 2);
+      dScatter2[21] = new NISTMottRS(*Element::dSc, 2);
+      dScatter2[22] = new NISTMottRS(*Element::dTi, 2);
+      dScatter2[23] = new NISTMottRS(*Element::dV, 2);
+      dScatter2[24] = new NISTMottRS(*Element::dCr, 2);
+      dScatter2[25] = new NISTMottRS(*Element::dMn, 2);
+      dScatter2[26] = new NISTMottRS(*Element::dFe, 2);
+      dScatter2[27] = new NISTMottRS(*Element::dCo, 2);
+      dScatter2[28] = new NISTMottRS(*Element::dNi, 2);
+      dScatter2[29] = new NISTMottRS(*Element::dCu, 2);
+      dScatter2[30] = new NISTMottRS(*Element::dZn, 2);
+      dScatter2[31] = new NISTMottRS(*Element::dGa, 2);
+      dScatter2[32] = new NISTMottRS(*Element::dGe, 2);
+      dScatter2[33] = new NISTMottRS(*Element::dAs, 2);
+      dScatter2[34] = new NISTMottRS(*Element::dSe, 2);
+      dScatter2[35] = new NISTMottRS(*Element::dBr, 2);
+      dScatter2[36] = new NISTMottRS(*Element::dKr, 2);
+      dScatter2[37] = new NISTMottRS(*Element::dRb, 2);
+      dScatter2[38] = new NISTMottRS(*Element::dSr, 2);
+      dScatter2[39] = new NISTMottRS(*Element::dY, 2);
+      dScatter2[40] = new NISTMottRS(*Element::dZr, 2);
+      dScatter2[41] = new NISTMottRS(*Element::dNb, 2);
+      dScatter2[42] = new NISTMottRS(*Element::dMo, 2);
+      dScatter2[43] = new NISTMottRS(*Element::dTc, 2);
+      dScatter2[44] = new NISTMottRS(*Element::dRu, 2);
+      dScatter2[45] = new NISTMottRS(*Element::dRh, 2);
+      dScatter2[46] = new NISTMottRS(*Element::dPd, 2);
+      dScatter2[47] = new NISTMottRS(*Element::dAg, 2);
+      dScatter2[48] = new NISTMottRS(*Element::dCd, 2);
+      dScatter2[49] = new NISTMottRS(*Element::dIn, 2);
+      dScatter2[50] = new NISTMottRS(*Element::dSn, 2);
+      dScatter2[51] = new NISTMottRS(*Element::dSb, 2);
+      dScatter2[52] = new NISTMottRS(*Element::dTe, 2);
+      dScatter2[53] = new NISTMottRS(*Element::dI, 2);
+      dScatter2[54] = new NISTMottRS(*Element::dXe, 2);
+      dScatter2[55] = new NISTMottRS(*Element::dCs, 2);
+      dScatter2[56] = new NISTMottRS(*Element::dBa, 2);
+      dScatter2[57] = new NISTMottRS(*Element::dLa, 2);
+      dScatter2[58] = new NISTMottRS(*Element::dCe, 2);
+      dScatter2[59] = new NISTMottRS(*Element::dPr, 2);
+      dScatter2[60] = new NISTMottRS(*Element::dNd, 2);
+      dScatter2[61] = new NISTMottRS(*Element::dPm, 2);
+      dScatter2[62] = new NISTMottRS(*Element::dSm, 2);
+      dScatter2[63] = new NISTMottRS(*Element::dEu, 2);
+      dScatter2[64] = new NISTMottRS(*Element::dGd, 2);
+      dScatter2[65] = new NISTMottRS(*Element::dTb, 2);
+      dScatter2[66] = new NISTMottRS(*Element::dDy, 2);
+      dScatter2[67] = new NISTMottRS(*Element::dHo, 2);
+      dScatter2[68] = new NISTMottRS(*Element::dEr, 2);
+      dScatter2[69] = new NISTMottRS(*Element::dTm, 2);
+      dScatter2[70] = new NISTMottRS(*Element::dYb, 2);
+      dScatter2[71] = new NISTMottRS(*Element::dLu, 2);
+      dScatter2[72] = new NISTMottRS(*Element::dHf, 2);
+      dScatter2[73] = new NISTMottRS(*Element::dTa, 2);
+      dScatter2[74] = new NISTMottRS(*Element::dW, 2);
+      dScatter2[75] = new NISTMottRS(*Element::dRe, 2);
+      dScatter2[76] = new NISTMottRS(*Element::dOs, 2);
+      dScatter2[77] = new NISTMottRS(*Element::dIr, 2);
+      dScatter2[78] = new NISTMottRS(*Element::dPt, 2);
+      dScatter2[79] = new NISTMottRS(*Element::dAu, 2);
+      dScatter2[80] = new NISTMottRS(*Element::dHg, 2);
+      dScatter2[81] = new NISTMottRS(*Element::dTl, 2);
+      dScatter2[82] = new NISTMottRS(*Element::dPb, 2);
+      dScatter2[83] = new NISTMottRS(*Element::dBi, 2);
+      dScatter2[84] = new NISTMottRS(*Element::dPo, 2);
+      dScatter2[85] = new NISTMottRS(*Element::dAt, 2);
+      dScatter2[86] = new NISTMottRS(*Element::dRn, 2);
+      dScatter2[87] = new NISTMottRS(*Element::dFr, 2);
+      dScatter2[88] = new NISTMottRS(*Element::dRa, 2);
+      dScatter2[89] = new NISTMottRS(*Element::dAc, 2);
+      dScatter2[90] = new NISTMottRS(*Element::dTh, 2);
+      dScatter2[91] = new NISTMottRS(*Element::dPa, 2);
+      dScatter2[92] = new NISTMottRS(*Element::dU, 2);
+      dScatter2[93] = new NISTMottRS(*Element::dNp, 2);
+      dScatter2[94] = new NISTMottRS(*Element::dPu, 2);
+      dScatter2[95] = new NISTMottRS(*Element::dAm, 2);
+      dScatter2[96] = new NISTMottRS(*Element::dCm, 2);
+
+      dScatter3[1] = new NISTMottRS(*Element::dH, 3);
+      dScatter3[2] = new NISTMottRS(*Element::dHe, 3);
+      dScatter3[3] = new NISTMottRS(*Element::dLi, 3);
+      dScatter3[4] = new NISTMottRS(*Element::dBe, 3);
+      dScatter3[5] = new NISTMottRS(*Element::dB, 3);
+      dScatter3[6] = new NISTMottRS(*Element::dC, 3);
+      dScatter3[7] = new NISTMottRS(*Element::dN, 3);
+      dScatter3[8] = new NISTMottRS(*Element::dO, 3);
+      dScatter3[9] = new NISTMottRS(*Element::dF, 3);
+      dScatter3[10] = new NISTMottRS(*Element::dNe, 3);
+      dScatter3[11] = new NISTMottRS(*Element::dNa, 3);
+      dScatter3[12] = new NISTMottRS(*Element::dMg, 3);
+      dScatter3[13] = new NISTMottRS(*Element::dAl, 3);
+      dScatter3[14] = new NISTMottRS(*Element::dSi, 3);
+      dScatter3[15] = new NISTMottRS(*Element::dP, 3);
+      dScatter3[16] = new NISTMottRS(*Element::dS, 3);
+      dScatter3[17] = new NISTMottRS(*Element::dCl, 3);
+      dScatter3[18] = new NISTMottRS(*Element::dAr, 3);
+      dScatter3[19] = new NISTMottRS(*Element::dK, 3);
+      dScatter3[20] = new NISTMottRS(*Element::dCa, 3);
+      dScatter3[21] = new NISTMottRS(*Element::dSc, 3);
+      dScatter3[22] = new NISTMottRS(*Element::dTi, 3);
+      dScatter3[23] = new NISTMottRS(*Element::dV, 3);
+      dScatter3[24] = new NISTMottRS(*Element::dCr, 3);
+      dScatter3[25] = new NISTMottRS(*Element::dMn, 3);
+      dScatter3[26] = new NISTMottRS(*Element::dFe, 3);
+      dScatter3[27] = new NISTMottRS(*Element::dCo, 3);
+      dScatter3[28] = new NISTMottRS(*Element::dNi, 3);
+      dScatter3[29] = new NISTMottRS(*Element::dCu, 3);
+      dScatter3[30] = new NISTMottRS(*Element::dZn, 3);
+      dScatter3[31] = new NISTMottRS(*Element::dGa, 3);
+      dScatter3[32] = new NISTMottRS(*Element::dGe, 3);
+      dScatter3[33] = new NISTMottRS(*Element::dAs, 3);
+      dScatter3[34] = new NISTMottRS(*Element::dSe, 3);
+      dScatter3[35] = new NISTMottRS(*Element::dBr, 3);
+      dScatter3[36] = new NISTMottRS(*Element::dKr, 3);
+      dScatter3[37] = new NISTMottRS(*Element::dRb, 3);
+      dScatter3[38] = new NISTMottRS(*Element::dSr, 3);
+      dScatter3[39] = new NISTMottRS(*Element::dY, 3);
+      dScatter3[40] = new NISTMottRS(*Element::dZr, 3);
+      dScatter3[41] = new NISTMottRS(*Element::dNb, 3);
+      dScatter3[42] = new NISTMottRS(*Element::dMo, 3);
+      dScatter3[43] = new NISTMottRS(*Element::dTc, 3);
+      dScatter3[44] = new NISTMottRS(*Element::dRu, 3);
+      dScatter3[45] = new NISTMottRS(*Element::dRh, 3);
+      dScatter3[46] = new NISTMottRS(*Element::dPd, 3);
+      dScatter3[47] = new NISTMottRS(*Element::dAg, 3);
+      dScatter3[48] = new NISTMottRS(*Element::dCd, 3);
+      dScatter3[49] = new NISTMottRS(*Element::dIn, 3);
+      dScatter3[50] = new NISTMottRS(*Element::dSn, 3);
+      dScatter3[51] = new NISTMottRS(*Element::dSb, 3);
+      dScatter3[52] = new NISTMottRS(*Element::dTe, 3);
+      dScatter3[53] = new NISTMottRS(*Element::dI, 3);
+      dScatter3[54] = new NISTMottRS(*Element::dXe, 3);
+      dScatter3[55] = new NISTMottRS(*Element::dCs, 3);
+      dScatter3[56] = new NISTMottRS(*Element::dBa, 3);
+      dScatter3[57] = new NISTMottRS(*Element::dLa, 3);
+      dScatter3[58] = new NISTMottRS(*Element::dCe, 3);
+      dScatter3[59] = new NISTMottRS(*Element::dPr, 3);
+      dScatter3[60] = new NISTMottRS(*Element::dNd, 3);
+      dScatter3[61] = new NISTMottRS(*Element::dPm, 3);
+      dScatter3[62] = new NISTMottRS(*Element::dSm, 3);
+      dScatter3[63] = new NISTMottRS(*Element::dEu, 3);
+      dScatter3[64] = new NISTMottRS(*Element::dGd, 3);
+      dScatter3[65] = new NISTMottRS(*Element::dTb, 3);
+      dScatter3[66] = new NISTMottRS(*Element::dDy, 3);
+      dScatter3[67] = new NISTMottRS(*Element::dHo, 3);
+      dScatter3[68] = new NISTMottRS(*Element::dEr, 3);
+      dScatter3[69] = new NISTMottRS(*Element::dTm, 3);
+      dScatter3[70] = new NISTMottRS(*Element::dYb, 3);
+      dScatter3[71] = new NISTMottRS(*Element::dLu, 3);
+      dScatter3[72] = new NISTMottRS(*Element::dHf, 3);
+      dScatter3[73] = new NISTMottRS(*Element::dTa, 3);
+      dScatter3[74] = new NISTMottRS(*Element::dW, 3);
+      dScatter3[75] = new NISTMottRS(*Element::dRe, 3);
+      dScatter3[76] = new NISTMottRS(*Element::dOs, 3);
+      dScatter3[77] = new NISTMottRS(*Element::dIr, 3);
+      dScatter3[78] = new NISTMottRS(*Element::dPt, 3);
+      dScatter3[79] = new NISTMottRS(*Element::dAu, 3);
+      dScatter3[80] = new NISTMottRS(*Element::dHg, 3);
+      dScatter3[81] = new NISTMottRS(*Element::dTl, 3);
+      dScatter3[82] = new NISTMottRS(*Element::dPb, 3);
+      dScatter3[83] = new NISTMottRS(*Element::dBi, 3);
+      dScatter3[84] = new NISTMottRS(*Element::dPo, 3);
+      dScatter3[85] = new NISTMottRS(*Element::dAt, 3);
+      dScatter3[86] = new NISTMottRS(*Element::dRn, 3);
+      dScatter3[87] = new NISTMottRS(*Element::dFr, 3);
+      dScatter3[88] = new NISTMottRS(*Element::dRa, 3);
+      dScatter3[89] = new NISTMottRS(*Element::dAc, 3);
+      dScatter3[90] = new NISTMottRS(*Element::dTh, 3);
+      dScatter3[91] = new NISTMottRS(*Element::dPa, 3);
+      dScatter3[92] = new NISTMottRS(*Element::dU, 3);
+      dScatter3[93] = new NISTMottRS(*Element::dNp, 3);
+      dScatter3[94] = new NISTMottRS(*Element::dPu, 3);
+      dScatter3[95] = new NISTMottRS(*Element::dAm, 3);
+      dScatter3[96] = new NISTMottRS(*Element::dCm, 3);
    }
 }

@@ -24,7 +24,7 @@ namespace SEmaterial
    {
    }
 
-   SEmaterial::SEmaterial(const Composition& comp, double density) :
+   __host__ __device__ SEmaterial::SEmaterial(const Composition& comp, double density) :
       Material(comp, density),
       workfunction(0.),
       energyCBbottom(0.),

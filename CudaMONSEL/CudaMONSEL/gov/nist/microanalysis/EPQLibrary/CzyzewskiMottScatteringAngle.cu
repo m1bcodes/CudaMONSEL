@@ -8,6 +8,8 @@
 
 #include "Amphibian\Algorithm.cuh"
 
+#include "CudaUtil.h"
+
 namespace CzyzewskiMottScatteringAngle
 {
    static const Reference::Author* alRef[] = { &Reference::Czyzewski, &Reference::MacCallum, &Reference::DJoy };
@@ -51,9 +53,17 @@ namespace CzyzewskiMottScatteringAngle
       }
    }
 
-   CzyzewskiMottScatteringAngle::CzyzewskiMottScatteringAngle(const ElementT& el) : RandomizedScatterT("Cyzewski", REFERENCE), mElement(el), mRutherford(ScreenedRutherfordScatteringAngle::getSRSA(el.getAtomicNumber()))
+   __host__ __device__ CzyzewskiMottScatteringAngle::CzyzewskiMottScatteringAngle(const ElementT& el) :
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+      RandomizedScatterT("Cyzewski", *Reference::dNullReference), mElement(el), mRutherford(ScreenedRutherfordScatteringAngle::getSRSA(el.getAtomicNumber()))
+#else
+      RandomizedScatterT("Cyzewski", REFERENCE), mElement(el), mRutherford(ScreenedRutherfordScatteringAngle::getSRSA(el.getAtomicNumber()))
+#endif
    {
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+#else
       init(el.getAtomicNumber());
+#endif
    }
 
    StringT CzyzewskiMottScatteringAngle::toString() const
@@ -67,7 +77,7 @@ namespace CzyzewskiMottScatteringAngle
       return mElement;
    }
 
-   double CzyzewskiMottScatteringAngle::scatteringAngleForSpecialEnergy(int ei, double rand) const
+   __host__ __device__ double CzyzewskiMottScatteringAngle::scatteringAngleForSpecialEnergy(int ei, double rand) const
    {
       VectorXd r(mCummulativeDF[ei]);
       int ai = Algorithm::binarySearch(r.data(), 0, r.size() - 1, rand);
@@ -339,16 +349,187 @@ namespace CzyzewskiMottScatteringAngle
       mScatter[94] = new CzyzewskiMottScatteringAngle(Element::Pu);
    }
 
-   const CzyzewskiMottScatteringAngle& getCMSA(int an)
+   __device__ CzyzewskiMottScatteringAngle * dScatter[113];
+
+   __global__ void initCuda()
    {
+      dScatter[1] = new CzyzewskiMottScatteringAngle(*Element::dH);
+      dScatter[2] = new CzyzewskiMottScatteringAngle(*Element::dHe);
+      dScatter[3] = new CzyzewskiMottScatteringAngle(*Element::dLi);
+      dScatter[4] = new CzyzewskiMottScatteringAngle(*Element::dBe);
+      dScatter[5] = new CzyzewskiMottScatteringAngle(*Element::dB);
+      dScatter[6] = new CzyzewskiMottScatteringAngle(*Element::dC);
+      dScatter[7] = new CzyzewskiMottScatteringAngle(*Element::dN);
+      dScatter[8] = new CzyzewskiMottScatteringAngle(*Element::dO);
+      dScatter[9] = new CzyzewskiMottScatteringAngle(*Element::dF);
+      dScatter[10] = new CzyzewskiMottScatteringAngle(*Element::dNe);
+      dScatter[11] = new CzyzewskiMottScatteringAngle(*Element::dNa);
+      dScatter[12] = new CzyzewskiMottScatteringAngle(*Element::dMg);
+      dScatter[13] = new CzyzewskiMottScatteringAngle(*Element::dAl);
+      dScatter[14] = new CzyzewskiMottScatteringAngle(*Element::dSi);
+      dScatter[15] = new CzyzewskiMottScatteringAngle(*Element::dP);
+      dScatter[16] = new CzyzewskiMottScatteringAngle(*Element::dS);
+      dScatter[17] = new CzyzewskiMottScatteringAngle(*Element::dCl);
+      dScatter[18] = new CzyzewskiMottScatteringAngle(*Element::dAr);
+      dScatter[19] = new CzyzewskiMottScatteringAngle(*Element::dK);
+      dScatter[20] = new CzyzewskiMottScatteringAngle(*Element::dCa);
+      dScatter[21] = new CzyzewskiMottScatteringAngle(*Element::dSc);
+      dScatter[22] = new CzyzewskiMottScatteringAngle(*Element::dTi);
+      dScatter[23] = new CzyzewskiMottScatteringAngle(*Element::dV);
+      dScatter[24] = new CzyzewskiMottScatteringAngle(*Element::dCr);
+      dScatter[25] = new CzyzewskiMottScatteringAngle(*Element::dMn);
+      dScatter[26] = new CzyzewskiMottScatteringAngle(*Element::dFe);
+      dScatter[27] = new CzyzewskiMottScatteringAngle(*Element::dCo);
+      dScatter[28] = new CzyzewskiMottScatteringAngle(*Element::dNi);
+      dScatter[29] = new CzyzewskiMottScatteringAngle(*Element::dCu);
+      dScatter[30] = new CzyzewskiMottScatteringAngle(*Element::dZn);
+      dScatter[31] = new CzyzewskiMottScatteringAngle(*Element::dGa);
+      dScatter[32] = new CzyzewskiMottScatteringAngle(*Element::dGe);
+      dScatter[33] = new CzyzewskiMottScatteringAngle(*Element::dAs);
+      dScatter[34] = new CzyzewskiMottScatteringAngle(*Element::dSe);
+      dScatter[35] = new CzyzewskiMottScatteringAngle(*Element::dBr);
+      dScatter[36] = new CzyzewskiMottScatteringAngle(*Element::dKr);
+      dScatter[37] = new CzyzewskiMottScatteringAngle(*Element::dRb);
+      dScatter[38] = new CzyzewskiMottScatteringAngle(*Element::dSr);
+      dScatter[39] = new CzyzewskiMottScatteringAngle(*Element::dY);
+      dScatter[40] = new CzyzewskiMottScatteringAngle(*Element::dZr);
+      dScatter[41] = new CzyzewskiMottScatteringAngle(*Element::dNb);
+      dScatter[42] = new CzyzewskiMottScatteringAngle(*Element::dMo);
+      dScatter[43] = new CzyzewskiMottScatteringAngle(*Element::dTc);
+      dScatter[44] = new CzyzewskiMottScatteringAngle(*Element::dRu);
+      dScatter[45] = new CzyzewskiMottScatteringAngle(*Element::dRh);
+      dScatter[46] = new CzyzewskiMottScatteringAngle(*Element::dPd);
+      dScatter[47] = new CzyzewskiMottScatteringAngle(*Element::dAg);
+      dScatter[48] = new CzyzewskiMottScatteringAngle(*Element::dCd);
+      dScatter[49] = new CzyzewskiMottScatteringAngle(*Element::dIn);
+      dScatter[50] = new CzyzewskiMottScatteringAngle(*Element::dSn);
+      dScatter[51] = new CzyzewskiMottScatteringAngle(*Element::dSb);
+      dScatter[52] = new CzyzewskiMottScatteringAngle(*Element::dTe);
+      dScatter[53] = new CzyzewskiMottScatteringAngle(*Element::dI);
+      dScatter[54] = new CzyzewskiMottScatteringAngle(*Element::dXe);
+      dScatter[55] = new CzyzewskiMottScatteringAngle(*Element::dCs);
+      dScatter[56] = new CzyzewskiMottScatteringAngle(*Element::dBa);
+      dScatter[57] = new CzyzewskiMottScatteringAngle(*Element::dLa);
+      dScatter[58] = new CzyzewskiMottScatteringAngle(*Element::dCe);
+      dScatter[59] = new CzyzewskiMottScatteringAngle(*Element::dPr);
+      dScatter[60] = new CzyzewskiMottScatteringAngle(*Element::dNd);
+      dScatter[61] = new CzyzewskiMottScatteringAngle(*Element::dPm);
+      dScatter[62] = new CzyzewskiMottScatteringAngle(*Element::dSm);
+      dScatter[63] = new CzyzewskiMottScatteringAngle(*Element::dEu);
+      dScatter[64] = new CzyzewskiMottScatteringAngle(*Element::dGd);
+      dScatter[65] = new CzyzewskiMottScatteringAngle(*Element::dTb);
+      dScatter[66] = new CzyzewskiMottScatteringAngle(*Element::dDy);
+      dScatter[67] = new CzyzewskiMottScatteringAngle(*Element::dHo);
+      dScatter[68] = new CzyzewskiMottScatteringAngle(*Element::dEr);
+      dScatter[69] = new CzyzewskiMottScatteringAngle(*Element::dTm);
+      dScatter[70] = new CzyzewskiMottScatteringAngle(*Element::dYb);
+      dScatter[71] = new CzyzewskiMottScatteringAngle(*Element::dLu);
+      dScatter[72] = new CzyzewskiMottScatteringAngle(*Element::dHf);
+      dScatter[73] = new CzyzewskiMottScatteringAngle(*Element::dTa);
+      dScatter[74] = new CzyzewskiMottScatteringAngle(*Element::dW);
+      dScatter[75] = new CzyzewskiMottScatteringAngle(*Element::dRe);
+      dScatter[76] = new CzyzewskiMottScatteringAngle(*Element::dOs);
+      dScatter[77] = new CzyzewskiMottScatteringAngle(*Element::dIr);
+      dScatter[78] = new CzyzewskiMottScatteringAngle(*Element::dPt);
+      dScatter[79] = new CzyzewskiMottScatteringAngle(*Element::dAu);
+      dScatter[80] = new CzyzewskiMottScatteringAngle(*Element::dHg);
+      dScatter[81] = new CzyzewskiMottScatteringAngle(*Element::dTl);
+      dScatter[82] = new CzyzewskiMottScatteringAngle(*Element::dPb);
+      dScatter[83] = new CzyzewskiMottScatteringAngle(*Element::dBi);
+      dScatter[84] = new CzyzewskiMottScatteringAngle(*Element::dPo);
+      dScatter[85] = new CzyzewskiMottScatteringAngle(*Element::dAt);
+      dScatter[86] = new CzyzewskiMottScatteringAngle(*Element::dRn);
+      dScatter[87] = new CzyzewskiMottScatteringAngle(*Element::dFr);
+      dScatter[88] = new CzyzewskiMottScatteringAngle(*Element::dRa);
+      dScatter[89] = new CzyzewskiMottScatteringAngle(*Element::dAc);
+      dScatter[90] = new CzyzewskiMottScatteringAngle(*Element::dTh);
+      dScatter[91] = new CzyzewskiMottScatteringAngle(*Element::dPa);
+      dScatter[92] = new CzyzewskiMottScatteringAngle(*Element::dU);
+      dScatter[93] = new CzyzewskiMottScatteringAngle(*Element::dNp);
+      dScatter[94] = new CzyzewskiMottScatteringAngle(*Element::dPu);
+   }
+
+   __host__ __device__ const VectorXd& CzyzewskiMottScatteringAngle::getMeanFreePath() const
+   {
+      return mMeanFreePath;
+   }
+
+   __host__ __device__ const VectorXd& CzyzewskiMottScatteringAngle::getTotalCrossSection() const
+   {
+      return mTotalCrossSection;
+   }
+
+   __host__ __device__ const MatrixXd& CzyzewskiMottScatteringAngle::getCummulativeDF() const
+   {
+      return mCummulativeDF;
+   }
+
+   __global__ void copyMeanFreePath(const unsigned int i, const double *data, const unsigned int len)
+   {
+      dScatter[i]->copyMeanFreePath<double>(data, len);
+   }
+
+   __global__ void copyTotalCrossSection(const unsigned int i, const double *data, const unsigned int len)
+   {
+      dScatter[i]->copyTotalCrossSection<double>(data, len);
+   }
+
+   __global__ void copyCummulativeDFRow(const unsigned int i, const unsigned int r, const double *data, const unsigned int len)
+   {
+      dScatter[i]->copyCummulativeDFRow<double>(r, data, len);
+   }
+
+   void copyDataToCuda()
+   {
+      for (int i = 0; i <= 94; ++i) {
+         double *dmfp = nullptr;
+         const VectorXd& mfp = mScatter[i]->getMeanFreePath();
+         checkCudaErrors(cudaMalloc((void **)&dmfp, sizeof(double) * mfp.size()));
+         checkCudaErrors(cudaMemcpy(dmfp, mfp.data(), sizeof(double) * mfp.size(), cudaMemcpyHostToDevice));
+         copyMeanFreePath << <1, 1 >> >(i, dmfp, mfp.size());
+         checkCudaErrors(cudaGetLastError());
+         checkCudaErrors(cudaFree(dmfp));
+
+         double *dtcs = nullptr;
+         const VectorXd& tcs = mScatter[i]->getTotalCrossSection();
+         checkCudaErrors(cudaMalloc((void **)&dtcs, sizeof(double) * tcs.size()));
+         checkCudaErrors(cudaMemcpy(dtcs, tcs.data(), sizeof(double) * tcs.size(), cudaMemcpyHostToDevice));
+         copyTotalCrossSection << <1, 1 >> >(i, dtcs, tcs.size());
+         checkCudaErrors(cudaGetLastError());
+         checkCudaErrors(cudaFree(dtcs));
+
+         const MatrixXd& cdf = mScatter[i]->getCummulativeDF();
+         for (int r = 0; r <= cdf.size(); ++r) {
+            double *dcdf = nullptr;
+            const VectorXd& cdf = mScatter[i]->getTotalCrossSection();
+            checkCudaErrors(cudaMalloc((void **)&dcdf, sizeof(double) * cdf.size()));
+            checkCudaErrors(cudaMemcpy(dcdf, cdf.data(), sizeof(double) * cdf.size(), cudaMemcpyHostToDevice));
+            copyCummulativeDFRow << <1, 1 >> >(i, r, dcdf, cdf.size());
+            checkCudaErrors(cudaGetLastError());
+            checkCudaErrors(cudaFree(dcdf));
+         }
+      }
+   }
+
+   __host__ __device__ const CzyzewskiMottScatteringAngle& getCMSA(int an)
+   {
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+      return *dScatter[an];
+#else
       return *mScatter[an];
+#endif
    }
 
-   CzyzewskiMottRandomizedScatterFactory::CzyzewskiMottRandomizedScatterFactory() : RandomizedScatterFactoryT("Czyzewski Mott cross-section", REFERENCE)
+   __host__ __device__ CzyzewskiMottRandomizedScatterFactory::CzyzewskiMottRandomizedScatterFactory() :
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+      RandomizedScatterFactoryT("Czyzewski Mott cross-section", *Reference::dNullReference)
+#else
+      RandomizedScatterFactoryT("Czyzewski Mott cross-section", REFERENCE)
+#endif
    {
    }
 
-   const RandomizedScatterT& CzyzewskiMottRandomizedScatterFactory::get(const Element::Element& elm) const
+   __host__ __device__ const RandomizedScatterT& CzyzewskiMottRandomizedScatterFactory::get(const Element::Element& elm) const
    {
       return getCMSA(elm.getAtomicNumber());
    }

@@ -53,13 +53,7 @@ namespace JoyLuoNieminenCSD
 
       int i = 0;
       for (const auto &el : mat.getElementSet()) {
-         //#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-         //         recipJ[i] = 1.166 / (el->getAtomicNumber() < 13 ? MeanIonizationPotential::computeWilson41(*el) : MeanIonizationPotential::computeSternheimer64(*el));
-         //#else
-         //         recipJ[i] = 1.166 / (el->getAtomicNumber() < 13 ? MeanIonizationPotential::Wilson41.compute(*el) : MeanIonizationPotential::Sternheimer64.compute(*el));
-         //#endif
          recipJ[i] = 1.166 / (el->getAtomicNumber() < 13 ? MeanIonizationPotential::computeWilson41(*el) : MeanIonizationPotential::computeSternheimer64(*el));
-         
          beta[i] = 1. - (recipJ[i] * bhplus1eV);
          coef[i] = 2.01507E-28 * mat.getDensity() * mat.weightFraction(*el, true) * el->getAtomicNumber() / el->getAtomicWeight();
          ++i;
@@ -72,7 +66,7 @@ namespace JoyLuoNieminenCSD
          gamma += coef[i] * ::log((recipJ[i] * breakE) + beta[i]);
       gamma /= ::pow(breakE, 3.5); // note: breaks if powf is used instead of pow (gamma becomes #1.ind due to division by 0)
 #ifdef _DEBUG
-      if (gamma != gamma) pritnf("JoyLuoNieminenCSD::init(): gamma is NaN");
+      if (gamma != gamma) printf("JoyLuoNieminenCSD::init(): gamma is NaN");
 #endif
    }
 
@@ -102,12 +96,9 @@ namespace JoyLuoNieminenCSD
 
       if (loss <= (MaxLossFraction * kE))
          return -loss;
-      //if (::fabs(kE - 7.5500619306e-018) < 0.01e-018)
-      //   printf("%d %.10e %.10e %.10e %.10e %.10e\n", nce, minEforTracking, breakE, len, kE, loss);
-      //printf("%d %.10e %.10e %.10e %.10e %.10e\n", nce, minEforTracking, breakE, len, kE, loss);
       loss = compute(len / 2., kE); // loss from 1st half of step
 #ifdef _DEBUG
-      if (loss != loss) pritnf("JoyLuoNieminenCSD::compute(): loss is NaN");
+      if (loss != loss) printf("JoyLuoNieminenCSD::compute(): loss is NaN");
 #endif
       return loss + compute(len / 2., kE + loss); // add loss from second half
    }

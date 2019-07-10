@@ -10,7 +10,7 @@ namespace GasScatteringCrossSection
    class GasScatteringCrossSection : public RandomizedScatterT
    {
    public:
-      explicit GasScatteringCrossSection(const ElementT& elm);
+      __host__ __device__ explicit GasScatteringCrossSection(const ElementT& elm);
       //GasScatteringCrossSection(const GasScatteringCrossSection& gscs);
 
       const RandomizedScatterT& getElasticModel();
@@ -31,14 +31,15 @@ namespace GasScatteringCrossSection
       void initializeDefaultStrategy();
 
    public:
-      GasScatteringRandomizedScatterFactory();
+      __host__ __device__ GasScatteringRandomizedScatterFactory();
 
-      const RandomizedScatterT& get(const ElementT& elm) const override;
+      __host__ __device__ const RandomizedScatterT& get(const ElementT& elm) const override;
    };
 
    extern const RandomizedScatterFactoryT& Factory;
 
    extern void init();
+   extern __global__ void initCuda();
 }
 
 #endif

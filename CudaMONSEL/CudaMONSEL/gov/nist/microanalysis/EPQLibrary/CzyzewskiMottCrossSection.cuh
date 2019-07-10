@@ -18,7 +18,7 @@ namespace CzyzewskiMottCrossSection
       StringT toString() const;
       const ElementT& getElement() const;
 
-      __host__ __device__ double totalCrossSection(const double energy) const;
+      double totalCrossSection(const double energy) const;
       double partialCrossSection(double elevation, double azimuth, double energy) const;
       double partialCrossSection(double elevation, double energy) const;
       double meanFreePath(double energy) const;

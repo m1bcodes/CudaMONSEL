@@ -453,12 +453,16 @@ namespace ScreenedRutherfordScatteringAngle
 #endif
    }
 
-   ScreenedRutherfordRandomizedScatterFactory::ScreenedRutherfordRandomizedScatterFactory() :
+   __host__ __device__ ScreenedRutherfordRandomizedScatterFactory::ScreenedRutherfordRandomizedScatterFactory() :
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+      RandomizedScatterFactoryT("Screened Rutherford elastic cross-section", *Reference::dNullReference)
+#else
       RandomizedScatterFactoryT("Screened Rutherford elastic cross-section", REFERENCE)
+#endif
    {
    }
 
-   const RandomizedScatterT& ScreenedRutherfordRandomizedScatterFactory::get(const ElementT& elm) const
+   __host__ __device__ const RandomizedScatterT& ScreenedRutherfordRandomizedScatterFactory::get(const ElementT& elm) const
    {
       return getSRSA(elm.getAtomicNumber());
    }

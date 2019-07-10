@@ -42,9 +42,9 @@ namespace NISTMottRS
    class NISTMottRSFactory : public RandomizedScatterFactoryT
    {
    public:
-      NISTMottRSFactory(int method);
+      __host__ __device__ NISTMottRSFactory(int method);
 
-      const RandomizedScatterT& get(const ElementT& elm) const override;
+      __host__ __device__ const RandomizedScatterT& get(const ElementT& elm) const override;
       void initializeDefaultStrategy() override;
 
    private:
@@ -59,6 +59,7 @@ namespace NISTMottRS
    extern const RandomizedScatterFactoryT& Factory100Lin;
 
    extern void init();
+   extern __global__ void initCuda();
 }
 
 #endif

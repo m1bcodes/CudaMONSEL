@@ -26,7 +26,7 @@ namespace Material
       renormalize();
    }
 
-   Material::Material(const Composition& comp, double density)
+   __host__ __device__ Material::Material(const Composition& comp, double density)
    {
       Composition::replicate(comp);
       mDensity = density;

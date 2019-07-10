@@ -12,7 +12,12 @@ namespace GasScatteringCrossSection
 
    static const double E0 = PhysicalConstants::ElectronMass * PhysicalConstants::SpeedOfLight * PhysicalConstants::SpeedOfLight;
 
-   GasScatteringCrossSection::GasScatteringCrossSection(const ElementT& elm) : RandomizedScatterT("Edgerton gas cross-section", REFERENCE), mElement(elm), mElastic(ScreenedRutherfordScatteringAngle::getSRSA(elm.getAtomicNumber()))
+   __host__ __device__ GasScatteringCrossSection::GasScatteringCrossSection(const ElementT& elm) :
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+      RandomizedScatterT("Edgerton gas cross-section", *Reference::dNullReference), mElement(elm), mElastic(ScreenedRutherfordScatteringAngle::getSRSA(elm.getAtomicNumber()))
+#else
+      RandomizedScatterT("Edgerton gas cross-section", REFERENCE), mElement(elm), mElastic(ScreenedRutherfordScatteringAngle::getSRSA(elm.getAtomicNumber()))
+#endif
    {
    }
    
@@ -262,16 +267,127 @@ namespace GasScatteringCrossSection
       mScatter[96] = new GasScatteringCrossSection(Element::Cm);
    }
 
-   static const GasScatteringCrossSection& getGSCS(int an)
+   __device__ GasScatteringCrossSection const * dScatter[113];
+
+   __global__ void initCuda()
    {
+      dScatter[1] = new GasScatteringCrossSection(*Element::dH);
+      dScatter[2] = new GasScatteringCrossSection(*Element::dHe);
+      dScatter[3] = new GasScatteringCrossSection(*Element::dLi);
+      dScatter[4] = new GasScatteringCrossSection(*Element::dBe);
+      dScatter[5] = new GasScatteringCrossSection(*Element::dB);
+      dScatter[6] = new GasScatteringCrossSection(*Element::dC);
+      dScatter[7] = new GasScatteringCrossSection(*Element::dN);
+      dScatter[8] = new GasScatteringCrossSection(*Element::dO);
+      dScatter[9] = new GasScatteringCrossSection(*Element::dF);
+      dScatter[10] = new GasScatteringCrossSection(*Element::dNe);
+      dScatter[11] = new GasScatteringCrossSection(*Element::dNa);
+      dScatter[12] = new GasScatteringCrossSection(*Element::dMg);
+      dScatter[13] = new GasScatteringCrossSection(*Element::dAl);
+      dScatter[14] = new GasScatteringCrossSection(*Element::dSi);
+      dScatter[15] = new GasScatteringCrossSection(*Element::dP);
+      dScatter[16] = new GasScatteringCrossSection(*Element::dS);
+      dScatter[17] = new GasScatteringCrossSection(*Element::dCl);
+      dScatter[18] = new GasScatteringCrossSection(*Element::dAr);
+      dScatter[19] = new GasScatteringCrossSection(*Element::dK);
+      dScatter[20] = new GasScatteringCrossSection(*Element::dCa);
+      dScatter[21] = new GasScatteringCrossSection(*Element::dSc);
+      dScatter[22] = new GasScatteringCrossSection(*Element::dTi);
+      dScatter[23] = new GasScatteringCrossSection(*Element::dV);
+      dScatter[24] = new GasScatteringCrossSection(*Element::dCr);
+      dScatter[25] = new GasScatteringCrossSection(*Element::dMn);
+      dScatter[26] = new GasScatteringCrossSection(*Element::dFe);
+      dScatter[27] = new GasScatteringCrossSection(*Element::dCo);
+      dScatter[28] = new GasScatteringCrossSection(*Element::dNi);
+      dScatter[29] = new GasScatteringCrossSection(*Element::dCu);
+      dScatter[30] = new GasScatteringCrossSection(*Element::dZn);
+      dScatter[31] = new GasScatteringCrossSection(*Element::dGa);
+      dScatter[32] = new GasScatteringCrossSection(*Element::dGe);
+      dScatter[33] = new GasScatteringCrossSection(*Element::dAs);
+      dScatter[34] = new GasScatteringCrossSection(*Element::dSe);
+      dScatter[35] = new GasScatteringCrossSection(*Element::dBr);
+      dScatter[36] = new GasScatteringCrossSection(*Element::dKr);
+      dScatter[37] = new GasScatteringCrossSection(*Element::dRb);
+      dScatter[38] = new GasScatteringCrossSection(*Element::dSr);
+      dScatter[39] = new GasScatteringCrossSection(*Element::dY);
+      dScatter[40] = new GasScatteringCrossSection(*Element::dZr);
+      dScatter[41] = new GasScatteringCrossSection(*Element::dNb);
+      dScatter[42] = new GasScatteringCrossSection(*Element::dMo);
+      dScatter[43] = new GasScatteringCrossSection(*Element::dTc);
+      dScatter[44] = new GasScatteringCrossSection(*Element::dRu);
+      dScatter[45] = new GasScatteringCrossSection(*Element::dRh);
+      dScatter[46] = new GasScatteringCrossSection(*Element::dPd);
+      dScatter[47] = new GasScatteringCrossSection(*Element::dAg);
+      dScatter[48] = new GasScatteringCrossSection(*Element::dCd);
+      dScatter[49] = new GasScatteringCrossSection(*Element::dIn);
+      dScatter[50] = new GasScatteringCrossSection(*Element::dSn);
+      dScatter[51] = new GasScatteringCrossSection(*Element::dSb);
+      dScatter[52] = new GasScatteringCrossSection(*Element::dTe);
+      dScatter[53] = new GasScatteringCrossSection(*Element::dI);
+      dScatter[54] = new GasScatteringCrossSection(*Element::dXe);
+      dScatter[55] = new GasScatteringCrossSection(*Element::dCs);
+      dScatter[56] = new GasScatteringCrossSection(*Element::dBa);
+      dScatter[57] = new GasScatteringCrossSection(*Element::dLa);
+      dScatter[58] = new GasScatteringCrossSection(*Element::dCe);
+      dScatter[59] = new GasScatteringCrossSection(*Element::dPr);
+      dScatter[60] = new GasScatteringCrossSection(*Element::dNd);
+      dScatter[61] = new GasScatteringCrossSection(*Element::dPm);
+      dScatter[62] = new GasScatteringCrossSection(*Element::dSm);
+      dScatter[63] = new GasScatteringCrossSection(*Element::dEu);
+      dScatter[64] = new GasScatteringCrossSection(*Element::dGd);
+      dScatter[65] = new GasScatteringCrossSection(*Element::dTb);
+      dScatter[66] = new GasScatteringCrossSection(*Element::dDy);
+      dScatter[67] = new GasScatteringCrossSection(*Element::dHo);
+      dScatter[68] = new GasScatteringCrossSection(*Element::dEr);
+      dScatter[69] = new GasScatteringCrossSection(*Element::dTm);
+      dScatter[70] = new GasScatteringCrossSection(*Element::dYb);
+      dScatter[71] = new GasScatteringCrossSection(*Element::dLu);
+      dScatter[72] = new GasScatteringCrossSection(*Element::dHf);
+      dScatter[73] = new GasScatteringCrossSection(*Element::dTa);
+      dScatter[74] = new GasScatteringCrossSection(*Element::dW);
+      dScatter[75] = new GasScatteringCrossSection(*Element::dRe);
+      dScatter[76] = new GasScatteringCrossSection(*Element::dOs);
+      dScatter[77] = new GasScatteringCrossSection(*Element::dIr);
+      dScatter[78] = new GasScatteringCrossSection(*Element::dPt);
+      dScatter[79] = new GasScatteringCrossSection(*Element::dAu);
+      dScatter[80] = new GasScatteringCrossSection(*Element::dHg);
+      dScatter[81] = new GasScatteringCrossSection(*Element::dTl);
+      dScatter[82] = new GasScatteringCrossSection(*Element::dPb);
+      dScatter[83] = new GasScatteringCrossSection(*Element::dBi);
+      dScatter[84] = new GasScatteringCrossSection(*Element::dPo);
+      dScatter[85] = new GasScatteringCrossSection(*Element::dAt);
+      dScatter[86] = new GasScatteringCrossSection(*Element::dRn);
+      dScatter[87] = new GasScatteringCrossSection(*Element::dFr);
+      dScatter[88] = new GasScatteringCrossSection(*Element::dRa);
+      dScatter[89] = new GasScatteringCrossSection(*Element::dAc);
+      dScatter[90] = new GasScatteringCrossSection(*Element::dTh);
+      dScatter[91] = new GasScatteringCrossSection(*Element::dPa);
+      dScatter[92] = new GasScatteringCrossSection(*Element::dU);
+      dScatter[93] = new GasScatteringCrossSection(*Element::dNp);
+      dScatter[94] = new GasScatteringCrossSection(*Element::dPu);
+      dScatter[95] = new GasScatteringCrossSection(*Element::dAm);
+      dScatter[96] = new GasScatteringCrossSection(*Element::dCm);
+   }
+
+   __host__ __device__ static const GasScatteringCrossSection& getGSCS(int an)
+   {
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+      return *dScatter[an];
+#else
       return *mScatter[an];
+#endif
    }
 
-   GasScatteringRandomizedScatterFactory::GasScatteringRandomizedScatterFactory() : RandomizedScatterFactoryT("Gas scattering algorithm", REFERENCE)
+   __host__ __device__ GasScatteringRandomizedScatterFactory::GasScatteringRandomizedScatterFactory() :
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+      RandomizedScatterFactoryT("Gas scattering algorithm", *Reference::dNullReference)
+#else
+      RandomizedScatterFactoryT("Gas scattering algorithm", REFERENCE)
+#endif
    {
    }
 
-   const RandomizedScatterT& GasScatteringRandomizedScatterFactory::get(const ElementT& elm) const
+   __host__ __device__ const RandomizedScatterT& GasScatteringRandomizedScatterFactory::get(const ElementT& elm) const
    {
       return getGSCS(elm.getAtomicNumber());
    }

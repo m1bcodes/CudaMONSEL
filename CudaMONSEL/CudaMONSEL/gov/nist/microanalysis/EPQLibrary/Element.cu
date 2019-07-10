@@ -1010,7 +1010,7 @@ namespace Element
       //memcpy(mIonizationEnergy, hIonizationEnergy, sizeof(hIonizationEnergy));
    }
 
-   static void copyDataToDevice()
+   void copyDataToDevice()
    {
       checkCudaErrors(cudaMemcpyToSymbol(dAtomicWeight, mAtomicWeight.data(), sizeof(float) * mAtomicWeight.size()));
       checkCudaErrors(cudaMemcpyToSymbol(dIonizationEnergy, mIonizationEnergy.data(), sizeof(float) * mIonizationEnergy.size()));
@@ -1033,7 +1033,6 @@ namespace Element
    {
       readAtomicWeights();
       readIonizationEnergy();
-      copyDataToDevice();
 
       printf("InitializeElements() completed: %d bytes\n", sizeof(mAllElements));
    }

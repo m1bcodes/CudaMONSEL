@@ -3,6 +3,8 @@
 #include "gov\nist\microanalysis\EPQLibrary\Composition.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\FromSI.cuh"
 
+#include "CudaUtil.h"
+
 namespace MeanIonizationPotential
 {
    __host__ __device__ MeanIonizationPotential::MeanIonizationPotential(StringT name, const ReferenceT &reference) : AlgorithmClass("Mean Ionization Potential", name, reference)
@@ -31,9 +33,9 @@ namespace MeanIonizationPotential
       for (auto &el : comp.getElementSet()) {
          double cz_a = comp.weightFraction(*el, true) * el->getAtomicNumber() / el->getAtomicWeight();
          m += cz_a;
-         lnJ += cz_a * ::logf(FromSI::keV(compute(*el)));
+         lnJ += cz_a * ::log(FromSI::keV(compute(*el)));
       }
-      return ToSI::keV(::expf(lnJ / m));
+      return ToSI::keV(::exp(lnJ / m));
    }
 
    Reference::CrudeReference SternheimerCR("Sternheimer quoted in Berger MJ, Seltzer S. NASA Technical Publication SP-4012 (1964)");
@@ -220,6 +222,7 @@ namespace MeanIonizationPotential
 
    const Zeller75MeanIonizationPotential Zeller75Ref;
    const MeanIonizationPotential &Zeller75 = Zeller75Ref;
+   __device__ const MeanIonizationPotential *dZeller75;
 
    // https://www.oreilly.com/library/view/c-cookbook/0596007612/ch03s06.html
    static double sciToDub(const std::string& str)
@@ -269,6 +272,17 @@ namespace MeanIonizationPotential
       }
    }
 
+   __host__ __device__ const VectorXd &Berger64MeanIonizationPotential::getData() const
+   {
+      return mMeasured;
+   }
+
+   //__device__ void Berger64MeanIonizationPotential::copyData(const double *data, const unsigned int len)
+   //{
+   //   mMeasured.resize(len);
+   //   memcpy(mMeasured.data(), data, len * sizeof(double));
+   //}
+
    __host__ __device__ double Berger64MeanIonizationPotential::compute(const ElementT &el) const
    {
       return mMeasured[el.getAtomicNumber() - 1];
@@ -276,7 +290,7 @@ namespace MeanIonizationPotential
 
    Berger64MeanIonizationPotential Berger64Ref;
    Berger64MeanIonizationPotential &Berger64 = Berger64Ref;
-   __device__ MeanIonizationPotential *dBerger64;
+   __device__ Berger64MeanIonizationPotential *dBerger64;
 
    Reference::CrudeReference Berger83CR("Berger MJ, Seltzer S. NBSIR 82-2550-A - US Dept of Commerce, Washington DC (1983)");
    __host__ __device__ Berger83MeanIonizationPotential::Berger83MeanIonizationPotential() :
@@ -309,6 +323,17 @@ namespace MeanIonizationPotential
       }
    }
 
+   __host__ __device__ const VectorXd &Berger83MeanIonizationPotential::getData() const
+   {
+      return mMeasured;
+   }
+
+   //__device__ void Berger83MeanIonizationPotential::copyData(const double *data, const unsigned int len)
+   //{
+   //   mMeasured.resize(len);
+   //   memcpy(mMeasured.data(), data, len * sizeof(double));
+   //}
+
    __host__ __device__ double Berger83MeanIonizationPotential::compute(const ElementT &el) const
    {
       return mMeasured[el.getAtomicNumber() - 1];
@@ -316,9 +341,9 @@ namespace MeanIonizationPotential
 
    Berger83MeanIonizationPotential Berger83Ref;
    Berger83MeanIonizationPotential &Berger83 = Berger83Ref;
-   __device__ MeanIonizationPotential *dBerger83;
+   __device__ Berger83MeanIonizationPotential *dBerger83;
 
-   const AlgorithmClassT *  mAllImplementations[] = {
+   const AlgorithmClassT * mAllImplementations[] = {
       &Berger64,
       &Berger83,
       &Bloch33,
@@ -331,8 +356,67 @@ namespace MeanIonizationPotential
       &Zeller75
    };
 
+   //__device__ const AlgorithmClassT * dAllImplementations[] = {
+   //   dBerger64,
+   //   dBerger83,
+   //   dBloch33,
+   //   dDuncumb69,
+   //   dBergerAndSeltzerCITZAF,
+   //   dHeinrich70,
+   //   dSpringer67,
+   //   dSternheimer64,
+   //   dWilson41,
+   //   dZeller75
+   //};
+
+   __global__ void initCuda()
+   {
+      dBerger64 = new Berger64MeanIonizationPotential();
+      dBerger83 = new Berger83MeanIonizationPotential();
+      dBloch33 = new Bloch33MeanIonizationPotential();
+      dDuncumb69 = new Duncumb69MeanIonizationPotential();
+      dBergerAndSeltzerCITZAF = new BergerAndSeltzerCITZAFMeanIonizationPotential();
+      dHeinrich70 = new Heinrich70MeanIonizationPotential();
+      dSpringer67 = new Springer67MeanIonizationPotential();
+      dSternheimer64 = new Sternheimer64MeanIonizationPotential();
+      dWilson41 = new Wilson41MeanIonizationPotential();
+      dZeller75 = new Zeller75MeanIonizationPotential();
+   }
+
+   __global__ void copyDataToBerger64(double *data, int len)
+   {
+      dBerger64->copyData<double>(data, len);
+   }
+
+   __global__ void copyDataToBerger83(double *data, int len)
+   {
+      dBerger83->copyData<double>(data, len);
+   }
+
+   void copyDataToCuda()
+   {
+      double *Berger64data = nullptr;
+      checkCudaErrors(cudaMalloc((void **)&Berger64data, Berger64.getData().size() * sizeof(double)));
+      checkCudaErrors(cudaMemcpy(Berger64data, Berger64.getData().data(), Berger64.getData().size() * sizeof(double), cudaMemcpyHostToDevice));
+      copyDataToBerger64 << <1, 1 >> >(Berger64data, Berger64.getData().size());
+      checkCudaErrors(cudaGetLastError());
+      checkCudaErrors(cudaFree(Berger64data));
+
+      double *Berger83data = nullptr;
+      checkCudaErrors(cudaMalloc((void **)&Berger83data, Berger83.getData().size() * sizeof(double)));
+      checkCudaErrors(cudaMemcpy(Berger83data, Berger83.getData().data(), Berger83.getData().size() * sizeof(double), cudaMemcpyHostToDevice));
+      copyDataToBerger83 << <1, 1 >> >(Berger83data, Berger83.getData().size());
+      checkCudaErrors(cudaGetLastError());
+      checkCudaErrors(cudaFree(Berger83data));
+   }
+
    AlgorithmClassT const * const * MeanIonizationPotential::getAllImplementations() const
    {
+//#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+//      return dAllImplementations;
+//#else
+//      return mAllImplementations;
+//#endif
       return mAllImplementations;
    }
 }

@@ -26,9 +26,9 @@ namespace ScreenedRutherfordScatteringAngle
    class ScreenedRutherfordRandomizedScatterFactory : public RandomizedScatterFactoryT
    {
    public:
-      ScreenedRutherfordRandomizedScatterFactory();
+      __host__ __device__ ScreenedRutherfordRandomizedScatterFactory();
 
-      const RandomizedScatterT& get(const ElementT& elm) const override;
+      __host__ __device__ const RandomizedScatterT& get(const ElementT& elm) const override;
 
    protected:
       void initializeDefaultStrategy() override;

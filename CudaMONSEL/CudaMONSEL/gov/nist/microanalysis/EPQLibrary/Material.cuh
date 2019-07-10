@@ -12,7 +12,7 @@ namespace Material
    public:
       Material(double density);
       Material(const Material& comp);
-      Material(const Composition& comp, double density);
+      __host__ __device__ Material(const Composition& comp, double density);
       Material(const Element::Element* elm[], const double density[]);
       Material(const Element::Element* elms[], int elmsLen, const double massFracs[], int massFracsLen, double density, const char* name);
 

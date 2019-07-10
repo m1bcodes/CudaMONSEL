@@ -42,7 +42,7 @@ namespace ToSI
    double gPerCC(double d);
    double inverse_gPerCC(double d);
    double percm(double d);
-   double angstrom(double a);
+   __host__ __device__ double angstrom(double a);
    double micrometer(double m);
    __host__ __device__ double sqrAngstrom(double a2);
    double barn(double a2);

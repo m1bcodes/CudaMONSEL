@@ -83,7 +83,12 @@ namespace MeanIonizationPotential
       __host__ __device__ Berger64MeanIonizationPotential();
       __host__ __device__ double compute(const ElementT& el) const override;
       void readTabulatedValues();
-      //__device__ void copyData(double *data);
+      __host__ __device__ const VectorXd& getData() const;
+      template<typename T>
+      __device__ void copyData(const T* data, const unsigned int len)
+      {
+         mMeasured.assign(data, data + len);
+      }
 
    private:
       VectorXd mMeasured; // nominal, in Joules
@@ -95,22 +100,41 @@ namespace MeanIonizationPotential
       __host__ __device__ Berger83MeanIonizationPotential();
       __host__ __device__ double compute(const ElementT& el) const override;
       void readTabulatedValues();
-      //__device__ void copyData(double *data);
+      __host__ __device__ const VectorXd& getData() const;
+      template<typename T>
+      __device__ void copyData(const T* data, const unsigned int len)
+      {
+         mMeasured.assign(data, data + len);
+      }
 
    private:
       VectorXd mMeasured; // nominal, in Joules
    };
 
-   extern Berger64MeanIonizationPotential &Berger64;
-   extern Berger83MeanIonizationPotential &Berger83;
-   extern const MeanIonizationPotential &Bloch33;
-   extern const MeanIonizationPotential &Duncumb69;
-   extern const MeanIonizationPotential &BergerAndSeltzerCITZAF;
-   extern const MeanIonizationPotential &Heinrich70;
-   extern const MeanIonizationPotential &Springer67;
-   extern const MeanIonizationPotential &Sternheimer64;
-   extern const MeanIonizationPotential &Wilson41;
-   extern const MeanIonizationPotential &Zeller75;
+   extern Berger64MeanIonizationPotential& Berger64;
+   extern Berger83MeanIonizationPotential& Berger83;
+   extern const MeanIonizationPotential& Bloch33;
+   extern const MeanIonizationPotential& Duncumb69;
+   extern const MeanIonizationPotential& BergerAndSeltzerCITZAF;
+   extern const MeanIonizationPotential& Heinrich70;
+   extern const MeanIonizationPotential& Springer67;
+   extern const MeanIonizationPotential& Sternheimer64;
+   extern const MeanIonizationPotential& Wilson41;
+   extern const MeanIonizationPotential& Zeller75;
+
+   extern __device__ Berger64MeanIonizationPotential* dBerger64;
+   extern __device__ Berger83MeanIonizationPotential* dBerger83;
+   extern __device__ const MeanIonizationPotential* dBloch33;
+   extern __device__ const MeanIonizationPotential* dDuncumb69;
+   extern __device__ const MeanIonizationPotential* dBergerAndSeltzerCITZAF;
+   extern __device__ const MeanIonizationPotential* dHeinrich70;
+   extern __device__ const MeanIonizationPotential* dSpringer67;
+   extern __device__ const MeanIonizationPotential* dSternheimer64;
+   extern __device__ const MeanIonizationPotential* dWilson41;
+   extern __device__ const MeanIonizationPotential* dZeller75;
+
+   extern __global__ void initCuda();
+   extern void copyDataToCuda();
 }
 
 #endif
