@@ -8,21 +8,21 @@ namespace Electron
    class Electron
    {
    public:
-      Electron(const double initialPos[], double kE);
+      __host__ __device__ Electron(const double initialPos[], double kE);
       Electron(const double initialPos[], double theta, double phi, double kE);
-      Electron(const Electron& parent, double theta, double phi, double kE);
+      __host__ __device__ Electron(const Electron& parent, double theta, double phi, double kE);
 
-      void Init(const double initialPos[], double theta, double phi, double kE);
+      __host__ __device__ void init(const double initialPos[], double theta, double phi, double kE);
 
       void setDirection(double theta, double phi);
       __host__ __device__ const double * getPosition() const;
-      void setPosition(const double newpos[]);
+      __host__ __device__ void setPosition(const double newpos[]);
       __host__ __device__ const double * getPrevPosition() const;
-      const RegionBaseT* getCurrentRegion() const;
+      __host__ __device__ const RegionBaseT* getCurrentRegion() const;
       const RegionBaseT* getPreviousRegion() const;
       __host__ __device__ double getEnergy() const;
-      double getPreviousEnergy() const;
-      int getStepCount() const;
+      __host__ __device__ double getPreviousEnergy() const;
+      __host__ __device__ int getStepCount() const;
       double stepLength() const;
       __host__ __device__ void candidatePoint(const double dS, double res[]) const;
       __host__ __device__ void updateDirection(const double dTheta, const double dPhi);
@@ -30,13 +30,13 @@ namespace Electron
       __host__ __device__ void setEnergy(double newEnergy);
       __host__ __device__ void setPreviousEnergy(double newPreviousEnergy);
       __host__ __device__ void setCurrentRegion(const RegionBaseT* reg);
-      const ElementT* getScatteringElement() const;
-      void setScatteringElement(const ElementT* scatteringElement);
-      double getPhi() const;
-      double getTheta() const;
-      bool isTrajectoryComplete() const;
-      void setTrajectoryComplete(bool trajectoryComplete);
-      long getIdent() const;
+      __host__ __device__ const ElementT* getScatteringElement() const;
+      __host__ __device__ void setScatteringElement(const ElementT* scatteringElement);
+      __host__ __device__ double getPhi() const;
+      __host__ __device__ double getTheta() const;
+      __host__ __device__ bool isTrajectoryComplete() const;
+      __host__ __device__ void setTrajectoryComplete(bool trajectoryComplete);
+      __host__ __device__ long getIdent() const;
       long getParentID() const;
 
    private:

@@ -7,6 +7,6 @@ namespace BarrierScatterMechanism
    class BarrierScatterMechanism
    {
    public:
-      virtual ElectronT* barrierScatter(ElectronT* pe, const RegionBaseT* nextRegion) const = 0;
+      __host__ __device__ virtual ElectronT* barrierScatter(ElectronT* pe, const RegionBaseT* nextRegion) const = 0;
    };
 }

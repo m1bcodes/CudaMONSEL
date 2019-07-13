@@ -305,13 +305,14 @@ namespace amp
    template<typename T>
    __host__ __device__ void vector<T>::resize(const unsigned int newsz)
    {
-      if (cap < newsz) {
-         T* tmp = new T[newsz];
-         for (int i = 0; i < sz; ++i) {
-            tmp[i] = vec[i];
-         }
-         clear(newsz);
-      }
+      //if (cap < newsz) {
+      //   T* tmp = new T[newsz];
+      //   for (int i = 0; i < sz; ++i) {
+      //      tmp[i] = vec[i];
+      //   }
+      //   clear(newsz);
+      //}
+      clear(newsz);
       sz = newsz;
    }
 

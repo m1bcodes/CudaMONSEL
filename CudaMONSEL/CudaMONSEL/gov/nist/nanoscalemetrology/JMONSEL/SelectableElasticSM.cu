@@ -9,12 +9,17 @@
 
 namespace SelectableElasticSM
 {
-   SelectableElasticSM::SelectableElasticSM(const MaterialT& mat, const RandomizedScatterFactoryT& rsf) : rsf(rsf), cached_kE(-1.)
+   __host__ __device__ SelectableElasticSM::SelectableElasticSM(const MaterialT& mat, const RandomizedScatterFactoryT& rsf) : rsf(rsf), cached_kE(-1.)
    {
       setMaterial(&mat);
    }
 
-   SelectableElasticSM::SelectableElasticSM(const MaterialT& mat) : rsf(NISTMottScatteringAngle::Factory), cached_kE(-1.)
+   __host__ __device__ SelectableElasticSM::SelectableElasticSM(const MaterialT& mat) :
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+      rsf(*NISTMottScatteringAngle::d_Factory), cached_kE(-1.)
+#else
+      rsf(NISTMottScatteringAngle::Factory), cached_kE(-1.)
+#endif
    {
       setMaterial(&mat);
    }
@@ -24,7 +29,7 @@ namespace SelectableElasticSM
    //   setMaterial(sm.mat);
    //}
 
-   void SelectableElasticSM::setCache(double kE)
+   __host__ __device__ void SelectableElasticSM::setCache(double kE)
    {
       /*
       * Algorithm: 1. Get scaled cross section (cross section times weight
@@ -41,13 +46,13 @@ namespace SelectableElasticSM
       cached_kE = kE;
    }
 
-   double SelectableElasticSM::scatterRate(const ElectronT* pe)
+   __host__ __device__ double SelectableElasticSM::scatterRate(const ElectronT* pe)
    {
       setCache(pe->getEnergy()); // computes totalScaledCrossSection for this eK
       return totalScaledCrossSection * densityNa;
    }
 
-   ElectronT* SelectableElasticSM::scatter(ElectronT* pe)
+   __host__ __device__ ElectronT* SelectableElasticSM::scatter(ElectronT* pe)
    {
       const double kE = pe->getPreviousEnergy();
       if (kE != cached_kE)
@@ -67,10 +72,10 @@ namespace SelectableElasticSM
       const double beta = 2 * Math2::PI * Random::random();
       pe->updateDirection(alpha, beta);
       pe->setScatteringElement(&(rse[index]->getElement()));
-      return NULL; // This mechanism is elastic. No SE.
+      return nullptr; // This mechanism is elastic. No SE.
    }
 
-   void SelectableElasticSM::setMaterial(const MaterialT* mat)
+   __host__ __device__ void SelectableElasticSM::setMaterial(const MaterialT* mat)
    {
       nce = mat->getElementCount();
       densityNa = mat->getDensity() * PhysicalConstants::AvagadroNumber;
@@ -82,7 +87,7 @@ namespace SelectableElasticSM
          cumulativeScaledCrossSection.resize(nce);
 
          int i = 0;
-         for (auto elm : elements) {
+         for (auto &elm : elements) {
             rse[i] = &rsf.get(*elm);
             // The factor of 1000 in the next line is to convert atomic
             // weight in g/mole to kg/mole.

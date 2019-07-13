@@ -37,7 +37,7 @@ namespace BackscatterStats
       return mPhi;
    }
 
-   Datum::Datum(long eID, long tStep, double e0, const double pos[], double theta, double phi) :
+   __host__ __device__ Datum::Datum(long eID, long tStep, double e0, const double pos[], double theta, double phi) :
       electronID(eID),
       trajStep(tStep),
       mkEeV(e0),
@@ -47,7 +47,19 @@ namespace BackscatterStats
       memcpy(mPosition, pos, sizeof(double) * 3);
    }
 
-   Datum::Datum(const Datum& other) :
+   __host__ __device__ Datum::Datum() :
+      electronID(0),
+      trajStep(0),
+      mkEeV(0),
+      mTheta(0),
+      mPhi(0)
+   {
+      mPosition[0] = 0;
+      mPosition[1] = 0;
+      mPosition[2] = 0;
+   }
+
+   __host__ __device__ Datum::Datum(const Datum& other) :
       electronID(other.electronID),
       trajStep(other.trajStep),
       mkEeV(other.mkEeV),
@@ -55,6 +67,32 @@ namespace BackscatterStats
       mPhi(other.mPhi)
    {
       memcpy(mPosition, other.mPosition, sizeof(double) * 3);
+   }
+
+   __host__ __device__ Datum& Datum::operator=(const Datum& other)
+   {
+      electronID = (other.electronID);
+      trajStep = (other.trajStep);
+      mkEeV = (other.mkEeV);
+      mTheta = (other.mTheta);
+      mPhi = (other.mPhi);
+      memcpy(mPosition, other.mPosition, sizeof(double) * 3);
+
+      return *this;
+   }
+
+   __host__ __device__ bool Datum::operator==(const Datum& other)
+   {
+      if (this == &other) return true;
+      return
+         electronID == (other.electronID) &&
+         trajStep == (other.trajStep) &&
+         mkEeV == (other.mkEeV) &&
+         mTheta == (other.mTheta) &&
+         mPhi == (other.mPhi) &&
+         mPosition[0] == mPosition[0] &&
+         mPosition[1] == mPosition[1] &&
+         mPosition[2] == mPosition[2];
    }
 
    StringT Datum::toString() const
@@ -105,7 +143,7 @@ namespace BackscatterStats
    {
    }
 
-   BackscatterStats::BackscatterStats(const MonteCarloSST& mcss, int nEnergyBins) :
+   __host__ __device__ BackscatterStats::BackscatterStats(const MonteCarloSST& mcss, int nEnergyBins) :
       mMonte(mcss),
       mEnergyBinCount(nEnergyBins),
       mLogDetected(false),
@@ -118,7 +156,7 @@ namespace BackscatterStats
    {
    }
 
-   BackscatterStats::~BackscatterStats()
+   __host__ __device__ BackscatterStats::~BackscatterStats()
    {
       delete mFwdEnergyBins;
       delete mBackEnergyBins;
@@ -126,7 +164,7 @@ namespace BackscatterStats
       delete mElevationBins;
    }
 
-   void BackscatterStats::initialize()
+   __host__ __device__ void BackscatterStats::initialize()
    {
       mBeamEnergy = FromSI::eV(mMonte.getBeamEnergy());
       mElevationBins->clear();
@@ -138,7 +176,7 @@ namespace BackscatterStats
       mLog.clear();
    }
 
-   void BackscatterStats::actionPerformed(const int ae)
+   __host__ __device__ void BackscatterStats::actionPerformed(const int ae)
    {
       //assert(ae.getSource() instanceof MonteCarloSS);
       //assert(ae.getSource() == mMonte);
@@ -182,7 +220,7 @@ namespace BackscatterStats
       }
    }
 
-   const HistogramT& BackscatterStats::backscatterEnergyHistogram() const
+   __host__ __device__ const HistogramT& BackscatterStats::backscatterEnergyHistogram() const
    {
       return *mBackEnergyBins;
    }
@@ -251,7 +289,7 @@ namespace BackscatterStats
    //   pw.close();
    //}
 
-   double BackscatterStats::backscatterFraction() const
+   __host__ __device__ double BackscatterStats::backscatterFraction() const
    {
       return (double)mBackEnergyBins->totalCounts() / (double)mEventCount;
    }
@@ -281,7 +319,7 @@ namespace BackscatterStats
       mLogDetected = logDetected;
    }
 
-   std::vector<Datum> BackscatterStats::getLog() const
+   amp::vector<Datum> BackscatterStats::getLog() const
    {
       return mLog;
    }

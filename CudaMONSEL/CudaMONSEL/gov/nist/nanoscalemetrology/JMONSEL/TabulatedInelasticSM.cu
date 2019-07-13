@@ -9,24 +9,7 @@
 
 namespace TabulatedInelasticSM
 {
-   TabulatedInelasticSM::TabulatedInelasticSM(const SEmaterialT& mat, int methodSE, const char* tables[]) :
-      methodSE((methodSE != 2) && (methodSE != 3) ? 1 : methodSE),
-      energyOffset(0.),
-      minEgenSE(0.),
-      tableIIMFP(NUTableInterpolation::getInstance(tables[0])),
-      tableReducedDeltaE(NUTableInterpolation::getInstance(tables[1])),
-      tableTheta(NUTableInterpolation::getInstance(tables[2])),
-      tableSEE0((methodSE == 2) || (methodSE == 3) ? NUTableInterpolation::getInstance(tables[3]) : nullptr),
-      rateMult(1.),
-      E0fromDispersion(false),
-      kEa(VectorXd(1, 0)),
-      interpInput(VectorXd(3, 0)),
-      defaultRatios(true)
-   {
-      setMaterial(&mat);
-   }
-
-   TabulatedInelasticSM::TabulatedInelasticSM(const SEmaterialT& mat, int methodSE, const char* tables[], double energyOffset) :
+   __host__ __device__ TabulatedInelasticSM::TabulatedInelasticSM(const SEmaterialT& mat, int methodSE, const char* tables[], double energyOffset) :
       methodSE((methodSE != 2) && (methodSE != 3) ? 1 : methodSE),
       energyOffset(energyOffset),
       minEgenSE(0.),
@@ -71,43 +54,58 @@ namespace TabulatedInelasticSM
       setMaterial(&mat);
    }
 
-   void updateDirection(double theta, double phi, double dTheta, double dPhi, double res[2])
+   __host__ __device__ TabulatedInelasticSM::TabulatedInelasticSM(const SEmaterialT& mat, int methodSE, const char* tables[]) :
+      methodSE((methodSE != 2) && (methodSE != 3) ? 1 : methodSE),
+      energyOffset(0.),
+      minEgenSE(0.),
+      tableIIMFP(NUTableInterpolation::getInstance(tables[0])),
+      tableReducedDeltaE(NUTableInterpolation::getInstance(tables[1])),
+      tableTheta(NUTableInterpolation::getInstance(tables[2])),
+      tableSEE0((methodSE == 2) || (methodSE == 3) ? NUTableInterpolation::getInstance(tables[3]) : nullptr),
+      rateMult(1.),
+      E0fromDispersion(false),
+      kEa(VectorXd(1, 0)),
+      interpInput(VectorXd(3, 0)),
+      defaultRatios(true)
    {
-      double ct = ::cos(theta), st = ::sin(theta);
-      double cp = ::cos(phi), sp = ::sin(phi);
-      double ca = ::cos(dTheta), sa = ::sin(dTheta);
-      double cb = ::cos(dPhi);
-
-      double xx = (cb * ct * sa) + (ca * st);
-      double yy = sa * ::sin(dPhi);
-      double dx = (cp * xx) - (sp * yy);
-      double dy = (cp * yy) + (sp * xx);
-      double dz = (ca * ct) - (cb * sa * st);
-
-      theta = ::atan2(::sqrt((dx * dx) + (dy * dy)), dz);
-      phi = ::atan2(dy, dx);
-      res[0] = theta;
-      res[1] = phi;
+      setMaterial(&mat);
    }
 
-   void TabulatedInelasticSM::simESEf(double Eq, double deltaE, double r, double res[2])
+   __host__ __device__ static void updateDirection(const double theta, const double phi, const double dTheta, const double dPhi, double res[2])
    {
-      double q = ::sqrt(Eq);
-      double kz = (deltaE - Eq) / 2. / q;
-      double kzf = kz + q;
-      double Ezq = kzf * kzf;
+      const double ct = ::cos(theta), st = ::sin(theta);
+      const double cp = ::cos(phi), sp = ::sin(phi);
+      const double ca = ::cos(dTheta), sa = ::sin(dTheta);
+      const double cb = ::cos(dPhi);
+
+      const double xx = (cb * ct * sa) + (ca * st);
+      const double yy = sa * ::sin(dPhi);
+      const double dx = (cp * xx) - (sp * yy);
+      const double dy = (cp * yy) + (sp * xx);
+      const double dz = (ca * ct) - (cb * sa * st);
+
+      res[0] = ::atan2(::sqrt((dx * dx) + (dy * dy)), dz);
+      res[1] = ::atan2(dy, dx);
+   }
+
+   __host__ __device__ void TabulatedInelasticSM::simESEf(double Eq, double deltaE, double r, double res[2])
+   {
+      const double q = ::sqrt(Eq);
+      const double kz = (deltaE - Eq) / 2. / q;
+      const double kzf = kz + q;
+      const double Ezq = kzf * kzf;
       double minE = (offsetFermiEnergy + bandgap) - Ezq;
       if (minE < 0.) minE = 0.;
       double maxE = offsetFermiEnergy - (kz * kz);
       if (!(minE <= maxE)) printf("TabulatedInelasticSM::simESEf: minE (%.10e) <= maxE (%.10e)\n", minE, maxE);
-      double Exy = (minE * (1. - r)) + (maxE * r);
-      double ESEf = Exy + Ezq;
-      double theta = ::acos(kzf / ::sqrt(ESEf));
+      const double Exy = (minE * (1. - r)) + (maxE * r);
+      const double ESEf = Exy + Ezq;
+      const double theta = ::acos(kzf / ::sqrt(ESEf));
       res[0] = ESEf;
       res[1] = theta;
    }
 
-   static double computeE0fromDispersion(double Eq, double deltaE)
+   __host__ __device__ static double computeE0fromDispersion(double Eq, double deltaE)
    {
       /*
       * Note to self: The derivation of this algorithm is in
@@ -118,46 +116,46 @@ namespace TabulatedInelasticSM
       if (Eq == 0.)
          return deltaE;
       /* Precompute quantities we're going to need more than once. */
-      double x = Eq / deltaE;
+      const double x = Eq / deltaE;
       /*
       * The numeric constant on the next line is a constant that appears in the
       * solution of Penn's dispersion equation. It has units of 1/Joule.
       */
-      double y = 3.77300614251479e17 * Eq;
-      double x13 = ::pow(x, 1 / 3.);
-      double x2 = x * x;
-      double c1 = x2 * x2 * (27. + (18. * y) + (2 * y * y));
-      double c2 = x2 * (27. + (4. * y));
-      double c3 = c2 - 27.;
-      double c4 = x2 * (3. + y);
-      double c6 = 1 - x2;
+      const double y = 3.77300614251479e17 * Eq;
+      const double x13 = ::pow(x, 1 / 3.);
+      const double x2 = x * x;
+      const double c1 = x2 * x2 * (27. + (18. * y) + (2 * y * y));
+      const double c2 = x2 * (27. + (4. * y));
+      const double c3 = c2 - 27.;
+      const double c4 = x2 * (3. + y);
+      const double c6 = 1 - x2;
       if (c3 > 0.) {
-         double tanPart = ::atan2(3. * c6 * ::sqrt(3. * c3 * c6), (18. * c4) - c1 - 27.);
+         const double tanPart = ::atan2(3. * c6 * ::sqrt(3. * c3 * c6), (18. * c4) - c1 - 27.);
          double trigPart = ::cos(tanPart / 3.);
-         double prefactor = 2. * x * ::sqrt(y * (y - (c6 * (y + 6.))));
+         const double prefactor = 2. * x * ::sqrt(y * (y - (c6 * (y + 6.))));
          trigPart *= prefactor;
-         double result = deltaE * ::sqrt(((3. - c4) + trigPart) / 3.);
+         const double result = deltaE * ::sqrt(((3. - c4) + trigPart) / 3.);
          return result;
       }
       else {
-         double c5 = ::pow(-c1 + (18. * c4) + (3. * (-9. + (c6 * ::sqrt(-(3. * c3 * c6))))), 1. / 3.);
-         double term1 = -2. * c4;
-         double x23 = x13 * x13;
-         double x43 = x * x13;
-         double y13 = ::pow(y, 1. / 3.);
-         double y23 = y13 * y13;
-         double x43y23 = x43 * y23;
-         double two13 = ::pow(2., 1. / 3.);
-         double term2 = -12. * two13 * x43y23 * c6;
-         double term3 = 2. * two13 * x43y23 * x2 * y;
-         double term23 = (term2 + term3) / c5;
-         double term4 = two13 * two13 * x23 * y13 * c5;
-         double result = deltaE * ::sqrt((6 + term1 + term23 + term4) / 6.);
+         const double c5 = ::pow(-c1 + (18. * c4) + (3. * (-9. + (c6 * ::sqrt(-(3. * c3 * c6))))), 1. / 3.);
+         const double term1 = -2. * c4;
+         const double x23 = x13 * x13;
+         const double x43 = x * x13;
+         const double y13 = ::pow(y, 1. / 3.);
+         const double y23 = y13 * y13;
+         const double x43y23 = x43 * y23;
+         const double two13 = ::pow(2., 1. / 3.);
+         const double term2 = -12. * two13 * x43y23 * c6;
+         const double term3 = 2. * two13 * x43y23 * x2 * y;
+         const double term23 = (term2 + term3) / c5;
+         const double term4 = two13 * two13 * x23 * y13 * c5;
+         const double result = deltaE * ::sqrt((6 + term1 + term23 + term4) / 6.);
          return result;
       }
    }
 
-   double TabulatedInelasticSM::pickBE(double Eq, double deltaE)
+   __host__ __device__ double TabulatedInelasticSM::pickBE(double Eq, double deltaE)
    {
       int i;
       /*
@@ -213,7 +211,7 @@ namespace TabulatedInelasticSM
       }
    }
 
-   ElectronT* TabulatedInelasticSM::scatter(ElectronT* pe)
+   __host__ __device__ ElectronT* TabulatedInelasticSM::scatter(ElectronT* pe)
    {
       const double kE0 = pe->getEnergy(); // PE initial energy rel to CB bottom
       const double kE = kE0 + energyOffset; // PE initial energy rel to
@@ -226,7 +224,7 @@ namespace TabulatedInelasticSM
          * actually occurs (at the end of the step). In this case, we simply
          * don't scatter.
          */
-         return NULL;
+         return nullptr;
       if (kE > tableEiDomain[1])
          printf("PE energy %.10e is outside the interpolation table interval of [%.10e, %.10e]\n", kE, tableEiDomain[0], tableEiDomain[1]);
       double theta = 0.;
@@ -300,7 +298,7 @@ namespace TabulatedInelasticSM
       */
 
       // Determine SE final energy and trajectory
-      ElectronT* se = NULL;
+      ElectronT* se = nullptr;
       double be = 0.;
 
       /*
@@ -312,9 +310,9 @@ namespace TabulatedInelasticSM
       * states in the gap. We therefore return no SE for such events.
       */
       if (deltaE < bandgap)
-         return NULL;
+         return nullptr;
 
-      double Eq = (2. * kE) - deltaE - (2. * ::sqrt(kE * (kE - deltaE)) * ::cos(theta));
+      const double Eq = (2. * kE) - deltaE - (2. * ::sqrt(kE * (kE - deltaE)) * ::cos(theta));
 
       switch (methodSE) {
       case 1:
@@ -330,7 +328,7 @@ namespace TabulatedInelasticSM
          */
          energySE = (deltaE + bEref) - pickBE(Eq, deltaE);
          if ((energySE + energyCBbottom) < minEgenSE)
-            return NULL;
+            return nullptr;
          thetaSE = Math2::PI / 2. - theta;
          phiSE = phi + Math2::PI;
          // Generate SE, apply energy loss and trajectory change to SE here
@@ -357,7 +355,7 @@ namespace TabulatedInelasticSM
             energySE = (deltaE + energy0SE) - energyOffset;
          }
          if ((energySE + energyCBbottom) < minEgenSE)
-            return NULL;
+            return nullptr;
          thetaSE = Math2::PI / 2. - theta;
          phiSE = phi + Math2::PI;
          // Generate SE, apply energy loss and trajectory change to SE here
@@ -369,7 +367,7 @@ namespace TabulatedInelasticSM
          if (be > 0.) { // core level excitation
             energySE = (deltaE + bEref) - be;
             if ((energySE + energyCBbottom) < minEgenSE)
-               return NULL;
+               return nullptr;
             /*
             * I'm going to approximate the angle distribution as isotropic
             * for now.
@@ -381,17 +379,17 @@ namespace TabulatedInelasticSM
             se = new ElectronT(*pe, thetaSE, phiSE, energySE);
          }
          else { // SE generation from extended band
-            double root = 2. * ::sqrt(offsetFermiEnergy * (offsetFermiEnergy + deltaE));
-            double sum = (2. * offsetFermiEnergy) + deltaE;
-            double Eqmin = sum - root;
-            double Eqmax = sum + root;
+            const double root = 2. * ::sqrt(offsetFermiEnergy * (offsetFermiEnergy + deltaE));
+            const double sum = (2. * offsetFermiEnergy) + deltaE;
+            const double Eqmin = sum - root;
+            const double Eqmax = sum + root;
             if ((Eqmin <= Eq) && (Eq <= Eqmax)) { // single-electron
                // scattering
                double energytheta[2];
                simESEf(Eq, deltaE, randoms[3], energytheta);
                energySE = energytheta[0] - energyOffset;
                if ((energySE + energyCBbottom) < minEgenSE)
-                  return NULL;
+                  return nullptr;
                // Generate SE in PE direction with correct energy
                se = new ElectronT(*pe, theta0PE, phi0PE, energySE);
                // Determine angles of SE q vector relative to PE original direction
@@ -419,7 +417,7 @@ namespace TabulatedInelasticSM
                   energy0SE = energyRangeSE0[1];
                energySE = (deltaE + energy0SE) - energyOffset;
                if ((energySE + energyCBbottom) < minEgenSE)
-                  return NULL;
+                  return nullptr;
                /*
                * For plasmon scattering, mode 3 assumes the plasmon
                * "forgets" the momentum of the event that created it before
@@ -435,14 +433,14 @@ namespace TabulatedInelasticSM
          }
          break;
       default:
-         se = NULL;
+         se = nullptr;
          break;
       }
 
       return se;
    }
 
-   double TabulatedInelasticSM::scatterRate(const ElectronT* pe)
+   __host__ __device__ double TabulatedInelasticSM::scatterRate(const ElectronT* pe)
    {
       kEa[0] = pe->getEnergy() + energyOffset; // The PE kinetic energy
       /*
@@ -467,7 +465,7 @@ namespace TabulatedInelasticSM
       return rateMult * tableIIMFP->interpolate(kEa.data(), kEa.size(), 1);
    }
 
-   void TabulatedInelasticSM::setMaterial(const MaterialT* mat)
+   __host__ __device__ void TabulatedInelasticSM::setMaterial(const MaterialT* mat)
    {
       if (!(mat->isSEmaterial()))
          printf("Material %s is not an SEmaterial as required for TabulatedInelasticSM.", mat->toString());
@@ -479,7 +477,7 @@ namespace TabulatedInelasticSM
       bandgap = semat->getBandgap();
       energyGap = bandgap;
       offsetFermiEnergy = semat->getEFermi() + energyOffset;
-      auto coreEnergiesSet = semat->getCoreEnergyArray();
+      auto &coreEnergiesSet = semat->getCoreEnergyArray();
       for (auto ce : coreEnergiesSet) {
          coreEnergies.push_back(ce);
       }
@@ -501,12 +499,32 @@ namespace TabulatedInelasticSM
       * tables that take the PE initial energy as an input parameter.
       */
       tableEiDomain = tableReducedDeltaE->getDomain()[0];
-      auto thetaTableEiDomain = tableTheta->getDomain()[0];
+      const auto &thetaTableEiDomain = tableTheta->getDomain()[0];
       if (thetaTableEiDomain[0] > tableEiDomain[0])
          tableEiDomain[0] = thetaTableEiDomain[0];
       if (thetaTableEiDomain[1] < tableEiDomain[1])
          tableEiDomain[1] = thetaTableEiDomain[1];
       tableIIMFPEiDomain = tableIIMFP->getDomain()[0];
+   }
+
+   __host__ __device__ const NUTableInterpolationT* TabulatedInelasticSM::gettableIIMFP() const
+   {
+      return tableIIMFP;
+   }
+
+   __host__ __device__ const NUTableInterpolationT* TabulatedInelasticSM::gettableReducedDeltaE() const
+   {
+      return tableReducedDeltaE;
+   }
+
+   __host__ __device__ const NUTableInterpolationT* TabulatedInelasticSM::gettableTheta() const
+   {
+      return tableTheta;
+   }
+
+   __host__ __device__ const NUTableInterpolationT* TabulatedInelasticSM::gettableSEE0() const
+   {
+      return tableSEE0;
    }
 
    void TabulatedInelasticSM::setMinEgenSE(double minEgenSE)

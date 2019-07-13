@@ -24,12 +24,12 @@ namespace ScreenedRutherfordScatteringAngle
       return "CrossSection[Screened-Rutherford," + StringT(mElement.toAbbrev()) + "]";
    }
 
-   const ElementT& ScreenedRutherfordScatteringAngle::getElement() const
+   __host__ __device__ const ElementT& ScreenedRutherfordScatteringAngle::getElement() const
    {
       return mElement;
    }
 
-   __host__ __device__ double ScreenedRutherfordScatteringAngle::totalCrossSection(double energy) const
+   __host__ __device__ double ScreenedRutherfordScatteringAngle::totalCrossSection(const double energy) const
    {
       // Ref: Heinrich 1981 p 459 convert to SI units
       const double z = mElement.getAtomicNumber();
@@ -37,7 +37,7 @@ namespace ScreenedRutherfordScatteringAngle
       return (7.670843088080456e-38 * zp * (1.0 + z)) / ((energy + ((5.44967975966321e-19 * zp * zp))));
    }
 
-   double ScreenedRutherfordScatteringAngle::randomScatteringAngle(double energy) const
+   __host__ __device__ double ScreenedRutherfordScatteringAngle::randomScatteringAngle(const double energy) const
    {
       // This method for calculating the scattering angle is taken from
       // NBSMONTE.FOR
@@ -468,10 +468,6 @@ namespace ScreenedRutherfordScatteringAngle
    __host__ __device__ const RandomizedScatterT& ScreenedRutherfordRandomizedScatterFactory::get(const ElementT& elm) const
    {
       return getSRSA(elm.getAtomicNumber());
-   }
-
-   void ScreenedRutherfordRandomizedScatterFactory::initializeDefaultStrategy()
-   {
    }
 
    const ScreenedRutherfordRandomizedScatterFactory FactoryScreenedRutherford;

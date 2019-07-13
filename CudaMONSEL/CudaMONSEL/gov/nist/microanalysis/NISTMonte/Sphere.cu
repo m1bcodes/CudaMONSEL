@@ -4,12 +4,12 @@
 
 namespace Sphere
 {
-   Sphere::Sphere(const double center[], double radius) : mRadius(radius)
+   __host__ __device__ Sphere::Sphere(const double center[], double radius) : mRadius(radius)
    {
       memcpy(mCenter, center, sizeof(double) * 3);
    }
 
-   bool Sphere::contains(const double pos[]) const
+   __host__ __device__ bool Sphere::contains(const double pos[]) const
    {
       return Math2::sqr(pos[0] - mCenter[0]) + Math2::sqr(pos[1] - mCenter[1]) + Math2::sqr(pos[2] - mCenter[2]) <= Math2::sqr(mRadius);
    }
@@ -19,7 +19,7 @@ namespace Sphere
       return mRadius;
    }
 
-   double Sphere::getFirstIntersection(const double pos0[], const double pos1[])
+   __host__ __device__ double Sphere::getFirstIntersection(const double pos0[], const double pos1[])
    {
       // Compute the intersection of the line between pos0 and pos1 and the
       // shell of the sphere.
@@ -112,7 +112,7 @@ namespace Sphere
       return mCenter;
    }
 
-   StringT Sphere::toString() const
+   __host__ __device__ StringT Sphere::toString() const
    {
       return "Sphere[" + amp::to_string(mCenter[0]) + amp::to_string(mCenter[1]) + amp::to_string(mCenter[2]) + ", r=" + amp::to_string(mRadius) + "]";
    }

@@ -5,10 +5,10 @@
 
 namespace Random
 {
-   extern __host__ __device__ double random();
+   extern __host__ __device__ float random();
    extern __host__ __device__ int randomInt(int mod);
-   extern __host__ __device__ double expRand();
-   extern __host__ __device__ double generateGaussianNoise(const double mean, const double stdDev);
+   extern __host__ __device__ float expRand();
+   extern __host__ __device__ float generateGaussianNoise(const float mean, const float stdDev);
 
    extern __global__ void initCudaStates(const unsigned int n);
    extern __global__ void destroyCudaState();

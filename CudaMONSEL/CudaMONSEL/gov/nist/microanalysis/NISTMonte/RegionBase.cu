@@ -7,7 +7,11 @@
 
 namespace RegionBase
 {
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+   __constant__ static double SMALL_DISP = 1.0e-15; // 1 fm
+#else
    static double SMALL_DISP = 1.0e-15; // 1 fm
+#endif
    
    //void RegionBase::updateMaterial(const MaterialT& oldMat, const IMaterialScatterModelT& newMat)
    //{
@@ -18,21 +22,21 @@ namespace RegionBase
    //      reg->updateMaterial(oldMat, newMat);
    //}
    
-   void RegionBase::updateMaterial(const IMaterialScatterModelT& oldMat, IMaterialScatterModelT& newMat)
+   __host__ __device__ void RegionBase::updateMaterial(const IMaterialScatterModelT& oldMat, IMaterialScatterModelT& newMat)
    {
       // Recursively replace all instances of oldMat with newMat
       if (mScatterModel == &oldMat)
          mScatterModel = &newMat;
-      for (auto reg : mSubRegions)
+      for (auto &reg : mSubRegions)
          reg->updateMaterial(oldMat, newMat);
    }
    
-   const MaterialT& RegionBase::getMaterial() const
+   __host__ __device__ const MaterialT& RegionBase::getMaterial() const
    {
       return mScatterModel->getMaterial();
    }
    
-   IMaterialScatterModelT* RegionBase::getScatterModel() const
+   __host__ __device__ IMaterialScatterModelT* RegionBase::getScatterModel() const
    {
       return mScatterModel;
    }
@@ -47,7 +51,7 @@ namespace RegionBase
       mSubRegions.insert(&reg);
    }
    
-   const RegionBase* RegionBase::containingSubRegion(const double pos[]) const
+   __host__ __device__ const RegionBase* RegionBase::containingSubRegion(const double pos[]) const
    {
       if (mShape->contains(pos)) {
          for (auto reg : mSubRegions) {
@@ -71,7 +75,7 @@ namespace RegionBase
       return res;
    }
    
-   const RegionBase* RegionBase::findEndOfStep(const double p0[], double p1[]) const
+   __host__ __device__ const RegionBase* RegionBase::findEndOfStep(const double p0[], double p1[]) const
    {
       const RegionBase* base = this;
       double t = mShape->getFirstIntersection(p0, p1);
@@ -127,7 +131,7 @@ namespace RegionBase
       return res;
    }
    
-   const ShapeT* RegionBase::getShape() const
+   __host__ __device__ const ShapeT* RegionBase::getShape() const
    {
       return mShape;
    }
@@ -199,7 +203,7 @@ namespace RegionBase
       //}
    }
 
-   Region::Region(Region* const parent, IMaterialScatterModelT * const msm, ShapeT * const shape)
+   __host__ __device__ Region::Region(Region* const parent, IMaterialScatterModelT * const msm, ShapeT * const shape)
    {
       mParent = parent;
       mScatterModel = msm;

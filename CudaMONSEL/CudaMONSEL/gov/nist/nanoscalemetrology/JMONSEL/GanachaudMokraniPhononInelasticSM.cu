@@ -7,7 +7,7 @@
 
 namespace GanachaudMokraniPhononInelasticSM
 {
-   GanachaudMokraniPhononInelasticSM::GanachaudMokraniPhononInelasticSM(double ratemultiplier, double phononE, double temperature, double eps0, double epsInfinity) : 
+   __host__ __device__ GanachaudMokraniPhononInelasticSM::GanachaudMokraniPhononInelasticSM(double ratemultiplier, double phononE, double temperature, double eps0, double epsInfinity) : 
       ratemultiplier(ratemultiplier),
       phononE(phononE),
       temperature(temperature),
@@ -22,11 +22,11 @@ namespace GanachaudMokraniPhononInelasticSM
       if (epsRatio <= 0.) printf("(eps0-epsInfinity)/eps0/epsInfinity < 0 in GanachaudMokraniPhononInelasticSM constructor.");
    }
 
-   ElectronT* GanachaudMokraniPhononInelasticSM::scatter(ElectronT* pe)
+   __host__ __device__ ElectronT* GanachaudMokraniPhononInelasticSM::scatter(ElectronT* pe)
    {
       const double kE0 = pe->getEnergy();
       if (kE0 < phononE)
-         return NULL;
+         return nullptr;
 
       const double x = phononE / kE0; // Energy ratio
 
@@ -46,10 +46,10 @@ namespace GanachaudMokraniPhononInelasticSM
       pe->setEnergy(kE0 - phononE);
       pe->setPreviousEnergy(kE0);
 
-      return NULL;
+      return nullptr;
    }
 
-   double GanachaudMokraniPhononInelasticSM::scatterRate(const ElectronT* pe)
+   __host__ __device__ double GanachaudMokraniPhononInelasticSM::scatterRate(const ElectronT* pe)
    {
       const double kE = pe->getEnergy();
       if (kE < phononE)
@@ -77,7 +77,7 @@ namespace GanachaudMokraniPhononInelasticSM
       }
    }
 
-   void GanachaudMokraniPhononInelasticSM::setMaterial(const MaterialT* mat)
+   __host__ __device__ void GanachaudMokraniPhononInelasticSM::setMaterial(const MaterialT* mat)
    {
       /*
       * There's nothing to do here. This is a required method, but the phonon

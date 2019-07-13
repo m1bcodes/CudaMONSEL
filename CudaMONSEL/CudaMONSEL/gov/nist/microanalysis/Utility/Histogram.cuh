@@ -7,44 +7,44 @@
 
 namespace Histogram
 {
-   class BinName
-   {
-   public:
-      BinName(int, const char[], const HistogramT&);
+   //class BinName
+   //{
+   //public:
+   //   __host__ __device__ BinName(int, const char[], const HistogramT&);
 
-      StringT toString() const;
+   //   StringT toString() const;
 
-      bool operator<(const BinName& o) const;
+   //   __host__ __device__ bool operator<(const BinName& o) const;
 
-   private:
-      const int mBin;
-      const StringT mFormat;
-      const HistogramT& mEnclosingClass;
-   };
+   //private:
+   //   const int mBin;
+   //   const StringT mFormat;
+   //   const HistogramT& mEnclosingClass;
+   //};
 
-   typedef std::map<BinName*, int> BinMap;
+   //typedef amp::unordered_map<BinName*, int> BinMap;
 
    class Histogram
    {
    public:
-      Histogram(double min, double max, int nBins);
-      Histogram(double min, double max, double ratio);
-      Histogram(double binMins[], int len, double max);
-      Histogram(const Histogram& hist);
+      __host__ __device__ Histogram(double min, double max, int nBins);
+      __host__ __device__ Histogram(double min, double max, double ratio);
+      __host__ __device__ Histogram(double binMins[], int len, double max);
+      __host__ __device__ Histogram(const Histogram& hist);
 
-      void addBin(double binMin);
-      int bin(double val) const;
+      __host__ __device__ void addBin(double binMin);
+      __host__ __device__ int bin(double val) const;
       double minValue(int bin) const;
       double maxValue(int bin) const;
-      void add(double val);
+      __host__ __device__ void add(double val);
       void add(double vals[], int len);
-      int binCount() const;
+      __host__ __device__ int binCount() const;
       StringT binName(int bin, StringT format) const;
-      int counts(int bin) const;
-      void clear();
+      __host__ __device__ int counts(int bin) const;
+      __host__ __device__ void clear();
       int overrange() const;
       int underrange() const;
-      int totalCounts() const;
+      __host__ __device__ int totalCounts() const;
       bool isBinMin(double binMin) const;
       void removeBin(int binNum);
 

@@ -6,7 +6,7 @@ namespace RandomizedScatter
    {
    }
    
-   void RandomizedScatter::initializeDefaultStrategy()
+   __host__ __device__ void RandomizedScatter::initializeDefaultStrategy()
    {
    }
 

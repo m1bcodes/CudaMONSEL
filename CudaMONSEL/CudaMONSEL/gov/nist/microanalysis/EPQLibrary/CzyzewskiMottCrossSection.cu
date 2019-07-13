@@ -355,7 +355,7 @@ namespace CzyzewskiMottCrossSection
       return "CzyzewskiMott[" + StringT(mElement.toAbbrev()) + "]";
    }
 
-   const ElementT& CzyzewskiMottCrossSection::getElement() const
+   __host__ __device__ const ElementT& CzyzewskiMottCrossSection::getElement() const
    {
       return mElement;
    }

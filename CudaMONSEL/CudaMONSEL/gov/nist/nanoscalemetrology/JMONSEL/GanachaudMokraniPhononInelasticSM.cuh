@@ -9,11 +9,11 @@ namespace GanachaudMokraniPhononInelasticSM
    class GanachaudMokraniPhononInelasticSM : public ScatterMechanismT
    {
    public:
-      GanachaudMokraniPhononInelasticSM(double ratemultiplier, double phononE, double temperature, double eps0, double epsInfinity);
+      __host__ __device__ GanachaudMokraniPhononInelasticSM(double ratemultiplier, double phononE, double temperature, double eps0, double epsInfinity);
 
-      double scatterRate(const ElectronT* pe) override;
-      ElectronT* scatter(ElectronT* pe) override;
-      void setMaterial(const MaterialT* mat) override;
+      __host__ __device__ double scatterRate(const ElectronT* pe) override;
+      __host__ __device__ ElectronT* scatter(ElectronT* pe) override;
+      __host__ __device__ void setMaterial(const MaterialT* mat) override;
 
       const char* toString();
 

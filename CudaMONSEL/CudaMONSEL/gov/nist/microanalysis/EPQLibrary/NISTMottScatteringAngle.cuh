@@ -21,9 +21,9 @@ namespace NISTMottScatteringAngle
 
       StringT toString() const;
 
-      const ElementT& getElement() const override;
+      __host__ __device__ const ElementT& getElement() const override;
       __host__ __device__ double totalCrossSection(const double) const override;
-      double randomScatteringAngle(const double) const override;
+      __host__ __device__ double randomScatteringAngle(const double) const override;
 
       __host__ __device__ const VectorXf& getSpwem() const;
       __host__ __device__ const MatrixXf& getX1() const;
@@ -57,20 +57,19 @@ namespace NISTMottScatteringAngle
       __host__ __device__ NISTMottRandomizedScatterFactory();
 
       __host__ __device__ const RandomizedScatterT& get(const ElementT& elm) const override;
-
-   protected:
-      void initializeDefaultStrategy() override;
    };
 
    const NISTMottScatteringAngle* mScatter[];
 
    extern const RandomizedScatterFactoryT& Factory;
+   extern __device__ const RandomizedScatterFactoryT* d_Factory;
 
    __host__ __device__ extern const NISTMottScatteringAngle& getNISTMSA(int an);
 
    extern void init();
    extern __global__ void initCuda();
    extern void copyDataToCuda();
+   extern __global__ void initFactory();
 }
 
 #endif

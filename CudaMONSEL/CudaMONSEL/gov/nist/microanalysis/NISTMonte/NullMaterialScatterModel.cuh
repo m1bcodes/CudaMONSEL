@@ -9,19 +9,19 @@ namespace NullMaterialScatterModel
    class NullMaterialScatterModel : public IMaterialScatterModelT
    {
    public:
-      NullMaterialScatterModel();
+      __host__ __device__ NullMaterialScatterModel();
 
-      ElectronT* barrierScatter(ElectronT* pe, const RegionBaseT* nextRegion) const override;
+      __host__ __device__ ElectronT* barrierScatter(ElectronT* pe, const RegionBaseT* nextRegion) const override;
 
-      double calculateEnergyLoss(double len, const ElectronT& pe) const override;
+      __host__ __device__ double calculateEnergyLoss(double len, const ElectronT& pe) const override;
 
-      const MaterialT& getMaterial() const override;
+      __host__ __device__ const MaterialT& getMaterial() const override;
 
-      double randomMeanPathLength(ElectronT& pe) override;
+      __host__ __device__ double randomMeanPathLength(ElectronT& pe) override;
 
-      ElectronT* scatter(ElectronT& pe) override;
+      __host__ __device__ ElectronT* scatter(ElectronT& pe) override;
 
-      double getMinEforTracking() const override;
+      __host__ __device__ double getMinEforTracking() const override;
 
       __host__ __device__ void setMinEforTracking(double minEforTracking) override;
 

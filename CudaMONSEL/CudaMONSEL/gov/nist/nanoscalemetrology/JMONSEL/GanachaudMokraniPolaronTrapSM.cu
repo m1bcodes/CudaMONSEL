@@ -5,7 +5,7 @@
 
 namespace GanachaudMokraniPolaronTrapSM
 {
-   GanachaudMokraniPolaronTrapSM::GanachaudMokraniPolaronTrapSM(double prefactor, double extinction) :
+   __host__ __device__ GanachaudMokraniPolaronTrapSM::GanachaudMokraniPolaronTrapSM(double prefactor, double extinction) :
       prefactor(prefactor),
       extinction(extinction),
       CUTOFF(-::log(10. / prefactor) / extinction)
@@ -14,14 +14,14 @@ namespace GanachaudMokraniPolaronTrapSM
       if (extinction < 0.) printf("ERROR: Nonpositive extinction in GanachaudMokraniPolaronTrapSM constructor.");
    }
 
-   ElectronT* GanachaudMokraniPolaronTrapSM::scatter(ElectronT* pe)
+   __host__ __device__ ElectronT* GanachaudMokraniPolaronTrapSM::scatter(ElectronT* pe)
    {
       pe->setEnergy(0.); // So listeners, if any, will record the energy change.
       pe->setTrajectoryComplete(true); // It's trapped
       return NULL;
    }
 
-   double GanachaudMokraniPolaronTrapSM::scatterRate(const ElectronT* pe)
+   __host__ __device__ double GanachaudMokraniPolaronTrapSM::scatterRate(const ElectronT* pe)
    {
       const double kE0 = pe->getEnergy();
       if (kE0 > CUTOFF) return 0.;
@@ -29,7 +29,7 @@ namespace GanachaudMokraniPolaronTrapSM
       return result;
    }
 
-   void GanachaudMokraniPolaronTrapSM::setMaterial(const MaterialT* mat)
+   __host__ __device__ void GanachaudMokraniPolaronTrapSM::setMaterial(const MaterialT* mat)
    {
    }
 

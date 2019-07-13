@@ -73,7 +73,7 @@ namespace CzyzewskiMottScatteringAngle
    }
 
 
-   const ElementT& CzyzewskiMottScatteringAngle::getElement() const
+   __host__ __device__ const ElementT& CzyzewskiMottScatteringAngle::getElement() const
    {
       return mElement;
    }
@@ -94,7 +94,7 @@ namespace CzyzewskiMottScatteringAngle
       }
    }
 
-   double CzyzewskiMottScatteringAngle::randomScatteringAngle(double energy, double rand) const
+   __host__ __device__ double CzyzewskiMottScatteringAngle::randomScatteringAngle(double energy, double rand) const
    {
       if (!(rand >= 0)) printf("CzyzewskiMottScatteringAngle::randomScatteringAngle 1: %lf\n", rand);
       if (!(rand < 1.0)) printf("CzyzewskiMottScatteringAngle::randomScatteringAngle 2: %lf\n", rand);
@@ -116,7 +116,7 @@ namespace CzyzewskiMottScatteringAngle
       }
    }
 
-   double CzyzewskiMottScatteringAngle::randomScatteringAngle(double energy) const
+   __host__ __device__ double CzyzewskiMottScatteringAngle::randomScatteringAngle(const double energy) const
    {
       if (energy < MAX_CZYZEWSKI) {
          return randomScatteringAngle(energy, Random::random());
@@ -138,7 +138,7 @@ namespace CzyzewskiMottScatteringAngle
       return mMeanFreePath[e - 1] + ((mMeanFreePath[e] - mMeanFreePath[e - 1]) * ((energy - e0) / (e1 - e0)));
    }
 
-   __host__ __device__ double CzyzewskiMottScatteringAngle::totalCrossSection(double energy) const
+   __host__ __device__ double CzyzewskiMottScatteringAngle::totalCrossSection(const double energy) const
    {
       if (energy < MAX_CZYZEWSKI) {
          int e = CzyzewskiMottCrossSection::getEnergyIndex(energy);
@@ -536,10 +536,6 @@ namespace CzyzewskiMottScatteringAngle
    __host__ __device__ const RandomizedScatterT& CzyzewskiMottRandomizedScatterFactory::get(const Element::Element& elm) const
    {
       return getCMSA(elm.getAtomicNumber());
-   }
-
-   void CzyzewskiMottRandomizedScatterFactory::initializeDefaultStrategy()
-   {
    }
 
    const CzyzewskiMottRandomizedScatterFactory CzyzewskiMottFactory;

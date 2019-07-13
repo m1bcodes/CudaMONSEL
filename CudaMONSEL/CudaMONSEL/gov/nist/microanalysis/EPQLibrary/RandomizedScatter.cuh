@@ -11,13 +11,13 @@ namespace RandomizedScatter
    protected:
       __host__ __device__ RandomizedScatter(StringT name, const ReferenceT& ref);
 
-      void initializeDefaultStrategy() override;
+      __host__ __device__ void initializeDefaultStrategy() override;
       AlgorithmClass const * const * getAllImplementations() const override;
 
    public:
-      virtual double randomScatteringAngle(double energy) const = 0;
-      __host__ __device__ virtual double totalCrossSection(double energy) const = 0;
-      virtual const ElementT& getElement() const = 0;
+      __host__ __device__ virtual double randomScatteringAngle(const double energy) const = 0;
+      __host__ __device__ virtual double totalCrossSection(const double energy) const = 0;
+      __host__ __device__ virtual const ElementT& getElement() const = 0;
    };
 }
 

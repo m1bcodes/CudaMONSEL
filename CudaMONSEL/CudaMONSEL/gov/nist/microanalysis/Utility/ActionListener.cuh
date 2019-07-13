@@ -6,7 +6,7 @@ namespace ActionListener
    class ActionListener
    {
    public:
-      virtual void actionPerformed(const int) = 0;
+      __host__ __device__ virtual void actionPerformed(const int) = 0;
    };
 }
 

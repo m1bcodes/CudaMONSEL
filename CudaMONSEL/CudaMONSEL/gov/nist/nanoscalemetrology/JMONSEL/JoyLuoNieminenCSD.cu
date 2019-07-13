@@ -7,7 +7,7 @@
 
 namespace JoyLuoNieminenCSD
 {
-   JoyLuoNieminenCSD::JoyLuoNieminenCSD(SEmaterialT& mat, double breakE) : mat(mat)
+   __host__ __device__ JoyLuoNieminenCSD::JoyLuoNieminenCSD(SEmaterialT& mat, double breakE) : mat(mat)
    {
       if (breakE > (mat.getWorkfunction() + ToSI::eV(1.)))
          this->breakE = breakE;

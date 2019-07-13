@@ -2,21 +2,21 @@
 
 namespace NormalIntersectionShape
 {
-   NormalIntersectionShape::NormalIntersectionShape(NormalShapeT& shapeA, NormalShapeT& shapeB) : shapeA(shapeA), shapeB(shapeB)
+   __host__ __device__ NormalIntersectionShape::NormalIntersectionShape(NormalShapeT& shapeA, NormalShapeT& shapeB) : shapeA(shapeA), shapeB(shapeB)
    {
    }
 
-   bool NormalIntersectionShape::contains(const double pos[]) const
+   __host__ __device__ bool NormalIntersectionShape::contains(const double pos[]) const
    {
       return ((ShapeT*)&shapeA)->contains(pos) && ((ShapeT*)&shapeB)->contains(pos);
    }
 
-   bool NormalIntersectionShape::contains(const double pos0[], const double pos1[]) const
+   __host__ __device__ bool NormalIntersectionShape::contains(const double pos0[], const double pos1[]) const
    {
       return shapeA.contains(pos0, pos1) && shapeB.contains(pos0, pos1);
    }
 
-   const double* NormalIntersectionShape::getFirstNormal(const double pos0[], const double pos1[])
+   __host__ __device__ const double* NormalIntersectionShape::getFirstNormal(const double pos0[], const double pos1[])
    {
       result[0] = 0.;
       result[1] = 0.;
@@ -36,7 +36,7 @@ namespace NormalIntersectionShape
       */
 
       // Get 1st A and B intersections and whether we are inside or outside
-      double delta[] = { pos1[0] - pos0[0], pos1[1] - pos0[1], pos1[2] - pos0[2] };
+      const double delta[] = { pos1[0] - pos0[0], pos1[1] - pos0[1], pos1[2] - pos0[2] };
       double nva[4];
       memcpy(nva, shapeA.getFirstNormal(pos0, pos1), sizeof(double) * 4);
 
@@ -110,7 +110,7 @@ namespace NormalIntersectionShape
             */
             u = nva[3] + EXTRAU; // Save the distance to our new start
             // point
-            double tmp[] = { pos0[0] + (u * delta[0]), // This is pos0+u*delta
+            const double tmp[] = { pos0[0] + (u * delta[0]), // This is pos0+u*delta
                pos0[1] + (u * delta[1]),
                pos0[2] + (u * delta[2])
             };
@@ -147,7 +147,7 @@ namespace NormalIntersectionShape
             // Get the next intersection in A
             u = nvb[3] + EXTRAU; // Save the distance to our new start
             // point
-            double tmp[] = {
+            const double tmp[] = {
                pos0[0] + (u * delta[0]), // This is pos0+u*delta
                pos0[1] + (u * delta[1]),
                pos0[2] + (u * delta[2])
@@ -173,14 +173,14 @@ namespace NormalIntersectionShape
          else { // Arrive here only in the unlikely event that we
             // simultaneously hit A and B boundaries. Depth changes
             // by 0 or 2
-            int depthchange = (((adepth ^ 1) - adepth) + (bdepth ^ 1)) - bdepth;
+            const int depthchange = (((adepth ^ 1) - adepth) + (bdepth ^ 1)) - bdepth;
             if (depthchange == 0) { // We simultaneously went into one as we
                // went out of the other
                // Update information for both A and B
                // Get the next intersection in both, A first
                u = nva[3] + EXTRAU; // Save the distance to our new
                // start point
-               double tmp1[] = {
+               const double tmp1[] = {
                   pos0[0] + (u * delta[0]), // This is pos0+u*delta
                   pos0[1] + (u * delta[1]),
                   pos0[2] + (u * delta[2])
@@ -192,7 +192,7 @@ namespace NormalIntersectionShape
                // Get the next intersection in B
                u = nvb[3] + EXTRAU; // Save the distance to our new
                // start point
-               double tmp2[] = {
+               const double tmp2[] = {
                   pos0[0] + (u * delta[0]), // This is pos0+u*delta
                   pos0[1] + (u * delta[1]),
                   pos0[2] + (u * delta[2])
@@ -247,7 +247,7 @@ namespace NormalIntersectionShape
          } // End simultaneous boundaries block
    } // End getFirstNormal()
 
-   double NormalIntersectionShape::getFirstIntersection(const double pos0[], const double pos1[])
+   __host__ __device__ double NormalIntersectionShape::getFirstIntersection(const double pos0[], const double pos1[])
    {
       return getFirstNormal(pos0, pos1)[3];
    }
@@ -270,12 +270,12 @@ namespace NormalIntersectionShape
       ((ITransform&)shapeB).translate(distance);
    }
 
-   const double* NormalIntersectionShape::getPreviousNormal() const
+   __host__ __device__ const double* NormalIntersectionShape::getPreviousNormal() const
    {
       return result;
    }
 
-   StringT NormalIntersectionShape::toString() const
+   __host__ __device__ StringT NormalIntersectionShape::toString() const
    {
       return "NormalIntersectionShape";
    }

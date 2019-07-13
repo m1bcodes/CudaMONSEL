@@ -12,9 +12,9 @@ namespace BrowningEmpiricalCrossSection
    public:
       __host__ __device__ explicit BrowningEmpiricalCrossSection(const ElementT& elm);
 
-      const ElementT& getElement() const;
+      __host__ __device__ const ElementT& getElement() const;
       __host__ __device__ double totalCrossSection(const double energy) const;
-      double randomScatteringAngle(const double energy) const;
+      __host__ __device__ double randomScatteringAngle(const double energy) const;
 
    private:
       const ElementT& mElement;

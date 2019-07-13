@@ -116,12 +116,12 @@ namespace NISTMottRS
       return name.c_str();
    }
 
-   const ElementT& NISTMottRS::getElement() const
+   __host__ __device__ const ElementT& NISTMottRS::getElement() const
    {
       return mElement;
    }
 
-   __host__ __device__ double NISTMottRS::totalCrossSection(double energy) const
+   __host__ __device__ double NISTMottRS::totalCrossSection(const double energy) const
    {
       if (energy < extrapolateBelowEnergy) {
          if (method == 3) { // linear interpolation
@@ -139,7 +139,7 @@ namespace NISTMottRS
       }
    }
 
-   double NISTMottRS::randomScatteringAngle(double energy) const
+   __host__ __device__ double NISTMottRS::randomScatteringAngle(const double energy) const
    {
       /*
       * Even in method 3 (linear interpolation) we use Browning for the angular
@@ -248,10 +248,6 @@ namespace NISTMottRS
       }
    }
 
-   void NISTMottRSFactory::initializeDefaultStrategy()
-   {
-   }
-
    const NISTMottRSFactory FactoryRef(1);
    const NISTMottRSFactory Factory100Ref(2);
    const NISTMottRSFactory Factory100LinRef(3);
@@ -260,13 +256,16 @@ namespace NISTMottRS
    const RandomizedScatterFactoryT& Factory100 = Factory100Ref;
    const RandomizedScatterFactoryT& Factory100Lin = Factory100LinRef;
 
-   //__device__ const RandomizedScatterFactoryT* dFactory;
-   //__device__ const RandomizedScatterFactoryT* dFactory100;
-   //__device__ const RandomizedScatterFactoryT* dFactory100Lin;
+   __device__ const RandomizedScatterFactoryT* d_Factory = nullptr;
+   __device__ const RandomizedScatterFactoryT* d_Factory100 = nullptr;
+   __device__ const RandomizedScatterFactoryT* d_Factory100Lin = nullptr;
 
-   //__device__ const NISTMottRSFactory *dFactoryRef = new NISTMottRSFactory(1);
-   //__device__ const NISTMottRSFactory *dFactory100Ref = new NISTMottRSFactory(2);
-   //__device__ const NISTMottRSFactory *dFactory100LinRef = new NISTMottRSFactory(3);
+   __global__ void initFactory()
+   {
+      d_Factory = new NISTMottRSFactory(1);
+      d_Factory100 = new NISTMottRSFactory(2);
+      d_Factory100Lin = new NISTMottRSFactory(3);
+   }
 
    void init()
    {

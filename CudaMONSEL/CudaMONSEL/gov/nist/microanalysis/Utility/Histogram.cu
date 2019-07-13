@@ -4,25 +4,25 @@
 
 namespace Histogram
 {
-   BinName::BinName(int bin, const char format[], const Histogram& ec) : mBin(bin), mFormat(format), mEnclosingClass(ec)
-   {
-      if (!(bin >= -1)) printf("BinName::BinName: !(bin >= -1)\n");
-      if (!(bin < mEnclosingClass.binCount() + 1)) printf("BinName::BinName: !(bin < binCount() + 1)\n");
-   }
+   //__host__ __device__ BinName::BinName(int bin, const char format[], const Histogram& ec) : mBin(bin), mFormat(format), mEnclosingClass(ec)
+   //{
+   //   if (!(bin >= -1)) printf("BinName::BinName: !(bin >= -1)\n");
+   //   if (!(bin < mEnclosingClass.binCount() + 1)) printf("BinName::BinName: !(bin < binCount() + 1)\n");
+   //}
 
-   StringT BinName::toString() const
-   {
-      StringT first = mBin < 0 ? "-inf" : mFormat + amp::to_string(mEnclosingClass.minValue(mBin));
-      StringT second = mBin >= mEnclosingClass.binCount() ? "inf" : mFormat + amp::to_string(mEnclosingClass.maxValue(mBin));
-      return "[" + first + "-" + second  + ")";
-   }
+   //StringT BinName::toString() const
+   //{
+   //   StringT first = mBin < 0 ? "-inf" : mFormat + amp::to_string(mEnclosingClass.minValue(mBin));
+   //   StringT second = mBin >= mEnclosingClass.binCount() ? "inf" : mFormat + amp::to_string(mEnclosingClass.maxValue(mBin));
+   //   return "[" + first + "-" + second  + ")";
+   //}
 
-   bool BinName::operator<(const BinName& rhs) const
-   {
-      return mBin < rhs.mBin;
-   }
+   //__host__ __device__ bool BinName::operator<(const BinName& rhs) const
+   //{
+   //   return mBin < rhs.mBin;
+   //}
    
-   Histogram::Histogram(double min, double max, int nBins) : mCounts(nBins + 2, 0), mBinMin(nBins + 1, 0)
+   __host__ __device__ Histogram::Histogram(double min, double max, int nBins) : mCounts(nBins + 2, 0), mBinMin(nBins + 1, 0)
    {
       if (max < min) {
          const double tmp = min;
@@ -41,7 +41,7 @@ namespace Histogram
       Algorithm::quicksort(mBinMin.data(), 0, mBinMin.size() - 1);
    }
 
-   Histogram::Histogram(double min, double max, double ratio) : mCounts((int)(::log(max / min) / ::log(ratio)) + 2, 0), mBinMin((int)(::log(max / min) / ::log(ratio)) + 1, 0)
+   __host__ __device__ Histogram::Histogram(double min, double max, double ratio) : mCounts((int)(::log(max / min) / ::log(ratio)) + 2, 0), mBinMin((int)(::log(max / min) / ::log(ratio)) + 1, 0)
    {
       if (ratio <= 1.0) printf("Histogram: ration must be greater than 1.0\n");
       if (min >= max) printf("Histogram: min must be less than max\n");
@@ -49,7 +49,7 @@ namespace Histogram
       for (int i = 0; i < mBinMin.size(); ++i, min *= ratio) mBinMin[i] = min;
    }
 
-   Histogram::Histogram(double binMins[], int len, double max) : mBinMin(len + 1, 0), mCounts(len + 2, 0)
+   __host__ __device__ Histogram::Histogram(double binMins[], int len, double max) : mBinMin(len + 1, 0), mCounts(len + 2, 0)
    {
       for (int i = 0; i < len; ++i) mBinMin[i] = binMins[i];
       mBinMin[len] = max;
@@ -57,11 +57,11 @@ namespace Histogram
       if (mBinMin[len - 1] != max) printf("Histogram: Max is not larger than all binMins.");
    }
 
-   Histogram::Histogram(const Histogram& hist) : mBinMin(hist.mBinMin), mCounts(hist.mCounts)
+   __host__ __device__ Histogram::Histogram(const Histogram& hist) : mBinMin(hist.mBinMin), mCounts(hist.mCounts)
    {
    }
 
-   void Histogram::addBin(double binMin)
+   __host__ __device__ void Histogram::addBin(double binMin)
    {
       VectorXd newBinMin(mBinMin);
       newBinMin.push_back(binMin);
@@ -70,7 +70,7 @@ namespace Histogram
       mBinMin = newBinMin;
    }
 
-   int Histogram::bin(double val) const
+   __host__ __device__ int Histogram::bin(double val) const
    {
       int i = Algorithm::binarySearch(mBinMin.data(), 0, mBinMin.size() - 1, val);
       i = (i >= 0 ? i : -i - 2);
@@ -89,7 +89,7 @@ namespace Histogram
       return bin + 1 < mBinMin.size() ? mBinMin[bin + 1] : INFINITY;
    }
 
-   void Histogram::add(double val)
+   __host__ __device__ void Histogram::add(double val)
    {
       ++mCounts[bin(val) + 1];
    }
@@ -100,22 +100,22 @@ namespace Histogram
          add(vals[i]);
    }
 
-   int Histogram::binCount() const
+   __host__ __device__ int Histogram::binCount() const
    {
       return mBinMin.size() - 1;
    }
 
-   StringT Histogram::binName(int bin, StringT format) const
-   {
-      return (BinName(bin, format.c_str(), *this)).toString();
-   }
+   //StringT Histogram::binName(int bin, StringT format) const
+   //{
+   //   return (BinName(bin, format.c_str(), *this)).toString();
+   //}
 
-   int Histogram::counts(int bin) const
+   __host__ __device__ int Histogram::counts(int bin) const
    {
       return mCounts[bin + 1];
    }
 
-   void Histogram::clear()
+   __host__ __device__ void Histogram::clear()
    {
       mCounts.resize(mCounts.size(), 0);
    }
@@ -130,7 +130,7 @@ namespace Histogram
       return mCounts[0];
    }
 
-   int Histogram::totalCounts() const
+   __host__ __device__ int Histogram::totalCounts() const
    {
       int res = 0;
       for (auto c : mCounts)

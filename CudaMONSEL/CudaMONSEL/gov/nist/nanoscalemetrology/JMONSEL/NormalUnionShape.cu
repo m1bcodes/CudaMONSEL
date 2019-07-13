@@ -5,30 +5,30 @@
 
 namespace NormalUnionShape
 {
-   NormalUnionShape::NormalUnionShape(NormalShapeT& a, NormalShapeT& b) : SumShapeT(&a, &b)
+   __host__ __device__ NormalUnionShape::NormalUnionShape(NormalShapeT& a, NormalShapeT& b) : SumShapeT(&a, &b)
    {  
    }
 
-   bool NormalUnionShape::contains(const double pos[]) const
+   __host__ __device__ bool NormalUnionShape::contains(const double pos[]) const
    {
       return SumShapeT::contains(pos);
    }
 
-   bool NormalUnionShape::contains(const double pos0[], const double pos1[]) const
+   __host__ __device__ bool NormalUnionShape::contains(const double pos0[], const double pos1[]) const
    {
       const amp::vector<ShapeT*>& shapes = getShapes();
-      for (auto shape : shapes)
+      for (auto &shape : shapes)
          if (((NormalShapeT*)shape)->contains(pos0, pos1))
             return true;
       return false;
    }
 
-   double NormalUnionShape::getFirstIntersection(const double pos0[], const double pos1[])
+   __host__ __device__ double NormalUnionShape::getFirstIntersection(const double pos0[], const double pos1[])
    {
       return getFirstNormal(pos0, pos1)[3];
    }
 
-   const double* NormalUnionShape::getFirstNormal(const double pos0[], const double pos1[])
+   __host__ __device__ const double* NormalUnionShape::getFirstNormal(const double pos0[], const double pos1[])
    {
       result[0] = 0.;
       result[1] = 0.;
@@ -275,12 +275,12 @@ namespace NormalUnionShape
          } // End simultaneous boundaries block
    } // End getFirstNormal()
 
-   const double* NormalUnionShape::getPreviousNormal() const
+   __host__ __device__ const double* NormalUnionShape::getPreviousNormal() const
    {
       return result;
    }
 
-   StringT NormalUnionShape::toString() const
+   __host__ __device__ StringT NormalUnionShape::toString() const
    {
       return "NormalUnionShape";
    }

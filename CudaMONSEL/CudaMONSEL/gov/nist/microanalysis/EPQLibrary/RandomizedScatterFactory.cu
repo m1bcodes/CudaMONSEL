@@ -6,7 +6,8 @@
 
 namespace RandomizedScatterFactory
 {
-   RandomizedScatterFactory::RandomizedScatterFactory(StringT name, const ReferenceT& ref) : AlgorithmClassT("Scatter factory", name, ref)
+   __host__ __device__ RandomizedScatterFactory::RandomizedScatterFactory(StringT name, const ReferenceT& ref) :
+      AlgorithmClassT("Scatter factory", name, ref)
    {
    }
 
@@ -21,5 +22,9 @@ namespace RandomizedScatterFactory
    AlgorithmClassT const * const * RandomizedScatterFactory::getAllImplementations() const
    {      
       return mImplementations;
+   }
+
+   __host__ __device__ void RandomizedScatterFactory::initializeDefaultStrategy()
+   {
    }
 }

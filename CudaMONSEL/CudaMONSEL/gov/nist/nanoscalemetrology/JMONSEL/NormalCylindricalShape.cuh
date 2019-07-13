@@ -10,17 +10,17 @@ namespace NormalCylindricalShape
    class NormalCylindricalShape : public CylindricalShapeT, public NormalShapeT
    {
    public:
-      NormalCylindricalShape(const double end0[], const double end1[], double radius);
+      __host__ __device__ NormalCylindricalShape(const double end0[], const double end1[], double radius);
 
-      bool contains(const double pos[]) const override;
-      double getFirstIntersection(const double pos0[], const double pos1[]) override;
-      StringT toString() const override;
+      __host__ __device__ bool contains(const double pos[]) const override;
+      __host__ __device__ double getFirstIntersection(const double pos0[], const double pos1[]) override;
+      __host__ __device__ StringT toString() const override;
 
-      bool isNormalShape() const override;
+      __host__ __device__ bool isNormalShape() const override;
 
-      bool contains(const double pos0[], const double pos1[]) const override;
-      const double* getFirstNormal(const double pos0[], const double pos1[]) override;
-      const double* getPreviousNormal() const override;
+      __host__ __device__ bool contains(const double pos0[], const double pos1[]) const override;
+      __host__ __device__ const double* getFirstNormal(const double pos0[], const double pos1[]) override;
+      __host__ __device__ const double* getPreviousNormal() const override;
 
       void rotate(const double pivot[], double phi, double theta, double psi) override;
       void translate(const double distance[]) override;

@@ -7,26 +7,26 @@
 
 namespace FittedInelSM
 {
-   FittedInelSM::FittedInelSM(const SEmaterialT& mat, double energySEgen, const SlowingDownAlgT& sdAlg) : sdAlg(sdAlg), energySEgen(energySEgen)
+   __host__ __device__ FittedInelSM::FittedInelSM(const SEmaterialT& mat, double energySEgen, const SlowingDownAlgT& sdAlg) : sdAlg(sdAlg), energySEgen(energySEgen)
    {
       setMaterial(&mat);
    }
 
-   ElectronT* FittedInelSM::scatter(ElectronT* pe)
+   __host__ __device__ ElectronT* FittedInelSM::scatter(ElectronT* pe)
    {
       const double phi = 2 * Math2::PI * Random::random();
       const double theta = ::acos(1. - (2. * Random::random()));
       return new ElectronT(*pe, theta, phi, energySEgen + eFermi);
    }
 
-   double FittedInelSM::scatterRate(const ElectronT* pe)
+   __host__ __device__ double FittedInelSM::scatterRate(const ElectronT* pe)
    {
       if (pe->getEnergy() <= (energySEgen + eFermi))
          return 0.;
       return (-sdAlg.compute(1.e-10, pe) * 1.e10) / energySEgen;
    }
 
-   void FittedInelSM::setMaterial(const MaterialT* mat)
+   __host__ __device__ void FittedInelSM::setMaterial(const MaterialT* mat)
    {
       if (!mat->isSEmaterial()) {
          printf("FittedInelSM::setMaterial: not SEmaterial\n");

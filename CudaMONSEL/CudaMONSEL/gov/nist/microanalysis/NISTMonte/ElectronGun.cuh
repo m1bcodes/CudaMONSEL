@@ -9,10 +9,10 @@ namespace ElectronGun
    {
    public:
       virtual void setBeamEnergy(double beamEnergy) = 0;
-      virtual double getBeamEnergy() const = 0;
-      virtual void setCenter(const double center[]) = 0;
+      __host__ __device__ virtual double getBeamEnergy() const = 0;
+      __host__ __device__ virtual void setCenter(const double center[]) = 0;
       virtual const double* getCenter() const = 0;
-      virtual ElectronT* createElectron() const = 0;
+      __host__ __device__ virtual ElectronT* createElectron() const = 0;
    };
 }
 

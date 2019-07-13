@@ -16,11 +16,11 @@ namespace SEmaterial
       //void replicate(const SEmaterial& mat);
 
    public:
-      SEmaterial();
-      SEmaterial(const SEmaterial&);
+      __host__ __device__ SEmaterial();
+      __host__ __device__ SEmaterial(const SEmaterial&);
       __host__ __device__ SEmaterial(const Composition& comp, double density);
-      SEmaterial(const Element::Element* elms[], int elemLen, const double weightFracs[], int wfLen, double density, char* name);
-      SEmaterial(const Material& mat);
+      __host__ __device__ SEmaterial(const Element::Element* elms[], int elemLen, const double weightFracs[], int wfLen, double density, char* name);
+      __host__ __device__ SEmaterial(const Material& mat);
 
       SEmaterial& operator=(const SEmaterial&);
       bool operator==(const SEmaterial&);
@@ -36,14 +36,14 @@ namespace SEmaterial
       //SEmaterial clone();
       long get_version() const;
       //VectorXd getBindingEnergyArray() const;
-      Setd getCoreEnergyArray() const;
-      double getEFermi() const;
+      __host__ __device__ Setd getCoreEnergyArray() const;
+      __host__ __device__ double getEFermi() const;
       //VectorXd getElectronDensityArray() const;
       __host__ __device__ double getEnergyCBbottom() const;
       double getEplasmon() const;
       //VectorXd getKineticEnergyArray() const;
-      double getWorkfunction() const;
-      double getBandgap() const;
+      __host__ __device__ double getWorkfunction() const;
+      __host__ __device__ double getBandgap() const;
       double getEpsr() const;
       double getDielectricBreakdownField() const;
 
@@ -51,8 +51,8 @@ namespace SEmaterial
       //void removeCoreEnergy(double index);
 
       //void setBindingEnergy(int index, double energy);
-      void setCoreEnergy();
-      void setCoreEnergy(const double coreEnergy[], int len);
+      __host__ __device__ void setCoreEnergy();
+      __host__ __device__ void setCoreEnergy(const double coreEnergy[], int len);
       //void setElectronDensity(int index, double density);
       __host__ __device__ void setEnergyCBbottom(double energyCBbottom);
       __host__ __device__ void setBandgap(double bandgap);

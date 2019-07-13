@@ -10,6 +10,24 @@
 
 namespace MonteCarloSS
 {
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+   extern __constant__ const int ScatterEvent;
+   extern __constant__ const int NonScatterEvent;
+   extern __constant__ const int BackscatterEvent;
+   extern __constant__ const int ExitMaterialEvent;
+   extern __constant__ const int TrajectoryStartEvent;
+   extern __constant__ const int TrajectoryEndEvent;
+   extern __constant__ const int LastTrajectoryEvent;
+   extern __constant__ const int FirstTrajectoryEvent;
+   extern __constant__ const int StartSecondaryEvent;
+   extern __constant__ const int EndSecondaryEvent;
+   extern __constant__ const int PostScatterEvent;
+
+   extern __constant__ const int  BeamEnergyChanged;
+
+   extern __constant__ const double ChamberRadius;
+   extern __constant__ const double SMALL_DISP;
+#else
    extern const int ScatterEvent;
    extern const int NonScatterEvent;
    extern const int BackscatterEvent;
@@ -26,6 +44,7 @@ namespace MonteCarloSS
 
    extern const double ChamberRadius;
    extern const double SMALL_DISP;
+#endif
 
    class MonteCarloSS final
    {
@@ -33,31 +52,31 @@ namespace MonteCarloSS
       typedef amp::vector<ActionListenerT*> ActionListeners;
 
    public:
-      MonteCarloSS(ElectronGunT const * gun, RegionT * mChamber, ElectronT * electron);
+      __host__ __device__ MonteCarloSS(ElectronGunT const * gun, RegionT * mChamber, ElectronT * electron);
       RegionT* getChamber();
-      void initializeTrajectory();
+      __host__ __device__ void initializeTrajectory();
 
-      void takeStep();
+      __host__ __device__ void takeStep();
 
-      void trackSecondaryElectron(ElectronT* newElectron);
-      bool allElectronsComplete();
-      void runTrajectory();
+      __host__ __device__ void trackSecondaryElectron(ElectronT* newElectron);
+      __host__ __device__ bool allElectronsComplete();
+      __host__ __device__ void runTrajectory();
       //int getElectronGeneration() const;
-      void addActionListener(ActionListenerT& sel);
-      void removeActionListener(ActionListenerT& sel);
-      void runMultipleTrajectories(int n);
-      double getBeamEnergy() const;
+      __host__ __device__ void addActionListener(ActionListenerT& sel);
+      __host__ __device__ void removeActionListener(ActionListenerT& sel);
+      __host__ __device__ void runMultipleTrajectories(int n);
+      __host__ __device__ double getBeamEnergy() const;
       void setElectronGun(ElectronGunT& gun);
       //void setBeamEnergy(double beamEnergy);
       void computeDetectorPosition(double elevation, double theta, double res[]);
-      const ElectronT& getElectron() const;
+      __host__ __device__ const ElectronT& getElectron() const;
       Element::UnorderedSetT getElementSet() const;
       void rotate(double pivot[], double phi, double theta, double psi);
       void translate(double distance[]);
       const RegionBaseT* findRegionContaining(double point[]) const;
 
    private:
-      void fireEvent(const int);
+      __host__ __device__ void fireEvent(const int);
       
       RegionT * mChamber;
       ElectronGunT const * mGun;

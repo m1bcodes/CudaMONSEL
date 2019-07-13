@@ -10,13 +10,13 @@ namespace IMaterialScatterModel
    class IMaterialScatterModel
    {
    public:
-      virtual const MaterialT& getMaterial() const = 0;
-      virtual double getMinEforTracking() const = 0;
+      __host__ __device__ virtual const MaterialT& getMaterial() const = 0;
+      __host__ __device__ virtual double getMinEforTracking() const = 0;
       __host__ __device__ virtual void setMinEforTracking(double minEforTracking) = 0;
-      virtual double randomMeanPathLength(ElectronT& pe) = 0;
-      virtual ElectronT* scatter(ElectronT& pe) = 0;
-      virtual ElectronT* barrierScatter(ElectronT* pe, const RegionBaseT* nextRegion) const = 0;
-      virtual double calculateEnergyLoss(double len, const ElectronT& pe) const = 0;
+      __host__ __device__ virtual double randomMeanPathLength(ElectronT& pe) = 0;
+      __host__ __device__ virtual ElectronT* scatter(ElectronT& pe) = 0;
+      __host__ __device__ virtual ElectronT* barrierScatter(ElectronT* pe, const RegionBaseT* nextRegion) const = 0;
+      __host__ __device__ virtual double calculateEnergyLoss(double len, const ElectronT& pe) const = 0;
    };
 }
 

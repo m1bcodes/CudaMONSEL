@@ -15,9 +15,9 @@ namespace ScreenedRutherfordScatteringAngle
 
       StringT toString() const;
 
-      const ElementT& getElement() const override;
-      __host__ __device__ double totalCrossSection(double energy) const override;
-      double randomScatteringAngle(double energy) const override;
+      __host__ __device__ const ElementT& getElement() const override;
+      __host__ __device__ double totalCrossSection(const double energy) const override;
+      __host__ __device__ double randomScatteringAngle(const double energy) const override;
 
    private:
       const ElementT& mElement;
@@ -29,9 +29,6 @@ namespace ScreenedRutherfordScatteringAngle
       __host__ __device__ ScreenedRutherfordRandomizedScatterFactory();
 
       __host__ __device__ const RandomizedScatterT& get(const ElementT& elm) const override;
-
-   protected:
-      void initializeDefaultStrategy() override;
    };
 
    extern const RandomizedScatterFactoryT& Factory;

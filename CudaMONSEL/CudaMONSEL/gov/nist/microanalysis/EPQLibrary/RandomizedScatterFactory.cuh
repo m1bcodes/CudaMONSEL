@@ -15,6 +15,8 @@ namespace RandomizedScatterFactory
 
    protected:
       __host__ __device__ RandomizedScatterFactory(StringT name, const ReferenceT& ref);
+
+      __host__ __device__ void initializeDefaultStrategy() override;
    };
 }
 

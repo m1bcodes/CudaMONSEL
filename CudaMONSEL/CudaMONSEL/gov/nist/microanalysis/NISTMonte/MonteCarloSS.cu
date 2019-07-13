@@ -12,6 +12,27 @@
 
 namespace MonteCarloSS
 {
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+   __constant__ const int ScatterEvent = 1;
+   __constant__ const int NonScatterEvent = 2;
+   __constant__ const int BackscatterEvent = 3;
+   __constant__ const int ExitMaterialEvent = 4;
+   __constant__ const int TrajectoryStartEvent = 5;
+   __constant__ const int TrajectoryEndEvent = 6;
+   __constant__ const int LastTrajectoryEvent = 7;
+   __constant__ const int FirstTrajectoryEvent = 8;
+   __constant__ const int StartSecondaryEvent = 9;
+   __constant__ const int EndSecondaryEvent = 10;
+   __constant__ const int PostScatterEvent = 11;
+
+   __constant__ const int BeamEnergyChanged = 100;
+
+   __constant__ static const int XAxis = 0;
+   __constant__ static const int YAxis = 1;
+   __constant__ static const int ZAxis = 2;
+   __constant__ const double ChamberRadius = 0.1;
+   __constant__ const double SMALL_DISP = 1.0e-15;
+#else
    const int ScatterEvent = 1;
    const int NonScatterEvent = ScatterEvent + 1;
    const int BackscatterEvent = ScatterEvent + 2;
@@ -31,8 +52,9 @@ namespace MonteCarloSS
    static const int ZAxis = 2;
    const double ChamberRadius = 0.1;
    const double SMALL_DISP = 1.0e-15;
+#endif
 
-   MonteCarloSS::MonteCarloSS(ElectronGunT const * gun, RegionT * chamber, ElectronT * electron) : mGun(gun), mChamber(chamber), mElectron(electron)
+   __host__ __device__ MonteCarloSS::MonteCarloSS(ElectronGunT const * gun, RegionT * chamber, ElectronT * electron) : mGun(gun), mChamber(chamber), mElectron(electron)
    {
       //TODO: shift the responsibility to the caller
       //const double center[] = {
@@ -77,8 +99,12 @@ namespace MonteCarloSS
    //   return traj;
    //}
 
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+   __constant__ static bool mDisableEvents = false;
+#else
    static bool mDisableEvents = false;
-   void MonteCarloSS::fireEvent(const int ae)
+#endif
+   __host__ __device__ void MonteCarloSS::fireEvent(const int ae)
    {
       if (!(mEventListeners.empty() || mDisableEvents)) {
          for (auto sel : mEventListeners)
@@ -91,7 +117,7 @@ namespace MonteCarloSS
       return mChamber;
    }
 
-   void MonteCarloSS::initializeTrajectory()
+   __host__ __device__ void MonteCarloSS::initializeTrajectory()
    {
       mElectron = mGun->createElectron();
       mElectron->setCurrentRegion(mChamber->containingSubRegion(mElectron->getPosition()));
@@ -99,7 +125,7 @@ namespace MonteCarloSS
       mElectron->setScatteringElement(nullptr);
    }
 
-   void MonteCarloSS::takeStep()
+   __host__ __device__ void MonteCarloSS::takeStep()
    {
       const double *pos0 = mElectron->getPosition();
 
@@ -162,7 +188,7 @@ namespace MonteCarloSS
       }
    }
 
-   void MonteCarloSS::trackSecondaryElectron(ElectronT* newElectron)
+   __host__ __device__ void MonteCarloSS::trackSecondaryElectron(ElectronT* newElectron)
    {
       double mMinEnergy = newElectron->getCurrentRegion()->getScatterModel()->getMinEforTracking();
       if (newElectron->getEnergy() > mMinEnergy) {
@@ -178,12 +204,12 @@ namespace MonteCarloSS
    //   return mElectronStack.size();
    //}
 
-   void MonteCarloSS::addActionListener(ActionListenerT& sel)
+   __host__ __device__ void MonteCarloSS::addActionListener(ActionListenerT& sel)
    {
       mEventListeners.push_back(&sel);
    }
 
-   void MonteCarloSS::removeActionListener(ActionListenerT& sel)
+   __host__ __device__ void MonteCarloSS::removeActionListener(ActionListenerT& sel)
    {
       auto itr = amp::find(mEventListeners.begin(), mEventListeners.end(), &sel);
       if (itr != mEventListeners.end()) {
@@ -191,7 +217,7 @@ namespace MonteCarloSS
       }
    }
 
-   bool MonteCarloSS::allElectronsComplete()
+   __host__ __device__ bool MonteCarloSS::allElectronsComplete()
    {
       bool tc = mElectron->isTrajectoryComplete();
       while (tc && !mElectronStack.empty()) {
@@ -205,7 +231,7 @@ namespace MonteCarloSS
       return tc;
    }
 
-   void MonteCarloSS::runTrajectory()
+   __host__ __device__ void MonteCarloSS::runTrajectory()
    {
       initializeTrajectory();
       fireEvent(TrajectoryStartEvent);
@@ -220,7 +246,7 @@ namespace MonteCarloSS
       fireEvent(TrajectoryEndEvent);
    }
 
-   void MonteCarloSS::runMultipleTrajectories(int n)
+   __host__ __device__ void MonteCarloSS::runMultipleTrajectories(int n)
    {
       fireEvent(FirstTrajectoryEvent);
       for (int i = 0; i < n; ++i) {
@@ -231,7 +257,7 @@ namespace MonteCarloSS
       fireEvent(LastTrajectoryEvent);
    }
 
-   double MonteCarloSS::getBeamEnergy() const
+   __host__ __device__ double MonteCarloSS::getBeamEnergy() const
    {
       return mGun->getBeamEnergy();
    }
@@ -257,7 +283,7 @@ namespace MonteCarloSS
       ElectronProbe::computePosition(0.0, elevation, theta, r, res);
    }
 
-   const ElectronT& MonteCarloSS::getElectron() const
+   __host__ __device__ const ElectronT& MonteCarloSS::getElectron() const
    {
       return *mElectron;
    }

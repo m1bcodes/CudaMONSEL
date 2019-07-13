@@ -8,9 +8,9 @@ namespace ScatterMechanism
    class ScatterMechanism
    {
    public:
-      virtual double scatterRate(const ElectronT* pe) = 0;
-      virtual ElectronT* scatter(ElectronT* pe) = 0; // note: needs destructor
-      virtual void setMaterial(const MaterialT* mat) = 0;
+      __host__ __device__ virtual double scatterRate(const ElectronT* pe) = 0;
+      __host__ __device__ virtual ElectronT* scatter(ElectronT* pe) = 0; // note: needs destructor
+      __host__ __device__ virtual void setMaterial(const MaterialT* mat) = 0;
    };
 }
 

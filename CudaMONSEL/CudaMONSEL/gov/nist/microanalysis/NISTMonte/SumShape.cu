@@ -14,7 +14,7 @@ namespace SumShape
    {
    }
 
-   SumShape::SumShape(ShapeT* const a, ShapeT* const b)
+   __host__ __device__ SumShape::SumShape(ShapeT* const a, ShapeT* const b)
    {
       mShapes.push_back(a);
       mShapes.push_back(b);
@@ -25,20 +25,15 @@ namespace SumShape
       mShapes.push_back(s);
    }
 
-   bool SumShape::isNormalShape() const
+   __host__ __device__ bool SumShape::contains(const double pos[]) const
    {
-      return false;
-   }
-
-   bool SumShape::contains(const double pos[]) const
-   {
-      for (auto shape : mShapes)
+      for (auto &shape : mShapes)
          if (shape->contains(pos))
             return true;
       return false;
    }
 
-   double SumShape::getFirstIntersection(const double pos0[], const double pos1[])
+   __host__ __device__ double SumShape::getFirstIntersection(const double pos0[], const double pos1[])
    {
       double u = INFINITY;
       if (contains(pos0)) {
@@ -48,7 +43,7 @@ namespace SumShape
          do {
             double uInc = INFINITY;
             double end[3] = { INFINITY, INFINITY, INFINITY };
-            for (auto shape : mShapes)
+            for (auto &shape : mShapes)
                if (shape->contains(start)) {
                   const double ui = shape->getFirstIntersection(start, pos1);
                   if ((ui != INFINITY) && ((uInc == INFINITY) || (ui > uInc))) {
@@ -81,7 +76,7 @@ namespace SumShape
       }
       else
          // Starting outside so get the shortest distance to a boundary
-         for (auto shape : mShapes) {
+         for (auto &shape : mShapes) {
             const double ui = shape->getFirstIntersection(pos0, pos1);
             if (ui < u)
                u = ui;
@@ -114,16 +109,16 @@ namespace SumShape
    //      ((TrajectoryVRML.IRender) shape).render(rc, wr);
    //}
 
-   const amp::vector<ShapeT*>& SumShape::getShapes() const
+   __host__ __device__ const amp::vector<ShapeT*>& SumShape::getShapes() const
    {
       return mShapes;
    }
 
-   StringT SumShape::toString() const
+   __host__ __device__ StringT SumShape::toString() const
    {
       StringT res = "Sum[";
       bool first = true;
-      for (auto shape : mShapes) {
+      for (auto &shape : mShapes) {
          if (!first)
             res += ", ";
          res += shape->toString();

@@ -6,9 +6,13 @@
 
 namespace CylindricalShape
 {
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+   __constant__ static const double EPSILON = 1.0e-40;
+#else
    static const double EPSILON = 1.0e-40;
+#endif
 
-   CylindricalShape::CylindricalShape(const double end0[], const double end1[], double radius)
+   __host__ __device__ CylindricalShape::CylindricalShape(const double end0[], const double end1[], double radius)
    {
       memcpy(mEnd0, end0, sizeof(double) * 3);
       memcpy(mEnd1, end1, sizeof(double) * 3);
@@ -23,7 +27,7 @@ namespace CylindricalShape
       mDelta2 = Math2::dot3d(mDelta, mDelta);
    }
 
-   CylindricalShape::CylindricalShape(const CylindricalShape& other) :
+   __host__ __device__ CylindricalShape::CylindricalShape(const CylindricalShape& other) :
       mRadius2(other.mRadius2),
       mLen2(other.mLen2),
       mDelta2(other.mDelta2)
@@ -33,20 +37,20 @@ namespace CylindricalShape
       memcpy(mDelta, other.mDelta, sizeof(double) * 3);
    }
 
-   double CylindricalShape::closestPointOnAxis(const double p[]) const
+   __host__ __device__ double CylindricalShape::closestPointOnAxis(const double p[]) const
    {
       return (mDelta[0] * (p[0] - mEnd0[0]) + mDelta[1] * (p[1] - mEnd0[1]) + mDelta[2] * (p[2] - mEnd0[2])) / mLen2;
    }
 
-   double CylindricalShape::distanceSqr(const double p[], double u) const
+   __host__ __device__ double CylindricalShape::distanceSqr(const double p[], double u) const
    {
       return Math2::sqr(p[0] - (mEnd0[0] + u * mDelta[0])) + Math2::sqr(p[1] - (mEnd0[1] + u * mDelta[1])) + Math2::sqr(p[2] - (mEnd0[2] + u * mDelta[2]));
    }
 
-   bool CylindricalShape::contains(const double pos[]) const
+   __host__ __device__ bool CylindricalShape::contains(const double pos[]) const
    {
       // project pos onto the line defined by end0 and end1.
-      double u = closestPointOnAxis(pos);
+      const double u = closestPointOnAxis(pos);
       // Is this point between end0 and end1 and is pos^2 <= mRadius from the
       // line from end0 to end1?
       return (u >= 0) && (u <= 1.0) && (distanceSqr(pos, u) <= mRadius2);
@@ -62,18 +66,18 @@ namespace CylindricalShape
       return mEnd1;
    }
 
-   static double checkT(double t)
+   __host__ __device__ static double checkT(double t)
    {
       return t >= 0.0 ? t : INFINITY;
    }
 
-   double CylindricalShape::getFirstIntersection(const double sa[], const double sb[])
+   __host__ __device__ double CylindricalShape::getFirstIntersection(const double sa[], const double sb[])
    {
       if (true) {
          double t0 = INFINITY, t1 = INFINITY, tc = INFINITY;
          double n[3];
          Math2::minus3d(sb, sa, n);
-         double nd = Math2::dot3d(n, mDelta);
+         const double nd = Math2::dot3d(n, mDelta);
          if (nd != 0.0) {
             // Check end cap 0
             double m1[3];
@@ -102,20 +106,20 @@ namespace CylindricalShape
                   t1 = t;
             }
          }
-         double a = mDelta2 * Math2::dot3d(n, n) - nd * nd;
-         if (::abs(a) > EPSILON) {
+         const double a = mDelta2 * Math2::dot3d(n, n) - nd * nd;
+         if (::fabs(a) > EPSILON) {
             double m[3];
             Math2::minus3d(sa, mEnd0, m);
-            double mn = Math2::dot3d(m, n);
-            double b = mDelta2 * mn - nd * Math2::dot3d(m, mDelta);
-            double md = Math2::dot3d(m, mDelta);
+            const double mn = Math2::dot3d(m, n);
+            const double b = mDelta2 * mn - nd * Math2::dot3d(m, mDelta);
+            const double md = Math2::dot3d(m, mDelta);
             // Consider the side of the cylinder
-            double c = mDelta2 * (Math2::dot3d(m, m) - mRadius2) - md * md;
-            double discr = b * b - a * c;
+            const double c = mDelta2 * (Math2::dot3d(m, m) - mRadius2) - md * md;
+            const double discr = b * b - a * c;
             if (discr >= 0.0) {
-               double tm = (-b - ::sqrt(discr)) / a;
-               double tp = (-b + ::sqrt(discr)) / a;
-               double t = ::fmin(tm > 0.0 ? tm : INFINITY, tp > 0.0 ? tp : INFINITY);
+               const double tm = (-b - ::sqrt(discr)) / a;
+               const double tp = (-b + ::sqrt(discr)) / a;
+               const double t = ::fmin(tm > 0.0 ? tm : INFINITY, tp > 0.0 ? tp : INFINITY);
                if ((t != INFINITY) && (md + t * nd >= 0.0) && (md + t * nd <= mDelta2))
                   tc = t;
             }
@@ -127,16 +131,16 @@ namespace CylindricalShape
          Math2::minus3d(sa, mEnd0, m);
          double n[3];
          Math2::minus3d(sb, sa, n);
-         double md = Math2::dot3d(m, mDelta), nd = Math2::dot3d(n, mDelta), dd = Math2::dot3d(mDelta, mDelta);
+         const double md = Math2::dot3d(m, mDelta), nd = Math2::dot3d(n, mDelta), dd = Math2::dot3d(mDelta, mDelta);
          // Segment fully outside end caps...
          if ((md < 0.0) && (md + nd < 0.0))
             return INFINITY;
          if ((md > dd) && (md + nd > dd))
             return INFINITY;
-         double nn = Math2::dot3d(n, n), mn = Math2::dot3d(m, n);
-         double a = dd * nn - nd * nd;
-         double k = Math2::dot3d(m, m) - mRadius2;
-         double c = dd * k - md * md;
+         const double nn = Math2::dot3d(n, n), mn = Math2::dot3d(m, n);
+         const double a = dd * nn - nd * nd;
+         const double k = Math2::dot3d(m, m) - mRadius2;
+         const double c = dd * k - md * md;
          if (::abs(a) < EPSILON) {
             if (md < 0.0)
                return checkT(-mn / nn);
@@ -145,8 +149,8 @@ namespace CylindricalShape
             else
                return 0.0;
          }
-         double b = dd * mn - nd * md;
-         double disc = b * b - a * c;
+         const double b = dd * mn - nd * md;
+         const double disc = b * b - a * c;
          if (disc < 0.0)
             return INFINITY;
          double t = (-b - ::sqrt(disc)) / a; // Always a >= 0.0
@@ -161,7 +165,7 @@ namespace CylindricalShape
          double p1[3];
          Math2::plus3d(sa, mult1, p1);
 
-         if (!(::abs(distanceSqr(p0, closestPointOnAxis(p1) - mRadius2)) < 1.0e-10 * mRadius2)) printf("CylindricalShape::getFirstIntersection: < 1.0e-10 * mRadius2 (%.10e)\n", mRadius2);
+         if (!(::fabs(distanceSqr(p0, closestPointOnAxis(p1) - mRadius2)) < 1.0e-10 * mRadius2)) printf("CylindricalShape::getFirstIntersection: < 1.0e-10 * mRadius2 (%.10e)\n", mRadius2);
          // Check end caps
          if (md + t * nd < 0.0) {
             t = -md / nd;
@@ -188,7 +192,7 @@ namespace CylindricalShape
       mEnd0[2] += distance[2];
    }
 
-   double CylindricalShape::getRadius() const
+   __host__ __device__ double CylindricalShape::getRadius() const
    {
       return ::sqrt(mRadius2);
    }
@@ -198,7 +202,7 @@ namespace CylindricalShape
       return ::sqrt(mDelta[0] * mDelta[0] + mDelta[1] * mDelta[1] + mDelta[2] * mDelta[2]);
    }
 
-   StringT CylindricalShape::toString() const
+   __host__ __device__ StringT CylindricalShape::toString() const
    {
       StringT res = "Cylinder([";
       res += amp::to_string(mEnd0[0]) + "," + amp::to_string(mEnd0[1]) + "," + amp::to_string(mEnd0[2]) + "],[";

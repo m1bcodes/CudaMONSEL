@@ -6,39 +6,43 @@
 
 namespace NullMaterialScatterModel
 {
-   NullMaterialScatterModel::NullMaterialScatterModel() : minEforTracking(ToSI::eV(0.1))
+   __host__ __device__ NullMaterialScatterModel::NullMaterialScatterModel() : minEforTracking(ToSI::eV(0.1))
    {
    }
 
-   ElectronT* NullMaterialScatterModel::barrierScatter(ElectronT* pe, const RegionBaseT* nextRegion) const
+   __host__ __device__ ElectronT* NullMaterialScatterModel::barrierScatter(ElectronT* pe, const RegionBaseT* nextRegion) const
    {
       //minEforTracking = ToSI::eV(0.1);
       pe->setCurrentRegion(nextRegion);
-      pe->setScatteringElement(NULL);
-      return NULL;
+      pe->setScatteringElement(nullptr);
+      return nullptr;
    }
 
-   double NullMaterialScatterModel::calculateEnergyLoss(double len, const ElectronT& pe) const
+   __host__ __device__ double NullMaterialScatterModel::calculateEnergyLoss(double len, const ElectronT& pe) const
    {
       return 0.0;
    }
 
-   const MaterialT& NullMaterialScatterModel::getMaterial() const
+   __host__ __device__ const MaterialT& NullMaterialScatterModel::getMaterial() const
    {
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+      return *Material::dDefault;
+#else
       return Material::Default;
+#endif
    }
 
-   double NullMaterialScatterModel::randomMeanPathLength(ElectronT& pe)
+   __host__ __device__ double NullMaterialScatterModel::randomMeanPathLength(ElectronT& pe)
    {
       return 1.0;
    }
 
-   ElectronT* NullMaterialScatterModel::scatter(ElectronT& pe)
+   __host__ __device__ ElectronT* NullMaterialScatterModel::scatter(ElectronT& pe)
    {
-      return NULL;
+      return nullptr;
    }
 
-   double NullMaterialScatterModel::getMinEforTracking() const
+   __host__ __device__ double NullMaterialScatterModel::getMinEforTracking() const
    {
       return minEforTracking;
    }

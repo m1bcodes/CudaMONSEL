@@ -12,15 +12,15 @@ namespace NormalUnionShape
    class NormalUnionShape : public SumShapeT, public NormalShapeT
    {
    public:
-      NormalUnionShape(NormalShapeT& a, NormalShapeT& b);
+      __host__ __device__ NormalUnionShape(NormalShapeT& a, NormalShapeT& b);
 
-      bool contains(const double pos[]) const override;
-      double getFirstIntersection(const double pos0[], const double pos1[]) override;
-      StringT toString() const override;
+      __host__ __device__ bool contains(const double pos[]) const override;
+      __host__ __device__ double getFirstIntersection(const double pos0[], const double pos1[]) override;
+      __host__ __device__ StringT toString() const override;
 
-      bool contains(const double pos0[], const double pos1[]) const override;
-      const double* getFirstNormal(const double pos0[], const double pos1[]) override;
-      const double* getPreviousNormal() const override;
+      __host__ __device__ bool contains(const double pos0[], const double pos1[]) const override;
+      __host__ __device__ const double* getFirstNormal(const double pos0[], const double pos1[]) override;
+      __host__ __device__ const double* getPreviousNormal() const override;
 
       void rotate(const double pivot[], double phi, double theta, double psi) override;
       void translate(const double distance[]) override;

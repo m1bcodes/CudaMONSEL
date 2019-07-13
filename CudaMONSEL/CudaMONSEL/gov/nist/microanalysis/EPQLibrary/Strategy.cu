@@ -43,7 +43,7 @@ namespace Strategy
       }
    }
 
-   __host__ __device__ void Strategy::addAlgorithm(StringT cls, AlgorithmClassT const * const value)
+   __host__ __device__ void Strategy::addAlgorithm(StringT cls, AlgorithmClassT const * value)
    {
       //if (!cls.isAssignableFrom(value.getClass()))
       //   throw new IllegalArgumentException(value.toString() + " is not derived from " + cls.toString());

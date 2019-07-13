@@ -44,12 +44,12 @@ namespace MONSEL_MaterialScatterModel
       }
    }
 
-   const MaterialT& MONSEL_MaterialScatterModel::getMaterial() const
+   __host__ __device__ const MaterialT& MONSEL_MaterialScatterModel::getMaterial() const
    {
       return *mat;
    }
 
-   void MONSEL_MaterialScatterModel::setCache(const ElectronT* pe)
+   __host__ __device__ void MONSEL_MaterialScatterModel::setCache(const ElectronT* pe)
    {
       // Remember kinetic energy for which the cache was created
       cached_eK = pe->getEnergy();
@@ -69,7 +69,7 @@ namespace MONSEL_MaterialScatterModel
       }
    }
 
-   double MONSEL_MaterialScatterModel::randomMeanPathLength(ElectronT& pe)
+   __host__ __device__ double MONSEL_MaterialScatterModel::randomMeanPathLength(ElectronT& pe)
    {
       setCache(&pe);
       /*
@@ -81,9 +81,9 @@ namespace MONSEL_MaterialScatterModel
       * free path is too long (or infinite) the multiple will be too small,
       * leading to numerical imprecision.
       */
-      double maxFreePath = 2. * MonteCarloSS::ChamberRadius;
+      const double maxFreePath = 2. * MonteCarloSS::ChamberRadius;
       if (totalScatterRate != 0.) {
-         double freepath = -::log(Random::random()) / totalScatterRate;
+         const double freepath = -::log(Random::random()) / totalScatterRate;
          return freepath > maxFreePath ? maxFreePath : freepath;
       }
       /*
@@ -98,7 +98,7 @@ namespace MONSEL_MaterialScatterModel
       return maxFreePath;
    }
 
-   ElectronT* MONSEL_MaterialScatterModel::scatter(ElectronT& pe)
+   __host__ __device__ ElectronT* MONSEL_MaterialScatterModel::scatter(ElectronT& pe)
    {
       /*
       * 1. Determine which of the scatter mechanisms active in this material
@@ -107,14 +107,14 @@ namespace MONSEL_MaterialScatterModel
       * this mechanism
       */
 
-      double eK = pe.getPreviousEnergy();
+      const double eK = pe.getPreviousEnergy();
       if (eK != cached_eK) {
          /*
          * scattering is based on energy at conclusion of previous step, but
          * scatterRate methods used to set the cache use the current energy.
          * This is inelegant, but for now I hold my nose and ...
          */
-         double eKsaved = pe.getEnergy();
+         const double eKsaved = pe.getEnergy();
          pe.setEnergy(eK);
          setCache(&pe);
          pe.setEnergy(eKsaved);
@@ -131,7 +131,7 @@ namespace MONSEL_MaterialScatterModel
       // Find the scatter mechanism that produced this scattering event
       // Generate a random # between 0 and total cumulative scatter rate
 
-      double r = Random::random() * totalScatterRate;
+      const double r = Random::random() * totalScatterRate;
       int index = 0; // Index is first index
 
       // Increment index and mechanism until cumulative scatter rate exceeds r
@@ -141,7 +141,7 @@ namespace MONSEL_MaterialScatterModel
       return scatterArray[index]->scatter(&pe);
    }
 
-   ElectronT* MONSEL_MaterialScatterModel::barrierScatter(ElectronT* pe, const RegionBaseT* nextRegion) const
+   __host__ __device__ ElectronT* MONSEL_MaterialScatterModel::barrierScatter(ElectronT* pe, const RegionBaseT* nextRegion) const
    {
       return barrierSM->barrierScatter(pe, nextRegion);
    }
@@ -164,7 +164,7 @@ namespace MONSEL_MaterialScatterModel
       return csd;
    }
 
-   double MONSEL_MaterialScatterModel::calculateEnergyLoss(double len, const ElectronT& pe) const
+   __host__ __device__ double MONSEL_MaterialScatterModel::calculateEnergyLoss(double len, const ElectronT& pe) const
    {
       return csd->compute(len, &pe);
    }
@@ -209,7 +209,7 @@ namespace MONSEL_MaterialScatterModel
    //   return true;
    //}
 
-   double MONSEL_MaterialScatterModel::getMinEforTracking() const
+   __host__ __device__ double MONSEL_MaterialScatterModel::getMinEforTracking() const
    {
       return minEforTracking;
    }

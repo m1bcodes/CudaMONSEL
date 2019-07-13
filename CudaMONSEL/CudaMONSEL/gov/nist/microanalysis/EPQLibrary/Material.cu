@@ -9,12 +9,12 @@ namespace Material
    const long serialVersionUID = 0x42;
    const double DEFAULT_DENSITY = 5.0 * 1.0e-3 / (1.0e-2 * 1.0e-2 * 1.0e-2); //ToSI::gPerCC(5.0);
 
-   Material::Material(double density)
+   __host__ __device__ Material::Material(double density)
    {
       mDensity = density;
    }
 
-   Material::Material(const Material& other)
+   __host__ __device__ Material::Material(const Material& other)
    {
       Composition::replicate(other);
       mDensity = other.mDensity;
@@ -170,5 +170,11 @@ namespace Material
       return false;
    }
 
+   __device__ const Material* dDefault;
    const Material Default(0);
+
+   __global__ void initCuda()
+   {
+      dDefault = new Material(0);
+   }
 }

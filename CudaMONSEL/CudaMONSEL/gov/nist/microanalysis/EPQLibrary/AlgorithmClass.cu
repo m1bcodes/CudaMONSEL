@@ -15,7 +15,7 @@ namespace AlgorithmClass
       return toString() != o.toString();
    }
 
-   const StringT AlgorithmClass::toString() const
+   __host__ __device__ const StringT AlgorithmClass::toString() const
    {
       return mClass + " [" + mName + "]";
    }
@@ -25,7 +25,7 @@ namespace AlgorithmClass
       return mClass;
    }
 
-   const StringT AlgorithmClass::getName() const
+   __host__ __device__ const StringT AlgorithmClass::getName() const
    {
       return mName;
    }
@@ -35,7 +35,7 @@ namespace AlgorithmClass
       return mReference.getShortForm();
    }
 
-   const ReferenceT& AlgorithmClass::getReferenceObj() const
+   __host__ __device__ const ReferenceT& AlgorithmClass::getReferenceObj() const
    {
       return mReference;
    }

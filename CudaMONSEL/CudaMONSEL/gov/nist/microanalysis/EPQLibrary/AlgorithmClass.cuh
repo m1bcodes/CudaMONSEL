@@ -19,11 +19,11 @@ namespace AlgorithmClass
       virtual AlgorithmClassT const * const * getAllImplementations() const = 0;
 
       int compareTo(const AlgorithmClass&) const;
-      const StringT toString() const;
+      __host__ __device__ const StringT toString() const;
       const StringT getAlgorithmClass() const;
-      const StringT getName() const;
+      __host__ __device__ const StringT getName() const;
       const StringT getReference() const;
-      const ReferenceT& getReferenceObj() const;
+      __host__ __device__ const ReferenceT& getReferenceObj() const;
 
    private:
       const StringT mClass;

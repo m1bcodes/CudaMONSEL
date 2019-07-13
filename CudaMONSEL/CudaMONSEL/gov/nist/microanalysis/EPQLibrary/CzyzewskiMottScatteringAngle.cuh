@@ -17,11 +17,10 @@ namespace CzyzewskiMottScatteringAngle
 
       StringT toString() const;
 
-      double randomScatteringAngle(double energy, double rand) const;
-
-      double randomScatteringAngle(double energy) const override;
-      __host__ __device__ double totalCrossSection(double energy) const override;
-      const ElementT& getElement() const override;
+      __host__ __device__ double randomScatteringAngle(const double energy, const double rand) const;
+      __host__ __device__ double randomScatteringAngle(const double energy) const override;
+      __host__ __device__ double totalCrossSection(const double energy) const override;
+      __host__ __device__ const ElementT& getElement() const override;
 
       double meanFreePath(double energy) const;
 
@@ -63,9 +62,6 @@ namespace CzyzewskiMottScatteringAngle
    public:
       __host__ __device__ CzyzewskiMottRandomizedScatterFactory();
       __host__ __device__ const RandomizedScatterT& get(const ElementT& elm) const override;
-
-   protected:
-      void initializeDefaultStrategy() override;
    };
 
    extern const RandomizedScatterFactoryT& Factory;

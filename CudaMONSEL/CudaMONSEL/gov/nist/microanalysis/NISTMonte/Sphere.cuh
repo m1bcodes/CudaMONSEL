@@ -10,11 +10,11 @@ namespace Sphere
    class Sphere : public ShapeT, public ITransformT//, TrajectoryVRML.IRender
    {
    public:
-      Sphere(const double center[], double radius);
+      __host__ __device__ Sphere(const double center[], double radius);
 
-      bool contains(const double pos[]) const override;
+      __host__ __device__ bool contains(const double pos[]) const override;
       double getRadius() const;
-      double getFirstIntersection(const double pos0[], const double pos1[]) override;
+      __host__ __device__ double getFirstIntersection(const double pos0[], const double pos1[]) override;
 
       void getInitialPoint(int res[]) const;
       void getPointAt(double phi, double theta, double frac, double res[]) const;
@@ -23,7 +23,7 @@ namespace Sphere
       void translate(const double distance[]) override;
 
       const double* getCenter() const;
-      StringT toString() const override;
+      __host__ __device__ StringT toString() const override;
 
    private:
       const double mRadius; // meters

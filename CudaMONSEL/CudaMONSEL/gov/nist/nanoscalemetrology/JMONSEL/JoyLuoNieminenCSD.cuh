@@ -9,7 +9,7 @@ namespace JoyLuoNieminenCSD
    class JoyLuoNieminenCSD : public SlowingDownAlgT
    {
    public:
-      JoyLuoNieminenCSD(SEmaterialT& mat, double breakE);
+      __host__ __device__ JoyLuoNieminenCSD(SEmaterialT& mat, double breakE);
       JoyLuoNieminenCSD(MaterialT& mat, double bh, double breakE);
 
       void setMaterial(const MaterialT& mat, double bh);

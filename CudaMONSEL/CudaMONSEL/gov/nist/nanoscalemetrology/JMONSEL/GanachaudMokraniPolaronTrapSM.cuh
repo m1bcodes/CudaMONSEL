@@ -9,11 +9,11 @@ namespace GanachaudMokraniPolaronTrapSM
    class GanachaudMokraniPolaronTrapSM : public ScatterMechanismT
    {
    public:
-      GanachaudMokraniPolaronTrapSM(double prefactor, double extinction);
+      __host__ __device__ GanachaudMokraniPolaronTrapSM(double prefactor, double extinction);
 
-      double scatterRate(const ElectronT* pe) override;
-      ElectronT* scatter(ElectronT* pe) override;
-      void setMaterial(const MaterialT* mat) override;
+      __host__ __device__ double scatterRate(const ElectronT* pe) override;
+      __host__ __device__ ElectronT* scatter(ElectronT* pe) override;
+      __host__ __device__ void setMaterial(const MaterialT* mat) override;
 
       StringT toString() const;
 

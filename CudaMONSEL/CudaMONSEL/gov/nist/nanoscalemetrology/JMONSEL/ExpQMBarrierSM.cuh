@@ -12,7 +12,7 @@ namespace ExpQMBarrierSM
       __host__ __device__ ExpQMBarrierSM(const MaterialT* mat);
       ExpQMBarrierSM(const MaterialT* mat, double lambda);
 
-      ElectronT* barrierScatter(ElectronT* pe, const RegionBaseT* nextRegion) const override;
+      __host__ __device__ ElectronT* barrierScatter(ElectronT* pe, const RegionBaseT* nextRegion) const override;
       StringT toString() const;
 
    private:

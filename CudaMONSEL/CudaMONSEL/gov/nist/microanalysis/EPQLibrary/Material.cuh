@@ -10,8 +10,8 @@ namespace Material
    protected:
 
    public:
-      Material(double density);
-      Material(const Material& comp);
+      __host__ __device__ Material(double density);
+      __host__ __device__ Material(const Material& comp);
       __host__ __device__ Material(const Composition& comp, double density);
       Material(const Element::Element* elm[], const double density[]);
       Material(const Element::Element* elms[], int elmsLen, const double massFracs[], int massFracsLen, double density, const char* name);
@@ -49,5 +49,7 @@ namespace Material
    };
 
    extern const Material Default;
+   extern __device__ const Material *dDefault;
+   extern __global__ void initCuda();
 }
 #endif

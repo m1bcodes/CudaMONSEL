@@ -6,20 +6,24 @@
 
 namespace Electron
 {
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+   __device__ static long lastID = 0; // ID of last generated electron
+#else
    static long lastID = 0; // ID of last generated electron
+#endif
 
    long getlastIdent()
    {
       return lastID;
    }
 
-   void Electron::Init(const double initialPos[], double theta, double phi, double kE)
+   __host__ __device__ void Electron::init(const double initialPos[], double theta, double phi, double kE)
    {
       memcpy(mPosition, initialPos, sizeof(double) * 3);
       memcpy(mPrevPosition, initialPos, sizeof(double) * 3);
-      mScatteringElement = (NULL);
-      mCurrentRegion = (NULL);
-      mPrevRegion = (NULL);
+      mScatteringElement = (nullptr);
+      mCurrentRegion = (nullptr);
+      mPrevRegion = (nullptr);
       mEnergy = (kE);
       previousEnergy = (kE);
       mTheta = (theta);
@@ -30,20 +34,20 @@ namespace Electron
       parentID = 0;
    }
 
-   Electron::Electron(const double initialPos[], double kE)
+   __host__ __device__ Electron::Electron(const double initialPos[], double kE)
    {
-      Init(initialPos, 0., 0., kE);
+      init(initialPos, 0., 0., kE);
    }
 
    Electron::Electron(const double initialPos[], double theta, double phi, double kE)
    {
-      Init(initialPos, theta, phi, kE);
+      init(initialPos, theta, phi, kE);
    }
 
-   Electron::Electron(const Electron& parent, double theta, double phi, double kE)
+   __host__ __device__ Electron::Electron(const Electron& parent, double theta, double phi, double kE)
    {
       const double* pos = parent.getPosition();
-      Init(pos, theta, phi, kE);
+      init(pos, theta, phi, kE);
       mCurrentRegion = parent.getCurrentRegion();
       mPrevRegion = mCurrentRegion;
       parentID = parent.getIdent();
@@ -60,7 +64,7 @@ namespace Electron
       return mPosition;
    }
 
-   void Electron::setPosition(const double newpos[])
+   __host__ __device__ void Electron::setPosition(const double newpos[])
    {
       memcpy(mPosition, newpos, sizeof(double) * 3);
    }
@@ -70,7 +74,7 @@ namespace Electron
       return mPrevPosition;
    }
 
-   const RegionBaseT* Electron::getCurrentRegion() const
+   __host__ __device__ const RegionBaseT* Electron::getCurrentRegion() const
    {
       return mCurrentRegion;
    }
@@ -85,12 +89,12 @@ namespace Electron
       return mEnergy;
    }
 
-   double Electron::getPreviousEnergy() const
+   __host__ __device__ double Electron::getPreviousEnergy() const
    {
       return previousEnergy;
    }
 
-   int Electron::getStepCount() const
+   __host__ __device__ int Electron::getStepCount() const
    {
       return mStepCount;
    }
@@ -102,7 +106,7 @@ namespace Electron
 
    __host__ __device__ void Electron::candidatePoint(const double dS, double res[]) const
    {
-      double st = ::sin(mTheta);
+      const double st = ::sin(mTheta);
       // Calculate the new point as dS distance from mPosition
       res[0] = mPosition[0] + dS * ::cos(mPhi) * st;
       res[1] = mPosition[1] + dS * ::sin(mPhi) * st;
@@ -159,37 +163,37 @@ namespace Electron
       mCurrentRegion = reg;
    }
 
-   const ElementT* Electron::getScatteringElement() const
+   __host__ __device__ const ElementT* Electron::getScatteringElement() const
    {
       return mScatteringElement;
    }
 
-   void Electron::setScatteringElement(const ElementT* scatteringElement)
+   __host__ __device__ void Electron::setScatteringElement(const ElementT* scatteringElement)
    {
       mScatteringElement = scatteringElement;
    }
 
-   double Electron::getPhi() const
+   __host__ __device__ double Electron::getPhi() const
    {
       return mPhi;
    }
 
-   double Electron::getTheta() const
+   __host__ __device__ double Electron::getTheta() const
    {
       return mTheta;
    }
 
-   bool Electron::isTrajectoryComplete() const
+   __host__ __device__ bool Electron::isTrajectoryComplete() const
    {
       return mTrajectoryComplete;
    }
 
-   void Electron::setTrajectoryComplete(bool trajectoryComplete)
+   __host__ __device__ void Electron::setTrajectoryComplete(bool trajectoryComplete)
    {
       mTrajectoryComplete = trajectoryComplete;
    }
 
-   long Electron::getIdent() const
+   __host__ __device__ long Electron::getIdent() const
    {
       return ident;
    }

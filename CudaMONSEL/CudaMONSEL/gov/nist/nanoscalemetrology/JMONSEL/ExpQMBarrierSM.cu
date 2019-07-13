@@ -18,7 +18,7 @@ namespace ExpQMBarrierSM
       classical(true),
       lambda(0),
       lambdaFactor(0),
-      mat(NULL)
+      mat(nullptr)
    {
    }
 
@@ -51,14 +51,14 @@ namespace ExpQMBarrierSM
       return 1. - (ratio * ratio);
    }
 
-   ElectronT* ExpQMBarrierSM::barrierScatter(ElectronT* pe, const RegionBaseT* nextRegion) const
+   __host__ __device__ ElectronT* ExpQMBarrierSM::barrierScatter(ElectronT* pe, const RegionBaseT* nextRegion) const
    {
       const MaterialT& nextmaterial = nextRegion->getMaterial();
       const RegionBaseT* currentRegion = pe->getCurrentRegion();
 
       if (!(currentRegion != nextRegion)) {
          printf("ExpQMBarrierSM::barrierScatter: currentRegion == nextRegion\n");
-         return NULL;
+         return nullptr;
       }
 
       double deltaU;
@@ -70,14 +70,14 @@ namespace ExpQMBarrierSM
 
       if (!(deltaU == -u0)) {
          printf("ExpQMBarrierSM::barrierScatter: deltaU != -u0 (%.10e, %.10e)\n", deltaU, -u0);
-         return NULL;
+         return nullptr;
       }
       if (nextmaterial.isSEmaterial())
          deltaU += ((SEmaterialT&)nextmaterial).getEnergyCBbottom();
 
       /* FIND THE OUTWARD POINTING NORMAL AT THE BOUNDARY */
       double nb[4]; // We'll store it here
-      memset(nb, INFINITY, sizeof(double) * 4);
+      nb[0] = INFINITY; nb[1] = INFINITY; nb[2] = INFINITY; nb[3] = INFINITY;
 
       if (currentRegion->isContainingRegion(*nextRegion)) {
          const RegionBaseT* struckRegion = nextRegion; // usually this is true
@@ -136,7 +136,7 @@ namespace ExpQMBarrierSM
          const double tmppos[] = { pos0[0] - (MonteCarloSS::SMALL_DISP * nb[0]), pos0[1] - (MonteCarloSS::SMALL_DISP * nb[1]), pos0[2] - (MonteCarloSS::SMALL_DISP * nb[2]) };
          pe->setPosition(tmppos);
 
-         return NULL;
+         return nullptr;
       }
 
       if (deltaU == 0.) {
@@ -151,7 +151,7 @@ namespace ExpQMBarrierSM
          pe->setPosition(tmppos);
          pe->setCurrentRegion(nextRegion);
 
-         return NULL;
+         return nullptr;
       }
 
       const double kE0 = pe->getEnergy();
@@ -213,7 +213,7 @@ namespace ExpQMBarrierSM
       const double phif = ::atan2(nf[1], nf[0]);
 
       pe->setDirection(thetaf, phif);
-      return NULL;
+      return nullptr;
    }
 
    StringT ExpQMBarrierSM::toString() const

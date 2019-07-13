@@ -23,16 +23,16 @@ namespace MONSEL_MaterialScatterModel
       //bool removeScatterMechanism(const ScatterMechanismT* mech);
       //bool removeScatterMechanism(ScatterMechanismT* mech);
 
-      const MaterialT& getMaterial() const override;
-      double getMinEforTracking() const override;
+      __host__ __device__ const MaterialT& getMaterial() const override;
+      __host__ __device__ double getMinEforTracking() const override;
       __host__ __device__ void setMinEforTracking(double minEforTracking) override;
-      double randomMeanPathLength(ElectronT& pe) override;
-      ElectronT* scatter(ElectronT& pe) override;
-      ElectronT* barrierScatter(ElectronT* pe, const RegionBaseT* nextRegion) const override;
-      double calculateEnergyLoss(double len, const ElectronT& pe) const override;
+      __host__ __device__ double randomMeanPathLength(ElectronT& pe) override;
+      __host__ __device__ ElectronT* scatter(ElectronT& pe) override;
+      __host__ __device__ ElectronT* barrierScatter(ElectronT* pe, const RegionBaseT* nextRegion) const override;
+      __host__ __device__ double calculateEnergyLoss(double len, const ElectronT& pe) const override;
 
    private:
-      void setCache(const ElectronT* pe);
+      __host__ __device__ void setCache(const ElectronT* pe);
 
       const SEmaterialT* mat; // The material for which this is the scatter model
 

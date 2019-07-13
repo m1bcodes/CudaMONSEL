@@ -5,7 +5,7 @@
 
 namespace NShapes
 {
-   extern NormalShapeT* createLine(
+   __host__ __device__ extern NormalShapeT* createLine(
       double topz, // z of the top face
       double width, // line width
       double length, // length of line

@@ -3,11 +3,11 @@
 
 namespace NormalMultiPlaneShape
 {
-   NormalMultiPlaneShape::NormalMultiPlaneShape()
+   __host__ __device__ NormalMultiPlaneShape::NormalMultiPlaneShape()
    {
    }
 
-   void NormalMultiPlaneShape::updateCach()
+   __host__ __device__ void NormalMultiPlaneShape::updateCach()
    {
       narray.resize(mPlanes.size(), VectorXd(3));
       carray.resize(mPlanes.size(), VectorXd(3));
@@ -18,7 +18,7 @@ namespace NormalMultiPlaneShape
       }
    }
 
-   static bool containsTieBreak(const double normal[])
+   __host__ __device__ static bool containsTieBreak(const double normal[])
    {
       if (normal[0] < 0.)
          return false;
@@ -32,7 +32,7 @@ namespace NormalMultiPlaneShape
       return true;
    }
 
-   const double* NormalMultiPlaneShape::getFirstNormal(const double pos0[], const double pos1[])
+   __host__ __device__ const double* NormalMultiPlaneShape::getFirstNormal(const double pos0[], const double pos1[])
    {
       /*
       * Explanation of the algorithm: Consider the line described by
@@ -96,8 +96,8 @@ namespace NormalMultiPlaneShape
          * outside->inside transition. denominator>0 means the opposite.
          * denominator==0 means the trajectory is parallel to the plane.
          */
-         double numerator = (pos0minusc[0] * narray[i][0]) + (pos0minusc[1] * narray[i][1]) + (pos0minusc[2] * narray[i][2]);
-         double denominator = (delta[0] * narray[i][0]) + (delta[1] * narray[i][1]) + (delta[2] * narray[i][2]);
+         const double numerator = (pos0minusc[0] * narray[i][0]) + (pos0minusc[1] * narray[i][1]) + (pos0minusc[2] * narray[i][2]);
+         const double denominator = (delta[0] * narray[i][0]) + (delta[1] * narray[i][1]) + (delta[2] * narray[i][2]);
          if (denominator == 0) {
             /*
             * If the trajectory is parallel to the plane there are no
@@ -169,12 +169,12 @@ namespace NormalMultiPlaneShape
       return result; // return "no intersection"
    }
 
-   double NormalMultiPlaneShape::getFirstIntersection(const double pos0[], const double pos1[])
+   __host__ __device__ double NormalMultiPlaneShape::getFirstIntersection(const double pos0[], const double pos1[])
    {
       return (getFirstNormal(pos0, pos1))[3];
    }
 
-   bool NormalMultiPlaneShape::contains(const double pos0[], const double pos1[]) const
+   __host__ __device__ bool NormalMultiPlaneShape::contains(const double pos0[], const double pos1[]) const
    {
       bool didDelta = false;
       double p0cdotn;
@@ -202,7 +202,7 @@ namespace NormalMultiPlaneShape
       return true;
    }
 
-   const double* NormalMultiPlaneShape::getPreviousNormal() const
+   __host__ __device__ const double* NormalMultiPlaneShape::getPreviousNormal() const
    {
       return result;
    }
@@ -220,18 +220,18 @@ namespace NormalMultiPlaneShape
    //   updateCach();
    //}
 
-   void NormalMultiPlaneShape::addPlane(PlaneT *plane)
+   __host__ __device__ void NormalMultiPlaneShape::addPlane(PlaneT *plane)
    {
       MultiPlaneShapeT::addPlane(plane);
       updateCach();
    }
 
-   bool NormalMultiPlaneShape::contains(const double pos[]) const
+   __host__ __device__ bool NormalMultiPlaneShape::contains(const double pos[]) const
    {
       if (mPlanes.size() == 1)
          return (mPlanes.at(0))->contains(pos);
       else {
-         for (auto pl : mPlanes)
+         for (auto &pl : mPlanes)
             if (!pl->contains(pos))
                return false;
          return true;
@@ -265,7 +265,7 @@ namespace NormalMultiPlaneShape
       updateCach();
    }
 
-   StringT NormalMultiPlaneShape::toString() const
+   __host__ __device__ StringT NormalMultiPlaneShape::toString() const
    {
       return "NormalMultiPlaneShape";
    }

@@ -16,7 +16,7 @@ namespace GaussianBeam
       setCenter(mult);
    }
 
-   GaussianBeam::GaussianBeam(double width, double energy, const double center[]) :
+   __host__ __device__ GaussianBeam::GaussianBeam(double width, double energy, const double center[]) :
       mWidth(width),
       mBeamEnergy(energy)
    {
@@ -38,12 +38,12 @@ namespace GaussianBeam
       mBeamEnergy = beamEnergy;
    }
 
-   double GaussianBeam::getBeamEnergy() const
+   __host__ __device__ double GaussianBeam::getBeamEnergy() const
    {
       return mBeamEnergy;
    }
 
-   void GaussianBeam::setCenter(const double center[])
+   __host__ __device__ void GaussianBeam::setCenter(const double center[])
    {
       memcpy(mCenter, center, sizeof(double) * 3);
    }
@@ -53,7 +53,7 @@ namespace GaussianBeam
       return mCenter;
    }
 
-   ElectronT* GaussianBeam::createElectron() const
+   __host__ __device__ ElectronT* GaussianBeam::createElectron() const
    {
       double initialPos[] = {
          mCenter[0],

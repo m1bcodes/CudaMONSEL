@@ -16,9 +16,9 @@ namespace GasScatteringCrossSection
       const RandomizedScatterT& getElasticModel();
       __host__ __device__ double ratioInelasticOverElastic() const;
 
-      const ElementT& getElement() const override;
-      __host__ __device__ double totalCrossSection(double energy) const override;
-      double randomScatteringAngle(double energy) const override;
+      __host__ __device__ const ElementT& getElement() const override;
+      __host__ __device__ double totalCrossSection(const double energy) const override;
+      __host__ __device__ double randomScatteringAngle(const double energy) const override;
 
    private:
       const ElementT& mElement;
@@ -27,9 +27,6 @@ namespace GasScatteringCrossSection
    
    class GasScatteringRandomizedScatterFactory : public RandomizedScatterFactoryT
    {
-   protected:
-      void initializeDefaultStrategy();
-
    public:
       __host__ __device__ GasScatteringRandomizedScatterFactory();
 

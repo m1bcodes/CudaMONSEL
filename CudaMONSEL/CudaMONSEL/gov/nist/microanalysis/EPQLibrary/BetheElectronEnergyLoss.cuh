@@ -10,21 +10,21 @@ namespace BetheElectronEnergyLoss
 {
    class BetheElectronEnergyLoss : public AlgorithmClassT
    {
-      void initializeDefaultStrategy() override;
+      __host__ __device__ void initializeDefaultStrategy() override;
 
    public:
-      BetheElectronEnergyLoss(StringT name, const ReferenceT& ref);
+      __host__ __device__ BetheElectronEnergyLoss(StringT name, const ReferenceT& ref);
 
       AlgorithmClassT const * const * getAllImplementations() const override;
 
-      virtual double compute(const ElementT& elm, double eB) const = 0;
+      __host__ __device__ virtual double compute(const ElementT& elm, double eB) const = 0;
    };
 
    class JoyLuoBetheElectronEnergyLoss : public BetheElectronEnergyLoss
    {
    public:
-      JoyLuoBetheElectronEnergyLoss();
-      double compute(const ElementT& el, double eB) const override;
+      __host__ __device__ JoyLuoBetheElectronEnergyLoss();
+      __host__ __device__ double compute(const ElementT& el, double eB) const override;
 
    private:
       VectorXd mK;
@@ -34,8 +34,8 @@ namespace BetheElectronEnergyLoss
    class Bethe30ModElectronEnergyLoss : public BetheElectronEnergyLoss
    {
    public:
-      Bethe30ModElectronEnergyLoss();
-      double compute(const ElementT& el, double eB) const override;
+      __host__ __device__ Bethe30ModElectronEnergyLoss();
+      __host__ __device__ double compute(const ElementT& el, double eB) const override;
 
    private:
       const double K;
@@ -44,8 +44,8 @@ namespace BetheElectronEnergyLoss
    class Bethe30ElectronEnergyLoss : public BetheElectronEnergyLoss
    {
    public:
-      Bethe30ElectronEnergyLoss();
-      double compute(const ElementT& el, double eB) const override;
+      __host__ __device__ Bethe30ElectronEnergyLoss();
+      __host__ __device__ double compute(const ElementT& el, double eB) const override;
 
    private:
       const double K;
@@ -54,8 +54,8 @@ namespace BetheElectronEnergyLoss
    class StragglingModified : public BetheElectronEnergyLoss
    {
    public:
-      StragglingModified(const BetheElectronEnergyLoss& base, double percent);
-      double compute(const ElementT& el, double eB) const override;
+      __host__ __device__ StragglingModified(const BetheElectronEnergyLoss& base, double percent);
+      __host__ __device__ double compute(const ElementT& el, double eB) const override;
 
    private:
       const BetheElectronEnergyLoss& mBethe;
@@ -65,6 +65,10 @@ namespace BetheElectronEnergyLoss
    extern const BetheElectronEnergyLoss& JoyLuo1989;
    extern const BetheElectronEnergyLoss& Bethe1930;
    extern const BetheElectronEnergyLoss& Bethe1930Strict;
+
+   extern __device__ const BetheElectronEnergyLoss *dJoyLuo1989;
+
+   extern __global__ void initCuda();
 }
 
 #endif

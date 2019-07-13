@@ -9,8 +9,12 @@ namespace BackscatterStats
    class Datum
    {
    public:
-      Datum(long eID, long tStep, double e0, const double pos[], double theta, double phi);
-      Datum(const Datum&);
+      __host__ __device__ Datum(long eID, long tStep, double e0, const double pos[], double theta, double phi);
+      __host__ __device__ Datum(); // TODO: remove this (ie update vector class so that it does not rely on objects having a default constructor)
+      __host__ __device__ Datum(const Datum&);
+
+      __host__ __device__ Datum& operator=(const Datum&); // TODO: remove this (ie update vector class)
+      __host__ __device__ bool operator==(const Datum&);
 
       long getElectronID() const;
       long getTrajStep() const;
@@ -23,38 +27,38 @@ namespace BackscatterStats
       static StringT getHeader();
 
    private:
-      const long electronID;
-      const long trajStep;
-      const double mkEeV;
+      long electronID;
+      long trajStep;
+      double mkEeV;
       double mPosition[3];
-      const double mTheta;
-      const double mPhi;
+      double mTheta;
+      double mPhi;
    };
 
    class BackscatterStats : public ActionListenerT
    {
    public:
       BackscatterStats(const MonteCarloSST& mcss);
-      BackscatterStats(const MonteCarloSST& mcss, int nEnergyBins);
-      ~BackscatterStats();
+      __host__ __device__ BackscatterStats(const MonteCarloSST& mcss, int nEnergyBins);
+      __host__ __device__ ~BackscatterStats();
 
-      void actionPerformed(const int ae) override;
+      __host__ __device__ void actionPerformed(const int ae) override;
 
-      const HistogramT& backscatterEnergyHistogram() const;
+      __host__ __device__ const HistogramT& backscatterEnergyHistogram() const;
       const HistogramT& forwardscatterEnergyHistogram() const;
       const HistogramT& elevationHistogram() const;
       const HistogramT& azimuthalHistogram() const;
 
-      double backscatterFraction() const;
+      __host__ __device__ double backscatterFraction() const;
       int getEnergyBinCount() const;
       double forwardscatterFraction() const;
       double scatterFraction() const;
       bool getLogDetected() const;
       void setLogDetected(bool logDetected);
-      std::vector<Datum> getLog() const;
+      amp::vector<Datum> getLog() const;
 
    private:
-      void initialize();
+      __host__ __device__ void initialize();
 
       int mEnergyBinCount;
       const MonteCarloSST& mMonte;
@@ -66,7 +70,7 @@ namespace BackscatterStats
       int mEventCount;
 
       bool mLogDetected;
-      std::vector<Datum> mLog;
+      amp::vector<Datum> mLog;
    };
 }
 

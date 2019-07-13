@@ -8,8 +8,9 @@ namespace MeanIonizationPotential
 {
    class MeanIonizationPotential : public AlgorithmClassT
    {
+      __host__ __device__ void initializeDefaultStrategy() override;
+
    public:
-      void initializeDefaultStrategy() override;
       AlgorithmClassT const * const * getAllImplementations() const;
 
       double computeLn(const CompositionT& comp) const;

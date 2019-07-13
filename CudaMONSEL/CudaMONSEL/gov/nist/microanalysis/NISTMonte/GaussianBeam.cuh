@@ -10,16 +10,16 @@ namespace GaussianBeam
    {
    public:
       GaussianBeam(double width);
-      GaussianBeam(double width, double energy, const double center[]);
+      __host__ __device__ GaussianBeam(double width, double energy, const double center[]);
 
       void setWidth(double width);
       double getWidth();
 
       void setBeamEnergy(double beamEnergy) override;
-      double getBeamEnergy() const override;
-      void setCenter(const double center[]) override;
+      __host__ __device__ double getBeamEnergy() const override;
+      __host__ __device__ void setCenter(const double center[]) override;
       const double* getCenter() const override;
-      ElectronT* createElectron() const override;
+      __host__ __device__ ElectronT* createElectron() const override;
 
    private:
       // transient private Random mRandom = new Random();

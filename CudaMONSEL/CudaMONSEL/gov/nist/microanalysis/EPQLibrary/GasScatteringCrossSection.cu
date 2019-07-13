@@ -13,7 +13,11 @@ namespace GasScatteringCrossSection
    const Reference::Author* al[] = { &Reference::RFEdgerton };
    const Reference::Book REFERENCE("Electron Energy-Loss Spectroscopy in the Electron Microscope, Second Edition", "Plenum Press, NY & London", 1996, al, 1);
 
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+   __constant__ static const double E0 =  8.1871048e-14;
+#else
    static const double E0 = PhysicalConstants::ElectronMass * PhysicalConstants::SpeedOfLight * PhysicalConstants::SpeedOfLight;
+#endif
 
    __host__ __device__ GasScatteringCrossSection::GasScatteringCrossSection(const ElementT& elm) :
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
@@ -34,38 +38,38 @@ namespace GasScatteringCrossSection
       return 20.0 / mElement.getAtomicNumber();
    }
 
-   const ElementT& GasScatteringCrossSection::getElement() const
+   __host__ __device__ const ElementT& GasScatteringCrossSection::getElement() const
    {
       return mElement;
    }
 
-   __host__ __device__ double GasScatteringCrossSection::totalCrossSection(double energy) const
+   __host__ __device__ double GasScatteringCrossSection::totalCrossSection(const double energy) const
    {
       return (1.0 + ratioInelasticOverElastic()) * mElastic.totalCrossSection(energy);
    }
 
-   double GasScatteringCrossSection::randomScatteringAngle(double energy) const
+   __host__ __device__ double GasScatteringCrossSection::randomScatteringAngle(const double energy) const
    {
       if (Random::random() * (1.0 + ratioInelasticOverElastic()) < 1.0)
          return mElastic.randomScatteringAngle(energy);
       else {
          // Electron velocity from energy
-         double v = PhysicalConstants::SpeedOfLight * ::sqrt(1.0 - 1.0 / Math2::sqr((energy / E0) + 1.0));
+         const double v = PhysicalConstants::SpeedOfLight * ::sqrt(1.0 - 1.0 / Math2::sqr((energy / E0) + 1.0));
          // Compute gamma, wave vector magnitude and atomic radius
-         double g = ::sqrt(1.0 - Math2::sqr(v / PhysicalConstants::SpeedOfLight));
-         double k0 = g * PhysicalConstants::ElectronMass * v / PhysicalConstants::PlanckReduced;
-         double rz = PhysicalConstants::BohrRadius * ::pow(mElement.getAtomicNumber(), -0.3333333);
+         const double g = ::sqrt(1.0 - Math2::sqr(v / PhysicalConstants::SpeedOfLight));
+         const double k0 = g * PhysicalConstants::ElectronMass * v / PhysicalConstants::PlanckReduced;
+         const double rz = PhysicalConstants::BohrRadius * ::powf(mElement.getAtomicNumber(), -0.3333333);
          // Two characteristic angles
-         double thE2 = Math2::sqr(mElement.getIonizationEnergy() / (g * PhysicalConstants::ElectronMass * v * v)); // unitless
-         double th02 = Math2::sqr(1.0 / (k0 * rz));
+         const double thE2 = Math2::sqr(mElement.getIonizationEnergy() / (g * PhysicalConstants::ElectronMass * v * v)); // unitless
+         const double th02 = Math2::sqr(1.0 / (k0 * rz));
          // Compute the maximum integrated cross section
-         double siInt = ::log((PhysicalConstants::PI * PhysicalConstants::PI + thE2) * (th02 + thE2) / (thE2 * (PhysicalConstants::PI * PhysicalConstants::PI + th02 + thE2)));
+         const double siInt = ::log((PhysicalConstants::PI * PhysicalConstants::PI + thE2) * (th02 + thE2) / (thE2 * (PhysicalConstants::PI * PhysicalConstants::PI + th02 + thE2)));
          if (!(siInt > 0.0)) printf("GasScatteringCrossSection::randomScatteringAngle siInt %lf\n", siInt);
          // Select a random integrated cross section
-         double exp_si = ::exp(Random::random() * siInt);
+         const double exp_si = ::exp(Random::random() * siInt);
          if (exp_si < 1.0) printf("GasScatteringCrossSection::randomScatteringAngle exp_si %lf\n", exp_si);
          // Solve for the angle that give us this (via Egerton 3.16)
-         double beta = ::sqrt(((1 - exp_si) * thE2 * (th02 + thE2)) / ((exp_si - 1) * thE2 - th02));
+         const double beta = ::sqrt(((1 - exp_si) * thE2 * (th02 + thE2)) / ((exp_si - 1) * thE2 - th02));
          if (!((beta >= 0) && (beta <= PhysicalConstants::PI))) printf("GasScatteringCrossSection::randomScatteringAngle beta %lf\n", beta);
          return beta;
       }
@@ -393,10 +397,6 @@ namespace GasScatteringCrossSection
    __host__ __device__ const RandomizedScatterT& GasScatteringRandomizedScatterFactory::get(const ElementT& elm) const
    {
       return getGSCS(elm.getAtomicNumber());
-   }
-
-   void GasScatteringRandomizedScatterFactory::initializeDefaultStrategy()
-   {
    }
 
    const GasScatteringRandomizedScatterFactory FactoryGasScattering;

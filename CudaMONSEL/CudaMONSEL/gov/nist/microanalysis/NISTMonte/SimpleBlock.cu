@@ -2,9 +2,9 @@
 
 namespace SimpleBlock
 {
-   static bool between(double x, double b0, double b1)
+   __host__ __device__ static bool between(double x, double b0, double b1)
    {
-      if (!(b0 <= b1)) printf("");
+      if (!(b0 <= b1)) printf("SimpleBlock::between error: %.10e, %.10e\n", b0, b1);
       return (x >= b0) && (x <= b1);
    }
 
@@ -25,13 +25,13 @@ namespace SimpleBlock
          }
    }
 
-   bool SimpleBlock::contains(const double pos[]) const
+   __host__ __device__ bool SimpleBlock::contains(const double pos[]) const
    {
       //assert(pos.length == 3);
       return between(pos[0], mCorner0[0], mCorner1[0]) && between(pos[1], mCorner0[1], mCorner1[1]) && between(pos[2], mCorner0[2], mCorner1[2]);
    }
 
-   double SimpleBlock::getFirstIntersection(const double pos0[], const double pos1[])
+   __host__ __device__ double SimpleBlock::getFirstIntersection(const double pos0[], const double pos1[])
    {
       //assert(pos0.length == 3);
       //assert(pos1.length == 3);
@@ -95,7 +95,7 @@ namespace SimpleBlock
    }
 
    
-   StringT SimpleBlock::toString() const
+   __host__ __device__ StringT SimpleBlock::toString() const
    {
       return "Block(" + amp::to_string(mCorner1[0]) + " " + amp::to_string(mCorner1[1]) + " " + amp::to_string(mCorner1[2]) + "," +
          amp::to_string(mCorner1[0]) + " " + amp::to_string(mCorner1[1]) + " " + amp::to_string(mCorner1[2]) + ")";

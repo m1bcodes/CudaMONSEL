@@ -16,17 +16,16 @@ namespace SumShape
    public:
       SumShape();
       SumShape(ShapeT* const shapes[], int len);
-      SumShape(ShapeT* const a, ShapeT* const b);
+      __host__ __device__ SumShape(ShapeT* const a, ShapeT* const b);
 
-      bool contains(const double pos[]) const override;
-      double getFirstIntersection(const double pos0[], const double pos1[]) override;
-      StringT toString() const override;
-      bool isNormalShape() const override;
+      __host__ __device__ bool contains(const double pos[]) const override;
+      __host__ __device__ double getFirstIntersection(const double pos0[], const double pos1[]) override;
+      __host__ __device__ StringT toString() const override;
 
       void rotate(const double pivot[], double phi, double theta, double psi) override;
       void translate(const double distance[]) override;
 
-      const amp::vector<ShapeT*>& getShapes() const;
+      __host__ __device__ const amp::vector<ShapeT*>& getShapes() const;
 
       void addShape(ShapeT* b);
 

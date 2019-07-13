@@ -12,9 +12,9 @@ namespace NISTMottRS
    public:
       __host__ __device__ explicit NISTMottRS(const ElementT& elm, int method);
 
-      double randomScatteringAngle(double energy) const override;
-      __host__ __device__ double totalCrossSection(double energy) const override;
-      const ElementT& getElement() const override;
+      __host__ __device__ double randomScatteringAngle(const double energy) const override;
+      __host__ __device__ double totalCrossSection(const double energy) const override;
+      __host__ __device__ const ElementT& getElement() const override;
 
       const char* toString();
       int getMethod() const;
@@ -45,7 +45,6 @@ namespace NISTMottRS
       __host__ __device__ NISTMottRSFactory(int method);
 
       __host__ __device__ const RandomizedScatterT& get(const ElementT& elm) const override;
-      void initializeDefaultStrategy() override;
 
    private:
       int method;
@@ -58,8 +57,13 @@ namespace NISTMottRS
    extern const RandomizedScatterFactoryT& Factory100;
    extern const RandomizedScatterFactoryT& Factory100Lin;
 
+   __device__ extern const RandomizedScatterFactoryT* d_Factory;
+   __device__ extern const RandomizedScatterFactoryT* d_Factory100;
+   __device__ extern const RandomizedScatterFactoryT* d_Factory100Lin;
+
    extern void init();
    extern __global__ void initCuda();
+   extern __global__ void initFactory();
 }
 
 #endif

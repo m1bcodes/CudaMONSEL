@@ -100,7 +100,7 @@ namespace NISTMottScatteringAngle
       return "CrossSection[NIST-Mott," + StringT(mElement.toAbbrev()) + "]";
    }
 
-   const ElementT& NISTMottScatteringAngle::getElement() const
+   __host__ __device__ const ElementT& NISTMottScatteringAngle::getElement() const
    {
       return mElement;
    }
@@ -125,20 +125,20 @@ namespace NISTMottScatteringAngle
       }
    }
 
-   double NISTMottScatteringAngle::randomScatteringAngle(const double energy) const
+   __host__ __device__ double NISTMottScatteringAngle::randomScatteringAngle(const double energy) const
    {
       if (energy < MAX_NISTMOTT) {
-         double logE = ::log(FromSI::eV(energy));
-         int j = (int)((logE - DL50) / PARAM); // offset to zero-based
-         double e2 = DL50 + (j + 1) * PARAM;
-         double e1 = e2 - PARAM;
-         int i = (logE - e1 < e2 - logE ? j : j + 1); // offset to zero-based
+         const double logE = ::log(FromSI::eV(energy));
+         const int j = (int)((logE - DL50) / PARAM); // offset to zero-based
+         const double e2 = DL50 + (j + 1) * PARAM;
+         const double e1 = e2 - PARAM;
+         const int i = (logE - e1 < e2 - logE ? j : j + 1); // offset to zero-based
          if (!((i >= 0) && (i < SPWEM_LEN))) printf("%d %s %lf %s %lf %s %lf\n", i, "\t", FromSI::eV(energy), "\t", e1, "\t", e2);
          // via j
-         int k = Random::randomInt(200); // offset to zero-based
-         double x = (mX1[i][k + 1] - mX1[i][k]) * Random::random();
-         double q = mX1[i][k] + x;
-         double com = 1.0 - 2.0 * q * q;
+         const int k = Random::randomInt(200); // offset to zero-based
+         const double x = (mX1[i][k + 1] - mX1[i][k]) * Random::random();
+         const double q = mX1[i][k] + x;
+         const double com = 1.0 - 2.0 * q * q;
          return com > -1.0 ? (com < 1.0 ? ::acos(com) : 0.0) : PhysicalConstants::PI;
       }
       else {
@@ -423,10 +423,6 @@ namespace NISTMottScatteringAngle
    {
    }
 
-   void NISTMottRandomizedScatterFactory::initializeDefaultStrategy()
-   {
-   }
-
    __host__ __device__ const RandomizedScatterT& NISTMottRandomizedScatterFactory::get(const ElementT& elm) const
    {
       return getNISTMSA(elm.getAtomicNumber());
@@ -434,4 +430,10 @@ namespace NISTMottScatteringAngle
 
    const NISTMottRandomizedScatterFactory NISTMottRandomizedFactory;
    const RandomizedScatterFactoryT& Factory = NISTMottRandomizedFactory;
+   __device__ const RandomizedScatterFactoryT* d_Factory = nullptr;
+
+   __global__ void initFactory()
+   {
+      d_Factory = new NISTMottRandomizedScatterFactory();
+   }
 }

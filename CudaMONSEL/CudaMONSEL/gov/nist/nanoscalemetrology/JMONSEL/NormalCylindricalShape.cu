@@ -4,7 +4,7 @@
 
 namespace NormalCylindricalShape
 {
-   NormalCylindricalShape::NormalCylindricalShape(const double end0[], const double end1[], double radius) :
+   __host__ __device__ NormalCylindricalShape::NormalCylindricalShape(const double end0[], const double end1[], double radius) :
       CylindricalShapeT(end0, end1, radius),
       radius2(radius * radius)
    {
@@ -15,12 +15,12 @@ namespace NormalCylindricalShape
       Math2::divide3d(axis, mLen, normalizedaxis);
    }
 
-   bool NormalCylindricalShape::contains(const double pos[]) const
+   __host__ __device__ bool NormalCylindricalShape::contains(const double pos[]) const
    {
       return CylindricalShapeT::contains(pos);
    }
 
-   bool NormalCylindricalShape::contains(const double pos0[], const double pos1[]) const
+   __host__ __device__ bool NormalCylindricalShape::contains(const double pos0[], const double pos1[]) const
    {
       const double p0c[] = { pos0[0] - end0[0], pos0[1] - end0[1], pos0[2] - end0[2] }; // pos0 - end0
       const double p0cdotn = (p0c[0] * normalizedaxis[0]) + (p0c[1] * normalizedaxis[1]) + (p0c[2] * normalizedaxis[2]);
@@ -62,8 +62,7 @@ namespace NormalCylindricalShape
             pos1[2] - pos0[2]
          };
          // The normal vector on this endcap is normalizedaxis
-         const double deltadotnormalizedaxis = (delta[0] * normalizedaxis[0]) + (delta[1] * normalizedaxis[1])
-            + (delta[2] * normalizedaxis[2]);
+         const double deltadotnormalizedaxis = (delta[0] * normalizedaxis[0]) + (delta[1] * normalizedaxis[1]) + (delta[2] * normalizedaxis[2]);
          if (deltadotnormalizedaxis == 0.)
             // endcap
             if (normalizedaxis[0] == 0) {
@@ -96,17 +95,17 @@ namespace NormalCylindricalShape
       return (r2 < radius2) && (p0cdotn > 0) && (p0cdotn < mLen);
    }
 
-   double NormalCylindricalShape::getFirstIntersection(const double pos0[], const double pos1[])
+   __host__ __device__ double NormalCylindricalShape::getFirstIntersection(const double pos0[], const double pos1[])
    {
       return getFirstNormal(pos0, pos1)[3];
    }
 
-   bool NormalCylindricalShape::isNormalShape() const
+   __host__ __device__ bool NormalCylindricalShape::isNormalShape() const
    {
       return true;
    }
 
-   const double* NormalCylindricalShape::getFirstNormal(const double pos0[], const double pos1[])
+   __host__ __device__ const double* NormalCylindricalShape::getFirstNormal(const double pos0[], const double pos1[])
    {
       nv[0] = 0.;
       nv[1] = 0.;
@@ -337,12 +336,12 @@ namespace NormalCylindricalShape
       CylindricalShapeT::translate(distance);
    }
 
-   const double* NormalCylindricalShape::getPreviousNormal() const
+   __host__ __device__ const double* NormalCylindricalShape::getPreviousNormal() const
    {
       return nv;
    }
 
-   StringT NormalCylindricalShape::toString() const
+   __host__ __device__ StringT NormalCylindricalShape::toString() const
    {
       return "NormalCylindricalShape";
    }

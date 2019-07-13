@@ -9,21 +9,21 @@ namespace BasicMaterialModel
 {
    class BasicMaterialModel : public AlgorithmUserT, public IMaterialScatterModelT
    {
-      void initializeDefaultStrategy() override;
+      __host__ __device__ void initializeDefaultStrategy() override;
 
    public:
       BasicMaterialModel(const MaterialT& mat);
 
-      const MaterialT& getMaterial() const override;
-      double randomMeanPathLength(ElectronT& pe) override;
+      __host__ __device__ const MaterialT& getMaterial() const override;
+      __host__ __device__ double randomMeanPathLength(ElectronT& pe) override;
 
-      ElectronT* scatter(ElectronT& pe) override;
+      __host__ __device__ ElectronT* scatter(ElectronT& pe) override;
 
-      ElectronT* barrierScatter(ElectronT* pe, const RegionBaseT* nextRegion) const override;
+      __host__ __device__ ElectronT* barrierScatter(ElectronT* pe, const RegionBaseT* nextRegion) const override;
 
-      double calculateEnergyLoss(double len, const ElectronT& pe) const override;
+      __host__ __device__ double calculateEnergyLoss(double len, const ElectronT& pe) const override;
 
-      double getMinEforTracking() const override;
+      __host__ __device__ double getMinEforTracking() const override;
       __host__ __device__ void setMinEforTracking(double minEforTracking) override;
 
    private:

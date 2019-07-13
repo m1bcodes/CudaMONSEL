@@ -5,7 +5,7 @@
 namespace MultiPlaneShape
 {
    // construct a Plane object with the specified normal containing the specified point
-   Plane::Plane(const double normal[], const double point[])
+   __host__ __device__ Plane::Plane(const double normal[], const double point[])
    {
       memcpy(mNormal, normal, sizeof(double) * 3);
       memcpy(mPoint, point, sizeof(double) * 3);
@@ -18,7 +18,7 @@ namespace MultiPlaneShape
    }
 
    // contains - Is the point p on the inside side of the plane? (Side opposite to the direction of the normal)
-   bool Plane::contains(const double p[]) const
+   __host__ __device__ bool Plane::contains(const double p[]) const
    {
       //if (!(len == 3)) printf("Plane::contains: len != 3 (%d)", len);
       return (((p[0] - mPoint[0]) * mNormal[0] + (p[1] - mPoint[1]) * mNormal[1] + (p[2] - mPoint[2]) * mNormal[2]) <= 0.0);
@@ -34,7 +34,7 @@ namespace MultiPlaneShape
 
    // intersection - Where does a line through p1 and p2 intersect the plane?
    // (Double.MAX_VALUE if the line and the plane are parallel or the line intersection occurs before p1)
-   double Plane::getFirstIntersection(const double p1[], const double p2[])
+   __host__ __device__ double Plane::getFirstIntersection(const double p1[], const double p2[])
    {
       //assert(p1.length == 3);
       //assert(p2.length == 3);
@@ -126,11 +126,11 @@ namespace MultiPlaneShape
    //   addPlane(normal, ptVec.data());
    //}
 
-   MultiPlaneShape::MultiPlaneShape()
+   __host__ __device__ MultiPlaneShape::MultiPlaneShape()
    {
    }
 
-   MultiPlaneShape::MultiPlaneShape(Plane* const planes[], int len) : mPlanes(planes, planes + len)
+   __host__ __device__ MultiPlaneShape::MultiPlaneShape(Plane* const planes[], int len) : mPlanes(planes, planes + len)
    {
    }
 
@@ -207,29 +207,29 @@ namespace MultiPlaneShape
    //   mPlanes.push_back(&newPlane);
    //}
 
-   void MultiPlaneShape::addPlane(Plane *plane)
+   __host__ __device__ void MultiPlaneShape::addPlane(Plane *plane)
    {
       mPlanes.push_back(plane);
    }
 
-   bool MultiPlaneShape::contains(const double pos[]) const
+   __host__ __device__ bool MultiPlaneShape::contains(const double pos[]) const
    {
       if (mPlanes.size() == 1)
          return (mPlanes.at(0))->contains(pos);
       else {
-         for (auto pl : mPlanes)
+         for (auto &pl : mPlanes)
             if (!pl->contains(pos))
                return false;
          return true;
       }
    }
 
-   static bool IsSamePosition(const double a[], const double b[])
+   __host__ __device__ static bool IsSamePosition(const double a[], const double b[])
    {
       return a[0] == b[0] && a[1] == b[1] && a[2] == b[2];
    }
 
-   double MultiPlaneShape::getFirstIntersection(const double pos0[], const double pos1[])
+   __host__ __device__ double MultiPlaneShape::getFirstIntersection(const double pos0[], const double pos1[])
    {
       if (mPlanes.size() == 1)
          return (mPlanes.at(0))->getFirstIntersection(pos0, pos1);
@@ -238,8 +238,8 @@ namespace MultiPlaneShape
          double minU = INFINITY;
          if (IsSamePosition(pos0, mInsidePos) || contains(pos0)) { // Easy part...
             // If we start inside then any plane we strike will take us outside
-            for (auto pl : mPlanes) {
-               double u = pl->getFirstIntersection(pos0, pos1);
+            for (auto &pl : mPlanes) {
+               const double u = pl->getFirstIntersection(pos0, pos1);
                // assert (u >= 0.0);
                if (u < minU)
                   minU = u;
@@ -258,8 +258,8 @@ namespace MultiPlaneShape
             // If we start outside then we may intersect a plane and yet remain
             // outside
             double testPt[3];
-            for (auto pli : mPlanes) {
-               double u = pli->getFirstIntersection(pos0, pos1);
+            for (auto &pli : mPlanes) {
+               const double u = pli->getFirstIntersection(pos0, pos1);
                if (!(u >= 0.0)) printf("MultiPlaneShape::getFirstIntersection: u < 0.0 (%.10e)", u);
                if (u < minU) {
                   // Don't bother to test the intersection unless it
@@ -268,7 +268,7 @@ namespace MultiPlaneShape
                   testPt[1] = pos0[1] + u * (pos1[1] - pos0[1]);
                   testPt[2] = pos0[2] + u * (pos1[2] - pos0[2]);
                   bool inside = true;
-                  for (auto plj : mPlanes)
+                  for (auto &plj : mPlanes)
                      if (plj != pli)
                         if (!plj->contains(testPt)) {
                            inside = false;
@@ -421,12 +421,12 @@ namespace MultiPlaneShape
       return mPlanes;
    }
 
-   StringT Plane::toString() const
+   __host__ __device__ StringT Plane::toString() const
    {
       return "Plane";
    }
 
-   StringT MultiPlaneShape::toString() const
+   __host__ __device__ StringT MultiPlaneShape::toString() const
    {
       return "MultiPlaneShape";
    }

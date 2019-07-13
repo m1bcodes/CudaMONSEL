@@ -9,12 +9,12 @@ namespace TabulatedInelasticSM
    class TabulatedInelasticSM : public ScatterMechanismT
    {
    public:
-      TabulatedInelasticSM(const SEmaterialT& mat, int methodSE, const char* tables[], double energyOffset);
-      TabulatedInelasticSM(const SEmaterialT& mat, int methodSE, const char* tables[]);
+      __host__ __device__ TabulatedInelasticSM(const SEmaterialT& mat, int methodSE, const char* tables[], double energyOffset);
+      __host__ __device__ TabulatedInelasticSM(const SEmaterialT& mat, int methodSE, const char* tables[]);
 
-      double scatterRate(const ElectronT* pe) override;
-      ElectronT* scatter(ElectronT* pe) override;
-      void setMaterial(const MaterialT* mat) override;
+      __host__ __device__ double scatterRate(const ElectronT* pe) override;
+      __host__ __device__ ElectronT* scatter(ElectronT* pe) override;
+      __host__ __device__ void setMaterial(const MaterialT* mat) override;
 
       void setMinEgenSE(double minEgenSE);
       double getMinEgenSE() const;
@@ -28,9 +28,14 @@ namespace TabulatedInelasticSM
 
       StringT toString() const;
 
+      __host__ __device__ const NUTableInterpolationT* gettableIIMFP() const;
+      __host__ __device__ const NUTableInterpolationT* gettableReducedDeltaE() const;
+      __host__ __device__ const NUTableInterpolationT* gettableTheta() const;
+      __host__ __device__ const NUTableInterpolationT* gettableSEE0() const;
+
    private:
-      void simESEf(double Eq, double deltaE, double r, double[2]);
-      double pickBE(double Eq, double deltaE);
+      __host__ __device__ void simESEf(double Eq, double deltaE, double r, double[2]);
+      __host__ __device__ double pickBE(double Eq, double deltaE);
 
       const int methodSE;
       double energyOffset;

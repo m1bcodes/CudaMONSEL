@@ -12,12 +12,12 @@ namespace MultiPlaneShape
    class Plane : public ShapeT, public ITransformT
    {
    public:
-      Plane(const double normal[], const double point[]);
+      __host__ __device__ Plane(const double normal[], const double point[]);
       Plane(const Plane&);
 
-      bool contains(const double pos[]) const override;
-      double getFirstIntersection(const double pos0[], const double pos1[]) override;
-      StringT toString() const override;
+      __host__ __device__ bool contains(const double pos[]) const override;
+      __host__ __device__ double getFirstIntersection(const double pos0[], const double pos1[]) override;
+      __host__ __device__ StringT toString() const override;
 
       bool almostContains(const double p[]);
 
@@ -37,19 +37,19 @@ namespace MultiPlaneShape
    public:
       typedef amp::vector<Plane*> Planes;
 
-      MultiPlaneShape();
-      MultiPlaneShape(Plane* const planes[], int len);
+      __host__ __device__ MultiPlaneShape();
+      __host__ __device__ MultiPlaneShape(Plane* const planes[], int len);
 
-      bool contains(const double pos[]) const override;
-      double getFirstIntersection(const double pos0[], const double pos1[]) override;
-      StringT toString() const override;
+      __host__ __device__ bool contains(const double pos[]) const override;
+      __host__ __device__ double getFirstIntersection(const double pos0[], const double pos1[]) override;
+      __host__ __device__ StringT toString() const override;
 
       void rotate(const double pivot[], double phi, double theta, double psi) override;
       void translate(const double distance[]) override;
 
       //void addOffsetPlane(const double normal[], const double pt[], double dist);
       //void addPlane(const double normal[], const double point[]);
-      virtual void addPlane(Plane *plane);
+      __host__ __device__ virtual void addPlane(Plane *plane);
 
       Planes getPlanes() const;
 

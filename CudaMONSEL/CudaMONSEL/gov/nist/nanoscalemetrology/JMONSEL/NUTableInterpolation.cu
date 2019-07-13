@@ -6,26 +6,6 @@
 
 namespace NUTableInterpolation
 {
-   static std::unordered_map<StringT, const NUTableInterpolationT*, amp::string_hash, amp::string_cmp> instanceMap;
-
-   /**
-   * getInstance - Returns an instance of a RegularTableInterpolation object
-   * for the table contained in the named resource.
-   *
-   * @param tableFileName - A String providing the full path name of the data
-   *           file that stores the table to be interpolated.
-   */
-   const NUTableInterpolation* getInstance(char const * tableFileName)
-   {
-      printf("NUTableInterpolation* getInstance: %s\n", tableFileName);
-      const NUTableInterpolation* uniqueInstance = instanceMap[tableFileName];
-      if (uniqueInstance == nullptr) {
-         uniqueInstance = new NUTableInterpolation(tableFileName);
-         instanceMap[tableFileName] = uniqueInstance;
-      }
-      return uniqueInstance;
-   }
-
    /**
    * RegularTableInterpolation - Create an interpolation table from the named
    * resource. The table is assumed to be stored in the resource as numbers (in
@@ -39,11 +19,14 @@ namespace NUTableInterpolation
    * @param tableFileName - A String providing the name of the resource (data
    *           file) that stores the table to be interpolated.
    */
-   NUTableInterpolation::NUTableInterpolation(char const * tableFileName) : tableFileName(tableFileName), range(2, 0)
+   __host__ __device__ NUTableInterpolation::NUTableInterpolation(char const * tableFileName) : tableFileName(tableFileName), range(2, 0)
    {
       range[0] = INFINITY;
       range[1] = -INFINITY;
+
+#if (!(defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0)))
       ReadTable(tableFileName);
+#endif
    }
 
    /**
@@ -54,14 +37,15 @@ namespace NUTableInterpolation
    *
    * @return the domain
    */
-   MatrixXd NUTableInterpolation::getDomain() const
+   __host__ __device__ const MatrixXd& NUTableInterpolation::getDomain() const
    {
       // Return a deep copy
-      MatrixXd domainCopy(dim, VectorXd(2, 0));
-      for (int i = 0; i < dim; i++)
-         for (int j = 0; j < 2; j++)
-            domainCopy[i][j] = domain[i][j];
-      return domainCopy;
+      //MatrixXd domainCopy(dim, VectorXd(2, 0));
+      //for (int i = 0; i < dim; i++)
+      //   for (int j = 0; j < 2; j++)
+      //      domainCopy[i][j] = domain[i][j];
+      //return domainCopy;
+      return domain;
    }
 
    /**
@@ -72,13 +56,14 @@ namespace NUTableInterpolation
    *
    * @return the range
    */
-   VectorXd NUTableInterpolation::getRange() const
+   __host__ __device__ const VectorXd& NUTableInterpolation::getRange() const
    {
       // Return a copy
-      VectorXd rangeCopy(2, 0);
-      rangeCopy[0] = range[0];
-      rangeCopy[1] = range[1];
-      return rangeCopy;
+      //VectorXd rangeCopy(2, 0);
+      //rangeCopy[0] = range[0];
+      //rangeCopy[1] = range[1];
+      //return rangeCopy;
+      return range;
    }
 
    /**
@@ -96,7 +81,7 @@ namespace NUTableInterpolation
    * @return double - The estimated value of the tabulated function at the
    *         supplied coordinate.
    */
-   double NUTableInterpolation::interpolate(double xval[], int xvallen, int order) const
+   __host__ __device__ double NUTableInterpolation::interpolate(double xval[], int xvallen, int order) const
    {
       if (xvallen < dim)
          printf("Attempt to interpolate %s at x with %d dimensions", tableFileName.c_str(), dim);
@@ -112,6 +97,7 @@ namespace NUTableInterpolation
          return NULagrangeInterpolation::d4(table4d, x, order, xval, xvallen)[0];
       default:
          printf("NUTableInterpolation::interpolate: Table dimensions must be 1<=dim<=4");
+         return NAN;
       }
    }
 
@@ -226,5 +212,95 @@ namespace NUTableInterpolation
       catch (std::exception&) {
          printf("NUTableInterpolation::ReadTable: failed reading file %s\n", tableFileName);
       }
+   }
+
+   __host__ __device__ const VectorXd& NUTableInterpolation::gettable1d() const
+   {
+      return table1d;
+   }
+
+   __host__ __device__ const MatrixXd& NUTableInterpolation::gettable2d() const
+   {
+      return table2d;
+   }
+
+   __host__ __device__ const Matrix3DXd& NUTableInterpolation::gettable3d() const
+   {
+      return table3d;
+   }
+
+   __host__ __device__ const Matrix4DXd& NUTableInterpolation::gettable4d() const
+   {
+      return table4d;
+   }
+
+   __host__ __device__ const MatrixXd& NUTableInterpolation::getx() const
+   {
+      return x;
+   }
+
+   __host__ __device__ const MatrixXd& NUTableInterpolation::getdomain() const
+   {
+      return domain;
+   }
+
+   __host__ __device__ const VectorXd& NUTableInterpolation::getrange() const
+   {
+      return range;
+   }
+
+   __device__ void NUTableInterpolation::copytable1d()
+   {
+   }
+
+   __global__ void copytable1d()
+   {
+   }
+
+   __host__ __device__ NUTableInterpolationFactory::NUTableInterpolationFactory()
+   {
+   }
+
+   /**
+   * getInstance - Returns an instance of a RegularTableInterpolation object
+   * for the table contained in the named resource.
+   *
+   * @param tableFileName - A String providing the full path name of the data
+   *           file that stores the table to be interpolated.
+   */
+   __host__ __device__ const NUTableInterpolation* NUTableInterpolationFactory::getInstance(char const * tableFileName)
+   {
+      printf("NUTableInterpolation* getInstance: %s\n", tableFileName);
+      const NUTableInterpolation* uniqueInstance = nullptr;
+      StringT key(tableFileName);
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+      if (instanceMap.ContainsKey(key))
+         instanceMap[key] = instanceMap[tableFileName];
+#else
+      if (!instanceMap.ContainsKey(key)) {
+         uniqueInstance = new NUTableInterpolation(tableFileName);
+         instanceMap.Put(key, uniqueInstance);
+      }
+      uniqueInstance = instanceMap[key];
+#endif
+      if (!uniqueInstance) printf("const NUTableInterpolation* NUTableInterpolationFactory::getInstance: failed\n");
+      return uniqueInstance;
+   }
+
+   static NUTableInterpolationFactory Factory;
+   __device__ static NUTableInterpolationFactory* d_Factory;
+
+   __global__ void initCuda()
+   {
+      d_Factory = new NUTableInterpolationFactory();
+   }
+
+   __host__ __device__ const NUTableInterpolation* getInstance(char const * tableFileName)
+   {
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+      return d_Factory->getInstance(tableFileName);
+#else
+      return Factory.getInstance(tableFileName);
+#endif
    }
 }

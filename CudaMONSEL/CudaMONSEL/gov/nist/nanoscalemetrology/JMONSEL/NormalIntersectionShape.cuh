@@ -10,18 +10,18 @@ namespace NormalIntersectionShape
    class NormalIntersectionShape : public NormalShapeT, public ITransformT
    {
    public:
-      NormalIntersectionShape(NormalShapeT& shapeA, NormalShapeT& shapeB);
+      __host__ __device__ NormalIntersectionShape(NormalShapeT& shapeA, NormalShapeT& shapeB);
 
-      bool contains(const double pos[]) const override;
-      double getFirstIntersection(const double pos0[], const double pos1[]) override;
-      StringT toString() const override;
+      __host__ __device__ bool contains(const double pos[]) const override;
+      __host__ __device__ double getFirstIntersection(const double pos0[], const double pos1[]) override;
+      __host__ __device__ StringT toString() const override;
 
       void rotate(const double pivot[], double phi, double theta, double psi) override;
       void translate(const double distance[]) override;
 
-      bool contains(const double pos0[], const double pos1[]) const  override;
-      const double* getFirstNormal(const double pos0[], const double pos1[]) override;
-      const double* getPreviousNormal() const override;
+      __host__ __device__ bool contains(const double pos0[], const double pos1[]) const  override;
+      __host__ __device__ const double* getFirstNormal(const double pos0[], const double pos1[]) override;
+      __host__ __device__ const double* getPreviousNormal() const override;
 
    private:
       NormalShapeT& shapeA;

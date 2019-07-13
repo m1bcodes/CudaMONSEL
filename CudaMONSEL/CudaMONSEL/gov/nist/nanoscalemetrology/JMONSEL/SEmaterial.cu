@@ -8,7 +8,7 @@ static const long serialVersionUID = 0x42;
 namespace SEmaterial
 {
    // Material properties appropriate to vacuum
-   SEmaterial::SEmaterial() :
+   __host__ __device__ SEmaterial::SEmaterial() :
       Material(0),
       workfunction(0.),
       energyCBbottom(0.),
@@ -16,7 +16,7 @@ namespace SEmaterial
    {
    }
 
-   SEmaterial::SEmaterial(const SEmaterial& other) :
+   __host__ __device__ SEmaterial::SEmaterial(const SEmaterial& other) :
       Material(other),
       workfunction(other.workfunction),
       energyCBbottom(other.energyCBbottom),
@@ -32,7 +32,7 @@ namespace SEmaterial
    {
    }
 
-   SEmaterial::SEmaterial(const Element::Element* elms[], int elemLen, const double weightFracs[], int wfLen, double density, char* name) :
+   __host__ __device__ SEmaterial::SEmaterial(const Element::Element* elms[], int elemLen, const double weightFracs[], int wfLen, double density, char* name) :
       Material(elms, elemLen, weightFracs, wfLen, density, name),
       workfunction(0.),
       energyCBbottom(0.),
@@ -40,7 +40,7 @@ namespace SEmaterial
    {
    }
 
-   SEmaterial::SEmaterial(const Material& mat) :
+   __host__ __device__ SEmaterial::SEmaterial(const Material& mat) :
       Material(mat),
       workfunction(0.),
       energyCBbottom(0.),
@@ -210,12 +210,12 @@ namespace SEmaterial
    //   return bindingEnergy;
    //}
 
-   Setd SEmaterial::getCoreEnergyArray() const
+   __host__ __device__ Setd SEmaterial::getCoreEnergyArray() const
    {
       return coreEnergy;
    }
 
-   double SEmaterial::getEFermi() const
+   __host__ __device__ double SEmaterial::getEFermi() const
    {
       return -energyCBbottom - workfunction;
    }
@@ -240,12 +240,12 @@ namespace SEmaterial
    //   return kineticEnergy;
    //}
 
-   double SEmaterial::getWorkfunction() const
+   __host__ __device__ double SEmaterial::getWorkfunction() const
    {
       return workfunction;
    }
 
-   double SEmaterial::getBandgap() const
+   __host__ __device__ double SEmaterial::getBandgap() const
    {
       return bandgap;
    }
@@ -308,12 +308,12 @@ namespace SEmaterial
    //   version = (version == _UI32_MAX) ? 0L : version + 1L;
    //}
 
-   void SEmaterial::setCoreEnergy()
+   __host__ __device__ void SEmaterial::setCoreEnergy()
    {
       this->coreEnergy.clear();
    }
 
-   void SEmaterial::setCoreEnergy(const double coreEnergy[], int len)
+   __host__ __device__ void SEmaterial::setCoreEnergy(const double coreEnergy[], int len)
    {
       setCoreEnergy();
       for (int i = 0; i < len; ++i) {

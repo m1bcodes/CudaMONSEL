@@ -30,7 +30,7 @@ namespace Composition
    {
       if (!mConstituents.empty()) {
          mNormalization = UncertainValue2::ZERO();
-         for (auto e : mConstituents) {
+         for (auto &e : mConstituents) {
             auto const &uv = e.second;
             if (((UncertainValue2::UncertainValue2&)uv).doubleValue() > 0.0) {
                mNormalization = UncertainValue2::add(mNormalization, uv);

@@ -29,21 +29,21 @@ namespace BasicMaterialModel
       //}
    }
    
-   const MaterialT& BasicMaterialModel::getMaterial() const
+   __host__ __device__ const MaterialT& BasicMaterialModel::getMaterial() const
    {
       return mMaterial;
    }
 
-   double BasicMaterialModel::randomMeanPathLength(ElectronT& pe)
+   __host__ __device__ double BasicMaterialModel::randomMeanPathLength(ElectronT& pe)
    {
       // Ref: Heinrich 1981 p 458
       double kE = pe.getEnergy();
       double minMfp = 1.0;
-      const ElementT* bestEl = &Element::None;
+      const ElementT* bestEl = nullptr;
       double den = mMaterial.getDensity();
       const RandomizedScatterFactoryT* rsf = (RandomizedScatterFactoryT*)getAlgorithm("RandomizedScatterFactory");
       if (!(rsf != NULL)) printf("BasicMaterialModel::randomMeanPathLength: rsf == NULL\n");
-      for (auto el : mMaterial.getElementSet()) {
+      for (auto &el : mMaterial.getElementSet()) {
          const double mfp = (el->getMass() * Random::expRand()) / (den * mMaterial.weightFraction(*el, true) * rsf->get(*el).totalCrossSection(kE));
          if (mfp < minMfp) {
             minMfp = mfp;
@@ -54,10 +54,14 @@ namespace BasicMaterialModel
       return minMfp;
    }
 
-   ElectronT* BasicMaterialModel::scatter(ElectronT& pe)
+   __host__ __device__ ElectronT* BasicMaterialModel::scatter(ElectronT& pe)
    {
       const ElementT* se = pe.getScatteringElement();
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+      if ((se != nullptr) && !(*se == *Element::dNone))
+#else
       if ((se != nullptr) && !(*se == Element::None))
+#endif
       {
          const RandomizedScatterFactoryT* rsf = (RandomizedScatterFactoryT*)getAlgorithm("RandomizedScatterFactory");
          if (rsf == nullptr) printf("BasicMaterialModel::scatter: rsf == NULL\n");
@@ -68,17 +72,17 @@ namespace BasicMaterialModel
          // so it is not necessary.
          pe.updateDirection(alpha, beta);
       }
-      return NULL; // --no SE generation in this model
+      return nullptr; // --no SE generation in this model
    }
 
-   ElectronT* BasicMaterialModel::barrierScatter(ElectronT* pe, const RegionBaseT* nextRegion) const
+   __host__ __device__ ElectronT* BasicMaterialModel::barrierScatter(ElectronT* pe, const RegionBaseT* nextRegion) const
    {
       pe->setCurrentRegion(nextRegion);
-      pe->setScatteringElement(NULL);
+      pe->setScatteringElement(nullptr);
       return nullptr;
    }
 
-   double BasicMaterialModel::calculateEnergyLoss(double len, const ElectronT& pe) const
+   __host__ __device__ double BasicMaterialModel::calculateEnergyLoss(double len, const ElectronT& pe) const
    {
       // See Heinrich 1981 pp 226-227
       const double kE = pe.getEnergy();
@@ -88,7 +92,7 @@ namespace BasicMaterialModel
       return res * mMaterial.getDensity() * len;
    }
 
-   double BasicMaterialModel::getMinEforTracking() const
+   __host__ __device__ double BasicMaterialModel::getMinEforTracking() const
    {
       return minEforTracking;
    }
@@ -98,10 +102,14 @@ namespace BasicMaterialModel
       this->minEforTracking = minEforTracking;
    }
 
-   void BasicMaterialModel::initializeDefaultStrategy()
+   __host__ __device__ void BasicMaterialModel::initializeDefaultStrategy()
    {
       // addDefaultAlgorithm(RandomizedScatterFactory.class,
       // ScreenedRutherfordScatteringAngle.Factory);
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+      addDefaultAlgorithm("RandomizedScatterFactory", NISTMottScatteringAngle::d_Factory);
+#else
       addDefaultAlgorithm("RandomizedScatterFactory", &NISTMottScatteringAngle::Factory);
+#endif
    }
 }

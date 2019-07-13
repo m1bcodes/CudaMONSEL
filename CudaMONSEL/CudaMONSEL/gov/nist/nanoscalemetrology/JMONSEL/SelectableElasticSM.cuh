@@ -13,16 +13,16 @@ namespace SelectableElasticSM
       typedef amp::vector<const RandomizedScatterT*> RandomizedScatterList;
 
    public:
-      SelectableElasticSM(const MaterialT& mat, const RandomizedScatterFactoryT& rsf);
-      SelectableElasticSM(const MaterialT& mat);
+      __host__ __device__ SelectableElasticSM(const MaterialT& mat, const RandomizedScatterFactoryT& rsf);
+      __host__ __device__ SelectableElasticSM(const MaterialT& mat);
       //SelectableElasticSM(const SelectableElasticSM&); // clonable
 
-      double scatterRate(const ElectronT* pe) override;
-      ElectronT* scatter(ElectronT* pe) override;
-      void setMaterial(const MaterialT* mat) override;
+      __host__ __device__ double scatterRate(const ElectronT* pe) override;
+      __host__ __device__ ElectronT* scatter(ElectronT* pe) override;
+      __host__ __device__ void setMaterial(const MaterialT* mat) override;
 
    private:
-      void setCache(double kE);
+      __host__ __device__ void setCache(double kE);
 
       RandomizedScatterList rse;
       // Set scatter class default to NISTMottScatteringAngle

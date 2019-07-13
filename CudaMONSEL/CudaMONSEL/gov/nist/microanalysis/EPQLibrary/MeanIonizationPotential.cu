@@ -11,7 +11,9 @@ namespace MeanIonizationPotential
    {
    }
 
-   void MeanIonizationPotential::initializeDefaultStrategy() {}
+   __host__ __device__ void MeanIonizationPotential::initializeDefaultStrategy()
+   {
+   }
 
    StringT caveat(const ElementT &el)
    {

@@ -18,7 +18,7 @@ namespace BrowningEmpiricalCrossSection
    {
    }
 
-   const ElementT& BrowningEmpiricalCrossSection::getElement() const
+   __host__ __device__ const ElementT& BrowningEmpiricalCrossSection::getElement() const
    {
       return mElement;
    }
@@ -30,7 +30,7 @@ namespace BrowningEmpiricalCrossSection
       return 3.0e-22 * mZp17 / (e + 0.005 * mZp17 * re + 0.0007 * mZp2 / re);
    }
 
-   double BrowningEmpiricalCrossSection::randomScatteringAngle(const double energy) const
+   __host__ __device__ double BrowningEmpiricalCrossSection::randomScatteringAngle(const double energy) const
    {
       const double r1 = Random::random(), r2 = Random::random();
       const double z = mElement.getAtomicNumber();

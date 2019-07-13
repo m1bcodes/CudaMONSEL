@@ -48,7 +48,7 @@ namespace NShapes
    //}
 
    // TODO: write a destructor
-   NormalShapeT* createLine(
+   __host__ __device__ NormalShapeT* createLine(
       double topz, // z of the top face
       double width, // line width
       double length, // length of line

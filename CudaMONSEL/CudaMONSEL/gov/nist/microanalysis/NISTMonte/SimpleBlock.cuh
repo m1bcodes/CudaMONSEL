@@ -11,9 +11,9 @@ namespace SimpleBlock
    public:
       SimpleBlock(const double corner0[], const double corner1[]);
 
-      bool contains(const double pos[]) const;
-      double getFirstIntersection(const double pos0[], const double pos1[]);
-      StringT toString() const;
+      __host__ __device__ bool contains(const double pos[]) const override;
+      __host__ __device__ double getFirstIntersection(const double pos0[], const double pos1[]) override;
+      __host__ __device__ StringT toString() const override;
 
       const double* getCorner0() const;
       const double* getCorner1() const;

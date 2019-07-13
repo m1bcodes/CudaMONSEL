@@ -11,19 +11,20 @@ namespace AlgorithmUser
    protected:
       __host__ __device__ AlgorithmUser();
 
-      void addDefaultAlgorithm(char cls[], const AlgorithmClassT* ac);
-      const AlgorithmClassT* getAlgorithm(char clsName[]) const;
+      __host__ __device__ void addDefaultAlgorithm(char cls[], AlgorithmClassT const * ac);
+      __host__ __device__ const AlgorithmClassT* getAlgorithm(char clsName[]) const;
 
       //virtual void initializeDefaultStrategy() = 0;
-      virtual void initializeDefaultStrategy() = 0;
+      __host__ __device__ virtual void initializeDefaultStrategy() = 0;
 
    private:
       StrategyT mLocalOverride;
    };
 
-   extern const BetheElectronEnergyLossT* getDefaultBetheEnergyLoss();
+   __host__ __device__ extern const BetheElectronEnergyLossT* getDefaultBetheEnergyLoss();
 
    extern StrategyT mGlobalOverride;
+   extern __device__ StrategyT* dGlobalOverride;
 
    extern const EdgeEnergyT& sDefaultEdgeEnergy;
    //extern TransitionEnergy sDefaultTransitionEnergy = null;
@@ -35,6 +36,8 @@ namespace AlgorithmUser
    //extern CorrectionAlgorithm sDefaultCorrectionAlgorithm = null;
 
    const EdgeEnergyT& getDefaultEdgeEnergy();
+
+   extern __global__ void initCuda();
 }
 
 #endif

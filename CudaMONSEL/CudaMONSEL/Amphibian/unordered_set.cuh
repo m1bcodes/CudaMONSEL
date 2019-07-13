@@ -97,6 +97,8 @@ namespace amp
       //__host__ __device__ const_iterator end();
       __host__ __device__ const_iterator begin() const;
       __host__ __device__ const_iterator end() const;
+      __host__ __device__ const_iterator find(const T&) const;
+      __host__ __device__ void erase(const const_iterator& itr);
 
       __host__ __device__ void insert(const_iterator& start, const_iterator& stop);
 
@@ -221,6 +223,15 @@ namespace amp
    }
 
    template<typename T, typename Hash, typename Pred>
+   __host__ __device__ unordered_set<T, Hash, Pred>::const_iterator unordered_set<T, Hash, Pred>::find(const T& v) const
+   {
+      for (const_iterator itr(*this); itr != end(); ++itr) {
+         if (*itr == v) return itr;
+      }
+      return end();
+   }
+
+   template<typename T, typename Hash, typename Pred>
    __host__ __device__ bool unordered_set<T, Hash, Pred>::empty() const
    {
       for (int k = 0; k < NUM_SET_BUCKETS; ++k) {
@@ -279,6 +290,12 @@ namespace amp
    __host__ __device__ void unordered_set<T, Hash, Pred>::erase(const T& v)
    {
       LinkedList::Remove<T, Pred>(&buckets[GetBucketIdx(v)], v);
+   }
+
+   template<typename T, typename Hash, typename Pred>
+   __host__ __device__ void unordered_set<T, Hash, Pred>::erase(const unordered_set<T, Hash, Pred>::const_iterator& v)
+   {
+      LinkedList::Remove<T, Pred>(&buckets[GetBucketIdx(*v)], *v);
    }
 
    template<typename T, typename Hash, typename Pred>

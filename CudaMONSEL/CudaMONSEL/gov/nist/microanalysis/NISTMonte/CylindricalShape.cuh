@@ -10,12 +10,12 @@ namespace CylindricalShape
    class CylindricalShape : public ShapeT, public ITransformT
    {
    public:
-      CylindricalShape(const double end0[], const double end1[], double radius);
-      CylindricalShape(const CylindricalShape&);
+      __host__ __device__ CylindricalShape(const double end0[], const double end1[], double radius);
+      __host__ __device__ CylindricalShape(const CylindricalShape&);
 
-      bool contains(const double pos[]) const override;
-      double getFirstIntersection(const double pos0[], const double pos1[]) override;
-      StringT toString() const override;
+      __host__ __device__ bool contains(const double pos[]) const override;
+      __host__ __device__ double getFirstIntersection(const double pos0[], const double pos1[]) override;
+      __host__ __device__ StringT toString() const override;
 
       void rotate(const double pivot[], double phi, double theta, double psi) override;
       void translate(const double distance[]) override;
@@ -23,12 +23,12 @@ namespace CylindricalShape
       const double* getEnd0() const;
       const double* getEnd1() const;
 
-      double getRadius() const;
+      __host__ __device__ double getRadius() const;
       double getLength() const;
 
    private:
-      double closestPointOnAxis(const double p[]) const;
-      double distanceSqr(const double p[], double u) const;
+      __host__ __device__ double closestPointOnAxis(const double p[]) const;
+      __host__ __device__ double distanceSqr(const double p[], double u) const;
 
       double mEnd0[3]; // The position of the center of one end cap
       double mEnd1[3]; // redundant...

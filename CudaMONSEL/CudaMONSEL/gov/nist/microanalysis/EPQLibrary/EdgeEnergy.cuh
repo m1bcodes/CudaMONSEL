@@ -9,7 +9,8 @@ namespace EdgeEnergy
    class EdgeEnergy : public AlgorithmClassT
    {
    protected:
-      void initializeDefaultStrategy() override;
+      __host__ __device__ void initializeDefaultStrategy() override;
+
       EdgeEnergy(StringT name, StringT ref);
       EdgeEnergy(StringT name, const ReferenceT& ref);
 

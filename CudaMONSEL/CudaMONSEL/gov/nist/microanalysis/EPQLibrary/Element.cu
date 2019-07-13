@@ -1010,7 +1010,7 @@ namespace Element
       //memcpy(mIonizationEnergy, hIonizationEnergy, sizeof(hIonizationEnergy));
    }
 
-   void copyDataToDevice()
+   void copyDataToCuda()
    {
       checkCudaErrors(cudaMemcpyToSymbol(dAtomicWeight, mAtomicWeight.data(), sizeof(float) * mAtomicWeight.size()));
       checkCudaErrors(cudaMemcpyToSymbol(dIonizationEnergy, mIonizationEnergy.data(), sizeof(float) * mIonizationEnergy.size()));
@@ -1170,7 +1170,7 @@ namespace Element
       return ::Element::getAtomicWeight(mAtomicNumber);
    }
 
-   double Element::getMass() const
+   __host__ __device__ double Element::getMass() const
    {
       return ToSI::AMU(::Element::getAtomicWeight(mAtomicNumber));
    }
@@ -1253,18 +1253,31 @@ namespace Element
       return mElementNames[mAtomicNumber];
    }
 
-   double Element::getIonizationEnergy() const
+   __host__ __device__ double Element::getIonizationEnergy() const
    {
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+      if (dIonizationEnergy[mAtomicNumber - 1] <= 0) {
+         printf("Element::getIonizationEnergy: load mIonizationEnergy by calling readIonizationEnergy first\n");
+         return -1.0;
+      }
+
+      const double res = (mAtomicNumber - 1 <= numIonizationEnergy) ? dIonizationEnergy[mAtomicNumber - 1] : -1.0;
+      if (res == -1.0) {
+         printf("Element::getIonizationEnergy: The ionization energy is not available for %s\n", toAbbrev());
+      }
+      return res;
+#else
       if (mIonizationEnergy.size() <= 0 || mIonizationEnergy[mAtomicNumber - 1] <= 0) {
          readIonizationEnergy();
          printf("Element::getIonizationEnergy: load mIonizationEnergy by calling readIonizationEnergy first\n");
       }
 
-      double res = (mAtomicNumber - 1 <= numIonizationEnergy) ? mIonizationEnergy[mAtomicNumber - 1] : -1.0;
+      const double res = (mAtomicNumber - 1 <= numIonizationEnergy) ? mIonizationEnergy[mAtomicNumber - 1] : -1.0;
       if (res == -1.0) {
          printf("Element::getIonizationEnergy: The ionization energy is not available for %s\n", toAbbrev());
       }
       return res;
+#endif
    }
 
    const Element& Element::readResolve()

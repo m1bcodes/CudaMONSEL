@@ -11,7 +11,7 @@ namespace EdgeEnergy
 {
    static const Reference::CrudeReference sCrudeRef("Edge Energy");
 
-   void EdgeEnergy::initializeDefaultStrategy()
+   __host__ __device__ void EdgeEnergy::initializeDefaultStrategy()
    {
    }
 

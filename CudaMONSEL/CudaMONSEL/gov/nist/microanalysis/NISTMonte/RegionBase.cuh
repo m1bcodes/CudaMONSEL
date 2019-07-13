@@ -6,30 +6,49 @@
 #include "gov\nist\microanalysis\EPQLibrary\Element.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\ITransform.cuh"
 
+#include "Amphibian\Hasher.cuh"
+
 namespace RegionBase
 {
    class RegionBase
    {
    public:
-      typedef std::unordered_set<RegionBase*> RBListT;
+      struct PtrHashFcn
+      {
+         __host__ __device__ inline unsigned int operator() (const RegionBase* ptr) const
+         {
+            return Hasher::Hash((char *)&ptr, sizeof(ptr));
+         }
+      };
+
+      struct PtrCompareFcn
+      {
+         __host__ __device__ inline unsigned int operator() (const RegionBase* lhs, const RegionBase* rhs) const
+         {
+            return lhs == rhs;
+         }
+      };
+
+      //typedef std::unordered_set<RegionBase*> RBListT;
+      typedef amp::unordered_set<RegionBase*, PtrHashFcn, PtrCompareFcn> RBListT;
 
    protected:
-      TransformableRegion * mParent;
-      IMaterialScatterModelT * mScatterModel;
-      ShapeT * mShape;
+      TransformableRegion* mParent;
+      IMaterialScatterModelT* mScatterModel;
+      ShapeT* mShape;
       RBListT mSubRegions;
 
    public:
       //void updateMaterial(const MaterialT& oldMat, const IMaterialScatterModelT& newMat);
-      void updateMaterial(const IMaterialScatterModelT& oldMat, IMaterialScatterModelT& newMat);
-      const MaterialT& getMaterial() const;
-      IMaterialScatterModelT* getScatterModel() const;
+      __host__ __device__ void updateMaterial(const IMaterialScatterModelT& oldMat, IMaterialScatterModelT& newMat);
+      __host__ __device__ const MaterialT& getMaterial() const;
+      __host__ __device__ IMaterialScatterModelT* getScatterModel() const;
       const RBListT& getSubRegions() const;
       void addRegion(RegionBase&); // protected member inaccessble via pointer
-      const RegionBase* containingSubRegion(const double pos[]) const;
+      __host__ __device__ const RegionBase* containingSubRegion(const double pos[]) const;
       Element::UnorderedSetT getElements(bool recurse) const;
-      const RegionBase* findEndOfStep(const double p0[], double p1[]) const; // p1 changes!!!
-      const ShapeT* getShape() const;
+      __host__ __device__ const RegionBase* findEndOfStep(const double p0[], double p1[]) const; // p1 changes!!!
+      __host__ __device__ const ShapeT* getShape() const;
       ShapeT* getShape2();
 
    //protected:
@@ -49,7 +68,7 @@ namespace RegionBase
    class Region : public TransformableRegion
    {
    public:
-      Region(Region* const parent, IMaterialScatterModelT * const msm, ShapeT * const shape);
+      __host__ __device__ Region(Region* const parent, IMaterialScatterModelT * const msm, ShapeT * const shape);
       Region(const Region&);
       void removeSubRegion(RegionBase& subRegion);
       void clearSubRegions();
