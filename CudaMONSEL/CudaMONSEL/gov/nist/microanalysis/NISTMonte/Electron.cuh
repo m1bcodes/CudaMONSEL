@@ -14,7 +14,7 @@ namespace Electron
 
       __host__ __device__ void init(const double initialPos[], double theta, double phi, double kE);
 
-      void setDirection(double theta, double phi);
+      __host__ __device__ void setDirection(double theta, double phi);
       __host__ __device__ const double * getPosition() const;
       __host__ __device__ void setPosition(const double newpos[]);
       __host__ __device__ const double * getPrevPosition() const;

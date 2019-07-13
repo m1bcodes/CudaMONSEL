@@ -14,7 +14,7 @@ namespace Material
       __host__ __device__ Material(const Material& comp);
       __host__ __device__ Material(const Composition& comp, double density);
       Material(const Element::Element* elm[], const double density[]);
-      Material(const Element::Element* elms[], int elmsLen, const double massFracs[], int massFracsLen, double density, const char* name);
+      __host__ __device__ Material(const Element::Element* elms[], int elmsLen, const double massFracs[], int massFracsLen, double density, const char* name);
 
       __host__ __device__ Material& operator=(const Material&);
       bool operator==(const Material&) const;

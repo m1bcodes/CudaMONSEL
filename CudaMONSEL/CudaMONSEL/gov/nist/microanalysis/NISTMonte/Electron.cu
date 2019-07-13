@@ -53,7 +53,7 @@ namespace Electron
       parentID = parent.getIdent();
    }
 
-   void Electron::setDirection(double theta, double phi)
+   __host__ __device__ void Electron::setDirection(double theta, double phi)
    {
       mTheta = theta;
       mPhi = phi;

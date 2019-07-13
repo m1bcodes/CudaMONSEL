@@ -44,7 +44,7 @@ namespace RegionBase
       __host__ __device__ const MaterialT& getMaterial() const;
       __host__ __device__ IMaterialScatterModelT* getScatterModel() const;
       const RBListT& getSubRegions() const;
-      void addRegion(RegionBase&); // protected member inaccessble via pointer
+      __host__ __device__ void addRegion(RegionBase&); // protected member inaccessble via pointer
       __host__ __device__ const RegionBase* containingSubRegion(const double pos[]) const;
       Element::UnorderedSetT getElements(bool recurse) const;
       __host__ __device__ const RegionBase* findEndOfStep(const double p0[], double p1[]) const; // p1 changes!!!
@@ -53,8 +53,8 @@ namespace RegionBase
 
    //protected:
       double getAtomsPerCubicMeter(const ElementT& el) const;
-      const RegionBase* getParent() const;
-      bool isContainingRegion(const RegionBase& searchTarget) const;
+      __host__ __device__ const RegionBase* getParent() const;
+      __host__ __device__ bool isContainingRegion(const RegionBase& searchTarget) const;
       StringT toString() const;
    };
 

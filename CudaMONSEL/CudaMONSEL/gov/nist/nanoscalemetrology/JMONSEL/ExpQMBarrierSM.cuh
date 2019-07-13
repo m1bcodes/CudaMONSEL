@@ -16,7 +16,7 @@ namespace ExpQMBarrierSM
       StringT toString() const;
 
    private:
-      double generalBarrierT(double rootPerpE, double rootDiff) const;
+      __host__ __device__ double generalBarrierT(double rootPerpE, double rootDiff) const;
 
       double u0; // Barrier height of this material to vacuum.
       double lambda; // Barrier width

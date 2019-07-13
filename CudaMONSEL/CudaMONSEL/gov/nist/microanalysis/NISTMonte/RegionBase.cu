@@ -46,7 +46,7 @@ namespace RegionBase
       return mSubRegions;
    }
 
-   void RegionBase::addRegion(RegionBase& reg)
+   __host__ __device__ void RegionBase::addRegion(RegionBase& reg)
    {
       mSubRegions.insert(&reg);
    }
@@ -146,12 +146,12 @@ namespace RegionBase
       return getMaterial().atomsPerCubicMeter(el);
    }
    
-   const RegionBase* RegionBase::getParent() const
+   __host__ __device__ const RegionBase* RegionBase::getParent() const
    {
       return mParent;
    }
    
-   bool RegionBase::isContainingRegion(const RegionBase& searchTarget) const
+   __host__ __device__ bool RegionBase::isContainingRegion(const RegionBase& searchTarget) const
    {
       for (auto sub : mSubRegions)
          if ((sub == &searchTarget) || sub->isContainingRegion(searchTarget))

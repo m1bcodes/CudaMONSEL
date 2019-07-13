@@ -60,12 +60,12 @@ namespace MultiPlaneShape
       mPoint[2] += distance[2];
    }
 
-   const double* Plane::getNormal() const
+   __host__ __device__ const double* Plane::getNormal() const
    {
       return mNormal;
    }
 
-   const double* Plane::getPoint() const
+   __host__ __device__ const double* Plane::getPoint() const
    {
       return mPoint;
    }

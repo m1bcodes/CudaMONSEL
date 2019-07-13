@@ -24,8 +24,8 @@ namespace MultiPlaneShape
       void rotate(const double pivot[], double phi, double theta, double psi) override;
       void translate(const double distance[]) override;
 
-      const double* getNormal() const;
-      const double* getPoint() const;
+      __host__ __device__ const double* getNormal() const;
+      __host__ __device__ const double* getPoint() const;
 
    private:
       double mNormal[3];

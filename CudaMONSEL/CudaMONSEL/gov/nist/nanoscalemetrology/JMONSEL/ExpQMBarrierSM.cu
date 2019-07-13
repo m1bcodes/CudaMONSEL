@@ -31,13 +31,13 @@ namespace ExpQMBarrierSM
    {
    }
 
-   static double sharpBarrierT(double rootPerpE, double rootDiff)
+   __host__ __device__ static double sharpBarrierT(double rootPerpE, double rootDiff)
    {
       double ksum = rootPerpE + rootDiff;
       return (4. * rootPerpE * rootDiff) / (ksum * ksum);
    }
 
-   double ExpQMBarrierSM::generalBarrierT(double rootPerpE, double rootDiff) const
+   __host__ __device__ double ExpQMBarrierSM::generalBarrierT(double rootPerpE, double rootDiff) const
    {
       const double k1 = lambdaFactor * rootPerpE;
       if (k1 > 50.)
