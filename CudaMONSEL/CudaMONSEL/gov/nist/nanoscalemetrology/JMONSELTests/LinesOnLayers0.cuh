@@ -5,17 +5,10 @@
 
 namespace LinesOnLayers
 {
-   extern void run();
-   extern void run1();
+   extern void copyDataToCuda();
 
-   extern void initCuda();
+   extern __global__ void initCuda();
    extern __global__ void runCuda();
-
-   class LinesOnLayers
-   {
-   public:
-   private:
-   };
 }
 
 #endif

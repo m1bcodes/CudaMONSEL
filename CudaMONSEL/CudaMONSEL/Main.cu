@@ -52,7 +52,7 @@
 #include "gov\nist\microanalysis\EPQTests\BetheElectronEnergyLossTest.cuh"
 #include "gov\nist\microanalysis\EPQTests\MonteCarloSSTest.cuh"
 
-#include "gov\nist\nanoscalemetrology\JMONSELTests\LinesOnLayers.cuh"
+#include "gov\nist\nanoscalemetrology\JMONSELTests\LinesOnLayers0.cuh"
 
 //__device__ __host__ float function(float x)
 //{
@@ -363,12 +363,14 @@ int main()
 
    //initCuda();
 
-   //LinesOnLayers::initCuda();
-   LinesOnLayers::run1();
+   LinesOnLayers::copyDataToCuda();
 
-   //LinesOnLayers::runCuda << <1, 1 >> >();
-   //checkCudaErrors(cudaDeviceSynchronize());
-   //checkCudaErrors(cudaGetLastError());
+   LinesOnLayers::initCuda<<<1, 1>>>();
+   //LinesOnLayers::run();
+
+   LinesOnLayers::runCuda << <1, 1 >> >();
+   checkCudaErrors(cudaDeviceSynchronize());
+   checkCudaErrors(cudaGetLastError());
 
    printf("done\n");
 
