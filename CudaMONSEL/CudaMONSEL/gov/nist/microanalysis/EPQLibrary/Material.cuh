@@ -49,7 +49,7 @@ namespace Material
    };
 
    extern const Material Default;
-   extern __device__ const Material *dDefault;
+   extern __device__ const Material *d_Default;
    extern __global__ void initCuda();
 }
 #endif

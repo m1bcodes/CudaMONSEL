@@ -24,16 +24,16 @@ namespace AlgorithmUser
    __host__ __device__ extern const BetheElectronEnergyLossT* getDefaultBetheEnergyLoss();
 
    extern StrategyT mGlobalOverride;
-   extern __device__ StrategyT* dGlobalOverride;
+   extern __device__ StrategyT* d_mGlobalOverride;
 
    extern const EdgeEnergyT& sDefaultEdgeEnergy;
-   //extern TransitionEnergy sDefaultTransitionEnergy = null;
-   //extern MassAbsorptionCoefficient sDefaultMAC = null;
-   //extern FluorescenceYieldMean sDefaultFluorescenceYieldMean = null;
-   //extern FluorescenceYield sDefaultFluorescenceYield = null;
+   //extern TransitionEnergy sDefaultTransitionEnergy;
+   //extern MassAbsorptionCoefficient sDefaultMAC;
+   //extern FluorescenceYieldMean sDefaultFluorescenceYieldMean;
+   //extern FluorescenceYield sDefaultFluorescenceYield;
    extern BetheElectronEnergyLossT* sDefaultBetheEnergyLoss;
-   //extern Bremsstrahlung.AngularDistribution sDefaultAngularDistribution = null;
-   //extern CorrectionAlgorithm sDefaultCorrectionAlgorithm = null;
+   //extern Bremsstrahlung.AngularDistribution sDefaultAngularDistribution;
+   //extern CorrectionAlgorithm sDefaultCorrectionAlgorithm;
 
    const EdgeEnergyT& getDefaultEdgeEnergy();
 

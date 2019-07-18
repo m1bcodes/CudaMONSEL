@@ -294,7 +294,7 @@ namespace UncertainValue2
    __host__ __device__ UncertainValue2 multiply(double v1, const UncertainValue2& v2)
    {
       if (v2.uncertainty() < 0.0) {
-         printf("Error: v2.uncertainty() < 0.0");
+         printf("UncertainValue2 multiply: v2.uncertainty() = %.10e < 0.0", v2.uncertainty());
          return NULL;
       }
       UncertainValue2 res(v1 * v2.doubleValue());

@@ -947,7 +947,7 @@ namespace Element
    static std::vector<float> mAtomicWeight; // nominal, in AMU, AtomicWeights.csv
    static std::vector<float> mIonizationEnergy; // Nominal in Joules, IonizationEnergies.csv
 
-   __constant__ static float dAtomicWeight[112], dIonizationEnergy[104];
+   __constant__ static float d_AtomicWeight[112], d_IonizationEnergy[104];
 
    static void readAtomicWeights()
    {
@@ -1005,15 +1005,15 @@ namespace Element
       }
 
       //int bytes = sizeof(float) * mIonizationEnergy.size();
-      //checkCudaErrors(cudaMalloc(&dIonizationEnergy, bytes));
-      //checkCudaErrors(cudaMemcpyToSymbol(dIonizationEnergy, mIonizationEnergy.data(), bytes, cudaMemcpyHostToDevice));
+      //checkCudaErrors(cudaMalloc(&d_IonizationEnergy, bytes));
+      //checkCudaErrors(cudaMemcpyToSymbol(d_IonizationEnergy, mIonizationEnergy.data(), bytes, cudaMemcpyHostToDevice));
       //memcpy(mIonizationEnergy, hIonizationEnergy, sizeof(hIonizationEnergy));
    }
 
    void copyDataToCuda()
    {
-      checkCudaErrors(cudaMemcpyToSymbol(dAtomicWeight, mAtomicWeight.data(), sizeof(float) * mAtomicWeight.size()));
-      checkCudaErrors(cudaMemcpyToSymbol(dIonizationEnergy, mIonizationEnergy.data(), sizeof(float) * mIonizationEnergy.size()));
+      checkCudaErrors(cudaMemcpyToSymbol(d_AtomicWeight, mAtomicWeight.data(), sizeof(float) * mAtomicWeight.size()));
+      checkCudaErrors(cudaMemcpyToSymbol(d_IonizationEnergy, mIonizationEnergy.data(), sizeof(float) * mIonizationEnergy.size()));
    }
 
    //struct Initializer
@@ -1109,11 +1109,11 @@ namespace Element
          return elmNone;
       }
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-      else if (!dAtomicWeight || !dAtomicWeight[atomicNo - 1]) {
-         printf("need to load dAtomicWeight on to device first\n");
+      else if (!d_AtomicWeight || !d_AtomicWeight[atomicNo - 1]) {
+         printf("need to load d_AtomicWeight on to device first\n");
          return elmNone;
       }
-      return dAtomicWeight[atomicNo - 1];
+      return d_AtomicWeight[atomicNo - 1];
 #else
       else if (!mAtomicWeight.size() || !mAtomicWeight[atomicNo - 1]) {
          readAtomicWeights();
@@ -1129,7 +1129,7 @@ namespace Element
    //      printf("invalid atmoic number: %d\n", atomicNo);
    //      return -1;
    //   }
-   //   return dAtomicWeight[atomicNo - 1];
+   //   return d_AtomicWeight[atomicNo - 1];
    //}
 
    Element const * const * allElements()
@@ -1256,12 +1256,12 @@ namespace Element
    __host__ __device__ double Element::getIonizationEnergy() const
    {
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-      if (dIonizationEnergy[mAtomicNumber - 1] <= 0) {
+      if (d_IonizationEnergy[mAtomicNumber - 1] <= 0) {
          printf("Element::getIonizationEnergy: load mIonizationEnergy by calling readIonizationEnergy first\n");
          return -1.0;
       }
 
-      const double res = (mAtomicNumber - 1 <= numIonizationEnergy) ? dIonizationEnergy[mAtomicNumber - 1] : -1.0;
+      const double res = (mAtomicNumber - 1 <= numIonizationEnergy) ? d_IonizationEnergy[mAtomicNumber - 1] : -1.0;
       if (res == -1.0) {
          printf("Element::getIonizationEnergy: The ionization energy is not available for %s\n", toAbbrev());
       }

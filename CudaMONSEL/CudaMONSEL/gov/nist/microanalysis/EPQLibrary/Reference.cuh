@@ -233,7 +233,7 @@ namespace Reference
 
    // default
    extern const CrudeReference NullReference;
-   extern __device__ CrudeReference *dNullReference;
+   extern __device__ CrudeReference *d_NullReference;
 
    extern __global__ void initCuda(char *d_data);
 

@@ -58,7 +58,7 @@ namespace SetTest
       //   printf("%d b");
       //}
 
-      int maxNum = 100;
+      const int maxNum = 100;
       set.insert(maxNum);
       for (int k = 0; k < maxNum; ++k) {
          set.insert(k);
@@ -69,7 +69,7 @@ namespace SetTest
          }
       }
 
-      int num1 = 50, num2 = 100;
+      const int num1 = 50, num2 = 100;
 
       set.erase(num1);
       set.erase(num2);

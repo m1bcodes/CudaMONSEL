@@ -43,7 +43,7 @@ namespace MeanIonizationPotential
    Reference::CrudeReference SternheimerCR("Sternheimer quoted in Berger MJ, Seltzer S. NASA Technical Publication SP-4012 (1964)");
    __host__ __device__ Sternheimer64MeanIonizationPotential::Sternheimer64MeanIonizationPotential() :
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-      MeanIonizationPotential("Sternheimer 1964", *Reference::dNullReference)
+      MeanIonizationPotential("Sternheimer 1964", *Reference::d_NullReference)
 #else
       MeanIonizationPotential("Sternheimer 1964", SternheimerCR)
 #endif
@@ -76,7 +76,7 @@ namespace MeanIonizationPotential
    Reference::CrudeReference BergerSeltzerCR("Berger and Seltzer as implemented by CITZAF 3.06");
    __host__ __device__ BergerAndSeltzerCITZAFMeanIonizationPotential::BergerAndSeltzerCITZAFMeanIonizationPotential() :
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-      MeanIonizationPotential("Berger & Seltzer as per JTA", *Reference::dNullReference)
+      MeanIonizationPotential("Berger & Seltzer as per JTA", *Reference::d_NullReference)
 #else
       MeanIonizationPotential("Berger & Seltzer as per JTA", BergerSeltzerCR)
 #endif
@@ -96,7 +96,7 @@ namespace MeanIonizationPotential
    Reference::CrudeReference Bloch33CR("Bloch F, F. Z. Phys. 81, 363 (1933)");
    __host__ __device__ Bloch33MeanIonizationPotential::Bloch33MeanIonizationPotential() :
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-      MeanIonizationPotential("Bloch 1933", *Reference::dNullReference)
+      MeanIonizationPotential("Bloch 1933", *Reference::d_NullReference)
 #else
       MeanIonizationPotential("Bloch 1933", Bloch33CR)
 #endif
@@ -116,7 +116,7 @@ namespace MeanIonizationPotential
    Reference::CrudeReference Wilson41CR("Wilson RR. Phys Rev. 60. 749 (1941)");
    __host__ __device__ Wilson41MeanIonizationPotential::Wilson41MeanIonizationPotential() :
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-      MeanIonizationPotential("Wilson 1941", *Reference::dNullReference)
+      MeanIonizationPotential("Wilson 1941", *Reference::d_NullReference)
 #else
       MeanIonizationPotential("Wilson 1941", Wilson41CR)
 #endif
@@ -149,7 +149,7 @@ namespace MeanIonizationPotential
    Reference::CrudeReference Springer67CR("Springer G. Meues Jahrbuch Fuer Mineralogie, Monatshefte (1967) 9/10, p. 304");
    __host__ __device__ Springer67MeanIonizationPotential::Springer67MeanIonizationPotential() :
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-      MeanIonizationPotential("Springer 1967", *Reference::dNullReference)
+      MeanIonizationPotential("Springer 1967", *Reference::d_NullReference)
 #else
       MeanIonizationPotential("Springer 1967", Springer67CR)
 #endif
@@ -169,7 +169,7 @@ namespace MeanIonizationPotential
    Reference::CrudeReference Heinrich70CR("Heinrich KFJ, Yakowitz H. Mikrochim Acta (1970) p 123");
    __host__ __device__ Heinrich70MeanIonizationPotential::Heinrich70MeanIonizationPotential() :
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-      MeanIonizationPotential("Heinrich & Yakowitz 1970", *Reference::dNullReference)
+      MeanIonizationPotential("Heinrich & Yakowitz 1970", *Reference::d_NullReference)
 #else
       MeanIonizationPotential("Heinrich & Yakowitz 1970", Heinrich70CR)
 #endif
@@ -189,7 +189,7 @@ namespace MeanIonizationPotential
    Reference::CrudeReference Duncumb69CR("Duncumb P, Shields-Mason PK, DeCasa C. Proc. 5th Int. Congr. on X-ray Optics and Microanalysis, Springer, Berlin, 1969 p. 146");
    __host__ __device__ Duncumb69MeanIonizationPotential::Duncumb69MeanIonizationPotential() :
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-      MeanIonizationPotential("Duncumb & DeCasa 1969", *Reference::dNullReference)
+      MeanIonizationPotential("Duncumb & DeCasa 1969", *Reference::d_NullReference)
 #else
       MeanIonizationPotential("Duncumb & DeCasa 1969", Duncumb69CR)
 #endif
@@ -209,7 +209,7 @@ namespace MeanIonizationPotential
    Reference::CrudeReference Zeller75CR("Zeller C in Ruste J, Gantois M, J. Phys. D. Appl. Phys 8, 872 (1975)");
    __host__ __device__ Zeller75MeanIonizationPotential::Zeller75MeanIonizationPotential() :
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-      MeanIonizationPotential("Zeller 1975", *Reference::dNullReference)
+      MeanIonizationPotential("Zeller 1975", *Reference::d_NullReference)
 #else
       MeanIonizationPotential("Zeller 1975", Zeller75CR)
 #endif
@@ -246,7 +246,7 @@ namespace MeanIonizationPotential
    Reference::CrudeReference Berger64CR("Berger MJ, Seltzer S. NASA Technical Publication SP-4012 (1964)");
    __host__ __device__ Berger64MeanIonizationPotential::Berger64MeanIonizationPotential() :
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-      MeanIonizationPotential("Berger & Seltzer 1964", *Reference::dNullReference)
+      MeanIonizationPotential("Berger & Seltzer 1964", *Reference::d_NullReference)
 #else
       MeanIonizationPotential("Berger & Seltzer 1964", Berger64CR)
 #endif
@@ -297,7 +297,7 @@ namespace MeanIonizationPotential
    Reference::CrudeReference Berger83CR("Berger MJ, Seltzer S. NBSIR 82-2550-A - US Dept of Commerce, Washington DC (1983)");
    __host__ __device__ Berger83MeanIonizationPotential::Berger83MeanIonizationPotential() :
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-      MeanIonizationPotential("Berger & Seltzer 1983", *Reference::dNullReference)
+      MeanIonizationPotential("Berger & Seltzer 1983", *Reference::d_NullReference)
 #else
       MeanIonizationPotential("Berger & Seltzer 1983", Berger83CR)
 #endif

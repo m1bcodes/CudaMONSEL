@@ -24,10 +24,10 @@ namespace Composition
       typedef amp::string StringT;
 
       __host__ __device__ Composition();
-      //Composition(const Composition& comp);
+      __host__ __device__ Composition(const Composition& comp);
       Composition(const Element::Element* elms[], int elmsLen, const double massFracs[], int massFracsLen);
       Composition(const Element::Element& elm);
-      Composition(const Element::Element* elms[], int elmsLen, const double massFracs[], int massFracsLen, char const * name);
+      __host__ __device__ Composition(const Element::Element* elms[], int elmsLen, const double massFracs[], int massFracsLen, char const * name);
 
       bool operator==(const Composition&) const;
       void operator=(const Composition&);
@@ -117,7 +117,7 @@ namespace Composition
       //Element::Element getNthElementByWeight(int n);
       //Element::Element getNthElementByAtomicFraction(int n);
       __host__ __device__ void setName(const char* name);
-      const char* getName() const;
+      __host__ __device__ const char* getName() const;
       int compareTo(const Composition& comp) const;
       Composition asComposition() const;
       Composition clone() const;
@@ -141,9 +141,11 @@ namespace Composition
 
       ConstituentsMapT& GetConstituents();
 
+      __host__ __device__ void renormalize();
+
    private:
       Composition readResolve();
-      void recomputeStoiciometry();
+      __host__ __device__ void recomputeStoiciometry();
       __host__ __device__ void recomputeWeightFractions();
 
       ConstituentsMapT mConstituents;
@@ -156,7 +158,7 @@ namespace Composition
       UncertainValue2::UncertainValue2 mMoleNorm;// = UncertainValue2::NaN();
 
    protected:
-      __host__ __device__ void renormalize();
+      //__host__ __device__ void renormalize();
       __host__ __device__ void replicate(const Composition& comp);
       __host__ __device__ void clear();
    };

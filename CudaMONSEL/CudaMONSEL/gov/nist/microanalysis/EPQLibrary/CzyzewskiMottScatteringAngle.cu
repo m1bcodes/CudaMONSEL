@@ -56,7 +56,7 @@ namespace CzyzewskiMottScatteringAngle
 
    __host__ __device__ CzyzewskiMottScatteringAngle::CzyzewskiMottScatteringAngle(const ElementT& el) :
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-      RandomizedScatterT("Cyzewski", *Reference::dNullReference), mElement(el), mRutherford(ScreenedRutherfordScatteringAngle::getSRSA(el.getAtomicNumber()))
+      RandomizedScatterT("Cyzewski", *Reference::d_NullReference), mElement(el), mRutherford(ScreenedRutherfordScatteringAngle::getSRSA(el.getAtomicNumber()))
 #else
       RandomizedScatterT("Cyzewski", REFERENCE), mElement(el), mRutherford(ScreenedRutherfordScatteringAngle::getSRSA(el.getAtomicNumber()))
 #endif
@@ -526,7 +526,7 @@ namespace CzyzewskiMottScatteringAngle
 
    __host__ __device__ CzyzewskiMottRandomizedScatterFactory::CzyzewskiMottRandomizedScatterFactory() :
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-      RandomizedScatterFactoryT("Czyzewski Mott cross-section", *Reference::dNullReference)
+      RandomizedScatterFactoryT("Czyzewski Mott cross-section", *Reference::d_NullReference)
 #else
       RandomizedScatterFactoryT("Czyzewski Mott cross-section", REFERENCE)
 #endif

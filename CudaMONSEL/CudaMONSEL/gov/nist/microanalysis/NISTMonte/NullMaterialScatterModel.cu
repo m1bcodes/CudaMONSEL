@@ -26,7 +26,7 @@ namespace NullMaterialScatterModel
    __host__ __device__ const MaterialT& NullMaterialScatterModel::getMaterial() const
    {
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-      return *Material::dDefault;
+      return *Material::d_Default;
 #else
       return Material::Default;
 #endif

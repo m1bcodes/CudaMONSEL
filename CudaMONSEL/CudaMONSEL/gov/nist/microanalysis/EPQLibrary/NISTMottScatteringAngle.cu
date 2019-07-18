@@ -81,7 +81,7 @@ namespace NISTMottScatteringAngle
 
    __host__ __device__ NISTMottScatteringAngle::NISTMottScatteringAngle(const ElementT& elm) :
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-      RandomizedScatterT("NIST Elastic cross-section", *Reference::dNullReference),
+      RandomizedScatterT("NIST Elastic cross-section", *Reference::d_NullReference),
 #else
       RandomizedScatterT("NIST Elastic cross-section", REFERENCE),
 #endif
@@ -258,106 +258,106 @@ namespace NISTMottScatteringAngle
       mScatter[96] = new NISTMottScatteringAngle(Element::Cm);
    }
 
-   __device__ NISTMottScatteringAngle *dScatter[113];
+   __device__ NISTMottScatteringAngle *d_mScatter[113];
 
    __global__ void initCuda()
    {
-      dScatter[1] = new NISTMottScatteringAngle(*Element::dH);
-      dScatter[2] = new NISTMottScatteringAngle(*Element::dHe);
-      dScatter[3] = new NISTMottScatteringAngle(*Element::dLi);
-      dScatter[4] = new NISTMottScatteringAngle(*Element::dBe);
-      dScatter[5] = new NISTMottScatteringAngle(*Element::dB);
-      dScatter[6] = new NISTMottScatteringAngle(*Element::dC);
-      dScatter[7] = new NISTMottScatteringAngle(*Element::dN);
-      dScatter[8] = new NISTMottScatteringAngle(*Element::dO);
-      dScatter[9] = new NISTMottScatteringAngle(*Element::dF);
-      dScatter[10] = new NISTMottScatteringAngle(*Element::dNe);
-      dScatter[11] = new NISTMottScatteringAngle(*Element::dNa);
-      dScatter[12] = new NISTMottScatteringAngle(*Element::dMg);
-      dScatter[13] = new NISTMottScatteringAngle(*Element::dAl);
-      dScatter[14] = new NISTMottScatteringAngle(*Element::dSi);
-      dScatter[15] = new NISTMottScatteringAngle(*Element::dP);
-      dScatter[16] = new NISTMottScatteringAngle(*Element::dS);
-      dScatter[17] = new NISTMottScatteringAngle(*Element::dCl);
-      dScatter[18] = new NISTMottScatteringAngle(*Element::dAr);
-      dScatter[19] = new NISTMottScatteringAngle(*Element::dK);
-      dScatter[20] = new NISTMottScatteringAngle(*Element::dCa);
-      dScatter[21] = new NISTMottScatteringAngle(*Element::dSc);
-      dScatter[22] = new NISTMottScatteringAngle(*Element::dTi);
-      dScatter[23] = new NISTMottScatteringAngle(*Element::dV);
-      dScatter[24] = new NISTMottScatteringAngle(*Element::dCr);
-      dScatter[25] = new NISTMottScatteringAngle(*Element::dMn);
-      dScatter[26] = new NISTMottScatteringAngle(*Element::dFe);
-      dScatter[27] = new NISTMottScatteringAngle(*Element::dCo);
-      dScatter[28] = new NISTMottScatteringAngle(*Element::dNi);
-      dScatter[29] = new NISTMottScatteringAngle(*Element::dCu);
-      dScatter[30] = new NISTMottScatteringAngle(*Element::dZn);
-      dScatter[31] = new NISTMottScatteringAngle(*Element::dGa);
-      dScatter[32] = new NISTMottScatteringAngle(*Element::dGe);
-      dScatter[33] = new NISTMottScatteringAngle(*Element::dAs);
-      dScatter[34] = new NISTMottScatteringAngle(*Element::dSe);
-      dScatter[35] = new NISTMottScatteringAngle(*Element::dBr);
-      dScatter[36] = new NISTMottScatteringAngle(*Element::dKr);
-      dScatter[37] = new NISTMottScatteringAngle(*Element::dRb);
-      dScatter[38] = new NISTMottScatteringAngle(*Element::dSr);
-      dScatter[39] = new NISTMottScatteringAngle(*Element::dY);
-      dScatter[40] = new NISTMottScatteringAngle(*Element::dZr);
-      dScatter[41] = new NISTMottScatteringAngle(*Element::dNb);
-      dScatter[42] = new NISTMottScatteringAngle(*Element::dMo);
-      dScatter[43] = new NISTMottScatteringAngle(*Element::dTc);
-      dScatter[44] = new NISTMottScatteringAngle(*Element::dRu);
-      dScatter[45] = new NISTMottScatteringAngle(*Element::dRh);
-      dScatter[46] = new NISTMottScatteringAngle(*Element::dPd);
-      dScatter[47] = new NISTMottScatteringAngle(*Element::dAg);
-      dScatter[48] = new NISTMottScatteringAngle(*Element::dCd);
-      dScatter[49] = new NISTMottScatteringAngle(*Element::dIn);
-      dScatter[50] = new NISTMottScatteringAngle(*Element::dSn);
-      dScatter[51] = new NISTMottScatteringAngle(*Element::dSb);
-      dScatter[52] = new NISTMottScatteringAngle(*Element::dTe);
-      dScatter[53] = new NISTMottScatteringAngle(*Element::dI);
-      dScatter[54] = new NISTMottScatteringAngle(*Element::dXe);
-      dScatter[55] = new NISTMottScatteringAngle(*Element::dCs);
-      dScatter[56] = new NISTMottScatteringAngle(*Element::dBa);
-      dScatter[57] = new NISTMottScatteringAngle(*Element::dLa);
-      dScatter[58] = new NISTMottScatteringAngle(*Element::dCe);
-      dScatter[59] = new NISTMottScatteringAngle(*Element::dPr);
-      dScatter[60] = new NISTMottScatteringAngle(*Element::dNd);
-      dScatter[61] = new NISTMottScatteringAngle(*Element::dPm);
-      dScatter[62] = new NISTMottScatteringAngle(*Element::dSm);
-      dScatter[63] = new NISTMottScatteringAngle(*Element::dEu);
-      dScatter[64] = new NISTMottScatteringAngle(*Element::dGd);
-      dScatter[65] = new NISTMottScatteringAngle(*Element::dTb);
-      dScatter[66] = new NISTMottScatteringAngle(*Element::dDy);
-      dScatter[67] = new NISTMottScatteringAngle(*Element::dHo);
-      dScatter[68] = new NISTMottScatteringAngle(*Element::dEr);
-      dScatter[69] = new NISTMottScatteringAngle(*Element::dTm);
-      dScatter[70] = new NISTMottScatteringAngle(*Element::dYb);
-      dScatter[71] = new NISTMottScatteringAngle(*Element::dLu);
-      dScatter[72] = new NISTMottScatteringAngle(*Element::dHf);
-      dScatter[73] = new NISTMottScatteringAngle(*Element::dTa);
-      dScatter[74] = new NISTMottScatteringAngle(*Element::dW);
-      dScatter[75] = new NISTMottScatteringAngle(*Element::dRe);
-      dScatter[76] = new NISTMottScatteringAngle(*Element::dOs);
-      dScatter[77] = new NISTMottScatteringAngle(*Element::dIr);
-      dScatter[78] = new NISTMottScatteringAngle(*Element::dPt);
-      dScatter[79] = new NISTMottScatteringAngle(*Element::dAu);
-      dScatter[80] = new NISTMottScatteringAngle(*Element::dHg);
-      dScatter[81] = new NISTMottScatteringAngle(*Element::dTl);
-      dScatter[82] = new NISTMottScatteringAngle(*Element::dPb);
-      dScatter[83] = new NISTMottScatteringAngle(*Element::dBi);
-      dScatter[84] = new NISTMottScatteringAngle(*Element::dPo);
-      dScatter[85] = new NISTMottScatteringAngle(*Element::dAt);
-      dScatter[86] = new NISTMottScatteringAngle(*Element::dRn);
-      dScatter[87] = new NISTMottScatteringAngle(*Element::dFr);
-      dScatter[88] = new NISTMottScatteringAngle(*Element::dRa);
-      dScatter[89] = new NISTMottScatteringAngle(*Element::dAc);
-      dScatter[90] = new NISTMottScatteringAngle(*Element::dTh);
-      dScatter[91] = new NISTMottScatteringAngle(*Element::dPa);
-      dScatter[92] = new NISTMottScatteringAngle(*Element::dU);
-      dScatter[93] = new NISTMottScatteringAngle(*Element::dNp);
-      dScatter[94] = new NISTMottScatteringAngle(*Element::dPu);
-      dScatter[95] = new NISTMottScatteringAngle(*Element::dAm);
-      dScatter[96] = new NISTMottScatteringAngle(*Element::dCm);
+      d_mScatter[1] = new NISTMottScatteringAngle(*Element::dH);
+      d_mScatter[2] = new NISTMottScatteringAngle(*Element::dHe);
+      d_mScatter[3] = new NISTMottScatteringAngle(*Element::dLi);
+      d_mScatter[4] = new NISTMottScatteringAngle(*Element::dBe);
+      d_mScatter[5] = new NISTMottScatteringAngle(*Element::dB);
+      d_mScatter[6] = new NISTMottScatteringAngle(*Element::dC);
+      d_mScatter[7] = new NISTMottScatteringAngle(*Element::dN);
+      d_mScatter[8] = new NISTMottScatteringAngle(*Element::dO);
+      d_mScatter[9] = new NISTMottScatteringAngle(*Element::dF);
+      d_mScatter[10] = new NISTMottScatteringAngle(*Element::dNe);
+      d_mScatter[11] = new NISTMottScatteringAngle(*Element::dNa);
+      d_mScatter[12] = new NISTMottScatteringAngle(*Element::dMg);
+      d_mScatter[13] = new NISTMottScatteringAngle(*Element::dAl);
+      d_mScatter[14] = new NISTMottScatteringAngle(*Element::dSi);
+      d_mScatter[15] = new NISTMottScatteringAngle(*Element::dP);
+      d_mScatter[16] = new NISTMottScatteringAngle(*Element::dS);
+      d_mScatter[17] = new NISTMottScatteringAngle(*Element::dCl);
+      d_mScatter[18] = new NISTMottScatteringAngle(*Element::dAr);
+      d_mScatter[19] = new NISTMottScatteringAngle(*Element::dK);
+      d_mScatter[20] = new NISTMottScatteringAngle(*Element::dCa);
+      d_mScatter[21] = new NISTMottScatteringAngle(*Element::dSc);
+      d_mScatter[22] = new NISTMottScatteringAngle(*Element::dTi);
+      d_mScatter[23] = new NISTMottScatteringAngle(*Element::dV);
+      d_mScatter[24] = new NISTMottScatteringAngle(*Element::dCr);
+      d_mScatter[25] = new NISTMottScatteringAngle(*Element::dMn);
+      d_mScatter[26] = new NISTMottScatteringAngle(*Element::dFe);
+      d_mScatter[27] = new NISTMottScatteringAngle(*Element::dCo);
+      d_mScatter[28] = new NISTMottScatteringAngle(*Element::dNi);
+      d_mScatter[29] = new NISTMottScatteringAngle(*Element::dCu);
+      d_mScatter[30] = new NISTMottScatteringAngle(*Element::dZn);
+      d_mScatter[31] = new NISTMottScatteringAngle(*Element::dGa);
+      d_mScatter[32] = new NISTMottScatteringAngle(*Element::dGe);
+      d_mScatter[33] = new NISTMottScatteringAngle(*Element::dAs);
+      d_mScatter[34] = new NISTMottScatteringAngle(*Element::dSe);
+      d_mScatter[35] = new NISTMottScatteringAngle(*Element::dBr);
+      d_mScatter[36] = new NISTMottScatteringAngle(*Element::dKr);
+      d_mScatter[37] = new NISTMottScatteringAngle(*Element::dRb);
+      d_mScatter[38] = new NISTMottScatteringAngle(*Element::dSr);
+      d_mScatter[39] = new NISTMottScatteringAngle(*Element::dY);
+      d_mScatter[40] = new NISTMottScatteringAngle(*Element::dZr);
+      d_mScatter[41] = new NISTMottScatteringAngle(*Element::dNb);
+      d_mScatter[42] = new NISTMottScatteringAngle(*Element::dMo);
+      d_mScatter[43] = new NISTMottScatteringAngle(*Element::dTc);
+      d_mScatter[44] = new NISTMottScatteringAngle(*Element::dRu);
+      d_mScatter[45] = new NISTMottScatteringAngle(*Element::dRh);
+      d_mScatter[46] = new NISTMottScatteringAngle(*Element::dPd);
+      d_mScatter[47] = new NISTMottScatteringAngle(*Element::dAg);
+      d_mScatter[48] = new NISTMottScatteringAngle(*Element::dCd);
+      d_mScatter[49] = new NISTMottScatteringAngle(*Element::dIn);
+      d_mScatter[50] = new NISTMottScatteringAngle(*Element::dSn);
+      d_mScatter[51] = new NISTMottScatteringAngle(*Element::dSb);
+      d_mScatter[52] = new NISTMottScatteringAngle(*Element::dTe);
+      d_mScatter[53] = new NISTMottScatteringAngle(*Element::dI);
+      d_mScatter[54] = new NISTMottScatteringAngle(*Element::dXe);
+      d_mScatter[55] = new NISTMottScatteringAngle(*Element::dCs);
+      d_mScatter[56] = new NISTMottScatteringAngle(*Element::dBa);
+      d_mScatter[57] = new NISTMottScatteringAngle(*Element::dLa);
+      d_mScatter[58] = new NISTMottScatteringAngle(*Element::dCe);
+      d_mScatter[59] = new NISTMottScatteringAngle(*Element::dPr);
+      d_mScatter[60] = new NISTMottScatteringAngle(*Element::dNd);
+      d_mScatter[61] = new NISTMottScatteringAngle(*Element::dPm);
+      d_mScatter[62] = new NISTMottScatteringAngle(*Element::dSm);
+      d_mScatter[63] = new NISTMottScatteringAngle(*Element::dEu);
+      d_mScatter[64] = new NISTMottScatteringAngle(*Element::dGd);
+      d_mScatter[65] = new NISTMottScatteringAngle(*Element::dTb);
+      d_mScatter[66] = new NISTMottScatteringAngle(*Element::dDy);
+      d_mScatter[67] = new NISTMottScatteringAngle(*Element::dHo);
+      d_mScatter[68] = new NISTMottScatteringAngle(*Element::dEr);
+      d_mScatter[69] = new NISTMottScatteringAngle(*Element::dTm);
+      d_mScatter[70] = new NISTMottScatteringAngle(*Element::dYb);
+      d_mScatter[71] = new NISTMottScatteringAngle(*Element::dLu);
+      d_mScatter[72] = new NISTMottScatteringAngle(*Element::dHf);
+      d_mScatter[73] = new NISTMottScatteringAngle(*Element::dTa);
+      d_mScatter[74] = new NISTMottScatteringAngle(*Element::dW);
+      d_mScatter[75] = new NISTMottScatteringAngle(*Element::dRe);
+      d_mScatter[76] = new NISTMottScatteringAngle(*Element::dOs);
+      d_mScatter[77] = new NISTMottScatteringAngle(*Element::dIr);
+      d_mScatter[78] = new NISTMottScatteringAngle(*Element::dPt);
+      d_mScatter[79] = new NISTMottScatteringAngle(*Element::dAu);
+      d_mScatter[80] = new NISTMottScatteringAngle(*Element::dHg);
+      d_mScatter[81] = new NISTMottScatteringAngle(*Element::dTl);
+      d_mScatter[82] = new NISTMottScatteringAngle(*Element::dPb);
+      d_mScatter[83] = new NISTMottScatteringAngle(*Element::dBi);
+      d_mScatter[84] = new NISTMottScatteringAngle(*Element::dPo);
+      d_mScatter[85] = new NISTMottScatteringAngle(*Element::dAt);
+      d_mScatter[86] = new NISTMottScatteringAngle(*Element::dRn);
+      d_mScatter[87] = new NISTMottScatteringAngle(*Element::dFr);
+      d_mScatter[88] = new NISTMottScatteringAngle(*Element::dRa);
+      d_mScatter[89] = new NISTMottScatteringAngle(*Element::dAc);
+      d_mScatter[90] = new NISTMottScatteringAngle(*Element::dTh);
+      d_mScatter[91] = new NISTMottScatteringAngle(*Element::dPa);
+      d_mScatter[92] = new NISTMottScatteringAngle(*Element::dU);
+      d_mScatter[93] = new NISTMottScatteringAngle(*Element::dNp);
+      d_mScatter[94] = new NISTMottScatteringAngle(*Element::dPu);
+      d_mScatter[95] = new NISTMottScatteringAngle(*Element::dAm);
+      d_mScatter[96] = new NISTMottScatteringAngle(*Element::dCm);
    }
 
    //__device__ void NISTMottScatteringAngle::copySpwem(float *dSpwem, unsigned int size)
@@ -372,12 +372,12 @@ namespace NISTMottScatteringAngle
 
    __global__ void copySpwem(unsigned int i, float *dSpwem, unsigned int size)
    {
-      dScatter[i]->copySpwem<float>(dSpwem, size);
+      d_mScatter[i]->copySpwem<float>(dSpwem, size);
    }
 
    __global__ void copyX1Row(unsigned int i, unsigned int r, float *dSX1r, unsigned int size)
    {
-      dScatter[i]->copyX1Row<float>(r, dSX1r, size);
+      d_mScatter[i]->copyX1Row<float>(r, dSX1r, size);
    }
 
    void copyDataToCuda()
@@ -408,7 +408,7 @@ namespace NISTMottScatteringAngle
    __host__ __device__ const NISTMottScatteringAngle& getNISTMSA(int an)
    {
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-      return *dScatter[an];
+      return *d_mScatter[an];
 #else
       return *mScatter[an];
 #endif
@@ -416,7 +416,7 @@ namespace NISTMottScatteringAngle
 
    __host__ __device__ NISTMottRandomizedScatterFactory::NISTMottRandomizedScatterFactory() :
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-      RandomizedScatterFactoryT("NIST Mott Inelastic Cross-Section", *Reference::dNullReference)
+      RandomizedScatterFactoryT("NIST Mott Inelastic Cross-Section", *Reference::d_NullReference)
 #else
       RandomizedScatterFactoryT("NIST Mott Inelastic Cross-Section", REFERENCE)
 #endif

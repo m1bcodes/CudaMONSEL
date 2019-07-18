@@ -17,7 +17,7 @@ namespace TabulatedInelasticSM
       tableReducedDeltaE(NUTableInterpolation::getInstance(tables[1])),
       tableTheta(NUTableInterpolation::getInstance(tables[2])),
       tableSEE0((methodSE == 2) || (methodSE == 3) ? NUTableInterpolation::getInstance(tables[3]) : nullptr),
-      energyRangeSE0((methodSE == 2) || (methodSE == 3) ? tableSEE0->getRange() : VectorXd()),
+      energyRangeSE0((methodSE == 2) || (methodSE == 3) ? tableSEE0->getrange() : VectorXd()),
       rateMult(1.), 
       E0fromDispersion(false),
       kEa(VectorXd(1, 0)), 
@@ -498,13 +498,13 @@ namespace TabulatedInelasticSM
       * tableEiDomain must be the energy range that is valid for *all* required
       * tables that take the PE initial energy as an input parameter.
       */
-      tableEiDomain = tableReducedDeltaE->getDomain()[0];
-      const auto &thetaTableEiDomain = tableTheta->getDomain()[0];
+      tableEiDomain = tableReducedDeltaE->getdomain()[0];
+      const auto &thetaTableEiDomain = tableTheta->getdomain()[0];
       if (thetaTableEiDomain[0] > tableEiDomain[0])
          tableEiDomain[0] = thetaTableEiDomain[0];
       if (thetaTableEiDomain[1] < tableEiDomain[1])
          tableEiDomain[1] = thetaTableEiDomain[1];
-      tableIIMFPEiDomain = tableIIMFP->getDomain()[0];
+      tableIIMFPEiDomain = tableIIMFP->getdomain()[0];
    }
 
    __host__ __device__ const NUTableInterpolationT* TabulatedInelasticSM::gettableIIMFP() const

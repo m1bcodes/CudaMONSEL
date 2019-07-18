@@ -65,6 +65,6 @@ namespace GaussianBeam
       initialPos[0] += r * ::cos(th);
       initialPos[1] += r * ::sin(th);
 
-      return new ElectronT(initialPos, mBeamEnergy); // TODO: handle this
+      return new ElectronT(initialPos, mBeamEnergy);
    }
 }

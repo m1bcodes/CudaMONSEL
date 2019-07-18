@@ -19,7 +19,7 @@ namespace BetheElectronEnergyLoss
 
    __host__ __device__ JoyLuoBetheElectronEnergyLoss::JoyLuoBetheElectronEnergyLoss() :
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-      BetheElectronEnergyLoss("Joy-Luo", *Reference::dNullReference), K(-(785 * ToSI::EV * ::pow(ToSI::CM, 3.0)) / (ToSI::ANGSTROM * ToSI::GRAM))
+      BetheElectronEnergyLoss("Joy-Luo", *Reference::d_NullReference), K(-(785 * ToSI::EV * ::pow(ToSI::CM, 3.0)) / (ToSI::ANGSTROM * ToSI::GRAM))
 #else
       BetheElectronEnergyLoss("Joy-Luo", Reference::GoldsteinBook), K(-(785 * ToSI::EV * ::pow(ToSI::CM, 3.0)) / (ToSI::ANGSTROM * ToSI::GRAM))
 #endif
@@ -46,7 +46,7 @@ namespace BetheElectronEnergyLoss
 
    const JoyLuoBetheElectronEnergyLoss JoyLuo1989Ref;
    const BetheElectronEnergyLoss& JoyLuo1989 = JoyLuo1989Ref;
-   __device__ const BetheElectronEnergyLoss* dJoyLuo1989 = nullptr;
+   __device__ const BetheElectronEnergyLoss* d_JoyLuo1989 = nullptr;
 
    /**
    * Bethe1930 - The original expression of Bethe for the stopping power
@@ -57,7 +57,7 @@ namespace BetheElectronEnergyLoss
    Reference::CrudeReference Leipzig1930CR("Bethe H. Ann. Phys. (Leipzig) 1930; 5: 325");
    Bethe30ModElectronEnergyLoss::Bethe30ModElectronEnergyLoss() :
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-      BetheElectronEnergyLoss("Bethe(Modified)", *Reference::dNullReference), K(-(785 * ToSI::EV * ::pow(ToSI::CM, 3.0)) / (ToSI::ANGSTROM * ToSI::GRAM))
+      BetheElectronEnergyLoss("Bethe(Modified)", *Reference::d_NullReference), K(-(785 * ToSI::EV * ::pow(ToSI::CM, 3.0)) / (ToSI::ANGSTROM * ToSI::GRAM))
 #else
       BetheElectronEnergyLoss("Bethe(Modified)", Leipzig1930CR), K(-(785 * ToSI::EV * ::pow(ToSI::CM, 3.0)) / (ToSI::ANGSTROM * ToSI::GRAM))
 #endif
@@ -78,7 +78,7 @@ namespace BetheElectronEnergyLoss
 
    const Bethe30ModElectronEnergyLoss Bethe1930Ref;
    const BetheElectronEnergyLoss& Bethe1930 = Bethe1930Ref;
-   __device__ const BetheElectronEnergyLoss* dBethe1930 = nullptr;
+   __device__ const BetheElectronEnergyLoss* d_Bethe1930 = nullptr;
 
    /**
    * Bethe1930Strict - The original expression of Bethe for the stopping power.
@@ -87,7 +87,7 @@ namespace BetheElectronEnergyLoss
    */
    __host__ __device__ Bethe30ElectronEnergyLoss::Bethe30ElectronEnergyLoss() :
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-      BetheElectronEnergyLoss("Bethe(Modified)", *Reference::dNullReference), K(-(785 * ToSI::EV * ::pow(ToSI::CM, 3.0)) / (ToSI::ANGSTROM * ToSI::GRAM))
+      BetheElectronEnergyLoss("Bethe(Modified)", *Reference::d_NullReference), K(-(785 * ToSI::EV * ::pow(ToSI::CM, 3.0)) / (ToSI::ANGSTROM * ToSI::GRAM))
 #else
       BetheElectronEnergyLoss("Bethe(Modified)", Leipzig1930CR), K(-(785 * ToSI::EV * ::pow(ToSI::CM, 3.0)) / (ToSI::ANGSTROM * ToSI::GRAM))
 #endif
@@ -105,7 +105,7 @@ namespace BetheElectronEnergyLoss
 
    const Bethe30ElectronEnergyLoss Bethe1930StrictRef;
    const BetheElectronEnergyLoss& Bethe1930Strict = Bethe1930StrictRef;
-   __device__ const BetheElectronEnergyLoss* dBethe1930Strict = nullptr;
+   __device__ const BetheElectronEnergyLoss* d_Bethe1930Strict = nullptr;
 
    /**
    * <p>
@@ -162,8 +162,8 @@ namespace BetheElectronEnergyLoss
 
    __global__ void initCuda()
    {
-      dJoyLuo1989 = new JoyLuoBetheElectronEnergyLoss();
-      dBethe1930 = new Bethe30ModElectronEnergyLoss();
-      dBethe1930Strict = new Bethe30ElectronEnergyLoss();
+      d_JoyLuo1989 = new JoyLuoBetheElectronEnergyLoss();
+      d_Bethe1930 = new Bethe30ModElectronEnergyLoss();
+      d_Bethe1930Strict = new Bethe30ElectronEnergyLoss();
    }
 }

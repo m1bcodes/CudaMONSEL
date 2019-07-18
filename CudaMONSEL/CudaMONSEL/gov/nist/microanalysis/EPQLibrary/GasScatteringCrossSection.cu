@@ -21,7 +21,7 @@ namespace GasScatteringCrossSection
 
    __host__ __device__ GasScatteringCrossSection::GasScatteringCrossSection(const ElementT& elm) :
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-      RandomizedScatterT("Edgerton gas cross-section", *Reference::dNullReference), mElement(elm), mElastic(ScreenedRutherfordScatteringAngle::getSRSA(elm.getAtomicNumber()))
+      RandomizedScatterT("Edgerton gas cross-section", *Reference::d_NullReference), mElement(elm), mElastic(ScreenedRutherfordScatteringAngle::getSRSA(elm.getAtomicNumber()))
 #else
       RandomizedScatterT("Edgerton gas cross-section", REFERENCE), mElement(elm), mElastic(ScreenedRutherfordScatteringAngle::getSRSA(elm.getAtomicNumber()))
 #endif
@@ -387,7 +387,7 @@ namespace GasScatteringCrossSection
 
    __host__ __device__ GasScatteringRandomizedScatterFactory::GasScatteringRandomizedScatterFactory() :
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-      RandomizedScatterFactoryT("Gas scattering algorithm", *Reference::dNullReference)
+      RandomizedScatterFactoryT("Gas scattering algorithm", *Reference::d_NullReference)
 #else
       RandomizedScatterFactoryT("Gas scattering algorithm", REFERENCE)
 #endif

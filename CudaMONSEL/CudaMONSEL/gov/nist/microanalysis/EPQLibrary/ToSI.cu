@@ -51,7 +51,7 @@ namespace ToSI
       return EV * e;
    }
 
-   double AMU(double amu)
+   __host__ __device__ double AMU(double amu)
    {
       return PhysicalConstants::UnifiedAtomicMass * amu;
    }

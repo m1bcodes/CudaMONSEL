@@ -11,6 +11,7 @@ namespace SelectableElasticSM
 {
    __host__ __device__ SelectableElasticSM::SelectableElasticSM(const MaterialT& mat, const RandomizedScatterFactoryT& rsf) : rsf(rsf), cached_kE(-1.)
    {
+      printf("SelectableElasticSM: %s\n", mat.getName());
       setMaterial(&mat);
    }
 

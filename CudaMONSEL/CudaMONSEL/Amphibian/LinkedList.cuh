@@ -88,6 +88,7 @@ namespace LinkedList
    __host__ __device__ void InsertHead(Node<T>** headAddr, const T& v)
    {
       Node<T>* newOne = (*headAddr == nullptr) ? new Node<T>(v, nullptr) : new Node<T>(v, *headAddr);
+      if (!newOne) printf("LinkedList::InsertHead: overflowed\n");
       *headAddr = newOne;
    }
 
@@ -97,10 +98,12 @@ namespace LinkedList
       Node<T>* newOne;
       if ((*headAddr) == nullptr) {
          newOne = new Node<T>(v, nullptr);
+         if (!newOne) printf("LinkedList::InsertNext 1: overflowed\n");
          (*headAddr) = newOne;
       }
       else {
          newOne = new Node<T>(v, (*headAddr)->GetNext());
+         if (!newOne) printf("LinkedList::InsertNext 2: overflowed\n");
          (*headAddr)->UpdateNext(newOne);
       }
    }
@@ -382,6 +385,7 @@ namespace LinkedListKV
    __host__ __device__ void InsertHead(Node<KeyT, ValueT>** head, const KeyT& k, const ValueT& v)
    {
       Node<KeyT, ValueT>* newOne = (*head == nullptr) ? new Node<KeyT, ValueT>(k, v, nullptr) : new Node<KeyT, ValueT>(k, v, *head);
+      if (!newOne) printf("LinkedListKV::InsertHead: overflowed\n");
       *head = newOne;
    }
 
@@ -398,10 +402,12 @@ namespace LinkedListKV
       Node<KeyT, ValueT>* newOne;
       if ((*head == nullptr)) {
          newOne = new Node<KeyT, ValueT>(k, v, nullptr);
+         if (!newOne) printf("LinkedListKV::InsertNext 1: overflowed\n");
          (*head) = newOne;
       }
       else {
          newOne = new Node<KeyT, ValueT>(k, v, *head);
+         if (!newOne) printf("LinkedListKV::InsertNext 2: overflowed\n");
          (*head)->UpdateNext(newOne);
       }
    }
@@ -535,7 +541,7 @@ namespace DLinkedList
       __host__ __device__ Node* GetNext() const;
       __host__ __device__ Node* GetPrev() const;
 
-      __host__ __device__ static void Insert(Node** node, Node* newone);
+      __host__ __device__ static void Insert(Node** node, Node* newOne);
       __host__ __device__ static void Insert(Node** node, const T& val);
       __host__ __device__ static void Remove(Node** node);
 
@@ -576,41 +582,42 @@ namespace DLinkedList
    template<typename T>
    __host__ __device__ void Node<T>::Insert(Node** node, const T& val)
    {
-      Node *newone = new Node(nullptr, nullptr, val);
+      Node *newOne = new Node(nullptr, nullptr, val);
+      if (!newOne) printf("DLinkedList::Insert: overflowed\n");
       if (!(*node)) {
-         *node = newone;
+         *node = newOne;
          return;
       }
 
-      newone->fwd = *node;
-      newone->bwd = (*node)->bwd;
-      (*node)->bwd = newone;
+      newOne->fwd = *node;
+      newOne->bwd = (*node)->bwd;
+      (*node)->bwd = newOne;
 
-      if (newone->bwd) {
-         (newone->bwd)->fwd = newone;
+      if (newOne->bwd) {
+         (newOne->bwd)->fwd = newOne;
       }
 
-      *node = newone;
+      *node = newOne;
    }
 
    template<typename T>
-   __host__ __device__ void Node<T>::Insert(Node** node, Node* newone)
+   __host__ __device__ void Node<T>::Insert(Node** node, Node* newOne)
    {
-      if (!newone) return;
+      if (!newOne) return;
       if (!(*node)) {
-         *node = newone;
+         *node = newOne;
          return;
       }
 
-      newone->fwd = *node;
-      newone->bwd = (*node)->bwd;
-      (*node)->bwd = newone;
+      newOne->fwd = *node;
+      newOne->bwd = (*node)->bwd;
+      (*node)->bwd = newOne;
 
-      if (newone->bwd) {
-         (newone->bwd)->fwd = newone;
+      if (newOne->bwd) {
+         (newOne->bwd)->fwd = newOne;
       }
 
-      *node = newone;
+      *node = newOne;
    }
 
    template<typename T>
@@ -630,9 +637,11 @@ namespace DLinkedList
 namespace amp
 {
    template<typename First, typename Second>
-   __host__ __device__ LinkedListKV::Node<First, Second>* make_pair(First first, Second second)
+   __host__ __device__ LinkedListKV::Node<First, Second>* make_pair(const First& first, const Second& second)
    {
-      return new LinkedListKV::Node<First, Second>(first, second, nullptr);
+      LinkedListKV::Node<First, Second>* ptr = new LinkedListKV::Node<First, Second>(first, second, nullptr);
+      if (!ptr) printf("LinkedListKV::Node<First, Second>* make_pair: overflowed\n");
+      return ptr;
    }
 }
 

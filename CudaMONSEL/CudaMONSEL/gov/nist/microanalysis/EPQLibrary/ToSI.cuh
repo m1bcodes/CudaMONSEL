@@ -37,7 +37,7 @@ namespace ToSI
    double MeV(double e);
    __host__ __device__ double keV(double e);
    __host__ __device__ double eV(double e);
-   double AMU(double amu);
+   __host__ __device__ double AMU(double amu);
    double dyne(double f);
    double gPerCC(double d);
    double inverse_gPerCC(double d);

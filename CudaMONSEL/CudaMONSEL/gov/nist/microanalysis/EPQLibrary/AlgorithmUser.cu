@@ -65,7 +65,7 @@ namespace AlgorithmUser
    __host__ __device__ const BetheElectronEnergyLossT* getDefaultBetheEnergyLoss()
    {
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-      return d_sDefaultBetheEnergyLoss == nullptr ? BetheElectronEnergyLoss::dJoyLuo1989 : d_sDefaultBetheEnergyLoss;
+      return d_sDefaultBetheEnergyLoss == nullptr ? BetheElectronEnergyLoss::d_JoyLuo1989 : d_sDefaultBetheEnergyLoss;
 #else
       return sDefaultBetheEnergyLoss == nullptr ? &BetheElectronEnergyLoss::JoyLuo1989 : sDefaultBetheEnergyLoss;
 #endif

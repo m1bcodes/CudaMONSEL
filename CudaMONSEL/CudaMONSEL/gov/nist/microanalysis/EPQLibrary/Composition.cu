@@ -62,10 +62,10 @@ namespace Composition
       renormalize();
    }
 
-   //Composition::Composition(const Composition& comp)
-   //{
-   //   replicate(comp);
-   //}
+   __host__ __device__ Composition::Composition(const Composition& comp)
+   {
+      replicate(comp);
+   }
 
    Composition::Composition(const Element::Element* elms[], int elmsLen, const double massFracs[], int massFracsLen)
    {
@@ -86,8 +86,9 @@ namespace Composition
       renormalize();
    }
 
-   Composition::Composition(const Element::Element* elms[], int elmsLen, const double massFracs[], int massFracsLen, char const* name)
+   __host__ __device__ Composition::Composition(const Element::Element* elms[], int elmsLen, const double massFracs[], int massFracsLen, char const* name)
    {
+      printf("Composition: %s begin\n", name);
       double* wf = new double[elmsLen];
       if (elmsLen == massFracsLen - 1) {
          double sum = 0.0;
@@ -108,7 +109,9 @@ namespace Composition
          if (massFracs[i] < 0.0) {
             printf("A mass fraction was less than zero while defining the material %s", name);
          }
-         mConstituents.insert(make_pair(elms[i], UncertainValue2::UncertainValue2(massFracs[i])));
+         UncertainValue2::UncertainValue2 tmp(massFracs[i]);
+         mConstituents.insert(make_pair(elms[i], tmp));
+         printf("Composition: %s end\n", name);
       }
       delete[] wf;
       mName = name;
@@ -224,10 +227,10 @@ namespace Composition
       return 0.0;
    }
 
-   void Composition::recomputeStoiciometry()
+   __host__ __device__ void Composition::recomputeStoiciometry()
    {
       mMoleNorm = UncertainValue2::ZERO();
-      for (auto itr : mConstituents) {
+      for (auto &itr : mConstituents) {
          mMoleNorm = UncertainValue2::add(mMoleNorm, UncertainValue2::multiply(1.0 / ((const Element::Element*)itr.first)->getAtomicWeight(), itr.second));
       }
 
@@ -664,7 +667,7 @@ namespace Composition
       mName = name;
    }
 
-   const char* Composition::getName() const
+   __host__ __device__ const char* Composition::getName() const
    {
       return mName.c_str();
    }

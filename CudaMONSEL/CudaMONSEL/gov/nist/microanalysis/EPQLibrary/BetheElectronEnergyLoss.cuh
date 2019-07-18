@@ -66,7 +66,7 @@ namespace BetheElectronEnergyLoss
    extern const BetheElectronEnergyLoss& Bethe1930;
    extern const BetheElectronEnergyLoss& Bethe1930Strict;
 
-   extern __device__ const BetheElectronEnergyLoss *dJoyLuo1989;
+   extern __device__ const BetheElectronEnergyLoss* d_JoyLuo1989;
 
    extern __global__ void initCuda();
 }

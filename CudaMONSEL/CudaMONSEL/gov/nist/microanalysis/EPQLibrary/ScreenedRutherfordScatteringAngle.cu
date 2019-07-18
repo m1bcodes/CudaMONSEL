@@ -11,7 +11,7 @@ namespace ScreenedRutherfordScatteringAngle
 
    __host__ __device__ ScreenedRutherfordScatteringAngle::ScreenedRutherfordScatteringAngle(const ElementT& elm) :
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-      RandomizedScatterT("Screened Rutherford", *Reference::dNullReference),
+      RandomizedScatterT("Screened Rutherford", *Reference::d_NullReference),
 #else
       RandomizedScatterT("Screened Rutherford", REFERENCE),
 #endif
@@ -458,7 +458,7 @@ namespace ScreenedRutherfordScatteringAngle
 
    __host__ __device__ ScreenedRutherfordRandomizedScatterFactory::ScreenedRutherfordRandomizedScatterFactory() :
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-      RandomizedScatterFactoryT("Screened Rutherford elastic cross-section", *Reference::dNullReference)
+      RandomizedScatterFactoryT("Screened Rutherford elastic cross-section", *Reference::d_NullReference)
 #else
       RandomizedScatterFactoryT("Screened Rutherford elastic cross-section", REFERENCE)
 #endif

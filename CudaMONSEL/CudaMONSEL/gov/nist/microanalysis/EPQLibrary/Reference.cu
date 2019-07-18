@@ -356,10 +356,10 @@ namespace Reference
    }
 
    const CrudeReference NullReference("-");
-   __device__ CrudeReference *dNullReference;
+   __device__ CrudeReference *d_NullReference;
 
    __global__ void initCuda(char *d_data)
    {
-      dNullReference = new CrudeReference(d_data);
+      d_NullReference = new CrudeReference(d_data);
    }
 }

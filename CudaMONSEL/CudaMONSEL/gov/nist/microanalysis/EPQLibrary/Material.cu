@@ -9,33 +9,33 @@ namespace Material
    const long serialVersionUID = 0x42;
    const double DEFAULT_DENSITY = 5.0 * 1.0e-3 / (1.0e-2 * 1.0e-2 * 1.0e-2); //ToSI::gPerCC(5.0);
 
-   __host__ __device__ Material::Material(double density)
+   __host__ __device__ Material::Material(double density) :
+      mDensity(density)
    {
-      mDensity = density;
    }
 
-   __host__ __device__ Material::Material(const Material& other)
+   __host__ __device__ Material::Material(const Material& other) :
+      Composition(other),
+      mDensity(other.mDensity)
    {
-      Composition::replicate(other);
-      mDensity = other.mDensity;
    }
 
-   __host__ __device__ Material::Material(const Element::Element* elms[], int elmsLen, const double massFracs[], int massFracsLen, double density, const char* name) : Composition(elms, elmsLen, massFracs, massFracsLen, name)
+   __host__ __device__ Material::Material(const Element::Element* elms[], int elmsLen, const double massFracs[], int massFracsLen, double density, const char* name) :
+      Composition(elms, elmsLen, massFracs, massFracsLen, name),
+      mDensity(density)
    {
-      mDensity = density;
-      renormalize();
    }
 
-   __host__ __device__ Material::Material(const Composition& comp, double density)
+   __host__ __device__ Material::Material(const Composition& comp, double density) :
+      Composition(comp),
+      mDensity(density)
    {
-      Composition::replicate(comp);
-      mDensity = density;
    }
 
-   Material::Material(const Element::Element* elm[], const double density[]) : Composition(elm, 1, density, 1, elm[0]->toString())
+   Material::Material(const Element::Element* elm[], const double density[]) :
+      Composition(elm, 1, density, 1, elm[0]->toString()),
+      mDensity(density[0])
    {
-      mDensity = density[0];
-      renormalize();
    }
 
    __host__ __device__ Material& Material::operator=(const Material& other)
@@ -170,11 +170,11 @@ namespace Material
       return false;
    }
 
-   __device__ const Material* dDefault;
+   __device__ const Material* d_Default;
    const Material Default(0);
 
    __global__ void initCuda()
    {
-      dDefault = new Material(0);
+      d_Default = new Material(0);
    }
 }

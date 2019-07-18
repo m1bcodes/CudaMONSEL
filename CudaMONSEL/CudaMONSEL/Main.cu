@@ -252,7 +252,7 @@ void testsCPU()
 
 __global__ void printNullReference()
 {
-   printf("%s\n", Reference::dNullReference->getLongForm().c_str());
+   printf("%s\n", Reference::d_NullReference->getLongForm().c_str());
 }
 
 __global__ void printSpwem()
@@ -286,8 +286,8 @@ void initCuda()
 
    Material::initCuda << <1, 1 >> >();
    AlgorithmUser::initCuda << <1, 1 >> >();
-   NISTMottRS::initFactory<<<1, 1>>>();
-   NUTableInterpolation::initCuda << <1, 1 >> >();
+   NISTMottRS::initFactory << <1, 1 >> >();
+   NUTableInterpolation::initFactory << <1, 1 >> >();
 
    char *d_data = nullptr;
    checkCudaErrors(cudaMalloc((void **)&d_data, sizeof(char) * 128));
@@ -353,12 +353,24 @@ void initCuda()
 
 int main()
 {
+   cudaDeviceSetLimit(cudaLimitMallocHeapSize, 1e9);
+   size_t a, t;
+   checkCudaErrors(cudaMemGetInfo(&a, &t));
+   printf("%ld, %ld\n", a, t);
+
    testsCPU();
-   testGPU();
+   //testGPU();
 
-   initCuda();
+   //initCuda();
 
-   LinesOnLayers::run();
+   //LinesOnLayers::initCuda();
+   LinesOnLayers::run1();
+
+   //LinesOnLayers::runCuda << <1, 1 >> >();
+   //checkCudaErrors(cudaDeviceSynchronize());
+   //checkCudaErrors(cudaGetLastError());
+
+   printf("done\n");
 
    return 0;
 }
