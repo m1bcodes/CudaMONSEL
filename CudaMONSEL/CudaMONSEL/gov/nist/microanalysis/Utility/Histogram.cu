@@ -24,6 +24,7 @@ namespace Histogram
    
    __host__ __device__ Histogram::Histogram(double min, double max, int nBins) : mCounts(nBins + 2, 0), mBinMin(nBins + 1, 0)
    {
+      printf("wew");
       if (max < min) {
          const double tmp = min;
          min = max;

@@ -88,7 +88,6 @@ namespace Composition
 
    __host__ __device__ Composition::Composition(const Element::Element* elms[], int elmsLen, const double massFracs[], int massFracsLen, char const* name)
    {
-      printf("Composition: %s begin\n", name);
       double* wf = new double[elmsLen];
       if (elmsLen == massFracsLen - 1) {
          double sum = 0.0;
@@ -111,7 +110,6 @@ namespace Composition
          }
          UncertainValue2::UncertainValue2 tmp(massFracs[i]);
          mConstituents.insert(make_pair(elms[i], tmp));
-         printf("Composition: %s end\n", name);
       }
       delete[] wf;
       mName = name;

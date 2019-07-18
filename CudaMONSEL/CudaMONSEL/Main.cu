@@ -354,16 +354,17 @@ void initCuda()
 int main()
 {
    cudaDeviceSetLimit(cudaLimitMallocHeapSize, 1e9);
-   size_t a, t;
-   checkCudaErrors(cudaMemGetInfo(&a, &t));
-   printf("%ld, %ld\n", a, t);
 
    testsCPU();
-   //testGPU();
+   testGPU();
 
-   //initCuda();
+   initCuda();
 
    LinesOnLayers::copyDataToCuda();
+
+   size_t a, t;
+   checkCudaErrors(cudaMemGetInfo(&a, &t));
+   printf("free/total: %ld/%ld\n", a, t);
 
    LinesOnLayers::initCuda<<<1, 1>>>();
    //LinesOnLayers::run();

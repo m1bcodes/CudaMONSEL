@@ -222,14 +222,14 @@ namespace LinesOnLayers
 
    __global__ void initCuda()
    {
-      printf("LinesOnLayers: initCuda");
+      printf("LinesOnLayers: initCuda\n");
    }
 
    __global__ void runCuda()
    {
-      printf("LinesOnLayers: runCuda");
+      printf("LinesOnLayers: runCuda\n");
       for (int i = 0; i < 10; ++i) {
-         printf("\n %.10e", Random::random());
+         printf("%.10e\n", Random::random());
       }
 
       vacuum = new SEmaterialT(); printf("0");
@@ -461,6 +461,7 @@ namespace LinesOnLayers
             eg->setCenter(egCenter);
 
             const int nbins = (int)(beamEeV / binSizeEV);
+            printf("47.5");
             BackscatterStatsT* back = new BackscatterStatsT(*monte, nbins); printf("48");
             monte->addActionListener(*back);
 

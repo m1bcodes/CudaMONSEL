@@ -55,12 +55,12 @@ namespace RegionBase
    {
       if (mShape->contains(pos)) {
          for (auto reg : mSubRegions) {
-            auto csr = reg->containingSubRegion(pos);
-            if (csr != NULL) return csr;
+            const RegionBase* csr = reg->containingSubRegion(pos);
+            if (csr) return csr;
          }
          return this;
       }
-      return NULL;
+      return nullptr;
    }
    
    Element::UnorderedSetT RegionBase::getElements(bool recurse) const
@@ -80,7 +80,7 @@ namespace RegionBase
       const RegionBase* base = this;
       double t = mShape->getFirstIntersection(p0, p1);
       if (t < 0.0) printf("%s %lf\n", mShape->toString().c_str(), t);
-      if ((t <= 1.0) && mParent != NULL)
+      if ((t <= 1.0) && mParent != nullptr)
          base = mParent;
 
       //if (t <= 1) {
@@ -120,13 +120,13 @@ namespace RegionBase
          Math2::normalize3d(delta, norm);
          Math2::multiply3d(SMALL_DISP, norm, prd);
          Math2::plus3d(p1, prd, over);
-         while (base != NULL) {
+         while (base != nullptr) {
             res = base->containingSubRegion(over);
-            if (res != NULL)
+            if (res != nullptr)
                return res;
             base = base->mParent;
          }
-         return NULL; // newly created point is nowhere in the chamber
+         return nullptr; // newly created point is nowhere in the chamber
       }
       return res;
    }
@@ -208,7 +208,7 @@ namespace RegionBase
       mParent = parent;
       mScatterModel = msm;
       mShape = shape;
-      if (mParent != NULL) mParent->addRegion(*this);
+      if (mParent != nullptr) mParent->addRegion(*this);
       mSubRegions.clear();
    }
 
