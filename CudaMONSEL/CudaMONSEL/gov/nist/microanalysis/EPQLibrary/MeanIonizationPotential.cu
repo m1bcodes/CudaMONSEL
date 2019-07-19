@@ -58,16 +58,16 @@ namespace MeanIonizationPotential
 
    const Sternheimer64MeanIonizationPotential Sternheimer64Ref;
    const MeanIonizationPotential &Sternheimer64 = Sternheimer64Ref;
-   __device__ const MeanIonizationPotential *dSternheimer64;
+   __device__ const MeanIonizationPotential *d_Sternheimer64;
 
    __host__ __device__ double computeSternheimer64(const ElementT &el)
    {
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-      if (dSternheimer64 == nullptr) {
+      if (d_Sternheimer64 == nullptr) {
          printf("computeSternheimer64: not initialized on device");
          return NAN;
       }
-      return dSternheimer64->compute(el);
+      return d_Sternheimer64->compute(el);
 #else
       return Sternheimer64.compute(el);
 #endif
@@ -91,7 +91,7 @@ namespace MeanIonizationPotential
 
    const BergerAndSeltzerCITZAFMeanIonizationPotential BergerAndSeltzerCITZAFRef;
    const MeanIonizationPotential &BergerAndSeltzerCITZAF = BergerAndSeltzerCITZAFRef;
-   __device__ const MeanIonizationPotential *dBergerAndSeltzerCITZAF;
+   __device__ const MeanIonizationPotential *d_BergerAndSeltzerCITZAF;
 
    Reference::CrudeReference Bloch33CR("Bloch F, F. Z. Phys. 81, 363 (1933)");
    __host__ __device__ Bloch33MeanIonizationPotential::Bloch33MeanIonizationPotential() :
@@ -111,7 +111,7 @@ namespace MeanIonizationPotential
 
    const Bloch33MeanIonizationPotential Bloch33Ref;
    const MeanIonizationPotential &Bloch33 = Bloch33Ref;
-   __device__ const MeanIonizationPotential *dBloch33;
+   __device__ const MeanIonizationPotential *d_Bloch33;
 
    Reference::CrudeReference Wilson41CR("Wilson RR. Phys Rev. 60. 749 (1941)");
    __host__ __device__ Wilson41MeanIonizationPotential::Wilson41MeanIonizationPotential() :
@@ -131,16 +131,16 @@ namespace MeanIonizationPotential
 
    const Wilson41MeanIonizationPotential Wilson41Ref;
    const MeanIonizationPotential &Wilson41 = Wilson41Ref;
-   __device__ const MeanIonizationPotential *dWilson41;
+   __device__ const MeanIonizationPotential *d_Wilson41;
 
    __host__ __device__ double computeWilson41(const ElementT &el)
    {
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-      if (dWilson41 == nullptr) {
+      if (d_Wilson41 == nullptr) {
          printf("computeWilson41: not initialized on device");
          return NAN;
       }
-      return dWilson41->compute(el);
+      return d_Wilson41->compute(el);
 #else
       return Wilson41.compute(el);
 #endif
@@ -164,7 +164,7 @@ namespace MeanIonizationPotential
 
    const Springer67MeanIonizationPotential Springer67Ref;
    const MeanIonizationPotential &Springer67 = Springer67Ref;
-   __device__ const MeanIonizationPotential *dSpringer67;
+   __device__ const MeanIonizationPotential *d_Springer67;
 
    Reference::CrudeReference Heinrich70CR("Heinrich KFJ, Yakowitz H. Mikrochim Acta (1970) p 123");
    __host__ __device__ Heinrich70MeanIonizationPotential::Heinrich70MeanIonizationPotential() :
@@ -184,7 +184,7 @@ namespace MeanIonizationPotential
 
    const Heinrich70MeanIonizationPotential Heinrich70Ref;
    const MeanIonizationPotential &Heinrich70 = Heinrich70Ref;
-   __device__ const MeanIonizationPotential *dHeinrich70;
+   __device__ const MeanIonizationPotential *d_Heinrich70;
 
    Reference::CrudeReference Duncumb69CR("Duncumb P, Shields-Mason PK, DeCasa C. Proc. 5th Int. Congr. on X-ray Optics and Microanalysis, Springer, Berlin, 1969 p. 146");
    __host__ __device__ Duncumb69MeanIonizationPotential::Duncumb69MeanIonizationPotential() :
@@ -204,7 +204,7 @@ namespace MeanIonizationPotential
 
    const Duncumb69MeanIonizationPotential Duncumb69Ref;
    const MeanIonizationPotential &Duncumb69 = Duncumb69Ref;
-   __device__ const MeanIonizationPotential *dDuncumb69;
+   __device__ const MeanIonizationPotential *d_Duncumb69;
 
    Reference::CrudeReference Zeller75CR("Zeller C in Ruste J, Gantois M, J. Phys. D. Appl. Phys 8, 872 (1975)");
    __host__ __device__ Zeller75MeanIonizationPotential::Zeller75MeanIonizationPotential() :
@@ -224,7 +224,7 @@ namespace MeanIonizationPotential
 
    const Zeller75MeanIonizationPotential Zeller75Ref;
    const MeanIonizationPotential &Zeller75 = Zeller75Ref;
-   __device__ const MeanIonizationPotential *dZeller75;
+   __device__ const MeanIonizationPotential *d_Zeller75;
 
    // https://www.oreilly.com/library/view/c-cookbook/0596007612/ch03s06.html
    static double sciToDub(const std::string& str)
@@ -292,7 +292,7 @@ namespace MeanIonizationPotential
 
    Berger64MeanIonizationPotential Berger64Ref;
    Berger64MeanIonizationPotential &Berger64 = Berger64Ref;
-   __device__ Berger64MeanIonizationPotential *dBerger64;
+   __device__ Berger64MeanIonizationPotential *d_Berger64;
 
    Reference::CrudeReference Berger83CR("Berger MJ, Seltzer S. NBSIR 82-2550-A - US Dept of Commerce, Washington DC (1983)");
    __host__ __device__ Berger83MeanIonizationPotential::Berger83MeanIonizationPotential() :
@@ -343,7 +343,7 @@ namespace MeanIonizationPotential
 
    Berger83MeanIonizationPotential Berger83Ref;
    Berger83MeanIonizationPotential &Berger83 = Berger83Ref;
-   __device__ Berger83MeanIonizationPotential *dBerger83;
+   __device__ Berger83MeanIonizationPotential *d_Berger83;
 
    const AlgorithmClassT * mAllImplementations[] = {
       &Berger64,
@@ -359,7 +359,7 @@ namespace MeanIonizationPotential
    };
 
    //__device__ const AlgorithmClassT * dAllImplementations[] = {
-   //   dBerger64,
+   //   d_Berger64,
    //   dBerger83,
    //   dBloch33,
    //   dDuncumb69,
@@ -373,26 +373,26 @@ namespace MeanIonizationPotential
 
    __global__ void initCuda()
    {
-      dBerger64 = new Berger64MeanIonizationPotential();
-      dBerger83 = new Berger83MeanIonizationPotential();
-      dBloch33 = new Bloch33MeanIonizationPotential();
-      dDuncumb69 = new Duncumb69MeanIonizationPotential();
-      dBergerAndSeltzerCITZAF = new BergerAndSeltzerCITZAFMeanIonizationPotential();
-      dHeinrich70 = new Heinrich70MeanIonizationPotential();
-      dSpringer67 = new Springer67MeanIonizationPotential();
-      dSternheimer64 = new Sternheimer64MeanIonizationPotential();
-      dWilson41 = new Wilson41MeanIonizationPotential();
-      dZeller75 = new Zeller75MeanIonizationPotential();
+      d_Berger64 = new Berger64MeanIonizationPotential();
+      d_Berger83 = new Berger83MeanIonizationPotential();
+      d_Bloch33 = new Bloch33MeanIonizationPotential();
+      d_Duncumb69 = new Duncumb69MeanIonizationPotential();
+      d_BergerAndSeltzerCITZAF = new BergerAndSeltzerCITZAFMeanIonizationPotential();
+      d_Heinrich70 = new Heinrich70MeanIonizationPotential();
+      d_Springer67 = new Springer67MeanIonizationPotential();
+      d_Sternheimer64 = new Sternheimer64MeanIonizationPotential();
+      d_Wilson41 = new Wilson41MeanIonizationPotential();
+      d_Zeller75 = new Zeller75MeanIonizationPotential();
    }
 
    __global__ void copyDataToBerger64(double *data, int len)
    {
-      dBerger64->copyData<double>(data, len);
+      d_Berger64->copyData<double>(data, len);
    }
 
    __global__ void copyDataToBerger83(double *data, int len)
    {
-      dBerger83->copyData<double>(data, len);
+      d_Berger83->copyData<double>(data, len);
    }
 
    void copyDataToCuda()

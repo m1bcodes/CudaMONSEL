@@ -65,6 +65,8 @@ namespace GaussianBeam
       initialPos[0] += r * ::cos(th);
       initialPos[1] += r * ::sin(th);
 
-      return new ElectronT(initialPos, mBeamEnergy);
+      ElectronT* newElectron = new ElectronT(initialPos, mBeamEnergy);
+      if (!newElectron) printf("ElectronT* GaussianBeam::createElectron: failed creating electron.\n");
+      return newElectron;
    }
 }

@@ -154,7 +154,7 @@ namespace BetheElectronEnergyLoss
    __host__ __device__ void BetheElectronEnergyLoss::initializeDefaultStrategy()
    {
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-      addDefaultAlgorithm("MeanIonizationPotential", MeanIonizationPotential::dBerger83);
+      addDefaultAlgorithm("MeanIonizationPotential", MeanIonizationPotential::d_Berger83);
 #else
       addDefaultAlgorithm("MeanIonizationPotential", &MeanIonizationPotential::Berger83);
 #endif

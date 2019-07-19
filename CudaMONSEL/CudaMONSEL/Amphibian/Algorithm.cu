@@ -31,7 +31,6 @@ namespace Algorithm
       a[r] = a[j];
       a[j] = t;
 
-
       return j;
    }
 

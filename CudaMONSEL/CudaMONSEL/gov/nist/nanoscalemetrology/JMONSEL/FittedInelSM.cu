@@ -16,7 +16,10 @@ namespace FittedInelSM
    {
       const double phi = 2 * Math2::PI * Random::random();
       const double theta = ::acos(1. - (2. * Random::random()));
-      return new ElectronT(*pe, theta, phi, energySEgen + eFermi);
+
+      ElectronT* newElectron = new ElectronT(*pe, theta, phi, energySEgen + eFermi);
+      if (!newElectron) printf("FittedInelSM::FittedInelSM: failed creating electron.\n");
+      return newElectron;
    }
 
    __host__ __device__ double FittedInelSM::scatterRate(const ElectronT* pe)

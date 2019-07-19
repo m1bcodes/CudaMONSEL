@@ -89,6 +89,7 @@ namespace Composition
    __host__ __device__ Composition::Composition(const Element::Element* elms[], int elmsLen, const double massFracs[], int massFracsLen, char const* name)
    {
       double* wf = new double[elmsLen];
+      if (!wf) printf("Composition::Composition: failed creating array.\n");
       if (elmsLen == massFracsLen - 1) {
          double sum = 0.0;
          for (int i = 0; i < massFracsLen; ++i) {

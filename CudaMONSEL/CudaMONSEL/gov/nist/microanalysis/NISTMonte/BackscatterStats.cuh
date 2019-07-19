@@ -24,7 +24,7 @@ namespace BackscatterStats
       double getPhi() const;
       StringT toString() const;
 
-      static StringT getHeader();
+      StringT getHeader();
 
    private:
       long electronID;
@@ -55,7 +55,7 @@ namespace BackscatterStats
       double scatterFraction() const;
       bool getLogDetected() const;
       void setLogDetected(bool logDetected);
-      amp::vector<Datum> getLog() const;
+      const amp::vector<Datum>& getLog() const;
 
    private:
       __host__ __device__ void initialize();

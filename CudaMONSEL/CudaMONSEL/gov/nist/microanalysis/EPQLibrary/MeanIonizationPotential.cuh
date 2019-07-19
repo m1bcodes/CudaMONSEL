@@ -123,16 +123,16 @@ namespace MeanIonizationPotential
    extern const MeanIonizationPotential& Wilson41;
    extern const MeanIonizationPotential& Zeller75;
 
-   extern __device__ Berger64MeanIonizationPotential* dBerger64;
-   extern __device__ Berger83MeanIonizationPotential* dBerger83;
-   extern __device__ const MeanIonizationPotential* dBloch33;
-   extern __device__ const MeanIonizationPotential* dDuncumb69;
-   extern __device__ const MeanIonizationPotential* dBergerAndSeltzerCITZAF;
-   extern __device__ const MeanIonizationPotential* dHeinrich70;
-   extern __device__ const MeanIonizationPotential* dSpringer67;
-   extern __device__ const MeanIonizationPotential* dSternheimer64;
-   extern __device__ const MeanIonizationPotential* dWilson41;
-   extern __device__ const MeanIonizationPotential* dZeller75;
+   extern __device__ Berger64MeanIonizationPotential* d_Berger64;
+   extern __device__ Berger83MeanIonizationPotential* d_Berger83;
+   extern __device__ const MeanIonizationPotential* d_Bloch33;
+   extern __device__ const MeanIonizationPotential* d_Duncumb69;
+   extern __device__ const MeanIonizationPotential* d_BergerAndSeltzerCITZAF;
+   extern __device__ const MeanIonizationPotential* d_Heinrich70;
+   extern __device__ const MeanIonizationPotential* d_Springer67;
+   extern __device__ const MeanIonizationPotential* d_Sternheimer64;
+   extern __device__ const MeanIonizationPotential* d_Wilson41;
+   extern __device__ const MeanIonizationPotential* d_Zeller75;
 
    extern __global__ void initCuda();
    extern void copyDataToCuda();

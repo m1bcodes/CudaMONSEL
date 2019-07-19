@@ -15,6 +15,7 @@
 #include "Amphibian\Tests\VectorTest.cuh"
 #include "Amphibian\Tests\StackTest.cuh"
 #include "Amphibian\random.cuh"
+#include "Amphibian\Algorithm.cuh"
 
 #include "CudaUtil.h"
 #include "ImageUtil.h"
@@ -67,7 +68,6 @@ __global__ void testKernel()
    printf("%d, %d, %d, %d, %d, %d\n", threadIdx.x, blockIdx.x, threadIdx.y, blockIdx.y, threadIdx.z, blockIdx.z);
    printf("%d, %d, %d\n", gridDim.x, gridDim.y, gridDim.z);
 
-   //int i = threadIdx.x + blockDim.x * blockIdx.x;
    Math2Test::testRandom1Cuda();
    Math2Test::testRandom2Cuda();
 
@@ -267,13 +267,13 @@ __global__ void printSpwem()
 __global__ void printMeanIonizationPotential()
 {
    printf("GPU:\n");
-   printf("Berger64: %d\n", MeanIonizationPotential::dBerger64->getData().size());
-   for (auto a : MeanIonizationPotential::dBerger64->getData()) {
+   printf("Berger64: %d\n", MeanIonizationPotential::d_Berger64->getData().size());
+   for (auto a : MeanIonizationPotential::d_Berger64->getData()) {
       printf("%.10e ", a);
    }
    printf("Berger64 end\n");
-   printf("Berger83: %d\n", MeanIonizationPotential::dBerger83->getData().size());
-   for (auto a : MeanIonizationPotential::dBerger83->getData()) {
+   printf("Berger83: %d\n", MeanIonizationPotential::d_Berger83->getData().size());
+   for (auto a : MeanIonizationPotential::d_Berger83->getData()) {
       printf("%.10e ", a);
    }
    printf("Berger83 end\n");
@@ -350,10 +350,27 @@ void initCuda()
    printf("Berger83 end\n");
    printf("CPU end\n");
 }
+// causes stack overflow on GPU since it is sorting on worst case (ie already sorted array)
+// use case: Histogram::Histogram
+//__global__ void AlgorithmTest()
+//{
+//   VectorXd bins(360 + 1, 0);
+//   bins[0] = 0;
+//   const double delta = (Math2::PI * 2) / (360 + 1);
+//   for (int i = 1; i < bins.size(); ++i)
+//      bins[i] = i * delta;
+//   Algorithm::quicksort(bins.data(), 0, bins.size() - 1);
+//}
 
 int main()
 {
    cudaDeviceSetLimit(cudaLimitMallocHeapSize, 1e9);
+   cudaDeviceSetLimit(cudaLimitStackSize, 131072);
+   size_t pValue;
+   cudaDeviceGetLimit(&pValue, cudaLimitMallocHeapSize);
+   printf("cudaLimitMallocHeapSize: %d\n", pValue);
+   cudaDeviceGetLimit(&pValue, cudaLimitStackSize);
+   printf("cudaLimitStackSize: %d\n", pValue);
 
    testsCPU();
    testGPU();
@@ -366,14 +383,19 @@ int main()
    checkCudaErrors(cudaMemGetInfo(&a, &t));
    printf("free/total: %ld/%ld\n", a, t);
 
-   LinesOnLayers::initCuda<<<1, 1>>>();
-   //LinesOnLayers::run();
+   LinesOnLayers::initCuda << <1, 1 >> >();
+   checkCudaErrors(cudaDeviceSynchronize());
+   checkCudaErrors(cudaGetLastError());
 
    LinesOnLayers::runCuda << <1, 1 >> >();
    checkCudaErrors(cudaDeviceSynchronize());
    checkCudaErrors(cudaGetLastError());
 
    printf("done\n");
+
+   //testsCPU();
+   //LinesOnLayers::initCuda();
+   //LinesOnLayers::runCuda();
 
    return 0;
 }

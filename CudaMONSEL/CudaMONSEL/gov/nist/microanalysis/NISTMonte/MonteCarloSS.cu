@@ -235,14 +235,12 @@ namespace MonteCarloSS
    {
       initializeTrajectory();
       fireEvent(TrajectoryStartEvent);
-      //unsigned int i = 0;
+      unsigned int i = 0;
       while (!allElectronsComplete()) {
-         //if (i == 19)
-         //   printf("%d\n", i++);
          takeStep();
-         //++i;
+         ++i;
       }
-      //printf("num steps: %d\n", i);
+      printf("%d steps\n", i);
       fireEvent(TrajectoryEndEvent);
    }
 
@@ -250,8 +248,7 @@ namespace MonteCarloSS
    {
       fireEvent(FirstTrajectoryEvent);
       for (int i = 0; i < n; ++i) {
-         //if (i == 50)
-            //printf("%d\n", i);
+         printf("itr #%d - ", i);
          runTrajectory();
       }
       fireEvent(LastTrajectoryEvent);

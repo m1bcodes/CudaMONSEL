@@ -333,6 +333,7 @@ namespace TabulatedInelasticSM
          phiSE = phi + Math2::PI;
          // Generate SE, apply energy loss and trajectory change to SE here
          se = new ElectronT(*pe, theta0PE, phi0PE, energySE);
+         if (!se) printf("ElectronT* TabulatedInelasticSM::scatter 0: failed creating electron.\n");
          se->updateDirection(thetaSE, phiSE);
          break;
       case 2:
@@ -360,6 +361,7 @@ namespace TabulatedInelasticSM
          phiSE = phi + Math2::PI;
          // Generate SE, apply energy loss and trajectory change to SE here
          se = new ElectronT(*pe, theta0PE, phi0PE, energySE);
+         if (!se) printf("ElectronT* TabulatedInelasticSM::scatter 1: failed creating electron.\n");
          se->updateDirection(thetaSE, phiSE);
          break;
       case 3:
@@ -377,6 +379,7 @@ namespace TabulatedInelasticSM
             // Generate SE, apply energy loss and trajectory change to SE
             // here
             se = new ElectronT(*pe, thetaSE, phiSE, energySE);
+            if (!se) printf("ElectronT* TabulatedInelasticSM::scatter 2: failed creating electron.\n");
          }
          else { // SE generation from extended band
             const double root = 2. * ::sqrt(offsetFermiEnergy * (offsetFermiEnergy + deltaE));
@@ -392,6 +395,7 @@ namespace TabulatedInelasticSM
                   return nullptr;
                // Generate SE in PE direction with correct energy
                se = new ElectronT(*pe, theta0PE, phi0PE, energySE);
+               if (!se) printf("ElectronT* TabulatedInelasticSM::scatter 3: failed creating electron.\n");
                // Determine angles of SE q vector relative to PE original direction
                thetaSE = Math2::PI / 2. - theta;
                phiSE = phi + Math2::PI;
@@ -429,6 +433,7 @@ namespace TabulatedInelasticSM
                // Generate SE, apply energy loss and trajectory change to SE
                // here
                se = new ElectronT(*pe, thetaSE, phiSE, energySE);
+               if (!se) printf("ElectronT* TabulatedInelasticSM::scatter 4: failed creating electron.\n");
             }
          }
          break;

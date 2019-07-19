@@ -131,28 +131,28 @@ namespace BackscatterStats
    }
 
    BackscatterStats::BackscatterStats(const MonteCarloSST& mcss) :
-      mMonte(mcss),
       mEnergyBinCount(400),
-      mLogDetected(false),
+      mMonte(mcss),
       mBeamEnergy(FromSI::eV(mMonte.getBeamEnergy())),
       mEventCount(0),
-      mElevationBins(new HistogramT(0.0, Math2::PI, 180)),
-      mAzimuthalBins(new HistogramT(0.0, 2.0 * Math2::PI, 360)),
       mFwdEnergyBins(new HistogramT(0.0, mBeamEnergy, mEnergyBinCount)),
-      mBackEnergyBins(new HistogramT(0.0, mBeamEnergy, mEnergyBinCount))
+      mBackEnergyBins(new HistogramT(0.0, mBeamEnergy, mEnergyBinCount)),
+      mAzimuthalBins(new HistogramT(0.0, 2.0 * Math2::PI, 360)),
+      mElevationBins(new HistogramT(0.0, Math2::PI, 180)),
+      mLogDetected(false)
    {
    }
 
    __host__ __device__ BackscatterStats::BackscatterStats(const MonteCarloSST& mcss, int nEnergyBins) :
-      mMonte(mcss),
       mEnergyBinCount(nEnergyBins),
-      mLogDetected(false),
+      mMonte(mcss),
       mBeamEnergy(FromSI::eV(mMonte.getBeamEnergy())),
-      mEventCount(0),
-      mElevationBins(new HistogramT(0.0, Math2::PI, 180)),
-      mAzimuthalBins(new HistogramT(0.0, 2.0 * Math2::PI, 360)),
       mFwdEnergyBins(new HistogramT(0.0, mBeamEnergy, mEnergyBinCount)),
-      mBackEnergyBins(new HistogramT(0.0, mBeamEnergy, mEnergyBinCount))
+      mBackEnergyBins(new HistogramT(0.0, mBeamEnergy, mEnergyBinCount)),
+      mAzimuthalBins(new HistogramT(0.0, 2.0 * Math2::PI, 360)),
+      mElevationBins(new HistogramT(0.0, Math2::PI, 180)),
+      mEventCount(0),
+      mLogDetected(false)
    {
    }
 
@@ -167,10 +167,10 @@ namespace BackscatterStats
    __host__ __device__ void BackscatterStats::initialize()
    {
       mBeamEnergy = FromSI::eV(mMonte.getBeamEnergy());
-      mElevationBins->clear();
-      mAzimuthalBins->clear();
       mFwdEnergyBins->clear();
       mBackEnergyBins->clear();
+      mAzimuthalBins->clear();
+      mElevationBins->clear();
       //mFwdEnergyBins = new HistogramT(0.0, mBeamEnergy, mEnergyBinCount);
       //mBackEnergyBins = new HistogramT(0.0, mBeamEnergy, mEnergyBinCount);
       mLog.clear();
@@ -319,7 +319,7 @@ namespace BackscatterStats
       mLogDetected = logDetected;
    }
 
-   amp::vector<Datum> BackscatterStats::getLog() const
+   const amp::vector<Datum>& BackscatterStats::getLog() const
    {
       return mLog;
    }
