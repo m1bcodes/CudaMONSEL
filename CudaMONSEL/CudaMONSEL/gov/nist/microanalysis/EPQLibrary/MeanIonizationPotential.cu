@@ -274,7 +274,7 @@ namespace MeanIonizationPotential
       }
    }
 
-   __host__ __device__ const VectorXd &Berger64MeanIonizationPotential::getData() const
+   __host__ __device__ const VectorXd& Berger64MeanIonizationPotential::getData() const
    {
       return mMeasured;
    }
@@ -291,8 +291,8 @@ namespace MeanIonizationPotential
    }
 
    Berger64MeanIonizationPotential Berger64Ref;
-   Berger64MeanIonizationPotential &Berger64 = Berger64Ref;
-   __device__ Berger64MeanIonizationPotential *d_Berger64;
+   Berger64MeanIonizationPotential& Berger64 = Berger64Ref;
+   __device__ Berger64MeanIonizationPotential* d_Berger64;
 
    Reference::CrudeReference Berger83CR("Berger MJ, Seltzer S. NBSIR 82-2550-A - US Dept of Commerce, Washington DC (1983)");
    __host__ __device__ Berger83MeanIonizationPotential::Berger83MeanIonizationPotential() :
@@ -342,8 +342,8 @@ namespace MeanIonizationPotential
    }
 
    Berger83MeanIonizationPotential Berger83Ref;
-   Berger83MeanIonizationPotential &Berger83 = Berger83Ref;
-   __device__ Berger83MeanIonizationPotential *d_Berger83;
+   Berger83MeanIonizationPotential& Berger83 = Berger83Ref;
+   __device__ Berger83MeanIonizationPotential* d_Berger83;
 
    const AlgorithmClassT * mAllImplementations[] = {
       &Berger64,
@@ -397,7 +397,7 @@ namespace MeanIonizationPotential
 
    void copyDataToCuda()
    {
-      double *Berger64data = nullptr;
+      double* Berger64data = nullptr;
       checkCudaErrors(cudaMalloc((void **)&Berger64data, Berger64.getData().size() * sizeof(double)));
       checkCudaErrors(cudaMemcpy(Berger64data, Berger64.getData().data(), Berger64.getData().size() * sizeof(double), cudaMemcpyHostToDevice));
       copyDataToBerger64 << <1, 1 >> >(Berger64data, Berger64.getData().size());
@@ -405,7 +405,7 @@ namespace MeanIonizationPotential
       checkCudaErrors(cudaGetLastError());
       checkCudaErrors(cudaFree(Berger64data));
 
-      double *Berger83data = nullptr;
+      double* Berger83data = nullptr;
       checkCudaErrors(cudaMalloc((void **)&Berger83data, Berger83.getData().size() * sizeof(double)));
       checkCudaErrors(cudaMemcpy(Berger83data, Berger83.getData().data(), Berger83.getData().size() * sizeof(double), cudaMemcpyHostToDevice));
       copyDataToBerger83 << <1, 1 >> >(Berger83data, Berger83.getData().size());

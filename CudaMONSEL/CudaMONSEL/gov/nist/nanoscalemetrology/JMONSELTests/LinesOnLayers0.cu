@@ -318,168 +318,169 @@ namespace LinesOnLayers
 
    __device__ MonteCarloSST* monte = nullptr;
 #else
-const int nTrajectories = 100;
+   const int nTrajectories = 100;
 
-const double pitchnm = 180;
-const int nlines = 3;
-const double hnm = 120;
-const double wnm = 80;
-const double linelengthnm = 1000;
-const double thetardeg = 3;
-const double thetaldeg = 3;
-const double radrnm = 20;
-const double radlnm = 20;
-const double layer1thicknessnm = 80;
-const double layer2thicknessnm = 200;
+   const double pitchnm = 180;
+   const int nlines = 3;
+   const double hnm = 120;
+   const double wnm = 80;
+   const double linelengthnm = 1000;
+   const double thetardeg = 3;
+   const double thetaldeg = 3;
+   const double radrnm = 20;
+   const double radlnm = 20;
+   const double layer1thicknessnm = 80;
+   const double layer2thicknessnm = 200;
 
-const double beamEeVvals[] = { 500. };
-const int beamEeVvalsLen = 1;
-const double beamsizenm = 0.5;
-const double deepnm = 15;
+   const double beamEeVvals[] = { 500. };
+   const int beamEeVvalsLen = 1;
+   const double beamsizenm = 0.5;
+   const double deepnm = 15;
 
-const bool trajImg = true;
-const int trajImgMaxTraj = 50;
-const double trajImgSize = 200e-9;
+   const bool trajImg = true;
+   const int trajImgMaxTraj = 50;
+   const double trajImgSize = 200e-9;
 
-const bool VRML = false;
-const int VRMLImgMaxTraj = 0;
+   const bool VRML = false;
+   const int VRMLImgMaxTraj = 0;
 
-SEmaterialT* vacuum = nullptr;
-ExpQMBarrierSMT* vacuumBarrier = nullptr;
-ZeroCSDT* sZeroCSD = nullptr;
+   SEmaterialT* vacuum = nullptr;
+   ExpQMBarrierSMT* vacuumBarrier = nullptr;
+   ZeroCSDT* sZeroCSD = nullptr;
 
-MONSEL_MaterialScatterModelT* vacuumMSM = nullptr;
+   MONSEL_MaterialScatterModelT* vacuumMSM = nullptr;
 
-const double PMMAbreakE = 1.60217653e-19 * 45.;
-const double PMMAdensity = 1190.;
-const double PMMAworkfun = 5.5;
-const double PMMAbandgap = 5.;
-const double PMMAEFermi = -5.;//-PMMAbandgap;
-const double PMMApotU = -5.5 - (-5.);
+   const double PMMAbreakE = 1.60217653e-19 * 45.;
+   const double PMMAdensity = 1190.;
+   const double PMMAworkfun = 5.5;
+   const double PMMAbandgap = 5.;
+   const double PMMAEFermi = -5.;//-PMMAbandgap;
+   const double PMMApotU = -5.5 - (-5.);
 
-SEmaterialT* PMMA = nullptr;
+   SEmaterialT* PMMA = nullptr;
 
-SelectableElasticSMT* PMMANISTMott = nullptr;
+   SelectableElasticSMT* PMMANISTMott = nullptr;
 
-JoyLuoNieminenCSDT* PMMACSD = nullptr;
-FittedInelSMT* PMMAfittedInel = nullptr;
-GanachaudMokraniPolaronTrapSMT* PMMApolaron = nullptr;
+   JoyLuoNieminenCSDT* PMMACSD = nullptr;
+   FittedInelSMT* PMMAfittedInel = nullptr;
+   GanachaudMokraniPolaronTrapSMT* PMMApolaron = nullptr;
 
-ExpQMBarrierSMT* pmmaeqmbsm = nullptr;
+   ExpQMBarrierSMT* pmmaeqmbsm = nullptr;
 
-MONSEL_MaterialScatterModelT* PMMAMSM = nullptr;
+   MONSEL_MaterialScatterModelT* PMMAMSM = nullptr;
 
-MONSEL_MaterialScatterModelT* PMMAMSMDeep = nullptr;
+   MONSEL_MaterialScatterModelT* PMMAMSMDeep = nullptr;
 
-MONSEL_MaterialScatterModelT* ARCMSM = nullptr;
+   MONSEL_MaterialScatterModelT* ARCMSM = nullptr;
 
-const double glCdensity = 1800.;
-const double glCworkfun = 5.0;
-const double glCbandgap = 0.;
-const double glCEFermi = 20.4;
-const double glCpotU = -5. - 20.4;
+   const double glCdensity = 1800.;
+   const double glCworkfun = 5.0;
+   const double glCbandgap = 0.;
+   const double glCEFermi = 20.4;
+   const double glCpotU = -5. - 20.4;
 
-SEmaterialT* glC = nullptr;
+   SEmaterialT* glC = nullptr;
 
-SelectableElasticSMT* glCNISTMott = nullptr;
+   SelectableElasticSMT* glCNISTMott = nullptr;
 
-TabulatedInelasticSMT* glCDS = nullptr;
+   TabulatedInelasticSMT* glCDS = nullptr;
 
-ExpQMBarrierSMT* glceqmbsm = nullptr;
+   ExpQMBarrierSMT* glceqmbsm = nullptr;
 
-MONSEL_MaterialScatterModelT* glCMSM = nullptr;
+   MONSEL_MaterialScatterModelT* glCMSM = nullptr;
 
-MONSEL_MaterialScatterModelT* glCMSMDeep = nullptr;
+   MONSEL_MaterialScatterModelT* glCMSMDeep = nullptr;
 
-const double phononE = 0.063;
-const double phononStrength = 3.;
+   const double phononE = 0.063;
+   const double phononStrength = 3.;
 
-const double Sidensity = 2330.;
-const double Siworkfun = 4.85;
-const double Sibandgap = 1.1;
-const double SiEFermi = -1.1;//-Sibandgap;
-const double SipotU = -44.85 - (-1.1);//-Siworkfun - SiEFermi;
+   const double Sidensity = 2330.;
+   const double Siworkfun = 4.85;
+   const double Sibandgap = 1.1;
+   const double SiEFermi = -1.1;//-Sibandgap;
+   const double SipotU = -44.85 - (-1.1);//-Siworkfun - SiEFermi;
 
-SEmaterialT* Si = nullptr;
+   SEmaterialT* Si = nullptr;
 
-SelectableElasticSMT* SiNISTMott = nullptr;
+   SelectableElasticSMT* SiNISTMott = nullptr;
 
-TabulatedInelasticSMT* SiDS = nullptr;
+   TabulatedInelasticSMT* SiDS = nullptr;
 
-GanachaudMokraniPhononInelasticSMT* Siphonon = nullptr;
+   GanachaudMokraniPhononInelasticSMT* Siphonon = nullptr;
 
-ExpQMBarrierSMT* sieqmbsm = nullptr;
+   ExpQMBarrierSMT* sieqmbsm = nullptr;
 
-MONSEL_MaterialScatterModelT* SiMSM = nullptr;
+   MONSEL_MaterialScatterModelT* SiMSM = nullptr;
 
-MONSEL_MaterialScatterModelT* SiMSMDeep = nullptr;
+   MONSEL_MaterialScatterModelT* SiMSMDeep = nullptr;
 
-SphereT* sphere = nullptr;
-GaussianBeamT* eg = nullptr;
+   SphereT* sphere = nullptr;
+   GaussianBeamT* eg = nullptr;
 
-const double pitch = 180 * 1.e-9;
-const double h = 120 * 1.e-9;
-const double w = 80 * 1.e-9;
-const double linelength = 1000 * 1.e-9;
+   const double pitch = 180 * 1.e-9;
+   const double h = 120 * 1.e-9;
+   const double w = 80 * 1.e-9;
+   const double linelength = 1000 * 1.e-9;
 
-const double radperdeg = 3.14159265358979323846 / 180.;
-const double thetar = 3 * 3.14159265358979323846 / 180.;
-const double thetal = 3 * 3.14159265358979323846 / 180.;
-const double radr = 20 * 1.e-9;
-const double radl = 20 * 1.e-9;
-const double layer1thickness = 80 * 1.e-9;
-const double layer2thickness = 200 * 1.e-9;
-const double beamsize = 0.5 * 1.e-9;
-const double deep = 15 * 1.e-9;
+   const double radperdeg = 3.14159265358979323846 / 180.;
+   const double thetar = 3 * 3.14159265358979323846 / 180.;
+   const double thetal = 3 * 3.14159265358979323846 / 180.;
+   const double radr = 20 * 1.e-9;
+   const double radl = 20 * 1.e-9;
+   const double layer1thickness = 80 * 1.e-9;
+   const double layer2thickness = 200 * 1.e-9;
+   const double beamsize = 0.5 * 1.e-9;
+   const double deep = 15 * 1.e-9;
 
-const double center[] = {
-   0.0,
-   0.0,
-   0.0
-};
+   const double center[] = {
+      0.0,
+      0.0,
+      0.0
+   };
 
-const double beamEeV = 500.;
-const double beamE = 1.60217653e-19 * 500;
-const double binSizeEV = 10.;
+   const double beamEeV = 500.;
+   const double beamE = 1.60217653e-19 * 500;
+   const double binSizeEV = 10.;
 
-NullMaterialScatterModelT* NULL_MSM = nullptr;
+   NullMaterialScatterModelT* NULL_MSM = nullptr;
 
-RegionT* chamber = nullptr;
+   RegionT* chamber = nullptr;
 
-const double normalvector[] = { 0., 0., -1. };
-const double layer1Pos[] = { 0., 0., 0. };
+   const double normalvector[] = { 0., 0., -1. };
+   const double layer1Pos[] = { 0., 0., 0. };
 
-NormalMultiPlaneShapeT* layer1 = nullptr;
-PlaneT* pl1 = nullptr;
-RegionT* layer1Region = nullptr;
+   NormalMultiPlaneShapeT* layer1 = nullptr;
+   PlaneT* pl1 = nullptr;
+   RegionT* layer1Region = nullptr;
 
-const double layer2Pos[] = { 0., 0., 80 * 1.e-9 };
-NormalMultiPlaneShapeT* layer2 = nullptr;
-PlaneT* pl2 = nullptr;
-RegionT* layer2Region = nullptr;
+   const double layer2Pos[] = { 0., 0., 80 * 1.e-9 };
+   NormalMultiPlaneShapeT* layer2 = nullptr;
+   PlaneT* pl2 = nullptr;
+   RegionT* layer2Region = nullptr;
 
-const double layer3Pos[] = { 0., 0., 80 * 1.e-9 + 200 * 1.e-9 };
-NormalMultiPlaneShapeT* layer3 = nullptr;
-PlaneT* pl3 = nullptr;
-RegionT* layer3Region = nullptr;
+   const double layer3Pos[] = { 0., 0., 80 * 1.e-9 + 200 * 1.e-9 };
+   NormalMultiPlaneShapeT* layer3 = nullptr;
+   PlaneT* pl3 = nullptr;
+   RegionT* layer3Region = nullptr;
 
-const double layer4Pos[] = { 0., 0., 80 * 1.e-9 + 200 * 1.e-9 + 15 * 1.e-9 };
-NormalMultiPlaneShapeT* layer4 = nullptr;
-PlaneT* pl4 = nullptr;
-RegionT* layer4Region = nullptr;
+   const double layer4Pos[] = { 0., 0., 80 * 1.e-9 + 200 * 1.e-9 + 15 * 1.e-9 };
+   NormalMultiPlaneShapeT* layer4 = nullptr;
+   PlaneT* pl4 = nullptr;
+   RegionT* layer4Region = nullptr;
 
-RegionT* deepRegion = nullptr;
+   RegionT* deepRegion = nullptr;
 
-const double leftmostLineCenterx = -180. * 1.e-9 * (3. / 2.);
-const double xcenter = -180. * 1.e-9 * (3. / 2.) + 0 * 180 * 1.e-9;
+   const double leftmostLineCenterx = -180. * 1.e-9 * (3. / 2.);
+   const double xcenter = -180. * 1.e-9 * (3. / 2.) + 0 * 180 * 1.e-9;
 
-NormalIntersectionShapeT* line = nullptr;
-RegionT* lineRegion = nullptr;
+   NormalIntersectionShapeT* line = nullptr;
+   RegionT* lineRegion = nullptr;
 
-MonteCarloSST* monte = nullptr;
+   MonteCarloSST* monte = nullptr;
 #endif
 
-__global__ void initCuda()
+   __global__ void initCuda()
+   //void initCuda()
    {
       printf("LinesOnLayers: initCuda\n");      for (int i = 0; i < 10; ++i) {
          printf("%.10e\n", Random::random());
@@ -670,6 +671,7 @@ __global__ void initCuda()
    }
 
    __global__ void runCuda()
+   //void runCuda()
    {
       printf("LinesOnLayers: runCuda\n");
 
@@ -760,23 +762,22 @@ __global__ void initCuda()
 
             const double SEf = (float)totalSE / nTrajectories;
             const double bsf = back->backscatterFraction() - SEf;
-            printf("\n %lf %lf %lf %lf %lf", beamEeV, xnm, ynm, bsf, SEf);
+            printf("%lf %lf %lf %lf %lf\n", beamEeV, xnm, ynm, bsf, SEf);
 
 #if (!(defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0)))
-            output += "\n" + std::to_string(beamEeV) + " " + std::to_string(xnm) + " " + std::to_string(ynm) + " " + std::to_string(bsf) + " " + std::to_string(SEf);
+            output += std::to_string(beamEeV) + " " + std::to_string(xnm) + " " + std::to_string(ynm) + " " + std::to_string(bsf) + " " + std::to_string(SEf) + "\n";
 #endif
 
             monte->removeActionListener(*back);
             delete back;
          }
       }
-      printf("\n");
 #if (!(defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0)))
       auto end = std::chrono::system_clock::now();
       std::chrono::duration<double> elapsed_seconds = end - start;
       std::time_t end_time = std::chrono::system_clock::to_time_t(end);
       std::cout << std::endl << "finished computation at " << std::ctime(&end_time) << "elapsed time: " << elapsed_seconds.count() << "s" << std::endl;
-      output += "\n" + std::to_string(elapsed_seconds.count());
+      output += std::to_string(elapsed_seconds.count());
       
       std::ofstream myfile;
       myfile.open("output.txt");

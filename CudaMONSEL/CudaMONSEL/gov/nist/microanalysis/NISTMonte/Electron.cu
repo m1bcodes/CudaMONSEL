@@ -120,16 +120,16 @@ namespace Electron
       // dPhi around the z-axis, then finally rotating back to the original
       // trajectory.
 
-      double ct = ::cos(mTheta), st = ::sin(mTheta);
-      double cp = ::cos(mPhi), sp = ::sin(mPhi);
-      double ca = ::cos(dTheta), sa = ::sin(dTheta);
-      double cb = ::cos(dPhi);
+      const double ct = ::cos(mTheta), st = ::sin(mTheta);
+      const double cp = ::cos(mPhi), sp = ::sin(mPhi);
+      const double ca = ::cos(dTheta), sa = ::sin(dTheta);
+      const double cb = ::cos(dPhi);
 
-      double xx = cb * ct * sa + ca * st;
-      double yy = sa * ::sin(dPhi);
-      double dx = cp * xx - sp * yy;
-      double dy = cp * yy + sp * xx;
-      double dz = ca * ct - cb * sa * st;
+      const double xx = cb * ct * sa + ca * st;
+      const double yy = sa * ::sin(dPhi);
+      const double dx = cp * xx - sp * yy;
+      const double dy = cp * yy + sp * xx;
+      const double dz = ca * ct - cb * sa * st;
 
       mTheta = ::atan2(::sqrt(dx * dx + dy * dy), dz);
       mPhi = ::atan2(dy, dx);

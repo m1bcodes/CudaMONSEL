@@ -18,9 +18,6 @@
 
 namespace SumShapeTest
 {
-   void testGetFirstIntersection();
-   void testAll();
-
    class SumShapeTest
    {
    public:

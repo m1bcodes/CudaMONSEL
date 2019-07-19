@@ -53,6 +53,7 @@ namespace RegionBase
    
    __host__ __device__ const RegionBase* RegionBase::containingSubRegion(const double pos[]) const
    {
+      if (pos[0] != pos[0] || pos[1] != pos[1] || pos[2] != pos[2]) printf("wtf\n");
       if (mShape->contains(pos)) {
          for (auto reg : mSubRegions) {
             const RegionBase* csr = reg->containingSubRegion(pos);
@@ -79,23 +80,14 @@ namespace RegionBase
    {
       const RegionBase* base = this;
       double t = mShape->getFirstIntersection(p0, p1);
-      if (t < 0.0) printf("%s %lf\n", mShape->toString().c_str(), t);
+      if (t < 0.0 || t != t) printf("%s %lf\n", mShape->toString().c_str(), t);
       if ((t <= 1.0) && mParent != nullptr)
          base = mParent;
-
-      //if (t <= 1) {
-      //   if (mParent != NULL)
-      //      printf("%s, %s, %.10e\n", mParent->toString().c_str(), mParent->mShape->toString().c_str(), t);
-      //   else
-      //      printf("%.10e\n", t);
-      //}
 
       const RegionBase* res = this;
       for (auto subRegion : mSubRegions) {
          double candidate = subRegion->mShape->getFirstIntersection(p0, p1);
-         if (p1[0] != p1[0] || p1[1] != p1[1] || p1[2] != p1[2]) {
-            printf("wtf\n");
-         }
+         if (p1[0] != p1[0] || p1[1] != p1[1] || p1[2] != p1[2]) printf("wtf\n");
          if (candidate <= 0.0) printf("%s %lf\n", subRegion->mShape->toString().c_str(), candidate);
          if ((candidate <= 1.0) && (candidate < t)) {
             //printf("%s, %s, %.10e\n", subRegion->toString().c_str(), subRegion->mShape->toString().c_str(), candidate);
@@ -120,12 +112,14 @@ namespace RegionBase
          Math2::normalize3d(delta, norm);
          Math2::multiply3d(SMALL_DISP, norm, prd);
          Math2::plus3d(p1, prd, over);
+         if (over[0] != over[0] || over[1] != over[1] || over[2] != over[2]) printf("wtff\n");
          while (base != nullptr) {
             res = base->containingSubRegion(over);
             if (res != nullptr)
                return res;
             base = base->mParent;
          }
+         printf("mm\n");
          return nullptr; // newly created point is nowhere in the chamber
       }
       return res;
