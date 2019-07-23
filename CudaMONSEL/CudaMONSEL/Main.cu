@@ -362,8 +362,23 @@ void initCuda()
 //   Algorithm::quicksort(bins.data(), 0, bins.size() - 1);
 //}
 
+__host__ __device__ int fib(int n)
+{
+   if (!n) return 1;
+   return n * fib(n - 1);
+}
+
+__global__ void ker()
+{
+   printf("%d\n", fib(10));
+}
+
 int main()
 {
+   //ker << <1, 1 >> >();
+   //checkCudaErrors(cudaDeviceSynchronize());
+   //checkCudaErrors(cudaGetLastError());
+
    cudaDeviceSetLimit(cudaLimitMallocHeapSize, 1e9);
    cudaDeviceSetLimit(cudaLimitStackSize, 131072);
    size_t pValue;

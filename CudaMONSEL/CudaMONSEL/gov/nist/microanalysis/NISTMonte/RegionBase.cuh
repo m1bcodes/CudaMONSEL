@@ -55,7 +55,7 @@ namespace RegionBase
       double getAtomsPerCubicMeter(const ElementT& el) const;
       __host__ __device__ const RegionBase* getParent() const;
       __host__ __device__ bool isContainingRegion(const RegionBase& searchTarget) const;
-      StringT toString() const;
+      __host__ __device__ StringT toString() const;
    };
 
    class TransformableRegion : public RegionBase, public ITransformT

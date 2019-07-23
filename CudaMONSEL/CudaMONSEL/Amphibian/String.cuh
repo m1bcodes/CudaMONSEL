@@ -11,9 +11,9 @@
 namespace amp
 {
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-   __constant__ const int MAX_LEN = sizeof(char) * 128;
+   __constant__ const int MAX_LEN = sizeof(char) * 1024;
 #else
-   const int MAX_LEN = sizeof(char) * 128;
+   const int MAX_LEN = sizeof(char) * 1024;
 #endif
 
    class string

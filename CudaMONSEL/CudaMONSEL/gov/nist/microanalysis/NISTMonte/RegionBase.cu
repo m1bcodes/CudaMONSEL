@@ -53,7 +53,7 @@ namespace RegionBase
    
    __host__ __device__ const RegionBase* RegionBase::containingSubRegion(const double pos[]) const
    {
-      if (pos[0] != pos[0] || pos[1] != pos[1] || pos[2] != pos[2]) printf("wtf\n");
+      //if (pos[0] != pos[0] || pos[1] != pos[1] || pos[2] != pos[2]) printf("wtf\n");
       if (mShape->contains(pos)) {
          for (auto reg : mSubRegions) {
             const RegionBase* csr = reg->containingSubRegion(pos);
@@ -95,6 +95,9 @@ namespace RegionBase
             base = subRegion;
          }
       }
+
+      if (base == nullptr) printf("base == nullptr 0\n");
+
       if (t < 0.0) {
          printf("findEndOfStep invalid t: %.10e\n", t);
       }
@@ -107,19 +110,19 @@ namespace RegionBase
          p1[2] = p0[2] + (t * delta[2]);
          // Find the region just over the boundary...
          double over[3];
-         double prd[3];
+         double prod[3];
          double norm[3];
          Math2::normalize3d(delta, norm);
-         Math2::multiply3d(SMALL_DISP, norm, prd);
-         Math2::plus3d(p1, prd, over);
+         Math2::multiply3d(SMALL_DISP, norm, prod);
+         Math2::plus3d(p1, prod, over);
          if (over[0] != over[0] || over[1] != over[1] || over[2] != over[2]) printf("wtff\n");
+         if (base == nullptr) printf("base == nullptr 1\n");
          while (base != nullptr) {
             res = base->containingSubRegion(over);
             if (res != nullptr)
                return res;
             base = base->mParent;
          }
-         printf("mm\n");
          return nullptr; // newly created point is nowhere in the chamber
       }
       return res;
@@ -153,7 +156,7 @@ namespace RegionBase
       return false;
    }
    
-   StringT RegionBase::toString() const
+   __host__ __device__ StringT RegionBase::toString() const
    {
       return mShape->toString() + " of " + getMaterial().toString();
    }

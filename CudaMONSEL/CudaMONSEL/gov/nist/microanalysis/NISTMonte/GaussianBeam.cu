@@ -60,13 +60,14 @@ namespace GaussianBeam
          mCenter[1],
          mCenter[2]
       };
-      double r = ::sqrt(-2. * ::log(Random::random())) * mWidth;
-      double th = 2.0 * PhysicalConstants::PI * (Random::random());
+      const double r = ::sqrt(-2. * ::log(Random::random())) * mWidth;
+      const double th = 2.0 * PhysicalConstants::PI * (Random::random());
       initialPos[0] += r * ::cos(th);
       initialPos[1] += r * ::sin(th);
 
       ElectronT* newElectron = new ElectronT(initialPos, mBeamEnergy);
       if (!newElectron) printf("ElectronT* GaussianBeam::createElectron: failed creating electron.\n");
+      //printf("epos: %.5e, %.5e, %.5e\n", newElectron->getPosition()[0], newElectron->getPosition()[1], newElectron->getPosition()[2]);
       return newElectron;
    }
 }

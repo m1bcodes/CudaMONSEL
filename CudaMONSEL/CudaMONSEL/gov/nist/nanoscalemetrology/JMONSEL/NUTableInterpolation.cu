@@ -102,11 +102,6 @@ namespace NUTableInterpolation
                x[i].resize(nPoints[i]);
 
                for (int j = 0; j < nPoints[i]; j++) {
-                  /*
-                  * TODO The try/catch below was added to debug a problem that
-                  * seems unique to Georg Frase's computer. After the problem is
-                  * solved, I can remove it.
-                  */
                   myfile >> x[i][j];
                }
 

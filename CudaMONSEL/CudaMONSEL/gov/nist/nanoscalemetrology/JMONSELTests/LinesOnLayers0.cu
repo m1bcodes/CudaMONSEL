@@ -763,11 +763,9 @@ namespace LinesOnLayers
             const double SEf = (float)totalSE / nTrajectories;
             const double bsf = back->backscatterFraction() - SEf;
             printf("%lf %lf %lf %lf %lf\n", beamEeV, xnm, ynm, bsf, SEf);
-
 #if (!(defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0)))
             output += std::to_string(beamEeV) + " " + std::to_string(xnm) + " " + std::to_string(ynm) + " " + std::to_string(bsf) + " " + std::to_string(SEf) + "\n";
 #endif
-
             monte->removeActionListener(*back);
             delete back;
          }
