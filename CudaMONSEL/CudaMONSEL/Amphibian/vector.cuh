@@ -72,6 +72,7 @@ namespace amp
       __host__ __device__ void resize(const unsigned int, const T&);
       __host__ __device__ void assign(const T[], const T[]);
       __host__ __device__ void reserve(const unsigned int);
+      __host__ __device__ void set_data(T[], const unsigned int);
 
       // comparison
       __host__ __device__ bool operator==(const vector<T>&) const;
@@ -340,6 +341,15 @@ namespace amp
    __host__ __device__ void vector<T>::reserve(const unsigned int newcap)
    {
       clear(newcap);
+   }
+
+   template<typename T>
+   __host__ __device__ void vector<T>::set_data(T v[], const unsigned int sz)
+   {
+      delete[] vec;
+      this->vec = v;
+      this->cap = sz;
+      this->sz = sz;
    }
 
    template<typename T>

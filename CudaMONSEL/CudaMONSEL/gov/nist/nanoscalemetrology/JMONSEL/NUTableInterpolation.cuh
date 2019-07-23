@@ -44,7 +44,7 @@ namespace NUTableInterpolation
 
       __device__ void copytable1d(const double*, const unsigned int);
       __device__ void copytable2d(const unsigned int, const double*, const unsigned int);
-      __device__ void copytable3d(const unsigned int, const unsigned int, const float*, const unsigned int);
+      __device__ void copytable3d(const unsigned int, const unsigned int, float*, const unsigned int);
       __device__ void copytable4d(const unsigned int, const unsigned int, const unsigned int, const double*, const unsigned int);
       __device__ void copyx(const unsigned int, const double*, const unsigned int);
       __device__ void copydomain(const unsigned int, const double*, const unsigned int);
@@ -55,6 +55,7 @@ namespace NUTableInterpolation
       __device__ void resizetable2d(const unsigned int);
       __device__ void resizetable3d_0(const unsigned int);
       __device__ void resizetable3d_1(const unsigned int, const unsigned int);
+      //__device__ void resizetable3d_2(const unsigned int, const unsigned int, const unsigned int);
       __device__ void resizetable4d_0(const unsigned int);
       __device__ void resizetable4d_1(const unsigned int, const unsigned int);
       __device__ void resizetable4d_2(const unsigned int, const unsigned int, const unsigned int);
