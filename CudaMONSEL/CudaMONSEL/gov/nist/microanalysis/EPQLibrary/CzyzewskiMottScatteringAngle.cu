@@ -465,54 +465,54 @@ namespace CzyzewskiMottScatteringAngle
       return mCummulativeDF;
    }
 
-   __global__ void copyMeanFreePath(const unsigned int i, const double *data, const unsigned int len)
+   __global__ void assignMeanFreePath(const unsigned int i, double *data, const unsigned int len)
    {
-      d_mScatter[i]->copyMeanFreePath<double>(data, len);
+      d_mScatter[i]->assignMeanFreePath<double>(data, len);
    }
 
-   __global__ void copyTotalCrossSection(const unsigned int i, const double *data, const unsigned int len)
+   __global__ void assignTotalCrossSection(const unsigned int i, double *data, const unsigned int len)
    {
-      d_mScatter[i]->copyTotalCrossSection<double>(data, len);
+      d_mScatter[i]->assignTotalCrossSection<double>(data, len);
    }
 
-   __global__ void copyCummulativeDFRow(const unsigned int i, const unsigned int r, const double *data, const unsigned int len)
+   __global__ void assignCummulativeDFRow(const unsigned int i, const unsigned int r, double *data, const unsigned int len)
    {
-      d_mScatter[i]->copyCummulativeDFRow<double>(r, data, len);
+      d_mScatter[i]->assignCummulativeDFRow<double>(r, data, len);
    }
 
-   void copyDataToCuda()
+   void transferDataToCuda()
    {
+      double **dmfp = new double*[95];
+      double **dtcs = new double*[95];
+      double ***dcdf = new double**[95];
       for (int i = 0; i <= 94; ++i) {
-         double *dmfp = nullptr;
          const VectorXd& mfp = mScatter[i]->getMeanFreePath();
-         checkCudaErrors(cudaMalloc((void **)&dmfp, sizeof(double) * mfp.size()));
-         checkCudaErrors(cudaMemcpy(dmfp, mfp.data(), sizeof(double) * mfp.size(), cudaMemcpyHostToDevice));
-         copyMeanFreePath << <1, 1 >> >(i, dmfp, mfp.size());
-         checkCudaErrors(cudaDeviceSynchronize());
-         checkCudaErrors(cudaGetLastError());
-         checkCudaErrors(cudaFree(dmfp));
+         checkCudaErrors(cudaMalloc((void **)&dmfp[i], sizeof(double) * mfp.size()));
+         checkCudaErrors(cudaMemcpy(dmfp[i], mfp.data(), sizeof(double) * mfp.size(), cudaMemcpyHostToDevice));
+         assignMeanFreePath << <1, 1 >> >(i, dmfp[i], mfp.size());
 
-         double *dtcs = nullptr;
          const VectorXd& tcs = mScatter[i]->getTotalCrossSection();
-         checkCudaErrors(cudaMalloc((void **)&dtcs, sizeof(double) * tcs.size()));
-         checkCudaErrors(cudaMemcpy(dtcs, tcs.data(), sizeof(double) * tcs.size(), cudaMemcpyHostToDevice));
-         copyTotalCrossSection << <1, 1 >> >(i, dtcs, tcs.size());
-         checkCudaErrors(cudaDeviceSynchronize());
-         checkCudaErrors(cudaGetLastError());
-         checkCudaErrors(cudaFree(dtcs));
+         checkCudaErrors(cudaMalloc((void **)&dtcs[i], sizeof(double) * tcs.size()));
+         checkCudaErrors(cudaMemcpy(dtcs[i], tcs.data(), sizeof(double) * tcs.size(), cudaMemcpyHostToDevice));
+         assignTotalCrossSection << <1, 1 >> >(i, dtcs[i], tcs.size());
 
          const MatrixXd& cdf = mScatter[i]->getCummulativeDF();
+         dcdf[i] = new double*[cdf.size()];
          for (int r = 0; r <= cdf.size(); ++r) {
-            double *dcdf = nullptr;
             const VectorXd& cdf = mScatter[i]->getTotalCrossSection();
-            checkCudaErrors(cudaMalloc((void **)&dcdf, sizeof(double) * cdf.size()));
-            checkCudaErrors(cudaMemcpy(dcdf, cdf.data(), sizeof(double) * cdf.size(), cudaMemcpyHostToDevice));
-            copyCummulativeDFRow << <1, 1 >> >(i, r, dcdf, cdf.size());
-            checkCudaErrors(cudaDeviceSynchronize());
-            checkCudaErrors(cudaGetLastError());
-            checkCudaErrors(cudaFree(dcdf));
+            checkCudaErrors(cudaMalloc((void **)&dcdf[i][r], sizeof(double) * cdf.size()));
+            checkCudaErrors(cudaMemcpy(dcdf[i][r], cdf.data(), sizeof(double) * cdf.size(), cudaMemcpyHostToDevice));
+            assignCummulativeDFRow << <1, 1 >> >(i, r, dcdf[i][r], cdf.size());
          }
       }
+      checkCudaErrors(cudaDeviceSynchronize());
+      checkCudaErrors(cudaGetLastError());
+      delete[] dmfp;
+      delete[] dtcs;
+      for (int i = 0; i <= 94; ++i) {
+         delete[] dcdf[i];
+      }
+      delete[] dcdf;
    }
 
    __host__ __device__ const CzyzewskiMottScatteringAngle& getCMSA(int an)

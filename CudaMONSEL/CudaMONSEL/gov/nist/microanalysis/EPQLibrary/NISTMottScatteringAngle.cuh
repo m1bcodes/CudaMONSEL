@@ -29,15 +29,15 @@ namespace NISTMottScatteringAngle
       __host__ __device__ const MatrixXf& getX1() const;
 
       template<typename T>
-      __device__ void copySpwem(const T *dSpwem, const unsigned int size)
+      __device__ void assignSpwem(T* dSpwem, const unsigned int len)
       {
-         mSpwem.assign(dSpwem, dSpwem + size);
+         mSpwem.set_data(dSpwem, len);
       }
 
       template<typename T>
-      __device__ void copyX1Row(const unsigned int r, const T * dSX1r, const unsigned int size)
+      __device__ void assignX1Row(const unsigned int r, T* dSX1r, const unsigned int len)
       {
-         mX1[r].assign(dSX1r, dSX1r + size);
+         mX1[r].set_data(dSX1r, len);
       }
 
    private:
@@ -68,7 +68,7 @@ namespace NISTMottScatteringAngle
 
    extern void init();
    extern __global__ void initCuda();
-   extern void copyDataToCuda();
+   extern void transferDataToCuda();
    extern __global__ void initFactory();
 }
 

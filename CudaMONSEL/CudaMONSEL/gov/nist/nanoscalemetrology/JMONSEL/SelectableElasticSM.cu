@@ -67,9 +67,7 @@ namespace SelectableElasticSM
          index++;
 
       const double alpha = rse[index]->randomScatteringAngle(kE);
-      if (alpha != alpha) {
-         printf("%s\n", rse[index]->toString().c_str());
-      }
+      if (alpha != alpha) printf("%s\n", rse[index]->toString().c_str());
       const double beta = 2 * Math2::PI * Random::random();
       pe->updateDirection(alpha, beta);
       pe->setScatteringElement(&(rse[index]->getElement()));

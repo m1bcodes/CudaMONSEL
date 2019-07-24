@@ -229,39 +229,39 @@ namespace NUTableInterpolation
       return tableFileName;
    }
 
-   __device__ void NUTableInterpolation::copytable1d(const double* data, const unsigned int len)
+   __device__ void NUTableInterpolation::assigntable1d(double* data, const unsigned int len)
    {
-      table1d.assign(data, data + len);
+      table1d.set_data(data, len);
    }
 
-   __device__ void NUTableInterpolation::copytable2d(const unsigned int i0, const double* data, const unsigned int len)
+   __device__ void NUTableInterpolation::assigntable2d(const unsigned int i0, double* data, const unsigned int len)
    {
-      table2d[i0].assign(data, data + len);
+      table2d[i0].set_data(data, len);
    }
 
-   __device__ void NUTableInterpolation::copytable3d(const unsigned int i0, const unsigned int i1, float* data, const unsigned int len)
+   __device__ void NUTableInterpolation::assigntable3d(const unsigned int i0, const unsigned int i1, float* data, const unsigned int len)
    {
       table3d[i0][i1].set_data(data, len);
    }
 
-   __device__ void NUTableInterpolation::copytable4d(const unsigned int i0, const unsigned int i1, const unsigned int d2, const double* data, const unsigned int len)
+   __device__ void NUTableInterpolation::assigntable4d(const unsigned int i0, const unsigned int i1, const unsigned int d2, double* data, const unsigned int len)
    {
-      table4d[i0][i1][d2].assign(data, data + len);
+      table4d[i0][i1][d2].set_data(data, len);
    }
 
-   __device__ void NUTableInterpolation::copyx(const unsigned int i0, const double* data, const unsigned int len)
+   __device__ void NUTableInterpolation::assignx(const unsigned int i0, double* data, const unsigned int len)
    {
-      x[i0].assign(data, data + len);
+      x[i0].set_data(data, len);
    }
 
-   __device__ void NUTableInterpolation::copydomain(const unsigned int i0, const double* data, const unsigned int len)
+   __device__ void NUTableInterpolation::assigndomain(const unsigned int i0, double* data, const unsigned int len)
    {
-      domain[i0].assign(data, data + len);
+      domain[i0].set_data(data, len);
    }
 
-   __device__ void NUTableInterpolation::copyrange(const double* data, const unsigned int len)
+   __device__ void NUTableInterpolation::assignrange(double* data, const unsigned int len)
    {
-      range.assign(data, data + len);
+      range.set_data(data, len);
    }
 
    __device__ void NUTableInterpolation::copydim(int d)
@@ -288,11 +288,6 @@ namespace NUTableInterpolation
    {
       table3d[i0].resize(d1);
    }
-
-   //__device__ void NUTableInterpolation::resizetable3d_2(const unsigned int i0, const unsigned int i1, const unsigned int d2)
-   //{
-   //   table3d[i0][i1].resize(d2);
-   //}
 
    __device__ void NUTableInterpolation::resizetable4d_0(const unsigned int d0)
    {
@@ -378,39 +373,39 @@ namespace NUTableInterpolation
       newOne = new NUTableInterpolation(fn);
    }
 
-   __global__ void copytable1d(const double* data, const unsigned int len)
+   __global__ void assigntable1d(double* data, const unsigned int len)
    {
-      newOne->copytable1d(data, len);
+      newOne->assigntable1d(data, len);
    }
 
-   __global__ void copytable2d(const unsigned int i0, const double* data, const unsigned int len)
+   __global__ void assigntable2d(const unsigned int i0, double* data, const unsigned int len)
    {
-      newOne->copytable2d(i0, data, len);
+      newOne->assigntable2d(i0, data, len);
    }
 
-   __global__ void copytable3d(const unsigned int i0, const unsigned int i1, float* data, const unsigned int len)
+   __global__ void assigntable3d(const unsigned int i0, const unsigned int i1, float* data, const unsigned int len)
    {
-      newOne->copytable3d(i0, i1, data, len);
+      newOne->assigntable3d(i0, i1, data, len);
    }
 
-   __global__ void copytable4d(const unsigned int i0, const unsigned int i1, const unsigned int d2, const double* data, const unsigned int len)
+   __global__ void assigntable4d(const unsigned int i0, const unsigned int i1, const unsigned int d2, double* data, const unsigned int len)
    {
-      newOne->copytable4d(i0, i1, d2, data, len);
+      newOne->assigntable4d(i0, i1, d2, data, len);
    }
 
-   __global__ void copyx(const unsigned int i0, const double* data, const unsigned int len)
+   __global__ void assignx(const unsigned int i0, double* data, const unsigned int len)
    {
-      newOne->copyx(i0, data, len);
+      newOne->assignx(i0, data, len);
    }
 
-   __global__ void copydomain(const unsigned int i0, const double* data, const unsigned int len)
+   __global__ void assigndomain(const unsigned int i0, double* data, const unsigned int len)
    {
-      newOne->copydomain(i0, data, len);
+      newOne->assigndomain(i0, data, len);
    }
 
-   __global__ void copyrange(const double* data, const unsigned int len)
+   __global__ void assignrange(double* data, const unsigned int len)
    {
-      newOne->copyrange(data, len);
+      newOne->assignrange(data, len);
    }
 
    __global__ void copydim(int d)
@@ -442,11 +437,6 @@ namespace NUTableInterpolation
    {
       newOne->resizetable3d_1(i0, d1);
    }
-
-   //__global__ void resizetable3d_2(const unsigned int i0, const unsigned int i1, const unsigned int d2)
-   //{
-   //   newOne->resizetable3d_2(i0, i1, d2);
-   //}
 
    __global__ void resizetable4d_0(const unsigned int d0)
    {
@@ -483,7 +473,7 @@ namespace NUTableInterpolation
       ptr[i][j] = new float[sz];
    }
 
-   void copyDataToCuda(char const * tableFileName)
+   void transferDataToCuda(char const * tableFileName)
    {
       NUTableInterpolation const * ptr = getInstance(tableFileName);
       
@@ -499,105 +489,103 @@ namespace NUTableInterpolation
       double* d_table1d = nullptr;
       checkCudaErrors(cudaMalloc((void **)&d_table1d, ptr->gettable1d().size() * sizeof(double)));
       checkCudaErrors(cudaMemcpy(d_table1d, ptr->gettable1d().data(), ptr->gettable1d().size() * sizeof(double), cudaMemcpyHostToDevice));
-      copytable1d << <1, 1 >> >(d_table1d, ptr->gettable1d().size());
+      assigntable1d << <1, 1 >> >(d_table1d, ptr->gettable1d().size());
       checkCudaErrors(cudaDeviceSynchronize());
       checkCudaErrors(cudaGetLastError());
-      checkCudaErrors(cudaFree(d_table1d));
 
-      double* d_table2d = nullptr;
+      double** d_table2d = new double*[ptr->gettable2d().size()];
       resizetable2d << <1, 1 >> >(ptr->gettable2d().size());
       checkCudaErrors(cudaDeviceSynchronize());
       checkCudaErrors(cudaGetLastError());
       for (int i = 0; i < ptr->gettable2d().size(); ++i) {
-         checkCudaErrors(cudaMalloc((void **)&d_table2d, ptr->gettable2d()[i].size() * sizeof(double)));
-         checkCudaErrors(cudaMemcpy(d_table2d, ptr->gettable2d()[i].data(), ptr->gettable2d()[i].size() * sizeof(double), cudaMemcpyHostToDevice));
-         copytable2d << <1, 1 >> >(i, d_table2d, ptr->gettable2d()[i].size());
-         checkCudaErrors(cudaDeviceSynchronize());
-         checkCudaErrors(cudaGetLastError());
-         checkCudaErrors(cudaFree(d_table2d));
+         checkCudaErrors(cudaMalloc((void **)&d_table2d[i], ptr->gettable2d()[i].size() * sizeof(double)));
+         checkCudaErrors(cudaMemcpy(d_table2d[i], ptr->gettable2d()[i].data(), ptr->gettable2d()[i].size() * sizeof(double), cudaMemcpyHostToDevice));
+         assigntable2d << <1, 1 >> >(i, d_table2d[i], ptr->gettable2d()[i].size());
       }
+      checkCudaErrors(cudaDeviceSynchronize());
+      checkCudaErrors(cudaGetLastError());
+      delete[] d_table2d;
 
-      float* d_table3d = nullptr;
+      float*** d_table3d = new float**[ptr->gettable3d().size()]; // 2d matrix of pointers on CPU each points to 1d vector of data on GPU
       resizetable3d_0 << <1, 1 >> >(ptr->gettable3d().size());
       checkCudaErrors(cudaDeviceSynchronize());
       checkCudaErrors(cudaGetLastError());
       for (int i = 0; i < ptr->gettable3d().size(); ++i) {
+         d_table3d[i] = new float*[ptr->gettable3d()[i].size()];
          resizetable3d_1 << <1, 1 >> >(i, ptr->gettable3d()[i].size());
-         //checkCudaErrors(cudaDeviceSynchronize());
-         //checkCudaErrors(cudaGetLastError());
          for (int j = 0; j < ptr->gettable3d()[i].size(); ++j) {
-            //resizetable3d_2 << <1, 1 >> >(i, j, ptr->gettable3d()[i][j].size());
-            checkCudaErrors(cudaMalloc((void **)&d_table3d, ptr->gettable3d()[i][j].size() * sizeof(float)));
-            checkCudaErrors(cudaMemcpy(d_table3d, ptr->gettable3d()[i][j].data(), ptr->gettable3d()[i][j].size() * sizeof(float), cudaMemcpyHostToDevice));
-            copytable3d << <1, 1 >> >(i, j, d_table3d, ptr->gettable3d()[i][j].size());
+            checkCudaErrors(cudaMalloc((void **)&d_table3d[i][j], ptr->gettable3d()[i][j].size() * sizeof(float)));
+            checkCudaErrors(cudaMemcpy(d_table3d[i][j], ptr->gettable3d()[i][j].data(), ptr->gettable3d()[i][j].size() * sizeof(float), cudaMemcpyHostToDevice));
+            assigntable3d << <1, 1 >> >(i, j, d_table3d[i][j], ptr->gettable3d()[i][j].size());
          }
       }
       checkCudaErrors(cudaDeviceSynchronize());
       checkCudaErrors(cudaGetLastError());
 
-      //for (int i = 0; i < ptr->gettable3d().size(); ++i) {
-      //   for (int j = 0; j < ptr->gettable3d()[i].size(); ++j) {
-      //      checkCudaErrors(cudaFree(d_table3d[i][j]));
-      //   }
-      //   checkCudaErrors(cudaFree(d_table3d[i]));
-      //}
+      for (int i = 0; i < ptr->gettable3d().size(); ++i) {
+         delete[] d_table3d[i];
+      }
+      delete[] d_table3d;
 
-      double* d_table4d = nullptr;
+      double**** d_table4d = new double***[ptr->gettable4d().size()];
       resizetable4d_0 << <1, 1 >> >(ptr->gettable4d().size());
       checkCudaErrors(cudaDeviceSynchronize());
       checkCudaErrors(cudaGetLastError());
       for (int i = 0; i < ptr->gettable4d().size(); ++i) {
+         d_table4d[i] = new double**[ptr->gettable4d()[i].size()];
          resizetable4d_1 << <1, 1 >> >(i, ptr->gettable4d()[i].size());
-         checkCudaErrors(cudaDeviceSynchronize());
-         checkCudaErrors(cudaGetLastError());
          for (int j = 0; j < ptr->gettable4d()[i].size(); ++j) {
+            d_table4d[i][j] = new double*[ptr->gettable4d()[i][j].size()];
             resizetable4d_2 << <1, 1 >> >(i, j, ptr->gettable4d()[i][j].size());
-            checkCudaErrors(cudaDeviceSynchronize());
-            checkCudaErrors(cudaGetLastError());
             for (int k = 0; k < ptr->gettable4d()[i][j].size(); ++k) {
-               checkCudaErrors(cudaMalloc((void **)&d_table4d, ptr->gettable4d()[i][j][k].size() * sizeof(double)));
-               checkCudaErrors(cudaMemcpy(d_table4d, ptr->gettable4d()[i][j][k].data(), ptr->gettable4d()[i][j][k].size() * sizeof(double), cudaMemcpyHostToDevice));
-               copytable4d << <1, 1 >> >(i, j, k, d_table4d, ptr->gettable4d()[i][j][k].size());
-               checkCudaErrors(cudaDeviceSynchronize());
-               checkCudaErrors(cudaGetLastError());
-               checkCudaErrors(cudaFree(d_table4d));
+               checkCudaErrors(cudaMalloc((void **)&d_table4d[i][j][k], ptr->gettable4d()[i][j][k].size() * sizeof(double)));
+               checkCudaErrors(cudaMemcpy(d_table4d[i][j][k], ptr->gettable4d()[i][j][k].data(), ptr->gettable4d()[i][j][k].size() * sizeof(double), cudaMemcpyHostToDevice));
+               assigntable4d << <1, 1 >> >(i, j, k, d_table4d[i][j][k], ptr->gettable4d()[i][j][k].size());
             }
          }
       }
+      checkCudaErrors(cudaDeviceSynchronize());
+      checkCudaErrors(cudaGetLastError());
+      for (int i = 0; i < ptr->gettable4d().size(); ++i) {
+         for (int j = 0; j < ptr->gettable4d()[i].size(); ++j) {
+            delete[] d_table4d[i][j];
+         }
+         delete[] d_table4d[i];
+      }
+      delete[] d_table4d;
 
-      double* d_x = nullptr;
+      double** d_x = new double*[ptr->getx().size()];
       resizex << <1, 1 >> >(ptr->getx().size());
       checkCudaErrors(cudaDeviceSynchronize());
       checkCudaErrors(cudaGetLastError());
       for (int i = 0; i < ptr->getx().size(); ++i) {
-         checkCudaErrors(cudaMalloc((void **)&d_x, ptr->getx()[i].size() * sizeof(double)));
-         checkCudaErrors(cudaMemcpy(d_x, ptr->getx()[i].data(), ptr->getx()[i].size() * sizeof(double), cudaMemcpyHostToDevice));
-         copyx << <1, 1 >> >(i, d_x, ptr->getx()[i].size());
-         checkCudaErrors(cudaDeviceSynchronize());
-         checkCudaErrors(cudaGetLastError());
-         checkCudaErrors(cudaFree(d_x));
+         checkCudaErrors(cudaMalloc((void **)&d_x[i], ptr->getx()[i].size() * sizeof(double)));
+         checkCudaErrors(cudaMemcpy(d_x[i], ptr->getx()[i].data(), ptr->getx()[i].size() * sizeof(double), cudaMemcpyHostToDevice));
+         assignx << <1, 1 >> >(i, d_x[i], ptr->getx()[i].size());
       }
+      checkCudaErrors(cudaDeviceSynchronize());
+      checkCudaErrors(cudaGetLastError());
+      delete[] d_x;
 
-      double* d_domain = nullptr;
+      double** d_domain = new double*[ptr->getdomain().size()];
       resizedomain << <1, 1 >> >(ptr->getdomain().size());
       checkCudaErrors(cudaDeviceSynchronize());
       checkCudaErrors(cudaGetLastError());
       for (int i = 0; i < ptr->getdomain().size(); ++i) {
-         checkCudaErrors(cudaMalloc((void **)&d_domain, ptr->getdomain()[i].size() * sizeof(double)));
-         checkCudaErrors(cudaMemcpy(d_domain, ptr->getdomain()[i].data(), ptr->getdomain()[i].size() * sizeof(double), cudaMemcpyHostToDevice));
-         copydomain << <1, 1 >> >(i, d_domain, ptr->getdomain()[i].size());
-         checkCudaErrors(cudaDeviceSynchronize());
-         checkCudaErrors(cudaGetLastError());
-         checkCudaErrors(cudaFree(d_domain));
+         checkCudaErrors(cudaMalloc((void **)&d_domain[i], ptr->getdomain()[i].size() * sizeof(double)));
+         checkCudaErrors(cudaMemcpy(d_domain[i], ptr->getdomain()[i].data(), ptr->getdomain()[i].size() * sizeof(double), cudaMemcpyHostToDevice));
+         assigndomain << <1, 1 >> >(i, d_domain[i], ptr->getdomain()[i].size());
       }
+      checkCudaErrors(cudaDeviceSynchronize());
+      checkCudaErrors(cudaGetLastError());
+      delete[] d_domain;
 
       double* d_range = nullptr;
       checkCudaErrors(cudaMalloc((void **)&d_range, ptr->getrange().size() * sizeof(double)));
       checkCudaErrors(cudaMemcpy(d_range, ptr->getrange().data(), ptr->getrange().size() * sizeof(double), cudaMemcpyHostToDevice));
-      copyrange << <1, 1 >> >(d_range, ptr->getrange().size());
+      assignrange << <1, 1 >> >(d_range, ptr->getrange().size());
       checkCudaErrors(cudaDeviceSynchronize());
       checkCudaErrors(cudaGetLastError());
-      checkCudaErrors(cudaFree(d_range));
 
       copydim << <1, 1 >> >(ptr->getdim());
       checkCudaErrors(cudaDeviceSynchronize());

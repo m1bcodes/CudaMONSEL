@@ -86,9 +86,9 @@ namespace MeanIonizationPotential
       void readTabulatedValues();
       __host__ __device__ const VectorXd& getData() const;
       template<typename T>
-      __device__ void copyData(const T* data, const unsigned int len)
+      __device__ void assignData(T* data, const unsigned int len)
       {
-         mMeasured.assign(data, data + len);
+         mMeasured.set_data(data, len);
       }
 
    private:
@@ -103,9 +103,9 @@ namespace MeanIonizationPotential
       void readTabulatedValues();
       __host__ __device__ const VectorXd& getData() const;
       template<typename T>
-      __device__ void copyData(const T* data, const unsigned int len)
+      __device__ void assignData(T* data, const unsigned int len)
       {
-         mMeasured.assign(data, data + len);
+         mMeasured.set_data(data, len);
       }
 
    private:
@@ -135,7 +135,7 @@ namespace MeanIonizationPotential
    extern __device__ const MeanIonizationPotential* d_Zeller75;
 
    extern __global__ void initCuda();
-   extern void copyDataToCuda();
+   extern void transferDataToCuda();
 }
 
 #endif

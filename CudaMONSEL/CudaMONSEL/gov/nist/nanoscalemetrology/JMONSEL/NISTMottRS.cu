@@ -25,8 +25,8 @@ namespace NISTMottRS
 
    __constant__ static const int SPWEM_LEN = 61;
    __constant__ static const int X1_LEN = 201;
-   __constant__ static const double DL50 = -17.0963196301;
-   __constant__ static const double PARAM = 0.04336766652;
+   __constant__ static const double DL50 = -39.3657307254;
+   __constant__ static const double PARAM = 0.09985774245;
 #else
    static const double MAX_NISTMOTT = ToSI::keV(20.0);
    static const double MIN_NISTMOTT = ToSI::keV(0.050);

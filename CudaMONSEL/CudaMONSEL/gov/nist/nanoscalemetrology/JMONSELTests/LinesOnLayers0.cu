@@ -70,7 +70,7 @@ namespace LinesOnLayers
       printf("\n");
    }
 
-   void copyDataToCuda()
+   void transferDataToCuda()
    {
       NUTableInterpolation::initFactory << <1, 1 >> >();
       checkCudaErrors(cudaDeviceSynchronize());
@@ -81,10 +81,10 @@ namespace LinesOnLayers
       const StringT SimReducedDeltaEglassy = tablePath + "interpNUSimReducedDeltaEglassyCSI.csv";
       const StringT simTableThetaNUglassy = tablePath + "interpsimTableThetaNUglassyCSI.csv";
       const StringT SimESE0NUglassy = tablePath + "interpSimESE0NUglassyCSI.csv";
-      NUTableInterpolation::copyDataToCuda(IIMFPPennInterpglassy.c_str());
-      NUTableInterpolation::copyDataToCuda(SimReducedDeltaEglassy.c_str());
-      NUTableInterpolation::copyDataToCuda(simTableThetaNUglassy.c_str());
-      NUTableInterpolation::copyDataToCuda(SimESE0NUglassy.c_str());
+      NUTableInterpolation::transferDataToCuda(IIMFPPennInterpglassy.c_str());
+      NUTableInterpolation::transferDataToCuda(SimReducedDeltaEglassy.c_str());
+      NUTableInterpolation::transferDataToCuda(simTableThetaNUglassy.c_str());
+      NUTableInterpolation::transferDataToCuda(SimESE0NUglassy.c_str());
 
       //tablePath = "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\SiTables\\";
       //const StringT IIMFPFullPennInterpSiSI = tablePath + "IIMFPFullPennInterpSiSI.csv";
@@ -151,10 +151,10 @@ namespace LinesOnLayers
       const StringT interpNUSimReducedDeltaEFullPennSiSI = tablePath + "interpNUSimReducedDeltaEFullPennSiSI.csv";
       const StringT interpNUThetaFullPennSiBGSI = tablePath + "interpNUThetaFullPennSiBGSI.csv";
       const StringT interpSimESE0NUSiBGSI = tablePath + "interpSimESE0NUSiBGSI.csv";
-      NUTableInterpolation::copyDataToCuda(IIMFPFullPennInterpSiSI.c_str());
-      NUTableInterpolation::copyDataToCuda(interpNUSimReducedDeltaEFullPennSiSI.c_str());
-      NUTableInterpolation::copyDataToCuda(interpNUThetaFullPennSiBGSI.c_str());
-      NUTableInterpolation::copyDataToCuda(interpSimESE0NUSiBGSI.c_str());
+      NUTableInterpolation::transferDataToCuda(IIMFPFullPennInterpSiSI.c_str());
+      NUTableInterpolation::transferDataToCuda(interpNUSimReducedDeltaEFullPennSiSI.c_str());
+      NUTableInterpolation::transferDataToCuda(interpNUThetaFullPennSiBGSI.c_str());
+      NUTableInterpolation::transferDataToCuda(interpSimESE0NUSiBGSI.c_str());
    }
 
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
@@ -482,23 +482,24 @@ namespace LinesOnLayers
    __global__ void initCuda()
    //void initCuda()
    {
-      printf("LinesOnLayers: initCuda\n");      for (int i = 0; i < 10; ++i) {
+      printf("LinesOnLayers: initCuda\n");
+      for (int i = 0; i < 10; ++i) {
          printf("%.10e\n", Random::random());
       }
 
-      vacuum = new SEmaterialT(); printf("0");
+      vacuum = new SEmaterialT();
       vacuum->setName("SE vacuum");
-      vacuumBarrier = new ExpQMBarrierSMT(vacuum); printf("1");
-      sZeroCSD = new ZeroCSDT(); printf("2");
+      vacuumBarrier = new ExpQMBarrierSMT(vacuum);
+      sZeroCSD = new ZeroCSDT();
 
-      vacuumMSM = new MONSEL_MaterialScatterModelT(vacuum, vacuumBarrier, sZeroCSD); printf("3");
+      vacuumMSM = new MONSEL_MaterialScatterModelT(vacuum, vacuumBarrier, sZeroCSD);
 
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
       const ElementT* componentsCOH[] = { Element::dC, Element::dO, Element::dH };
 #else
       const ElementT* componentsCOH[] = { &Element::C, &Element::O, &Element::H };
 #endif
-      CompositionT* PMMAcomp = new CompositionT(); printf("4");
+      CompositionT* PMMAcomp = new CompositionT();
       const double compositionCOH[] = { 5, 2, 8 };
       PMMAcomp->defineByMoleFraction(componentsCOH, 3, compositionCOH, 3);
       SEmaterialT* PMMA = new SEmaterialT(*PMMAcomp, PMMAdensity); printf("4.5");
@@ -508,25 +509,25 @@ namespace LinesOnLayers
       PMMA->setEnergyCBbottom(ToSI::eV(PMMApotU));
 
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-      PMMANISTMott = new SelectableElasticSMT(*PMMA, *NISTMottRS::d_Factory); printf("5");
+      PMMANISTMott = new SelectableElasticSMT(*PMMA, *NISTMottRS::d_Factory);
 #else
-      PMMANISTMott = new SelectableElasticSMT(*PMMA, NISTMottRS::Factory); printf("5");
+      PMMANISTMott = new SelectableElasticSMT(*PMMA, NISTMottRS::Factory);
 #endif
 
-      PMMACSD = new JoyLuoNieminenCSDT(*PMMA, PMMAbreakE); printf("6");
-      PMMAfittedInel = new FittedInelSMT(*PMMA, ToSI::eV(65.4), *PMMACSD); printf("7");
-      PMMApolaron = new GanachaudMokraniPolaronTrapSMT(2.e7, 1. / ToSI::eV(4.)); printf("8");
+      PMMACSD = new JoyLuoNieminenCSDT(*PMMA, PMMAbreakE);
+      PMMAfittedInel = new FittedInelSMT(*PMMA, ToSI::eV(65.4), *PMMACSD);
+      PMMApolaron = new GanachaudMokraniPolaronTrapSMT(2.e7, 1. / ToSI::eV(4.));
 
-      pmmaeqmbsm = new ExpQMBarrierSMT(PMMA); printf("9");
+      pmmaeqmbsm = new ExpQMBarrierSMT(PMMA);
 
-      PMMAMSM = new MONSEL_MaterialScatterModelT(PMMA, pmmaeqmbsm, sZeroCSD); printf("10");
+      PMMAMSM = new MONSEL_MaterialScatterModelT(PMMA, pmmaeqmbsm, sZeroCSD);
       PMMAMSM->addScatterMechanism(PMMANISTMott);
-      PMMAMSM->addScatterMechanism(PMMAfittedInel);
-      PMMAMSM->addScatterMechanism(PMMApolaron);
+      //PMMAMSM->addScatterMechanism(PMMAfittedInel);
+      //PMMAMSM->addScatterMechanism(PMMApolaron);
 
       PMMAMSM->setCSD(PMMACSD);
 
-      PMMAMSMDeep = new MONSEL_MaterialScatterModelT(PMMA, pmmaeqmbsm, sZeroCSD); printf("11");
+      PMMAMSMDeep = new MONSEL_MaterialScatterModelT(PMMA, pmmaeqmbsm, sZeroCSD);
       PMMAMSMDeep->addScatterMechanism(PMMANISTMott);
       PMMAMSMDeep->addScatterMechanism(PMMAfittedInel);
       PMMAMSMDeep->addScatterMechanism(PMMApolaron);
@@ -534,7 +535,7 @@ namespace LinesOnLayers
       PMMAMSMDeep->setCSD(PMMACSD);
       PMMAMSMDeep->setMinEforTracking(ToSI::eV(50.));
 
-      ARCMSM = PMMAMSM; printf("12");
+      ARCMSM = PMMAMSM;
 
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
       const ElementT* glCComponents[] = { Element::dC };
@@ -542,7 +543,7 @@ namespace LinesOnLayers
       const ElementT* glCComponents[] = { &Element::C };
 #endif
       const double glCComposition[] = { 1. };
-      glC = new SEmaterialT(glCComponents, 1, glCComposition, 1, glCdensity, "glassy Carbon"); printf("13");
+      glC = new SEmaterialT(glCComponents, 1, glCComposition, 1, glCdensity, "glassy Carbon");
       glC->setWorkfunction(ToSI::eV(glCworkfun));
       glC->setEnergyCBbottom(ToSI::eV(glCpotU));
       glC->setBandgap(ToSI::eV(glCbandgap));
@@ -550,9 +551,9 @@ namespace LinesOnLayers
       glC->setCoreEnergy(glCCoreEnergy, 1);
 
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-      glCNISTMott = new SelectableElasticSMT(*glC, *NISTMottRS::d_Factory); printf("14");
+      glCNISTMott = new SelectableElasticSMT(*glC, *NISTMottRS::d_Factory);
 #else
-      glCNISTMott = new SelectableElasticSMT(*glC, NISTMottRS::Factory); printf("14");
+      glCNISTMott = new SelectableElasticSMT(*glC, NISTMottRS::Factory);
 #endif
 
       StringT tablePath = "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\glassyCTables\\";
@@ -567,15 +568,15 @@ namespace LinesOnLayers
          SimESE0NUglassy.c_str()
       };
 
-      glCDS = new TabulatedInelasticSMT(*glC, 3, glCTables); printf("15");
+      glCDS = new TabulatedInelasticSMT(*glC, 3, glCTables);
 
-      glceqmbsm = new ExpQMBarrierSMT(glC); printf("16");
+      glceqmbsm = new ExpQMBarrierSMT(glC);
 
-      glCMSM = new MONSEL_MaterialScatterModelT(glC, glceqmbsm, sZeroCSD); printf("17");
+      glCMSM = new MONSEL_MaterialScatterModelT(glC, glceqmbsm, sZeroCSD);
       glCMSM->addScatterMechanism(glCNISTMott);
       glCMSM->addScatterMechanism(glCDS);
 
-      glCMSMDeep = new MONSEL_MaterialScatterModelT(glC, glceqmbsm, sZeroCSD); printf("18");
+      glCMSMDeep = new MONSEL_MaterialScatterModelT(glC, glceqmbsm, sZeroCSD);
       glCMSMDeep->addScatterMechanism(glCNISTMott);
       glCMSMDeep->addScatterMechanism(glCDS);
 
@@ -587,7 +588,7 @@ namespace LinesOnLayers
       const ElementT* SiComponent[] = { &Element::Si };
 #endif
       const double SiComposition[] = { 1. };
-      Si = new SEmaterialT(SiComponent, 1, SiComposition, 1, Sidensity, "Silicon"); printf("19");
+      Si = new SEmaterialT(SiComponent, 1, SiComposition, 1, Sidensity, "Silicon");
       Si->setWorkfunction(ToSI::eV(Siworkfun));
       Si->setEnergyCBbottom(ToSI::eV(SipotU));
       Si->setBandgap(ToSI::eV(Sibandgap));
@@ -595,9 +596,9 @@ namespace LinesOnLayers
       Si->setCoreEnergy(SiCoreEnergy, 4);
 
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-      SiNISTMott = new SelectableElasticSMT(*Si, *NISTMottRS::d_Factory); printf("20");
+      SiNISTMott = new SelectableElasticSMT(*Si, *NISTMottRS::d_Factory);
 #else
-      SiNISTMott = new SelectableElasticSMT(*Si, NISTMottRS::Factory); printf("20");
+      SiNISTMott = new SelectableElasticSMT(*Si, NISTMottRS::Factory);
 #endif
 
       tablePath = "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\SiTables\\";
@@ -612,51 +613,53 @@ namespace LinesOnLayers
          interpSimESE0NUSiBGSI.c_str()
       };
 
-      SiDS = new TabulatedInelasticSMT(*Si, 3, SiTables, ToSI::eV(13.54)); printf("21");
+      SiDS = new TabulatedInelasticSMT(*Si, 3, SiTables, ToSI::eV(13.54));
 
-      Siphonon = new GanachaudMokraniPhononInelasticSMT(phononStrength, ToSI::eV(phononE), 300., 11.7, 1.); printf("22");
+      Siphonon = new GanachaudMokraniPhononInelasticSMT(phononStrength, ToSI::eV(phononE), 300., 11.7, 1.);
 
-      sieqmbsm = new ExpQMBarrierSMT(Si); printf("23");
+      sieqmbsm = new ExpQMBarrierSMT(Si);
 
-      SiMSM = new MONSEL_MaterialScatterModelT(Si, sieqmbsm, sZeroCSD); printf("24");
+      SiMSM = new MONSEL_MaterialScatterModelT(Si, sieqmbsm, sZeroCSD);
       SiMSM->addScatterMechanism(SiNISTMott);
       SiMSM->addScatterMechanism(SiDS);
       SiMSM->addScatterMechanism(Siphonon);
 
-      SiMSMDeep = new MONSEL_MaterialScatterModelT(Si, sieqmbsm, sZeroCSD); printf("25");
+      SiMSMDeep = new MONSEL_MaterialScatterModelT(Si, sieqmbsm, sZeroCSD);
       SiMSMDeep->addScatterMechanism(SiNISTMott);
       SiMSMDeep->addScatterMechanism(SiDS);
       SiMSMDeep->addScatterMechanism(Siphonon);
 
       SiMSMDeep->setMinEforTracking(ToSI::eV(50.));
 
-      sphere = new SphereT(center, MonteCarloSS::ChamberRadius); printf("26");
-      eg = new GaussianBeamT(beamsize, beamE, center); printf("27");
+      sphere = new SphereT(center, MonteCarloSS::ChamberRadius);
+      eg = new GaussianBeamT(beamsize, beamE, center);
 
-      NULL_MSM = new NullMaterialScatterModelT(); printf("28");
-      chamber = new RegionT(nullptr, NULL_MSM, sphere); printf("29");
+      printf("PMMANISTMott->scatterRate: %.5e\n", PMMANISTMott->scatterRate(eg->createElectron()));
+
+      NULL_MSM = new NullMaterialScatterModelT();
+      chamber = new RegionT(nullptr, NULL_MSM, sphere);
       chamber->updateMaterial(*(chamber->getScatterModel()), *vacuumMSM);
 
-      layer1 = new NormalMultiPlaneShapeT(); printf("30");
-      pl1 = new PlaneT(normalvector, layer1Pos); printf("31");
+      layer1 = new NormalMultiPlaneShapeT();
+      pl1 = new PlaneT(normalvector, layer1Pos);
       layer1->addPlane(pl1);
-      layer1Region = new RegionT(chamber, ARCMSM, (NormalShapeT*)layer1); printf("32");
+      layer1Region = new RegionT(chamber, ARCMSM, (NormalShapeT*)layer1);
 
-      layer2 = new NormalMultiPlaneShapeT(); printf("33");
-      pl2 = new PlaneT(normalvector, layer2Pos); printf("34");
+      layer2 = new NormalMultiPlaneShapeT();
+      pl2 = new PlaneT(normalvector, layer2Pos);
       layer2->addPlane(pl2);
-      layer2Region = new RegionT(layer1Region, glCMSM, (NormalShapeT*)layer2); printf("35");
+      layer2Region = new RegionT(layer1Region, glCMSM, (NormalShapeT*)layer2);
 
-      layer3 = new NormalMultiPlaneShapeT(); printf("36");
-      pl3 = new PlaneT(normalvector, layer2Pos); printf("37");
+      layer3 = new NormalMultiPlaneShapeT();
+      pl3 = new PlaneT(normalvector, layer2Pos);
       layer3->addPlane(pl3);
-      layer3Region = new RegionT(layer2Region, SiMSM, (NormalShapeT*)layer3); printf("38");
+      layer3Region = new RegionT(layer2Region, SiMSM, (NormalShapeT*)layer3);
 
-      layer4 = new NormalMultiPlaneShapeT(); printf("39");
-      pl4 = new PlaneT(normalvector, layer4Pos); printf("40");
-      layer4Region = new RegionT(layer3Region, SiMSM, (NormalShapeT*)layer4); printf("41");
+      layer4 = new NormalMultiPlaneShapeT();
+      pl4 = new PlaneT(normalvector, layer4Pos);
+      layer4Region = new RegionT(layer3Region, SiMSM, (NormalShapeT*)layer4);
 
-      deepRegion = new RegionT(layer3Region, SiMSMDeep, (NormalShapeT*)layer4); printf("42");
+      deepRegion = new RegionT(layer3Region, SiMSMDeep, (NormalShapeT*)layer4);
 
       //for (int i = 0; i < nlines; ++i) {
       //   double xcenter = leftmostLineCenterx + i*pitch;
@@ -666,8 +669,8 @@ namespace LinesOnLayers
       //   RegionT lineRegion(&chamber, &PMMAMSM, line);
       //}
 
-      line = (NormalIntersectionShapeT*)NShapes::createLine(-h, w, linelength, thetal, thetar, radl, radr); printf("43");
-      lineRegion = new RegionT(chamber, PMMAMSM, line); printf("44");
+      line = (NormalIntersectionShapeT*)NShapes::createLine(-h, w, linelength, thetal, thetar, radl, radr);
+      lineRegion = new RegionT(chamber, PMMAMSM, line);
    }
 
    __global__ void runCuda()
@@ -675,11 +678,11 @@ namespace LinesOnLayers
    {
       printf("LinesOnLayers: runCuda\n");
 
-      //VectorXd yvals(128); printf("45");
-      //for (int i = -64; i < 64; i += 1) {
-      //   yvals.push_back(i);
-      //}
-      VectorXd yvals(1, -64); printf("45");
+      VectorXd yvals(128);
+      for (int i = -64; i < 64; i += 1) {
+         yvals.push_back(i);
+      }
+      //VectorXd yvals(1, -64); printf("45");
 
       const double xbottom = wnm / 2.;
       const double xtop = wnm / 2. - hnm * ::tan(thetar);
@@ -690,29 +693,29 @@ namespace LinesOnLayers
       if (thetar < 0.) xfinestop = xtop + 20.5;
       else xfinestop = wnm / 2. + 20.5;
 
-      //VectorXd xvals(128); printf("46");
-      //double deltax = 5.;
-      //double x = xstart;
-      //while (x < xfinestart) {
-      //   xvals.push_back(x);
-      //   x += deltax;
-      //}
-      //x = xfinestart;
-      //deltax = 1;
-      //while (x < xfinestop) {
-      //   xvals.push_back(x);
-      //   x += deltax;
-      //}
-      //x = xfinestop;
-      //deltax = 5.;
-      //while (x < xstop) {
-      //   xvals.push_back(x);
-      //   x += deltax;
-      //}
-      //xvals.push_back(xstop);
-      VectorXd xvals(1, xstart); printf("46");
+      VectorXd xvals(128);
+      double deltax = 5.;
+      double x = xstart;
+      while (x < xfinestart) {
+         xvals.push_back(x);
+         x += deltax;
+      }
+      x = xfinestart;
+      deltax = 1;
+      while (x < xfinestop) {
+         xvals.push_back(x);
+         x += deltax;
+      }
+      x = xfinestop;
+      deltax = 5.;
+      while (x < xstop) {
+         xvals.push_back(x);
+         x += deltax;
+      }
+      xvals.push_back(xstop);
+      //VectorXd xvals(1, xstart); printf("46");
 
-      monte = new MonteCarloSST(eg, chamber, eg->createElectron()); printf("47");
+      monte = new MonteCarloSST(eg, chamber, eg->createElectron());
 
       //printf("\n# Trajectories at each landing position: %d", nTrajectories);
       //printf("\n# Pitch of lines (nm): %.10e", pitchnm);
@@ -741,8 +744,8 @@ namespace LinesOnLayers
          //double ynm = yvals[0];
          const double y = ynm * 1.e-9;
          for (auto xnm : xvals) {
-            double x = xnm*1.e-9;
-            const double egCenter[] = { x, y, -h - 20.*1.e-9 };
+            const double x = xnm * 1.e-9;
+            const double egCenter[] = { x, y, -h - 20. * 1.e-9 };
             eg->setCenter(egCenter);
 
             const int nbins = (int)(beamEeV / binSizeEV);

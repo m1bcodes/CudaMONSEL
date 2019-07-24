@@ -317,7 +317,7 @@ void initCuda()
    NISTMottScatteringAngle::initFactory << <1, 1 >> >();
    checkCudaErrors(cudaDeviceSynchronize());
    checkCudaErrors(cudaGetLastError());
-   NISTMottScatteringAngle::copyDataToCuda();
+   NISTMottScatteringAngle::transferDataToCuda();
    printSpwem << <1, 1 >> >();
    checkCudaErrors(cudaDeviceSynchronize());
    checkCudaErrors(cudaGetLastError());
@@ -333,7 +333,7 @@ void initCuda()
    MeanIonizationPotential::initCuda << <1, 1 >> >();
    checkCudaErrors(cudaDeviceSynchronize());
    checkCudaErrors(cudaGetLastError());
-   MeanIonizationPotential::copyDataToCuda();
+   MeanIonizationPotential::transferDataToCuda();
    printMeanIonizationPotential << <1, 1 >> >();
    checkCudaErrors(cudaDeviceSynchronize());
    checkCudaErrors(cudaGetLastError());
@@ -362,23 +362,19 @@ void initCuda()
 //   Algorithm::quicksort(bins.data(), 0, bins.size() - 1);
 //}
 
-__host__ __device__ int fib(int n)
+__global__ void printTotalCrossSection()
 {
-   if (!n) return 1;
-   return n * fib(n - 1);
-}
+   printf("%.5e\n", NISTMottScatteringAngle::d_Factory->get(*Element::dC).totalCrossSection(8.01088e-17));
+   //printf("%.5e\n", NISTMottScatteringAngle::d_Factory->get(*Element::dO));
+   //printf("%.5e\n", NISTMottScatteringAngle::d_Factory->get(*Element::dH));
 
-__global__ void ker()
-{
-   printf("%d\n", fib(10));
+   //printf("%.5e\n", NISTMottScatteringAngle::d_Factory->get(*Element::dC).totalCrossSection(8.01088e-17));
+   //printf("%.5e\n", NISTMottScatteringAngle::d_Factory->get(*Element::dO).totalCrossSection(8.01088e-17));
+   //printf("%.5e\n", NISTMottScatteringAngle::d_Factory->get(*Element::dH).totalCrossSection(8.01088e-17));
 }
 
 int main()
 {
-   //ker << <1, 1 >> >();
-   //checkCudaErrors(cudaDeviceSynchronize());
-   //checkCudaErrors(cudaGetLastError());
-
    cudaDeviceSetLimit(cudaLimitMallocHeapSize, 1e9);
    cudaDeviceSetLimit(cudaLimitStackSize, 131072);
    size_t pValue;
@@ -392,11 +388,11 @@ int main()
 
    initCuda();
 
-   LinesOnLayers::copyDataToCuda();
+   LinesOnLayers::transferDataToCuda();
 
    size_t a, t;
    checkCudaErrors(cudaMemGetInfo(&a, &t));
-   printf("free/total: %ld/%ld\n", a, t);
+   printf("free/total: %lu/%lu\n", a, t);
 
    LinesOnLayers::initCuda << <1, 1 >> >();
    checkCudaErrors(cudaDeviceSynchronize());

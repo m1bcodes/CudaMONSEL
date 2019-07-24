@@ -86,8 +86,8 @@ namespace RegionBase
 
       const RegionBase* res = this;
       for (auto subRegion : mSubRegions) {
-         double candidate = subRegion->mShape->getFirstIntersection(p0, p1);
-         if (p1[0] != p1[0] || p1[1] != p1[1] || p1[2] != p1[2]) printf("wtf\n");
+         const double candidate = subRegion->mShape->getFirstIntersection(p0, p1);
+         if (p1[0] != p1[0] || p1[1] != p1[1] || p1[2] != p1[2]) printf("RegionBase::findEndOfStep: wtf 1\n");
          if (candidate <= 0.0) printf("%s %lf\n", subRegion->mShape->toString().c_str(), candidate);
          if ((candidate <= 1.0) && (candidate < t)) {
             //printf("%s, %s, %.10e\n", subRegion->toString().c_str(), subRegion->mShape->toString().c_str(), candidate);
@@ -97,10 +97,8 @@ namespace RegionBase
       }
 
       if (base == nullptr) printf("base == nullptr 0\n");
+      if (t < 0.0) printf("findEndOfStep invalid t: %.10e\n", t);
 
-      if (t < 0.0) {
-         printf("findEndOfStep invalid t: %.10e\n", t);
-      }
       if (t <= 1.0) {
          double delta[3];
          Math2::minus3d(p1, p0, delta);
@@ -115,7 +113,7 @@ namespace RegionBase
          Math2::normalize3d(delta, norm);
          Math2::multiply3d(SMALL_DISP, norm, prod);
          Math2::plus3d(p1, prod, over);
-         if (over[0] != over[0] || over[1] != over[1] || over[2] != over[2]) printf("wtff\n");
+         if (over[0] != over[0] || over[1] != over[1] || over[2] != over[2]) printf("RegionBase::findEndOfStep: wtf 2\n");
          if (base == nullptr) printf("base == nullptr 1\n");
          while (base != nullptr) {
             res = base->containingSubRegion(over);

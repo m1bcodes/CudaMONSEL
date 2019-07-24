@@ -385,33 +385,31 @@ namespace MeanIonizationPotential
       d_Zeller75 = new Zeller75MeanIonizationPotential();
    }
 
-   __global__ void copyDataToBerger64(double *data, int len)
+   __global__ void assignDataToBerger64(double *data, int len)
    {
-      d_Berger64->copyData<double>(data, len);
+      d_Berger64->assignData<double>(data, len);
    }
 
-   __global__ void copyDataToBerger83(double *data, int len)
+   __global__ void assignDataToBerger83(double *data, int len)
    {
-      d_Berger83->copyData<double>(data, len);
+      d_Berger83->assignData<double>(data, len);
    }
 
-   void copyDataToCuda()
+   void transferDataToCuda()
    {
       double* Berger64data = nullptr;
       checkCudaErrors(cudaMalloc((void **)&Berger64data, Berger64.getData().size() * sizeof(double)));
       checkCudaErrors(cudaMemcpy(Berger64data, Berger64.getData().data(), Berger64.getData().size() * sizeof(double), cudaMemcpyHostToDevice));
-      copyDataToBerger64 << <1, 1 >> >(Berger64data, Berger64.getData().size());
+      assignDataToBerger64 << <1, 1 >> >(Berger64data, Berger64.getData().size());
       checkCudaErrors(cudaDeviceSynchronize());
       checkCudaErrors(cudaGetLastError());
-      checkCudaErrors(cudaFree(Berger64data));
 
       double* Berger83data = nullptr;
       checkCudaErrors(cudaMalloc((void **)&Berger83data, Berger83.getData().size() * sizeof(double)));
       checkCudaErrors(cudaMemcpy(Berger83data, Berger83.getData().data(), Berger83.getData().size() * sizeof(double), cudaMemcpyHostToDevice));
-      copyDataToBerger83 << <1, 1 >> >(Berger83data, Berger83.getData().size());
+      assignDataToBerger83 << <1, 1 >> >(Berger83data, Berger83.getData().size());
       checkCudaErrors(cudaDeviceSynchronize());
       checkCudaErrors(cudaGetLastError());
-      checkCudaErrors(cudaFree(Berger83data));
    }
 
    AlgorithmClassT const * const * MeanIonizationPotential::getAllImplementations() const

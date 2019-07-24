@@ -42,20 +42,19 @@ namespace NUTableInterpolation
       __host__ __device__ int getdim() const;
       __host__ __device__ StringT gettableFileName() const;
 
-      __device__ void copytable1d(const double*, const unsigned int);
-      __device__ void copytable2d(const unsigned int, const double*, const unsigned int);
-      __device__ void copytable3d(const unsigned int, const unsigned int, float*, const unsigned int);
-      __device__ void copytable4d(const unsigned int, const unsigned int, const unsigned int, const double*, const unsigned int);
-      __device__ void copyx(const unsigned int, const double*, const unsigned int);
-      __device__ void copydomain(const unsigned int, const double*, const unsigned int);
-      __device__ void copyrange(const double*, const unsigned int);
+      __device__ void assigntable1d(double*, const unsigned int);
+      __device__ void assigntable2d(const unsigned int, double*, const unsigned int);
+      __device__ void assigntable3d(const unsigned int, const unsigned int, float*, const unsigned int);
+      __device__ void assigntable4d(const unsigned int, const unsigned int, const unsigned int, double*, const unsigned int);
+      __device__ void assignx(const unsigned int, double*, const unsigned int);
+      __device__ void assigndomain(const unsigned int, double*, const unsigned int);
+      __device__ void assignrange(double*, const unsigned int);
       __device__ void copydim(int);
       __device__ void copytableFileName(const char*);
 
       __device__ void resizetable2d(const unsigned int);
       __device__ void resizetable3d_0(const unsigned int);
       __device__ void resizetable3d_1(const unsigned int, const unsigned int);
-      //__device__ void resizetable3d_2(const unsigned int, const unsigned int, const unsigned int);
       __device__ void resizetable4d_0(const unsigned int);
       __device__ void resizetable4d_1(const unsigned int, const unsigned int);
       __device__ void resizetable4d_2(const unsigned int, const unsigned int, const unsigned int);
@@ -98,5 +97,5 @@ namespace NUTableInterpolation
 
    extern __global__ void initFactory();
 
-   extern void copyDataToCuda(char const * tableFileName);
+   extern void transferDataToCuda(char const * tableFileName);
 }

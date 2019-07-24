@@ -239,11 +239,10 @@ namespace ULagrangeInterpolation
          index0 = f.size() - order - 1;
       float* y = new float[order + 1];
       for (int i = 0; i <= order; i++) {
-         VectorXf temp = d1(f[index0 + i].data(), f[index0 + i].size(), x0[1], xinc[1], order, x[1]);
-         y[i] = temp[0];
+         y[i] = d1(f[index0 + i].data(), f[index0 + i].size(), x0[1], xinc[1], order, x[1])[0];
       }
 
-      VectorXf ret = d1(y, order + 1, x0[0] + index0 * xinc[0], xinc[0], order, x[0]);
+      const VectorXf& ret = d1(y, order + 1, x0[0] + index0 * xinc[0], xinc[0], order, x[0]);
       delete[] y;
       return ret;
    }

@@ -25,21 +25,21 @@ namespace CzyzewskiMottScatteringAngle
       double meanFreePath(double energy) const;
 
       template<typename T>
-      __device__ void copyMeanFreePath(const T* data, const unsigned int len)
+      __device__ void assignMeanFreePath(T* data, const unsigned int len)
       {
-         mMeanFreePath.assign(data, data + len);
+         mMeanFreePath.set_data(data, len);
       }
 
       template<typename T>
-      __device__ void copyTotalCrossSection(const T* data, const unsigned int len)
+      __device__ void assignTotalCrossSection(T* data, const unsigned int len)
       {
-         mTotalCrossSection.assign(data, data + len);
+         mTotalCrossSection.set_data(data, len);
       }
 
       template<typename T>
-      __device__ void copyCummulativeDFRow(const unsigned int r, const T* data, const unsigned int len)
+      __device__ void assignCummulativeDFRow(const unsigned int r, T* data, const unsigned int len)
       {
-         mCummulativeDF[r].assign(data, data + len);
+         mCummulativeDF[r].set_data(data, len);
       }
 
       __host__ __device__ const VectorXd& getMeanFreePath() const;
@@ -68,7 +68,7 @@ namespace CzyzewskiMottScatteringAngle
 
    extern void init();
    extern __global__ void initCuda();
-   extern void copyDataToCuda();
+   extern void transferDataToCuda();
 }
 
 #endif

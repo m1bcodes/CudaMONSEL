@@ -10,6 +10,8 @@
 #include "gov\nist\microanalysis\Utility\ActionListener.cuh"
 #include "gov\nist\microanalysis\Utility\Math2.cuh"
 
+#include "Amphibian\Random.cuh"
+
 namespace MonteCarloSS
 {
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
@@ -119,14 +121,10 @@ namespace MonteCarloSS
 
    __host__ __device__ void MonteCarloSS::initializeTrajectory()
    {
-      //printf("createElectron\n");
       mElectron = mGun->createElectron();
-      //printf("containingSubRegion\n");
       auto reg = mChamber->containingSubRegion(mElectron->getPosition());
-      //printf("setCurrentRegion\n");
       mElectron->setCurrentRegion(reg);
       // Stop when you can't generate any more x-rays
-      //printf("setScatteringElement\n");
       mElectron->setScatteringElement(nullptr);
    }
 
@@ -140,7 +138,6 @@ namespace MonteCarloSS
          mElectron->setCurrentRegion(currentRegion);
          if (currentRegion == nullptr) {
             mElectron->setTrajectoryComplete(true);
-            if (mElectron->isTrajectoryComplete()) printf("tc0\n"); // should not happen
             return;
          }
       }
@@ -149,13 +146,10 @@ namespace MonteCarloSS
 
       double pos1[3];
       mElectron->candidatePoint(msm->randomMeanPathLength(*mElectron), pos1);
-      printf("p1.1: %.5e, %.5e, %.5e\n", pos1[0], pos1[1], pos1[2]);
       const RegionBaseT* nextRegion = currentRegion->findEndOfStep(pos0, pos1);
-      printf("p1.2: %.5e, %.5e, %.5e\n", pos1[0], pos1[1], pos1[2]);
       mElectron->move(pos1, msm->calculateEnergyLoss(Math2::distance3d(pos0, pos1), *mElectron));
       const bool tc = (mElectron->getEnergy() < msm->getMinEforTracking()) || mElectron->isTrajectoryComplete();
       mElectron->setTrajectoryComplete(tc);
-      if (mElectron->isTrajectoryComplete()) printf("tc1\n");
       if (!tc) {
          if (nextRegion == currentRegion) {
             if (mChamber == nullptr) printf("MonteCarloSS::takeStep(): mChamber == nullptr");
@@ -165,7 +159,6 @@ namespace MonteCarloSS
             ElectronT* secondary = msm->scatter(*mElectron);
             fireEvent(PostScatterEvent);
             mElectron->setTrajectoryComplete((mElectron->getEnergy() < msm->getMinEforTracking()) || mElectron->isTrajectoryComplete());
-            if (mElectron->isTrajectoryComplete()) printf("tc2\n");
             if (secondary != nullptr) trackSecondaryElectron(secondary);
 
             if (mElectron->getCurrentRegion() != currentRegion) printf("MonteCarloSS::takeStep()MonteCarloSS::takeStep(): mElectron->getCurrentRegion() != currentRegion\n");
@@ -191,7 +184,6 @@ namespace MonteCarloSS
             fireEvent(BackscatterEvent);
             mElectron->setCurrentRegion(nullptr);
             mElectron->setTrajectoryComplete(true);
-            printf("tc3\n");
          }
       }
    }
@@ -249,7 +241,7 @@ namespace MonteCarloSS
          takeStep();
          ++i;
       }
-      printf("%d steps\n", i);
+      //printf("%d steps\n", i);
       fireEvent(TrajectoryEndEvent);
    }
 
@@ -257,7 +249,7 @@ namespace MonteCarloSS
    {
       fireEvent(FirstTrajectoryEvent);
       for (int i = 0; i < n; ++i) {
-         printf("itr #%d:\n", i);
+         //printf("itr #%d:\n", i);
          runTrajectory();
       }
       fireEvent(LastTrajectoryEvent);

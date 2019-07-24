@@ -176,7 +176,7 @@ namespace MONSEL_MaterialScatterModel
       // mechanism
       // mechCopy.setMaterial(mat); // Initialize the copy for this material
       // if(scatterSet.add(mechCopy)) {
-      if (amp::find(scatterArray.begin(), scatterArray.end(), mech) == scatterArray.end()) { // TODO: fix slow find
+      if (amp::find(scatterArray.begin(), scatterArray.end(), mech) == scatterArray.end()) {
          scatterArray.push_back(mech);
          nscattermech = scatterArray.size();
          cached_cumulativeScatterRate.resize(nscattermech);

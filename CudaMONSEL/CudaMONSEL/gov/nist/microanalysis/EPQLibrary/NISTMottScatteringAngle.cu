@@ -19,8 +19,8 @@ namespace NISTMottScatteringAngle
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
    __constant__ const int SPWEM_LEN = 61;
    __constant__ const int X1_LEN = 201;
-   __constant__ const double DL50 = 1.69897000434;
-   __constant__ const double PARAM = 0.04336766652;
+   __constant__ const double DL50 = 3.91202300543;
+   __constant__ const double PARAM = 0.09985774245;
 
    __constant__ static const double MAX_NISTMOTT = 3.2043531e-15;
 #else
@@ -110,7 +110,7 @@ namespace NISTMottScatteringAngle
       if (energy < MAX_NISTMOTT) {
          const double scale = PhysicalConstants::BohrRadius * PhysicalConstants::BohrRadius;
          const double logE = ::logf(FromSI::eV(energy));
-         int j = 1 + (int)((logE - DL50) / PARAM);
+         const int j = 1 + (int)((logE - DL50) / PARAM);
          if (j == 1)
             return value(DL50, DL50 + PARAM, DL50 + 2.0 * PARAM, mSpwem[0], mSpwem[1], mSpwem[2], logE) * scale;
          else if (j == SPWEM_LEN)
@@ -370,39 +370,43 @@ namespace NISTMottScatteringAngle
    //   mX1[r].assign(dSpwem, dSpwem + size);
    //}
 
-   __global__ void copySpwem(unsigned int i, float *dSpwem, unsigned int size)
+   __global__ void assignSpwem(unsigned int i, float *dSpwem, unsigned int size)
    {
-      d_mScatter[i]->copySpwem<float>(dSpwem, size);
+      d_mScatter[i]->assignSpwem<float>(dSpwem, size);
    }
 
-   __global__ void copyX1Row(unsigned int i, unsigned int r, float *dSX1r, unsigned int size)
+   __global__ void assignX1Row(unsigned int i, unsigned int r, float *dSX1r, unsigned int size)
    {
-      d_mScatter[i]->copyX1Row<float>(r, dSX1r, size);
+      d_mScatter[i]->assignX1Row<float>(r, dSX1r, size);
    }
 
-   void copyDataToCuda()
+   void transferDataToCuda()
    {
+      float **dSpwem = new float*[97];
+      float ***dX1 = new float**[97];
       for (int i = 1; i <= 96; ++i) {
-         float *dSpwem = nullptr;
          const VectorXf& spwem = mScatter[i]->getSpwem();
-         checkCudaErrors(cudaMalloc((void **)&dSpwem, sizeof(float) * spwem.size()));
-         checkCudaErrors(cudaMemcpy(dSpwem, spwem.data(), sizeof(float) * spwem.size(), cudaMemcpyHostToDevice));
-         copySpwem << <1, 1 >> >(i, dSpwem, spwem.size());
-         checkCudaErrors(cudaDeviceSynchronize());
-         checkCudaErrors(cudaGetLastError());
-         checkCudaErrors(cudaFree(dSpwem));
+         dSpwem[i] = new float[spwem.size()];
+         checkCudaErrors(cudaMalloc((void **)&dSpwem[i], sizeof(float) * spwem.size()));
+         checkCudaErrors(cudaMemcpy(dSpwem[i], spwem.data(), sizeof(float) * spwem.size(), cudaMemcpyHostToDevice));
+         assignSpwem << <1, 1 >> >(i, dSpwem[i], spwem.size());
 
          const MatrixXf& x1 = mScatter[i]->getX1();
+         dX1[i] = new float*[x1.size()];
          for (int r = 0; r < x1.size(); ++r) {
-            float *dX1r = nullptr;
-            checkCudaErrors(cudaMalloc((void **)&dX1r, x1[r].size() * sizeof(float)));
-            checkCudaErrors(cudaMemcpy(dX1r, x1[r].data(), x1[r].size() * sizeof(float), cudaMemcpyHostToDevice));
-            copyX1Row << <1, 1 >> >(i, r, dX1r, x1[r].size());
-            checkCudaErrors(cudaDeviceSynchronize());
-            checkCudaErrors(cudaGetLastError());
-            checkCudaErrors(cudaFree(dX1r));
+            dX1[i][r] = new float[x1[r].size()];
+            checkCudaErrors(cudaMalloc((void **)&dX1[i][r], sizeof(float) * x1[r].size()));
+            checkCudaErrors(cudaMemcpy(dX1[i][r], x1[r].data(), sizeof(float) * x1[r].size(), cudaMemcpyHostToDevice));
+            assignX1Row << <1, 1 >> >(i, r, dX1[i][r], x1[r].size());
          }
       }
+      checkCudaErrors(cudaDeviceSynchronize());
+      checkCudaErrors(cudaGetLastError());
+      delete[] dSpwem;
+      for (int i = 1; i <= 96; ++i) {
+         delete[] dX1[i];
+      }
+      delete[] dX1;
    }
 
    __host__ __device__ const NISTMottScatteringAngle& getNISTMSA(int an)
