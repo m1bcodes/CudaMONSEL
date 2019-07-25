@@ -126,13 +126,14 @@ namespace MonteCarloSS
       mElectron->setCurrentRegion(reg);
       // Stop when you can't generate any more x-rays
       mElectron->setScatteringElement(nullptr);
+
    }
 
    __host__ __device__ void MonteCarloSS::takeStep()
    {
       const double *pos0 = mElectron->getPosition();
 
-      const RegionBaseT* currentRegion = mElectron->getCurrentRegion();
+      const RegionBaseT* currentRegion = mElectron->getCurrentRegion(); printf("0");
       if ((currentRegion == nullptr) || !(currentRegion->getShape()->contains(pos0))) {
          currentRegion = mChamber->containingSubRegion(pos0);
          mElectron->setCurrentRegion(currentRegion);
@@ -141,15 +142,16 @@ namespace MonteCarloSS
             return;
          }
       }
-      IMaterialScatterModelT* msm = currentRegion->getScatterModel();
+      IMaterialScatterModelT* msm = currentRegion->getScatterModel(); printf("1");
       if (msm == nullptr) printf("MonteCarloSS::takeStep: msm is null\n");
 
       double pos1[3];
-      mElectron->candidatePoint(msm->randomMeanPathLength(*mElectron), pos1);
-      const RegionBaseT* nextRegion = currentRegion->findEndOfStep(pos0, pos1);
-      mElectron->move(pos1, msm->calculateEnergyLoss(Math2::distance3d(pos0, pos1), *mElectron));
-      const bool tc = (mElectron->getEnergy() < msm->getMinEforTracking()) || mElectron->isTrajectoryComplete();
-      mElectron->setTrajectoryComplete(tc);
+      mElectron->candidatePoint(msm->randomMeanPathLength(*mElectron), pos1); printf("2");
+      const RegionBaseT* nextRegion = currentRegion->findEndOfStep(pos0, pos1); printf("3");
+      mElectron->move(pos1, msm->calculateEnergyLoss(Math2::distance3d(pos0, pos1), *mElectron)); printf("4");
+      const bool tc = (mElectron->getEnergy() < msm->getMinEforTracking()) || mElectron->isTrajectoryComplete(); printf("5");
+      mElectron->setTrajectoryComplete(tc); printf("6");
+      printf("\n");
       if (!tc) {
          if (nextRegion == currentRegion) {
             if (mChamber == nullptr) printf("MonteCarloSS::takeStep(): mChamber == nullptr");
@@ -241,7 +243,7 @@ namespace MonteCarloSS
          takeStep();
          ++i;
       }
-      //printf("%d steps\n", i);
+      printf("%d steps\n", i);
       fireEvent(TrajectoryEndEvent);
    }
 
@@ -249,7 +251,7 @@ namespace MonteCarloSS
    {
       fireEvent(FirstTrajectoryEvent);
       for (int i = 0; i < n; ++i) {
-         //printf("itr #%d:\n", i);
+         printf("itr #%d:\n", i);
          runTrajectory();
       }
       fireEvent(LastTrajectoryEvent);

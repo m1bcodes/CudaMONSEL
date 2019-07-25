@@ -12,6 +12,8 @@ namespace LinesOnLayers
 
    extern __global__ void initCuda();
    extern __global__ void runCuda();
+   extern __global__ void runCudaSinglePixel();
+   extern __global__ void runCudaSinglePixel(int c, int r);
 }
 
 #endif

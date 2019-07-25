@@ -30,7 +30,9 @@ namespace Random
    {
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
       // curand_uniform() can return between 0.0 (exclusive) and 1.0 (inclusive).
-      return 1 - curand_uniform(&states[threadIdx.x + blockDim.x * blockIdx.x]); // excludes 1.0 but includes 0.0.
+      int blockId = blockIdx.x + blockIdx.y * gridDim.x;
+      int threadId = blockId * (blockDim.x * blockDim.y) + (threadIdx.y * blockDim.x) + threadIdx.x;
+      return 1 - curand_uniform(&states[threadId]); // excludes 1.0 but includes 0.0.
 #else
       //return (double)rand() / RAND_MAX;
       // http://c-faq.com/lib/randrange.html
@@ -42,7 +44,9 @@ namespace Random
    __host__ __device__ int randomInt(int mod)
    {
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-      return (int)truncf((1 - curand_uniform(&states[threadIdx.x + blockDim.x * blockIdx.x])) * mod);
+      int blockId = blockIdx.x + blockIdx.y * gridDim.x;
+      int threadId = blockId * (blockDim.x * blockDim.y) + (threadIdx.y * blockDim.x) + threadIdx.x;
+      return (int)truncf((1 - curand_uniform(&states[threadId])) * mod);
 #else
       return rand() % mod;
 #endif
@@ -51,7 +55,9 @@ namespace Random
    __host__ __device__ float expRand()
    {
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-      float r = curand_uniform(&states[threadIdx.x + blockDim.x * blockIdx.x]); // excludes 0.0 but includes 1.0.
+      int blockId = blockIdx.x + blockIdx.y * gridDim.x;
+      int threadId = blockId * (blockDim.x * blockDim.y) + (threadIdx.y * blockDim.x) + threadIdx.x;
+      float r = curand_uniform(&states[threadId]); // excludes 0.0 but includes 1.0.
       if (r >= 1) r = 1 - r;
       return -::log(r);
 #else
@@ -64,7 +70,9 @@ namespace Random
    __host__ __device__ float generateGaussianNoise(const float mean, const float stdDev)
    {
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-      return curand_normal(&states[threadIdx.x + blockDim.x * blockIdx.x]) * stdDev + mean;
+      int blockId = blockIdx.x + blockIdx.y * gridDim.x;
+      int threadId = blockId * (blockDim.x * blockDim.y) + (threadIdx.y * blockDim.x) + threadIdx.x;
+      return curand_normal(&states[threadId]) * stdDev + mean;
 #else
       static bool hasSpare = false;
       static float spare;

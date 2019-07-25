@@ -55,6 +55,8 @@
 
 #include "gov\nist\nanoscalemetrology\JMONSELTests\LinesOnLayers0.cuh"
 
+#include <chrono>
+
 //__device__ __host__ float function(float x)
 //{
 //   #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
@@ -106,23 +108,32 @@ __global__ void testKernel()
    StackTest::testOne();
 }
 
-const unsigned int NUM_ROWS = 1;
 const unsigned int NUM_COLS = 16;
+const unsigned int H = 128, W = 80;
+const unsigned int TX = 16, TY = 16;
+dim3 blockSize(TX, TY); // Equivalent to dim3 blockSize(TX, TY, 1);
+int bx = (W + blockSize.x - 1) / blockSize.x;
+int by = (H + blockSize.y - 1) / blockSize.y;
+dim3 gridSize = dim3(bx, by);
 
 __global__ void printRand()
 {
-   const unsigned int i = threadIdx.x + blockDim.x * blockIdx.x;
-   printf("thread id %d: %.10e\n", i, Random::random());
+   const unsigned int c = threadIdx.x + blockDim.x * blockIdx.x;
+   const unsigned int r = blockIdx.y*blockDim.y + threadIdx.y;
+
+   int blockId = blockIdx.x + blockIdx.y * gridDim.x;
+   int threadId = blockId * (blockDim.x * blockDim.y) + (threadIdx.y * blockDim.x) + threadIdx.x;
+   printf("%d, %d (%d): %.5e | ", r, c, threadId, Random::random());
 }
 
 void testGPU()
 {
    printf("-----------------GPU-----------------------------\n");
-   Random::initCudaStates << <1, 1 >> >(NUM_ROWS * NUM_COLS);
+   Random::initCudaStates << <1, 1 >> >(H * W);
    checkCudaErrors(cudaDeviceSynchronize());
    checkCudaErrors(cudaGetLastError());
 
-   printRand << <1, 16 >> >();
+   printRand << <gridSize, blockSize >> >();
    checkCudaErrors(cudaDeviceSynchronize());
    checkCudaErrors(cudaGetLastError());
 
@@ -245,9 +256,9 @@ void testsCPU()
 
    MonteCarloSSTest::testOne();
 
-   SumShapeTest::SumShapeTest sumShapeTest;
-   sumShapeTest.testGetFirstIntersection();
-   sumShapeTest.testAll();
+   //SumShapeTest::SumShapeTest sumShapeTest;
+   //sumShapeTest.testGetFirstIntersection();
+   //sumShapeTest.testAll();
 }
 
 __global__ void printNullReference()
@@ -394,13 +405,29 @@ int main()
    checkCudaErrors(cudaMemGetInfo(&a, &t));
    printf("free/total: %lu/%lu\n", a, t);
 
-   LinesOnLayers::initCuda << <1, 1 >> >();
+   LinesOnLayers::initCuda << <1, 2 >> >();
    checkCudaErrors(cudaDeviceSynchronize());
    checkCudaErrors(cudaGetLastError());
 
-   LinesOnLayers::runCuda << <1, 1 >> >();
+   //LinesOnLayers::runCuda << <1, 1 >> >();
+   //checkCudaErrors(cudaDeviceSynchronize());
+   //checkCudaErrors(cudaGetLastError());
+
+   //cudaStream_t streams[2];
+   //cudaStreamCreate(&streams[0]);
+   //cudaStreamCreate(&streams[1]);
+
+   auto start = std::chrono::system_clock::now();
+   //LinesOnLayers::runCudaSinglePixel << <gridSize, blockSize >> >();
+   //LinesOnLayers::runCudaSinglePixel << <1, 1, 0, streams[0]>> >(0, 0);
+   //LinesOnLayers::runCudaSinglePixel << <1, 1, 0, streams[1] >> >(0, 1);
+   LinesOnLayers::runCudaSinglePixel << <1, 1 >> >();
    checkCudaErrors(cudaDeviceSynchronize());
    checkCudaErrors(cudaGetLastError());
+   auto end = std::chrono::system_clock::now();
+   std::chrono::duration<double> elapsed_seconds = end - start;
+   std::time_t end_time = std::chrono::system_clock::to_time_t(end);
+   std::cout << std::endl << "finished computation at " << std::ctime(&end_time) << "elapsed time: " << elapsed_seconds.count() << "s" << std::endl;
 
    printf("done\n");
 
