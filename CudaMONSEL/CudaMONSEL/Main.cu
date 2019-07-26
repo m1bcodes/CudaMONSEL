@@ -1,6 +1,5 @@
 /*
 * - without length, the array parameter (eg const double a[]) is always 3 dimensional
-* - use "auto" keyword for pointers ONLY
 */
 
 #include <stdio.h>
@@ -139,10 +138,10 @@ __global__ void testLibraryCuda()
    StackTest::testOne();
 }
 
-//const unsigned int H = 128, W = 80;
-//const unsigned int TX = 16, TY = 16;
-const unsigned int H = 4, W = 4;
-const unsigned int TX = 2, TY = 2;
+const unsigned int H = 128, W = 80;
+const unsigned int TX = 16, TY = 16;
+//const unsigned int H = 16, W = 16;
+//const unsigned int TX = 4, TY = 4;
 dim3 blockSize(TX, TY); // Equivalent to dim3 blockSize(TX, TY, 1);
 int bx = (W + blockSize.x - 1) / blockSize.x;
 int by = (H + blockSize.y - 1) / blockSize.y;
@@ -461,8 +460,7 @@ int main()
    //LinesOnLayers::runCudaSinglePixel << <gridSize, blockSize >> >();
    //LinesOnLayers::runCudaSinglePixel << <1, 1, 0, streams[0]>> >(0, 0);
    //LinesOnLayers::runCudaSinglePixel << <1, 1, 0, streams[1] >> >(0, 1);
-   //LinesOnLayers::runCudaSinglePixel << <8, 1 >> >();
-   LinesOnLayers::runCudaSinglePixel << <1, 1 >> >(0, 4);
+   LinesOnLayers::runCudaSinglePixel << <gridSize, blockSize >> >();
    checkCudaErrors(cudaDeviceSynchronize());
    checkCudaErrors(cudaGetLastError());
    auto end = std::chrono::system_clock::now();

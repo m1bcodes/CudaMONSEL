@@ -327,7 +327,7 @@ namespace NUTableInterpolation
    */
    __host__ __device__ const NUTableInterpolation* NUTableInterpolationFactory::getInstance(char const * tableFileName)
    {
-      printf("NUTableInterpolation* getInstance: %s\n", tableFileName);
+      //printf("NUTableInterpolation* getInstance: %s\n", tableFileName);
       const NUTableInterpolation* uniqueInstance = nullptr;
       StringT key(tableFileName);
 
