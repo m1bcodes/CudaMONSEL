@@ -58,7 +58,6 @@
     <CudaCompile Include="gov\nist\microanalysis\EPQTests\BetheElectronEnergyLossTest.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQTests\CylindricalShapeTest.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQTests\EdgeEnergyTest.cu" />
-    <CudaCompile Include="gov\nist\microanalysis\EPQTests\Math2Test.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQTests\MeanIonizationPotentialTest.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQTests\MonteCarloSSTest.cu" />
     <CudaCompile Include="gov\nist\microanalysis\EPQTests\RegionBaseTest.cu" />
@@ -108,7 +107,6 @@
     <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSEL\ZeroCSD.cu" />
     <CudaCompile Include="Main.cu" />
     <CudaCompile Include="SimRunner.cu" />
-    <CudaCompile Include="t527.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Amphibian\Hasher.cuh" />
@@ -157,7 +155,6 @@
     <ClInclude Include="gov\nist\microanalysis\EPQTests\BetheElectronEnergyLossTest.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQTests\CylindricalShapeTest.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQTests\EdgeEnergyTest.cuh" />
-    <ClInclude Include="gov\nist\microanalysis\EPQTests\Math2Test.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQTests\MeanIonizationPotentialTest.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQTests\MonteCarloSSTest.cuh" />
     <ClInclude Include="gov\nist\microanalysis\EPQTests\RegionBaseTest.cuh" />

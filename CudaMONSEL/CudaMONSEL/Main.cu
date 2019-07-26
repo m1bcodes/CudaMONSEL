@@ -47,7 +47,6 @@
 #include "gov\nist\microanalysis\EPQTests\EdgeEnergyTest.cuh"
 #include "gov\nist\microanalysis\EPQTests\MeanIonizationPotentialTest.cuh"
 #include "gov\nist\microanalysis\EPQTests\SphereTest.cuh"
-#include "gov\nist\microanalysis\EPQTests\Math2Test.cuh"
 #include "gov\nist\microanalysis\EPQTests\CylindricalShapeTest.cuh"
 #include "gov\nist\microanalysis\EPQTests\SumShapeTest.cuh"
 #include "gov\nist\microanalysis\EPQTests\BetheElectronEnergyLossTest.cuh"
@@ -65,13 +64,45 @@
 //   #endif
 //}
 
-__global__ void testKernel()
+__host__ __device__ void testRandom1()
+{
+   printf("%.10e\n", Random::random());
+   printf("%.10e\n", Random::random());
+   printf("%.10e\n", Random::random());
+   printf("%.10e\n", Random::random());
+   printf("%.10e\n", Random::random());
+   printf("%.10e\n", Random::random());
+   printf("%.10e\n", Random::random());
+   printf("%.10e\n", Random::random());
+   printf("%.10e\n", Random::random());
+   printf("%.10e\n", Random::random());
+
+   printf("Math2Test::testRandom1() completed.\n");
+}
+
+__host__ __device__ void testRandom2()
+{
+   printf("%.10e\n", Random::random());
+   printf("%.10e\n", Random::random());
+   printf("%.10e\n", Random::random());
+   printf("%.10e\n", Random::random());
+   printf("%.10e\n", Random::random());
+   printf("%.10e\n", Random::random());
+   printf("%.10e\n", Random::random());
+   printf("%.10e\n", Random::random());
+   printf("%.10e\n", Random::random());
+   printf("%.10e\n", Random::random());
+
+   printf("Math2Test::testRandom2() completed.\n");
+}
+
+__global__ void testLibraryCuda()
 {
    printf("%d, %d, %d, %d, %d, %d\n", threadIdx.x, blockIdx.x, threadIdx.y, blockIdx.y, threadIdx.z, blockIdx.z);
    printf("%d, %d, %d\n", gridDim.x, gridDim.y, gridDim.z);
 
-   Math2Test::testRandom1Cuda();
-   Math2Test::testRandom2Cuda();
+   testRandom1();
+   testRandom2();
 
    HasherTest::TestOne();
 
@@ -108,9 +139,10 @@ __global__ void testKernel()
    StackTest::testOne();
 }
 
-const unsigned int NUM_COLS = 16;
-const unsigned int H = 128, W = 80;
-const unsigned int TX = 16, TY = 16;
+//const unsigned int H = 128, W = 80;
+//const unsigned int TX = 16, TY = 16;
+const unsigned int H = 4, W = 4;
+const unsigned int TX = 2, TY = 2;
 dim3 blockSize(TX, TY); // Equivalent to dim3 blockSize(TX, TY, 1);
 int bx = (W + blockSize.x - 1) / blockSize.x;
 int by = (H + blockSize.y - 1) / blockSize.y;
@@ -137,12 +169,12 @@ void testGPU()
    checkCudaErrors(cudaDeviceSynchronize());
    checkCudaErrors(cudaGetLastError());
 
-   testKernel << <1, 1 >> >();
+   testLibraryCuda << <1, 1 >> >();
    checkCudaErrors(cudaDeviceSynchronize());
    checkCudaErrors(cudaGetLastError());
 }
 
-void testsCPU()
+void testLibrary()
 {
    printf("-----------------CPU-----------------------------\n");
    HasherTest::TestOne();
@@ -180,6 +212,12 @@ void testsCPU()
 
    StackTest::testOne();
 
+   testRandom1();
+   testRandom2();
+}
+
+void initSim()
+{
    EdgeEnergy::DiracHartreeSlaterIonizationEnergies::loadxionUis();
    EdgeEnergy::NISTEdgeEnergy::loadNISTxrtdb();
    EdgeEnergy::ChantlerEdgeEnergy::loadFFastEdgeDB();
@@ -196,10 +234,10 @@ void testsCPU()
    NISTMottRS::init();
    MeanIonizationPotential::Berger64.readTabulatedValues();
    MeanIonizationPotential::Berger83.readTabulatedValues();
+}
 
-   Math2Test::testRandom1();
-   Math2Test::testRandom2();
-
+void testSim()
+{
    UncertainValue2::UncertainValue2 v0(0, "abc", 5);
    UncertainValue2::UncertainValue2 v1(1);
    UncertainValue2::UncertainValue2 v2(2, 10);
@@ -394,7 +432,9 @@ int main()
    cudaDeviceGetLimit(&pValue, cudaLimitStackSize);
    printf("cudaLimitStackSize: %d\n", pValue);
 
-   testsCPU();
+   testLibrary();
+   initSim();
+   testSim();
    testGPU();
 
    initCuda();
@@ -405,7 +445,7 @@ int main()
    checkCudaErrors(cudaMemGetInfo(&a, &t));
    printf("free/total: %lu/%lu\n", a, t);
 
-   LinesOnLayers::initCuda << <1, 2 >> >();
+   LinesOnLayers::initCuda << <1, 1 >> >();
    checkCudaErrors(cudaDeviceSynchronize());
    checkCudaErrors(cudaGetLastError());
 
@@ -421,7 +461,8 @@ int main()
    //LinesOnLayers::runCudaSinglePixel << <gridSize, blockSize >> >();
    //LinesOnLayers::runCudaSinglePixel << <1, 1, 0, streams[0]>> >(0, 0);
    //LinesOnLayers::runCudaSinglePixel << <1, 1, 0, streams[1] >> >(0, 1);
-   LinesOnLayers::runCudaSinglePixel << <1, 1 >> >();
+   //LinesOnLayers::runCudaSinglePixel << <8, 1 >> >();
+   LinesOnLayers::runCudaSinglePixel << <1, 1 >> >(0, 4);
    checkCudaErrors(cudaDeviceSynchronize());
    checkCudaErrors(cudaGetLastError());
    auto end = std::chrono::system_clock::now();

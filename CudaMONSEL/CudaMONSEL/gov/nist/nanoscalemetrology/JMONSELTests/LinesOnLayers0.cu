@@ -255,7 +255,6 @@ namespace LinesOnLayers
    __device__ MONSEL_MaterialScatterModelT* SiMSMDeep = nullptr;
 
    __device__ SphereT* sphere = nullptr;
-   __device__ GaussianBeamT* eg = nullptr;
 
    __constant__ const double pitch = 180 * 1.e-9;
    __constant__ const double h = 120 * 1.e-9;
@@ -315,8 +314,6 @@ namespace LinesOnLayers
 
    __device__ NormalIntersectionShapeT* line = nullptr;
    __device__ RegionT* lineRegion = nullptr;
-
-   __device__ MonteCarloSST* monte = nullptr;
 
    __device__ double* yvals = nullptr;
    __device__ double* xvals = nullptr;
@@ -420,7 +417,6 @@ namespace LinesOnLayers
    MONSEL_MaterialScatterModelT* SiMSMDeep = nullptr;
 
    SphereT* sphere = nullptr;
-   GaussianBeamT* eg = nullptr;
 
    const double pitch = 180 * 1.e-9;
    const double h = 120 * 1.e-9;
@@ -480,8 +476,6 @@ namespace LinesOnLayers
 
    NormalIntersectionShapeT* line = nullptr;
    RegionT* lineRegion = nullptr;
-
-   MonteCarloSST* monte = nullptr;
 
    double* yvals = nullptr;
    double* xvals = nullptr;
@@ -642,7 +636,6 @@ namespace LinesOnLayers
       SiMSMDeep->setMinEforTracking(ToSI::eV(50.));
 
       sphere = new SphereT(center, MonteCarloSS::ChamberRadius);
-      eg = new GaussianBeamT(beamsize, beamE, center);
 
       NULL_MSM = new NullMaterialScatterModelT();
       chamber = new RegionT(nullptr, NULL_MSM, sphere);
@@ -679,8 +672,6 @@ namespace LinesOnLayers
 
       line = (NormalIntersectionShapeT*)NShapes::createLine(-h, w, linelength, thetal, thetar, radl, radr);
       lineRegion = new RegionT(chamber, PMMAMSM, line);
-
-      monte = new MonteCarloSST(eg, chamber, eg->createElectron());
 
       VectorXd yvalstmp(128);
       for (int i = -64; i < 64; i += 1) {
@@ -727,6 +718,87 @@ namespace LinesOnLayers
       memcpy(xvals, xvalstmp.data(), xvalsSize * sizeof(double));
    }
 
+   __global__ void runCudaSinglePixel()
+   {
+      int r = blockIdx.y*blockDim.y + threadIdx.y;
+      int c = blockIdx.x*blockDim.x + threadIdx.x;
+
+      int blockId = blockIdx.x + blockIdx.y * gridDim.x;
+      int threadId = blockId * (blockDim.x * blockDim.y) + (threadIdx.y * blockDim.x) + threadIdx.x;
+      printf("%d, %d (%d) began\n", r, c, threadId);
+
+      const double ynm = yvals[r];
+      const double y = ynm * 1.e-9;
+      const double xnm = xvals[c];
+      const double x = xnm * 1.e-9;
+
+      GaussianBeamT eg(beamsize, beamE, center);
+      const double egCenter[] = { x, y, -h - 20. * 1.e-9 };
+      eg.setCenter(egCenter);
+      MonteCarloSST monte(&eg, chamber, nullptr);
+
+      const int nbins = (int)(beamEeV / binSizeEV);
+      BackscatterStatsT back(monte, nbins); //printf("48\n");
+      monte.addActionListener(back);
+
+      monte.runMultipleTrajectories(nTrajectories);
+
+      const HistogramT& hist = back.backscatterEnergyHistogram(); //printf("49\n");
+
+      const double energyperbineV = beamEeV / hist.binCount();
+      const double maxSEbin = 50. / energyperbineV;
+      int totalSE = 0;
+      for (int j = 0; j < (int)maxSEbin; ++j) {
+         totalSE = totalSE + hist.counts(j);
+      }
+
+      const double SEf = (float)totalSE / nTrajectories;
+      const double bsf = back.backscatterFraction() - SEf;
+      printf("%lf %lf %lf %lf %lf\n", beamEeV, xnm, ynm, bsf, SEf);
+      monte.removeActionListener(back);
+
+      printf("%d, %d (%d) ended\n", r, c, threadId);
+   }
+
+   __global__ void runCudaSinglePixel(int r, int c)
+   {
+      int blockId = blockIdx.x + blockIdx.y * gridDim.x;
+      int threadId = blockId * (blockDim.x * blockDim.y) + (threadIdx.y * blockDim.x) + threadIdx.x;
+      printf("%d, %d (%d) began\n", r, c, threadId);
+
+      const double ynm = yvals[r];
+      const double y = ynm * 1.e-9;
+      const double xnm = xvals[c];
+      const double x = xnm * 1.e-9;
+
+      GaussianBeamT eg(beamsize, beamE, center);
+      const double egCenter[] = { x, y, -h - 20. * 1.e-9 };
+      eg.setCenter(egCenter);
+      MonteCarloSST monte(&eg, chamber, nullptr);
+
+      const int nbins = (int)(beamEeV / binSizeEV);
+      BackscatterStatsT back(monte, nbins); //printf("48\n");
+      monte.addActionListener(back);
+
+      monte.runMultipleTrajectories(nTrajectories);
+
+      const HistogramT& hist = back.backscatterEnergyHistogram(); //printf("49\n");
+
+      const double energyperbineV = beamEeV / hist.binCount();
+      const double maxSEbin = 50. / energyperbineV;
+      int totalSE = 0;
+      for (int j = 0; j < (int)maxSEbin; ++j) {
+         totalSE = totalSE + hist.counts(j);
+      }
+
+      const double SEf = (float)totalSE / nTrajectories;
+      const double bsf = back.backscatterFraction() - SEf;
+      printf("%lf %lf %lf %lf %lf\n", beamEeV, xnm, ynm, bsf, SEf);
+      monte.removeActionListener(back);
+
+      printf("%d, %d (%d) ended\n", r, c, threadId);
+   }
+
    __global__ void runCuda()
    //void runCuda()
    {
@@ -750,6 +822,8 @@ namespace LinesOnLayers
 
       //printf("\n");
       //printf("\nbeamE (eV)\t x(nm)\t y (nm)\t BSE yield\t SE yield");
+      GaussianBeamT* eg = new GaussianBeamT(beamsize, beamE, center);
+      MonteCarloSST* monte = new MonteCarloSST(eg, chamber, nullptr);
 
 #if (!(defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0)))
       std::string output;
@@ -802,82 +876,5 @@ namespace LinesOnLayers
       myfile << output.c_str();
       myfile.close();
 #endif
-   }
-
-   __global__ void runCudaSinglePixel()
-   {
-      int c = blockIdx.x*blockDim.x + threadIdx.x;
-      int r = blockIdx.y*blockDim.y + threadIdx.y;
-
-      int blockId = blockIdx.x + blockIdx.y * gridDim.x;
-      int threadId = blockId * (blockDim.x * blockDim.y) + (threadIdx.y * blockDim.x) + threadIdx.x;
-      printf("%d, %d (%d) began\n", r, c, threadId);
-
-      double ynm = yvals[r];
-      const double y = ynm * 1.e-9;
-      double xnm = xvals[c];
-      const double x = xnm * 1.e-9;
-
-      const double egCenter[] = { x, y, -h - 20. * 1.e-9 };
-      eg->setCenter(egCenter);
-
-      const int nbins = (int)(beamEeV / binSizeEV);
-      BackscatterStatsT* back = new BackscatterStatsT(*monte, nbins); //printf("48\n");
-      monte->addActionListener(*back);
-
-      monte->runMultipleTrajectories(nTrajectories);
-
-      const HistogramT& hist = back->backscatterEnergyHistogram(); //printf("49\n");
-
-      const double energyperbineV = beamEeV / hist.binCount();
-      const double maxSEbin = 50. / energyperbineV;
-      int totalSE = 0;
-      for (int j = 0; j < (int)maxSEbin; ++j) {
-         totalSE = totalSE + hist.counts(j);
-      }
-
-      const double SEf = (float)totalSE / nTrajectories;
-      const double bsf = back->backscatterFraction() - SEf;
-      printf("%lf %lf %lf %lf %lf\n", beamEeV, xnm, ynm, bsf, SEf);
-      monte->removeActionListener(*back);
-      delete back;
-
-      printf("%d, %d (%d) ended\n", r, c, threadId);
-   }
-
-   __global__ void runCudaSinglePixel(int c, int r)
-   {
-      printf("%d, %d began\n", r, c);
-
-      double ynm = yvals[r];
-      const double y = ynm * 1.e-9;
-      double xnm = xvals[c];
-      const double x = xnm * 1.e-9;
-
-      const double egCenter[] = { x, y, -h - 20. * 1.e-9 };
-      eg->setCenter(egCenter);
-
-      const int nbins = (int)(beamEeV / binSizeEV);
-      BackscatterStatsT* back = new BackscatterStatsT(*monte, nbins); //printf("48\n");
-      monte->addActionListener(*back);
-
-      monte->runMultipleTrajectories(nTrajectories);
-
-      const HistogramT& hist = back->backscatterEnergyHistogram(); //printf("49\n");
-
-      const double energyperbineV = beamEeV / hist.binCount();
-      const double maxSEbin = 50. / energyperbineV;
-      int totalSE = 0;
-      for (int j = 0; j < (int)maxSEbin; ++j) {
-         totalSE = totalSE + hist.counts(j);
-      }
-
-      const double SEf = (float)totalSE / nTrajectories;
-      const double bsf = back->backscatterFraction() - SEf;
-      printf("%lf %lf %lf %lf %lf\n", beamEeV, xnm, ynm, bsf, SEf);
-      monte->removeActionListener(*back);
-      delete back;
-
-      printf("%d, %d ended\n", r, c);
    }
 }

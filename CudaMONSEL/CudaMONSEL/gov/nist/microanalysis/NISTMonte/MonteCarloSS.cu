@@ -56,7 +56,7 @@ namespace MonteCarloSS
    const double SMALL_DISP = 1.0e-15;
 #endif
 
-   __host__ __device__ MonteCarloSS::MonteCarloSS(ElectronGunT const * gun, RegionT * chamber, ElectronT * electron) : mGun(gun), mChamber(chamber), mElectron(electron)
+   __host__ __device__ MonteCarloSS::MonteCarloSS(ElectronGunT const * gun, RegionT* chamber, ElectronT* electron) : mGun(gun), mChamber(chamber), mElectron(electron)
    {
       //TODO: shift the responsibility to the caller
       //const double center[] = {
@@ -133,7 +133,7 @@ namespace MonteCarloSS
    {
       const double *pos0 = mElectron->getPosition();
 
-      const RegionBaseT* currentRegion = mElectron->getCurrentRegion(); printf("0");
+      const RegionBaseT* currentRegion = mElectron->getCurrentRegion();
       if ((currentRegion == nullptr) || !(currentRegion->getShape()->contains(pos0))) {
          currentRegion = mChamber->containingSubRegion(pos0);
          mElectron->setCurrentRegion(currentRegion);
@@ -142,16 +142,15 @@ namespace MonteCarloSS
             return;
          }
       }
-      IMaterialScatterModelT* msm = currentRegion->getScatterModel(); printf("1");
+      IMaterialScatterModelT* msm = currentRegion->getScatterModel();
       if (msm == nullptr) printf("MonteCarloSS::takeStep: msm is null\n");
 
       double pos1[3];
-      mElectron->candidatePoint(msm->randomMeanPathLength(*mElectron), pos1); printf("2");
-      const RegionBaseT* nextRegion = currentRegion->findEndOfStep(pos0, pos1); printf("3");
-      mElectron->move(pos1, msm->calculateEnergyLoss(Math2::distance3d(pos0, pos1), *mElectron)); printf("4");
-      const bool tc = (mElectron->getEnergy() < msm->getMinEforTracking()) || mElectron->isTrajectoryComplete(); printf("5");
-      mElectron->setTrajectoryComplete(tc); printf("6");
-      printf("\n");
+      mElectron->candidatePoint(msm->randomMeanPathLength(*mElectron), pos1);
+      const RegionBaseT* nextRegion = currentRegion->findEndOfStep(pos0, pos1);
+      mElectron->move(pos1, msm->calculateEnergyLoss(Math2::distance3d(pos0, pos1), *mElectron));
+      const bool tc = (mElectron->getEnergy() < msm->getMinEforTracking()) || mElectron->isTrajectoryComplete();
+      mElectron->setTrajectoryComplete(tc);
       if (!tc) {
          if (nextRegion == currentRegion) {
             if (mChamber == nullptr) printf("MonteCarloSS::takeStep(): mChamber == nullptr");
@@ -221,7 +220,6 @@ namespace MonteCarloSS
 
    __host__ __device__ bool MonteCarloSS::allElectronsComplete()
    {
-      //printf("allElectronsComplete\n");
       bool tc = mElectron->isTrajectoryComplete();
       while (tc && !mElectronStack.empty()) {
          fireEvent(EndSecondaryEvent);
@@ -238,20 +236,20 @@ namespace MonteCarloSS
    {
       initializeTrajectory();
       fireEvent(TrajectoryStartEvent);
-      unsigned int i = 0;
+      //unsigned int i = 0;
       while (!allElectronsComplete()) {
          takeStep();
-         ++i;
+         //++i;
       }
-      printf("%d steps\n", i);
       fireEvent(TrajectoryEndEvent);
+      //printf("%d steps\n", i);
    }
 
    __host__ __device__ void MonteCarloSS::runMultipleTrajectories(int n)
    {
       fireEvent(FirstTrajectoryEvent);
       for (int i = 0; i < n; ++i) {
-         printf("itr #%d:\n", i);
+         //printf("itr #%d:\n", i);
          runTrajectory();
       }
       fireEvent(LastTrajectoryEvent);

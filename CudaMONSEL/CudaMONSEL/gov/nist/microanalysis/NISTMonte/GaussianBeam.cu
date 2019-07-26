@@ -67,7 +67,6 @@ namespace GaussianBeam
 
       ElectronT* newElectron = new ElectronT(initialPos, mBeamEnergy);
       if (!newElectron) printf("ElectronT* GaussianBeam::createElectron: failed creating electron.\n");
-      //printf("epos: %.5e, %.5e, %.5e\n", newElectron->getPosition()[0], newElectron->getPosition()[1], newElectron->getPosition()[2]);
       return newElectron;
    }
 }
