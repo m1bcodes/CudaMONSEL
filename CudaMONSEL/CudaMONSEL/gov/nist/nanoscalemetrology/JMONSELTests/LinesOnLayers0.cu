@@ -716,15 +716,21 @@ namespace LinesOnLayers
 
       memcpy(yvals, yvalstmp.data(), yvalsSize * sizeof(double));
       memcpy(xvals, xvalstmp.data(), xvalsSize * sizeof(double));
+
+      printf("(%d, %d)", xvalsSize, yvalsSize);
    }
 
-   __global__ void runCudaSinglePixel()
+   __global__ void
+   //__launch_bounds__(256, 3)
+   runCudaSinglePixel(float* result)
    {
-      int r = blockIdx.y*blockDim.y + threadIdx.y;
-      int c = blockIdx.x*blockDim.x + threadIdx.x;
+      const unsigned int r = blockIdx.y*blockDim.y + threadIdx.y;
+      const unsigned int c = blockIdx.x*blockDim.x + threadIdx.x;
 
-      int blockId = blockIdx.x + blockIdx.y * gridDim.x;
-      int threadId = blockId * (blockDim.x * blockDim.y) + (threadIdx.y * blockDim.x) + threadIdx.x;
+      if (r >= yvalsSize || c >= xvalsSize) return;
+
+      const unsigned int blockId = blockIdx.x + blockIdx.y * gridDim.x;
+      const unsigned int threadId = blockId * (blockDim.x * blockDim.y) + (threadIdx.y * blockDim.x) + threadIdx.x;
       printf("%d, %d (%d) began\n", r, c, threadId);
 
       const double ynm = yvals[r];
@@ -907,6 +913,8 @@ namespace LinesOnLayers
       const double bsf = back.backscatterFraction() - SEf;
       printf("%lf %lf %lf %lf %lf\n", beamEeV, xnm, ynm, bsf, SEf);
       monte.removeActionListener(back);
+
+      result[r * xvalsSize + c] = SEf;
 
       printf("%d, %d (%d) ended\n", r, c, threadId);
    }

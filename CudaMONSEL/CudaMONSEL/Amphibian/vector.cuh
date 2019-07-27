@@ -13,6 +13,9 @@ namespace amp
    static const int VECTOR_INITIAL_SIZE = 16;
 #endif
 
+   /*
+   * This vector class does not increase size automatically (if full while push_back-ing)
+   */
    template<typename T>
    class vector
    {

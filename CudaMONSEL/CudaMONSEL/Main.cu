@@ -138,13 +138,11 @@ __global__ void testLibraryCuda()
    StackTest::testOne();
 }
 
-const unsigned int H = 128, W = 80;
+const unsigned int W = 80, H = 128;
 const unsigned int TX = 16, TY = 16;
-//const unsigned int H = 16, W = 16;
-//const unsigned int TX = 4, TY = 4;
 dim3 blockSize(TX, TY); // Equivalent to dim3 blockSize(TX, TY, 1);
-int bx = (W + blockSize.x - 1) / blockSize.x;
-int by = (H + blockSize.y - 1) / blockSize.y;
+unsigned int bx = (W + blockSize.x - 1) / blockSize.x;
+unsigned int by = (H + blockSize.y - 1) / blockSize.y;
 dim3 gridSize = dim3(bx, by);
 
 __global__ void printRand()
@@ -421,10 +419,53 @@ __global__ void printTotalCrossSection()
    //printf("%.5e\n", NISTMottScatteringAngle::d_Factory->get(*Element::dH).totalCrossSection(8.01088e-17));
 }
 
+void deviceQuery()
+{
+   cudaDeviceProp prop;
+   int nDevices = 0, i;
+   cudaError_t ierr;
+
+   ierr = cudaGetDeviceCount(&nDevices);
+   if (ierr != cudaSuccess) {
+      printf("Sync error: %s\n", cudaGetErrorString(ierr));
+   }
+
+   for (i = 0; i < nDevices; ++i) {
+      ierr = cudaGetDeviceProperties(&prop, i);
+      printf("Device number: %d\n", i);
+      printf("  Device name: %s\n", prop.name);
+      printf("  Compute capability: %d.%d\n\n", prop.major, prop.minor);
+
+      printf("  Clock Rate: %d kHz\n", prop.clockRate);
+      printf("  Total SMs: %d \n", prop.multiProcessorCount);
+      printf("  Shared Memory Per SM: %lu bytes\n", prop.sharedMemPerMultiprocessor);
+      printf("  Registers Per SM: %d 32-bit\n", prop.regsPerMultiprocessor);
+      printf("  Max threads per SM: %d\n", prop.maxThreadsPerMultiProcessor);
+      printf("  L2 Cache Size: %d bytes\n", prop.l2CacheSize);
+      printf("  Total Global Memory: %lu bytes\n", prop.totalGlobalMem);
+      printf("  Memory Clock Rate: %d kHz\n\n", prop.memoryClockRate);
+
+      printf("  Max threads per block: %d\n", prop.maxThreadsPerBlock);
+      printf("  Max threads in X-dimension of block: %d\n", prop.maxThreadsDim[0]);
+      printf("  Max threads in Y-dimension of block: %d\n", prop.maxThreadsDim[1]);
+      printf("  Max threads in Z-dimension of block: %d\n\n", prop.maxThreadsDim[2]);
+
+      printf("  Max blocks in X-dimension of grid: %d\n", prop.maxGridSize[0]);
+      printf("  Max blocks in Y-dimension of grid: %d\n", prop.maxGridSize[1]);
+      printf("  Max blocks in Z-dimension of grid: %d\n\n", prop.maxGridSize[2]);
+
+      printf("  Shared Memory Per Block: %lu bytes\n", prop.sharedMemPerBlock);
+      printf("  Registers Per Block: %d 32-bit\n", prop.regsPerBlock);
+      printf("  Warp size: %d\n\n", prop.warpSize);
+   }
+}
+
 int main()
 {
+   deviceQuery();
+
    cudaDeviceSetLimit(cudaLimitMallocHeapSize, 1e9);
-   cudaDeviceSetLimit(cudaLimitStackSize, 131072);
+   cudaDeviceSetLimit(cudaLimitStackSize, 65536);
    size_t pValue;
    cudaDeviceGetLimit(&pValue, cudaLimitMallocHeapSize);
    printf("cudaLimitMallocHeapSize: %d\n", pValue);
@@ -456,17 +497,36 @@ int main()
    //cudaStreamCreate(&streams[0]);
    //cudaStreamCreate(&streams[1]);
 
+   float* d_result = nullptr;
+   checkCudaErrors(cudaMalloc((void**)&d_result, sizeof(d_result[0]) * H * W));
    auto start = std::chrono::system_clock::now();
    //LinesOnLayers::runCudaSinglePixel << <gridSize, blockSize >> >();
    //LinesOnLayers::runCudaSinglePixel << <1, 1, 0, streams[0]>> >(0, 0);
    //LinesOnLayers::runCudaSinglePixel << <1, 1, 0, streams[1] >> >(0, 1);
-   LinesOnLayers::runCudaSinglePixel << <gridSize, blockSize >> >();
+   LinesOnLayers::runCudaSinglePixel << <gridSize, blockSize >> >(d_result);
    checkCudaErrors(cudaDeviceSynchronize());
    checkCudaErrors(cudaGetLastError());
    auto end = std::chrono::system_clock::now();
    std::chrono::duration<double> elapsed_seconds = end - start;
    std::time_t end_time = std::chrono::system_clock::to_time_t(end);
    std::cout << std::endl << "finished computation at " << std::ctime(&end_time) << "elapsed time: " << elapsed_seconds.count() << "s" << std::endl;
+
+   float* h_result = new float[H * W * sizeof(h_result[0])];
+   checkCudaErrors(cudaMemcpy(h_result, d_result, sizeof(h_result[0]) * H * W, cudaMemcpyDeviceToHost));
+
+   std::string output;
+   for (int i = 0; i < H; ++i) {
+      for (int j = 0; j < W; ++j) {
+         printf("%.5e ", h_result[i * W + j]);
+         output += std::to_string(h_result[i * W + j]) + " ";
+      }
+      printf("\n");
+   }
+
+   std::ofstream myfile;
+   myfile.open("output.txt");
+   myfile << output.c_str();
+   myfile.close();
 
    printf("done\n");
 
