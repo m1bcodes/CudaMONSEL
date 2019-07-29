@@ -475,19 +475,21 @@ int main()
    testLibrary();
    initSim();
    testSim();
-   testGPU();
+   //testGPU();
 
-   initCuda();
+   //initCuda();
 
-   LinesOnLayers::transferDataToCuda();
+   //LinesOnLayers::transferDataToCuda();
 
    size_t a, t;
    checkCudaErrors(cudaMemGetInfo(&a, &t));
    printf("free/total: %lu/%lu\n", a, t);
 
-   LinesOnLayers::initCuda << <1, 1 >> >();
-   checkCudaErrors(cudaDeviceSynchronize());
-   checkCudaErrors(cudaGetLastError());
+   //LinesOnLayers::initCuda << <1, 1 >> >();
+   //checkCudaErrors(cudaDeviceSynchronize());
+   //checkCudaErrors(cudaGetLastError());
+
+   LinesOnLayers::initRange();
 
    //LinesOnLayers::runCuda << <1, 1 >> >();
    //checkCudaErrors(cudaDeviceSynchronize());
@@ -498,21 +500,29 @@ int main()
    //cudaStreamCreate(&streams[1]);
 
    float* d_result = nullptr;
-   checkCudaErrors(cudaMalloc((void**)&d_result, sizeof(d_result[0]) * H * W));
+   //checkCudaErrors(cudaMalloc((void**)&d_result, sizeof(d_result[0]) * H * W));
+   d_result = new float[sizeof(d_result[0]) * H * W];
    auto start = std::chrono::system_clock::now();
-   //LinesOnLayers::runCudaSinglePixel << <gridSize, blockSize >> >();
-   //LinesOnLayers::runCudaSinglePixel << <1, 1, 0, streams[0]>> >(0, 0);
-   //LinesOnLayers::runCudaSinglePixel << <1, 1, 0, streams[1] >> >(0, 1);
-   LinesOnLayers::runCudaSinglePixel << <gridSize, blockSize >> >(d_result);
-   checkCudaErrors(cudaDeviceSynchronize());
-   checkCudaErrors(cudaGetLastError());
+   printf("start timing\n");
+
+   //LinesOnLayers::runCudaSinglePixel << <gridSize, blockSize >> >(d_result);
+   //checkCudaErrors(cudaDeviceSynchronize());
+   //checkCudaErrors(cudaGetLastError());
+
+   for (int i = 0; i < H; ++i) {
+      for (int j = 0; j < W; ++j) {
+         LinesOnLayers::runSinglePixel(i, j, d_result);
+      }
+   }
+
    auto end = std::chrono::system_clock::now();
    std::chrono::duration<double> elapsed_seconds = end - start;
    std::time_t end_time = std::chrono::system_clock::to_time_t(end);
    std::cout << std::endl << "finished computation at " << std::ctime(&end_time) << "elapsed time: " << elapsed_seconds.count() << "s" << std::endl;
 
    float* h_result = new float[H * W * sizeof(h_result[0])];
-   checkCudaErrors(cudaMemcpy(h_result, d_result, sizeof(h_result[0]) * H * W, cudaMemcpyDeviceToHost));
+   //checkCudaErrors(cudaMemcpy(h_result, d_result, sizeof(h_result[0]) * H * W, cudaMemcpyDeviceToHost));
+   memcpy(h_result, d_result, sizeof(h_result[0]) * H * W);
 
    std::string output;
    for (int i = 0; i < H; ++i) {

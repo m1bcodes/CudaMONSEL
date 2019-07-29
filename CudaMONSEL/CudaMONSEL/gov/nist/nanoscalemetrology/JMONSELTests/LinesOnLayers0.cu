@@ -483,6 +483,53 @@ namespace LinesOnLayers
    unsigned int xvalsSize = 0;
 #endif
 
+   __host__ __device__ void initRange()
+   {
+      VectorXd yvalstmp(128);
+      for (int i = -64; i < 64; i += 1) {
+         yvalstmp.push_back(i);
+      }
+
+      const double xbottom = wnm / 2.;
+      const double xtop = wnm / 2. - hnm * ::tan(thetar);
+      const double xstart = xbottom - 100.5;
+      const double xstop = xbottom + 100.5;
+      const double xfinestart = xtop - 20.5;
+      double xfinestop;
+      if (thetar < 0.) xfinestop = xtop + 20.5;
+      else xfinestop = wnm / 2. + 20.5;
+
+      VectorXd xvalstmp(128);
+      double deltax = 5.;
+      double x = xstart;
+      while (x < xfinestart) {
+         xvalstmp.push_back(x);
+         x += deltax;
+      }
+      x = xfinestart;
+      deltax = 1;
+      while (x < xfinestop) {
+         xvalstmp.push_back(x);
+         x += deltax;
+      }
+      x = xfinestop;
+      deltax = 5.;
+      while (x < xstop) {
+         xvalstmp.push_back(x);
+         x += deltax;
+      }
+      xvalstmp.push_back(xstop);
+
+      yvalsSize = yvalstmp.size();
+      xvalsSize = xvalstmp.size();
+
+      yvals = new double[yvalsSize];
+      xvals = new double[xvalsSize];
+
+      memcpy(yvals, yvalstmp.data(), yvalsSize * sizeof(double));
+      memcpy(xvals, xvalstmp.data(), xvalsSize * sizeof(double));
+   }
+
    __global__ void initCuda()
    //void initCuda()
    {
@@ -673,66 +720,13 @@ namespace LinesOnLayers
       //line = (NormalIntersectionShapeT*)NShapes::createLine(-h, w, linelength, thetal, thetar, radl, radr);
       //lineRegion = new RegionT(chamber, PMMAMSM, line);
 
-      VectorXd yvalstmp(128);
-      for (int i = -64; i < 64; i += 1) {
-         yvalstmp.push_back(i);
-      }
-
-      const double xbottom = wnm / 2.;
-      const double xtop = wnm / 2. - hnm * ::tan(thetar);
-      const double xstart = xbottom - 100.5;
-      const double xstop = xbottom + 100.5;
-      const double xfinestart = xtop - 20.5;
-      double xfinestop;
-      if (thetar < 0.) xfinestop = xtop + 20.5;
-      else xfinestop = wnm / 2. + 20.5;
-
-      VectorXd xvalstmp(128);
-      double deltax = 5.;
-      double x = xstart;
-      while (x < xfinestart) {
-         xvalstmp.push_back(x);
-         x += deltax;
-      }
-      x = xfinestart;
-      deltax = 1;
-      while (x < xfinestop) {
-         xvalstmp.push_back(x);
-         x += deltax;
-      }
-      x = xfinestop;
-      deltax = 5.;
-      while (x < xstop) {
-         xvalstmp.push_back(x);
-         x += deltax;
-      }
-      xvalstmp.push_back(xstop);
-
-      yvalsSize = yvalstmp.size();
-      xvalsSize = xvalstmp.size();
-
-      yvals = new double[yvalsSize];
-      xvals = new double[xvalsSize];
-
-      memcpy(yvals, yvalstmp.data(), yvalsSize * sizeof(double));
-      memcpy(xvals, xvalstmp.data(), xvalsSize * sizeof(double));
+      initRange();
 
       printf("(%d, %d)", xvalsSize, yvalsSize);
    }
 
-   __global__ void
-   //__launch_bounds__(256, 3)
-   runCudaSinglePixel(float* result)
+   __host__ __device__ void runSinglePixel(const unsigned int r, const unsigned int c, float* result)
    {
-      const unsigned int r = blockIdx.y*blockDim.y + threadIdx.y;
-      const unsigned int c = blockIdx.x*blockDim.x + threadIdx.x;
-
-      if (r >= yvalsSize || c >= xvalsSize) return;
-
-      const unsigned int blockId = blockIdx.x + blockIdx.y * gridDim.x;
-      const unsigned int threadId = blockId * (blockDim.x * blockDim.y) + (threadIdx.y * blockDim.x) + threadIdx.x;
-      printf("%d, %d (%d) began\n", r, c, threadId);
-
       const double ynm = yvals[r];
       const double y = ynm * 1.e-9;
       const double xnm = xvals[c];
@@ -745,10 +739,14 @@ namespace LinesOnLayers
 
       MONSEL_MaterialScatterModelT vacuumMSM(&vacuum, &vacuumBarrier, &sZeroCSD);
 
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
       const ElementT* componentsCOH[] = { Element::dC, Element::dO, Element::dH };
+#else
+      const ElementT* componentsCOH[] = { &Element::C, &Element::O, &Element::H };
+#endif
 
       CompositionT PMMAcomp;
-      const double compositionCOH[] = { 5, 2, 8 };
+      const double compositionCOH[] = { 5., 2., 8. };
       PMMAcomp.defineByMoleFraction(componentsCOH, 3, compositionCOH, 3);
       SEmaterialT PMMA(PMMAcomp, PMMAdensity);
       PMMA.setName("PMMA");
@@ -756,7 +754,11 @@ namespace LinesOnLayers
       PMMA.setBandgap(ToSI::eV(PMMAbandgap));
       PMMA.setEnergyCBbottom(ToSI::eV(PMMApotU));
 
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
       SelectableElasticSMT PMMANISTMott(PMMA, *NISTMottRS::d_Factory);
+#else
+      SelectableElasticSMT PMMANISTMott(PMMA, NISTMottRS::Factory);
+#endif
 
       JoyLuoNieminenCSDT PMMACSD(PMMA, PMMAbreakE);
       FittedInelSMT PMMAfittedInel(PMMA, ToSI::eV(65.4), PMMACSD);
@@ -781,7 +783,12 @@ namespace LinesOnLayers
 
       MONSEL_MaterialScatterModelT& ARCMSM = PMMAMSM;
 
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
       const ElementT* glCComponents[] = { Element::dC };
+#else
+      const ElementT* glCComponents[] = { &Element::C };
+#endif
+
       const double glCComposition[] = { 1. };
       SEmaterialT glC(glCComponents, 1, glCComposition, 1, glCdensity, "glassy Carbon");
       glC.setWorkfunction(ToSI::eV(glCworkfun));
@@ -790,7 +797,11 @@ namespace LinesOnLayers
       const double glCCoreEnergy[] = { ToSI::eV(284.2) };
       glC.setCoreEnergy(glCCoreEnergy, 1);
 
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
       SelectableElasticSMT glCNISTMott(glC, *NISTMottRS::d_Factory);
+#else
+      SelectableElasticSMT glCNISTMott(glC, NISTMottRS::Factory);
+#endif
 
       StringT tablePath = "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\glassyCTables\\";
       const StringT IIMFPPennInterpglassy = tablePath + "IIMFPPennInterpglassyCSI.csv";
@@ -817,7 +828,12 @@ namespace LinesOnLayers
 
       glCMSMDeep.setMinEforTracking(ToSI::eV(50.));
 
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
       const ElementT* SiComponent[] = { Element::dSi };
+#else
+      const ElementT* SiComponent[] = { &Element::Si };
+#endif
+
       const double SiComposition[] = { 1. };
       SEmaterialT Si(SiComponent, 1, SiComposition, 1, Sidensity, "Silicon");
       Si.setWorkfunction(ToSI::eV(Siworkfun));
@@ -826,7 +842,11 @@ namespace LinesOnLayers
       const double SiCoreEnergy[] = { ToSI::eV(99.2), ToSI::eV(99.8), ToSI::eV(149.7), ToSI::eV(1839.) };
       Si.setCoreEnergy(SiCoreEnergy, 4);
 
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
       SelectableElasticSMT SiNISTMott(Si, *NISTMottRS::d_Factory);
+#else
+      SelectableElasticSMT SiNISTMott(Si, NISTMottRS::Factory);
+#endif
 
       tablePath = "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\SiTables\\";
       const StringT IIMFPFullPennInterpSiSI = tablePath + "IIMFPFullPennInterpSiSI.csv";
@@ -839,7 +859,7 @@ namespace LinesOnLayers
          interpNUThetaFullPennSiBGSI.c_str(),
          interpSimESE0NUSiBGSI.c_str()
       };
-      
+
       TabulatedInelasticSMT SiDS(Si, 3, SiTables, ToSI::eV(13.54));
 
       GanachaudMokraniPhononInelasticSMT Siphonon(phononStrength, ToSI::eV(phononE), 300., 11.7, 1.);
@@ -909,131 +929,29 @@ namespace LinesOnLayers
          totalSE = totalSE + hist.counts(j);
       }
 
-      const double SEf = (float)totalSE / nTrajectories;
+      const double SEf = (double)totalSE / nTrajectories;
       const double bsf = back.backscatterFraction() - SEf;
       printf("%lf %lf %lf %lf %lf\n", beamEeV, xnm, ynm, bsf, SEf);
       monte.removeActionListener(back);
 
       result[r * xvalsSize + c] = SEf;
+   }
+
+   __global__ void
+   //__launch_bounds__(256, 3)
+   runCudaSinglePixel(float* result)
+   {
+      const unsigned int r = blockIdx.y*blockDim.y + threadIdx.y;
+      const unsigned int c = blockIdx.x*blockDim.x + threadIdx.x;
+
+      if (r >= yvalsSize || c >= xvalsSize) return;
+
+      const unsigned int blockId = blockIdx.x + blockIdx.y * gridDim.x;
+      const unsigned int threadId = blockId * (blockDim.x * blockDim.y) + (threadIdx.y * blockDim.x) + threadIdx.x;
+      printf("%d, %d (%d) began\n", r, c, threadId);
+
+      runSinglePixel(r, c, result);
 
       printf("%d, %d (%d) ended\n", r, c, threadId);
    }
-
-   //__global__ void runCudaSinglePixel(int r, int c)
-   //{
-   //   int blockId = blockIdx.x + blockIdx.y * gridDim.x;
-   //   int threadId = blockId * (blockDim.x * blockDim.y) + (threadIdx.y * blockDim.x) + threadIdx.x;
-   //   printf("%d, %d (%d) began\n", r, c, threadId);
-
-   //   const double ynm = yvals[r];
-   //   const double y = ynm * 1.e-9;
-   //   const double xnm = xvals[c];
-   //   const double x = xnm * 1.e-9;
-
-   //   GaussianBeamT eg(beamsize, beamE, center);
-   //   const double egCenter[] = { x, y, -h - 20. * 1.e-9 };
-   //   eg.setCenter(egCenter);
-   //   MonteCarloSST monte(&eg, chamber, nullptr);
-
-   //   const int nbins = (int)(beamEeV / binSizeEV);
-   //   BackscatterStatsT back(monte, nbins); //printf("48\n");
-   //   monte.addActionListener(back);
-
-   //   monte.runMultipleTrajectories(nTrajectories);
-
-   //   const HistogramT& hist = back.backscatterEnergyHistogram(); //printf("49\n");
-
-   //   const double energyperbineV = beamEeV / hist.binCount();
-   //   const double maxSEbin = 50. / energyperbineV;
-   //   int totalSE = 0;
-   //   for (int j = 0; j < (int)maxSEbin; ++j) {
-   //      totalSE = totalSE + hist.counts(j);
-   //   }
-
-   //   const double SEf = (float)totalSE / nTrajectories;
-   //   const double bsf = back.backscatterFraction() - SEf;
-   //   printf("%lf %lf %lf %lf %lf\n", beamEeV, xnm, ynm, bsf, SEf);
-   //   monte.removeActionListener(back);
-
-   //   printf("%d, %d (%d) ended\n", r, c, threadId);
-   //}
-//
-//   __global__ void runCuda()
-//   //void runCuda()
-//   {
-//      printf("LinesOnLayers: runCuda (%d, %d)\n", yvalsSize, xvalsSize);
-//
-//      //printf("\n# Trajectories at each landing position: %d", nTrajectories);
-//      //printf("\n# Pitch of lines (nm): %.10e", pitchnm);
-//      //printf("\n# lines: %d", nlines);
-//      //printf("\nLine height (nm): %.10e", hnm);
-//      //printf("\nLine bottom width (nm): %.10e", wnm);
-//      //printf("\nLine length (nm): %.10e", linelengthnm);
-//      //printf("\nLeft and right sidewall angles (deg): %.10e %.10e", thetaldeg, thetardeg);
-//      //printf("\nLeft and right top corner radii (nm): %.10e %.10e", radlnm, radrnm);
-//      //printf("\nThicknesses of 1st and second layers (nm): %.10e %.10e", layer1thicknessnm, layer2thicknessnm);
-//      //printf("\nBeam landing energies (eV): ");
-//
-//      //for (int i = 0; i < beamEeVvalsLen; i++) {
-//      //   printf("\n%.10e", beamEeVvals[i]);
-//      //}
-//      //printf("\nBeam size (standard deviation, in nm): %.10e", beamsizenm);
-//
-//      //printf("\n");
-//      //printf("\nbeamE (eV)\t x(nm)\t y (nm)\t BSE yield\t SE yield");
-//      GaussianBeamT* eg = new GaussianBeamT(beamsize, beamE, center);
-//      MonteCarloSST* monte = new MonteCarloSST(eg, chamber, nullptr);
-//
-//#if (!(defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0)))
-//      std::string output;
-//      auto start = std::chrono::system_clock::now();
-//#endif
-//
-//      for (int r = 0; r < yvalsSize; ++r) {
-//         const double ynm = yvals[r];
-//         const double y = ynm * 1.e-9;
-//         for (int c = 0; c < xvalsSize; ++c) {
-//            double xnm = xvals[c];
-//            const double x = xnm * 1.e-9;
-//            const double egCenter[] = { x, y, -h - 20. * 1.e-9 };
-//            eg->setCenter(egCenter);
-//
-//            const int nbins = (int)(beamEeV / binSizeEV);
-//            BackscatterStatsT* back = new BackscatterStatsT(*monte, nbins); //printf("48\n");
-//            monte->addActionListener(*back);
-//
-//            monte->runMultipleTrajectories(nTrajectories);
-//
-//            const HistogramT& hist = back->backscatterEnergyHistogram(); //printf("49\n");
-//
-//            const double energyperbineV = beamEeV / hist.binCount();
-//            const double maxSEbin = 50. / energyperbineV;
-//            int totalSE = 0;
-//            for (int j = 0; j < (int)maxSEbin; ++j) {
-//               totalSE = totalSE + hist.counts(j);
-//            }
-//
-//            const double SEf = (float)totalSE / nTrajectories;
-//            const double bsf = back->backscatterFraction() - SEf;
-//            printf("%lf %lf %lf %lf %lf\n", beamEeV, xnm, ynm, bsf, SEf);
-//#if (!(defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0)))
-//            output += std::to_string(beamEeV) + " " + std::to_string(xnm) + " " + std::to_string(ynm) + " " + std::to_string(bsf) + " " + std::to_string(SEf) + "\n";
-//#endif
-//            monte->removeActionListener(*back);
-//            delete back;
-//         }
-//      }
-//#if (!(defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0)))
-//      auto end = std::chrono::system_clock::now();
-//      std::chrono::duration<double> elapsed_seconds = end - start;
-//      std::time_t end_time = std::chrono::system_clock::to_time_t(end);
-//      std::cout << std::endl << "finished computation at " << std::ctime(&end_time) << "elapsed time: " << elapsed_seconds.count() << "s" << std::endl;
-//      output += std::to_string(elapsed_seconds.count());
-//      
-//      std::ofstream myfile;
-//      myfile.open("output.txt");
-//      myfile << output.c_str();
-//      myfile.close();
-//#endif
-//   }
 }
