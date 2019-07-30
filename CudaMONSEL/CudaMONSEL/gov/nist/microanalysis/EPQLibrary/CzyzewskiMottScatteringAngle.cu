@@ -37,7 +37,7 @@ namespace CzyzewskiMottScatteringAngle
       // Calculate a normalized running sum that will be used to map a random
       // number between
       // [0,1.00) onto a scattering angle.
-      mCummulativeDF.resize(CzyzewskiMottCrossSection::SpecialEnergyCount, VectorXd(CzyzewskiMottCrossSection::SpecialAngleCount, 0));
+      mCummulativeDF.resize(CzyzewskiMottCrossSection::SpecialEnergyCount, VectorXf(CzyzewskiMottCrossSection::SpecialAngleCount, 0));
       for (int r = 0; r < CzyzewskiMottCrossSection::SpecialEnergyCount; ++r) {
          const double energy = CzyzewskiMottCrossSection::getSpecialEnergy(r);
          mCummulativeDF[r][0] = 0.0;
@@ -61,8 +61,7 @@ namespace CzyzewskiMottScatteringAngle
       RandomizedScatterT("Cyzewski", REFERENCE), mElement(el), mRutherford(ScreenedRutherfordScatteringAngle::getSRSA(el.getAtomicNumber()))
 #endif
    {
-#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-#else
+#if (!(defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0)))
       init(el.getAtomicNumber());
 #endif
    }
@@ -80,7 +79,7 @@ namespace CzyzewskiMottScatteringAngle
 
    __host__ __device__ double CzyzewskiMottScatteringAngle::scatteringAngleForSpecialEnergy(int ei, double rand) const
    {
-      VectorXd r(mCummulativeDF[ei]);
+      VectorXf r(mCummulativeDF[ei]);
       int ai = Algorithm::binarySearch(r.data(), 0, r.size() - 1, rand);
       if (ai >= 0)
          return CzyzewskiMottCrossSection::getSpecialAngle(ai);
@@ -450,58 +449,63 @@ namespace CzyzewskiMottScatteringAngle
       d_mScatter[94] = new CzyzewskiMottScatteringAngle(*Element::dPu);
    }
 
-   __host__ __device__ const VectorXd& CzyzewskiMottScatteringAngle::getMeanFreePath() const
+   __host__ __device__ const VectorXf& CzyzewskiMottScatteringAngle::getMeanFreePath() const
    {
       return mMeanFreePath;
    }
 
-   __host__ __device__ const VectorXd& CzyzewskiMottScatteringAngle::getTotalCrossSection() const
+   __host__ __device__ const VectorXf& CzyzewskiMottScatteringAngle::getTotalCrossSection() const
    {
       return mTotalCrossSection;
    }
 
-   __host__ __device__ const MatrixXd& CzyzewskiMottScatteringAngle::getCummulativeDF() const
+   __host__ __device__ const MatrixXf& CzyzewskiMottScatteringAngle::getCummulativeDF() const
    {
       return mCummulativeDF;
    }
 
-   __global__ void assignMeanFreePath(const unsigned int i, double *data, const unsigned int len)
+   template<typename T>
+   __global__ void assignMeanFreePath(const unsigned int i, T *data, const unsigned int len)
    {
-      d_mScatter[i]->assignMeanFreePath<double>(data, len);
+      d_mScatter[i]->assignMeanFreePath<T>(data, len);
    }
 
-   __global__ void assignTotalCrossSection(const unsigned int i, double *data, const unsigned int len)
+   template<typename T>
+   __global__ void assignTotalCrossSection(const unsigned int i, T *data, const unsigned int len)
    {
-      d_mScatter[i]->assignTotalCrossSection<double>(data, len);
+      d_mScatter[i]->assignTotalCrossSection<T>(data, len);
    }
 
-   __global__ void assignCummulativeDFRow(const unsigned int i, const unsigned int r, double *data, const unsigned int len)
+   template<typename T>
+   __global__ void assignCummulativeDFRow(const unsigned int i, const unsigned int r, T *data, const unsigned int len)
    {
-      d_mScatter[i]->assignCummulativeDFRow<double>(r, data, len);
+      d_mScatter[i]->assignCummulativeDFRow<T>(r, data, len);
    }
+
+   typedef float data_type;
 
    void transferDataToCuda()
    {
-      double **dmfp = new double*[95];
-      double **dtcs = new double*[95];
-      double ***dcdf = new double**[95];
+      data_type **dmfp = new data_type*[95];
+      data_type **dtcs = new data_type*[95];
+      data_type ***dcdf = new data_type**[95];
       for (int i = 0; i <= 94; ++i) {
-         const VectorXd& mfp = mScatter[i]->getMeanFreePath();
-         checkCudaErrors(cudaMalloc((void **)&dmfp[i], sizeof(double) * mfp.size()));
-         checkCudaErrors(cudaMemcpy(dmfp[i], mfp.data(), sizeof(double) * mfp.size(), cudaMemcpyHostToDevice));
+         const VectorXf& mfp = mScatter[i]->getMeanFreePath();
+         checkCudaErrors(cudaMalloc((void **)&dmfp[i], sizeof(data_type) * mfp.size()));
+         checkCudaErrors(cudaMemcpy(dmfp[i], mfp.data(), sizeof(data_type) * mfp.size(), cudaMemcpyHostToDevice));
          assignMeanFreePath << <1, 1 >> >(i, dmfp[i], mfp.size());
 
-         const VectorXd& tcs = mScatter[i]->getTotalCrossSection();
-         checkCudaErrors(cudaMalloc((void **)&dtcs[i], sizeof(double) * tcs.size()));
-         checkCudaErrors(cudaMemcpy(dtcs[i], tcs.data(), sizeof(double) * tcs.size(), cudaMemcpyHostToDevice));
+         const VectorXf& tcs = mScatter[i]->getTotalCrossSection();
+         checkCudaErrors(cudaMalloc((void **)&dtcs[i], sizeof(data_type) * tcs.size()));
+         checkCudaErrors(cudaMemcpy(dtcs[i], tcs.data(), sizeof(data_type) * tcs.size(), cudaMemcpyHostToDevice));
          assignTotalCrossSection << <1, 1 >> >(i, dtcs[i], tcs.size());
 
-         const MatrixXd& cdf = mScatter[i]->getCummulativeDF();
-         dcdf[i] = new double*[cdf.size()];
+         const MatrixXf& cdf = mScatter[i]->getCummulativeDF();
+         dcdf[i] = new data_type*[cdf.size()];
          for (int r = 0; r <= cdf.size(); ++r) {
-            const VectorXd& cdf = mScatter[i]->getTotalCrossSection();
-            checkCudaErrors(cudaMalloc((void **)&dcdf[i][r], sizeof(double) * cdf.size()));
-            checkCudaErrors(cudaMemcpy(dcdf[i][r], cdf.data(), sizeof(double) * cdf.size(), cudaMemcpyHostToDevice));
+            const VectorXf& cdf = mScatter[i]->getTotalCrossSection();
+            checkCudaErrors(cudaMalloc((void **)&dcdf[i][r], sizeof(data_type) * cdf.size()));
+            checkCudaErrors(cudaMemcpy(dcdf[i][r], cdf.data(), sizeof(data_type) * cdf.size(), cudaMemcpyHostToDevice));
             assignCummulativeDFRow << <1, 1 >> >(i, r, dcdf[i][r], cdf.size());
          }
       }

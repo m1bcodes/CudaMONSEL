@@ -13,6 +13,17 @@ namespace Algorithm
       return l;
    }
 
+   __host__ __device__ int binarySearch(const float a[], int l, int r, const float t)
+   {
+      while (l <= r) {
+         const int mid = l + (r - l) / 2;
+         if (a[mid] == t) return mid;
+         if (a[mid] < t) l = mid + 1;
+         else r = mid - 1;
+      }
+      return l;
+   }
+
    __host__ __device__ static int partition(double a[], int l, int r)
    {
       int j = l - 1; // points to the last element less than pivot

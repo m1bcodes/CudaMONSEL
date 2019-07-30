@@ -23,11 +23,11 @@ namespace NUTableInterpolation
    */
    __host__ __device__ NUTableInterpolation::NUTableInterpolation(char const * tableFileName) :
       table1d(0, 0),
-      table2d(0, VectorXd(0, 0)),
+      table2d(0, VectorXf(0, 0)),
       table3d(0, MatrixXf(0, VectorXf(0, 0))),
-      table4d(0, Matrix3DXd(0, MatrixXd(0, VectorXd(0, 0)))),
-      x(0, VectorXd(0, 0)),
-      domain(0, VectorXd(0, 0)),
+      table4d(0, Matrix3DXf(0, MatrixXf(0, VectorXf(0, 0)))),
+      x(0, VectorXf(0, 0)),
+      domain(0, VectorXf(0, 0)),
       range(2, 0),
       tableFileName(tableFileName)
    {
@@ -54,7 +54,7 @@ namespace NUTableInterpolation
    * @return double - The estimated value of the tabulated function at the
    *         supplied coordinate.
    */
-   __host__ __device__ double NUTableInterpolation::interpolate(double xval[], int xvallen, int order) const
+   __host__ __device__ double NUTableInterpolation::interpolate(float xval[], int xvallen, int order) const
    {
       if (xvallen < dim)
          printf("Attempt to interpolate %s at x with %d dimensions", tableFileName.c_str(), dim);
@@ -94,7 +94,7 @@ namespace NUTableInterpolation
             VectorXi nPoints(dim, 0);
             x.resize(dim);
 
-            domain.resize(dim, VectorXd(2, 0));
+            domain.resize(dim, VectorXf(2, 0));
 
             for (int i = 0; i < dim; i++) {
                myfile >> a;
@@ -119,7 +119,7 @@ namespace NUTableInterpolation
             case 1:
                table1d.resize(nPoints[0]);
                for (int i = 0; i < nPoints[0]; i++) {
-                  double tmp;
+                  float tmp;
                   myfile >> tmp;
                   table1d[i] = tmp;
                   if (table1d[i] < range[0])
@@ -129,10 +129,10 @@ namespace NUTableInterpolation
                }
                break;
             case 2:
-               table2d.resize(nPoints[0], VectorXd(nPoints[1], 0));
+               table2d.resize(nPoints[0], VectorXf(nPoints[1], 0));
                for (int i = 0; i < nPoints[0]; i++)
                   for (int j = 0; j < nPoints[1]; j++) {
-                     double tmp;
+                     float tmp;
                      myfile >> tmp;
                      table2d[i][j] = tmp;
                      if (table2d[i][j] < range[0])
@@ -147,7 +147,7 @@ namespace NUTableInterpolation
                for (int i = 0; i < nPoints[0]; i++)
                   for (int j = 0; j < nPoints[1]; j++)
                      for (int k = 0; k < nPoints[2]; k++) {
-                        double tmp;
+                        float tmp;
                         myfile >> tmp;
                         table3d[i][j][k] = tmp;
                         if (table3d[i][j][k] < range[0])
@@ -157,12 +157,12 @@ namespace NUTableInterpolation
                      }
                break;
             case 4:
-               table4d.resize(nPoints[0], Matrix3DXd(nPoints[1], MatrixXd(nPoints[1], VectorXd(nPoints[2], 0))));
+               table4d.resize(nPoints[0], Matrix3DXf(nPoints[1], MatrixXf(nPoints[1], VectorXf(nPoints[2], 0))));
                for (int i = 0; i < nPoints[0]; i++) {
                   for (int j = 0; j < nPoints[1]; j++) {
                      for (int k = 0; k < nPoints[2]; k++) {
                         for (int m = 0; m < nPoints[3]; m++) {
-                           double tmp;
+                           float tmp;
                            myfile >> tmp;
                            table4d[i][j][k][m] = tmp;
                            if (table4d[i][j][k][m] < range[0])
@@ -184,12 +184,12 @@ namespace NUTableInterpolation
       }
    }
 
-   __host__ __device__ const VectorXd& NUTableInterpolation::gettable1d() const
+   __host__ __device__ const VectorXf& NUTableInterpolation::gettable1d() const
    {
       return table1d;
    }
 
-   __host__ __device__ const MatrixXd& NUTableInterpolation::gettable2d() const
+   __host__ __device__ const MatrixXf& NUTableInterpolation::gettable2d() const
    {
       return table2d;
    }
@@ -199,22 +199,22 @@ namespace NUTableInterpolation
       return table3d;
    }
 
-   __host__ __device__ const Matrix4DXd& NUTableInterpolation::gettable4d() const
+   __host__ __device__ const Matrix4DXf& NUTableInterpolation::gettable4d() const
    {
       return table4d;
    }
 
-   __host__ __device__ const MatrixXd& NUTableInterpolation::getx() const
+   __host__ __device__ const MatrixXf& NUTableInterpolation::getx() const
    {
       return x;
    }
 
-   __host__ __device__ const MatrixXd& NUTableInterpolation::getdomain() const
+   __host__ __device__ const MatrixXf& NUTableInterpolation::getdomain() const
    {
       return domain;
    }
 
-   __host__ __device__ const VectorXd& NUTableInterpolation::getrange() const
+   __host__ __device__ const VectorXf& NUTableInterpolation::getrange() const
    {
       return range;
    }
@@ -227,41 +227,6 @@ namespace NUTableInterpolation
    __host__ __device__ StringT NUTableInterpolation::gettableFileName() const
    {
       return tableFileName;
-   }
-
-   __device__ void NUTableInterpolation::assigntable1d(double* data, const unsigned int len)
-   {
-      table1d.set_data(data, len);
-   }
-
-   __device__ void NUTableInterpolation::assigntable2d(const unsigned int i0, double* data, const unsigned int len)
-   {
-      table2d[i0].set_data(data, len);
-   }
-
-   __device__ void NUTableInterpolation::assigntable3d(const unsigned int i0, const unsigned int i1, float* data, const unsigned int len)
-   {
-      table3d[i0][i1].set_data(data, len);
-   }
-
-   __device__ void NUTableInterpolation::assigntable4d(const unsigned int i0, const unsigned int i1, const unsigned int d2, double* data, const unsigned int len)
-   {
-      table4d[i0][i1][d2].set_data(data, len);
-   }
-
-   __device__ void NUTableInterpolation::assignx(const unsigned int i0, double* data, const unsigned int len)
-   {
-      x[i0].set_data(data, len);
-   }
-
-   __device__ void NUTableInterpolation::assigndomain(const unsigned int i0, double* data, const unsigned int len)
-   {
-      domain[i0].set_data(data, len);
-   }
-
-   __device__ void NUTableInterpolation::assignrange(double* data, const unsigned int len)
-   {
-      range.set_data(data, len);
    }
 
    __device__ void NUTableInterpolation::copydim(int d)
@@ -373,37 +338,44 @@ namespace NUTableInterpolation
       newOne = new NUTableInterpolation(fn);
    }
 
-   __global__ void assigntable1d(double* data, const unsigned int len)
+   template<typename T>
+   __global__ void assigntable1d(T* data, const unsigned int len)
    {
       newOne->assigntable1d(data, len);
    }
 
-   __global__ void assigntable2d(const unsigned int i0, double* data, const unsigned int len)
+   template<typename T>
+   __global__ void assigntable2d(const unsigned int i0, T* data, const unsigned int len)
    {
       newOne->assigntable2d(i0, data, len);
    }
 
-   __global__ void assigntable3d(const unsigned int i0, const unsigned int i1, float* data, const unsigned int len)
+   template<typename T>
+   __global__ void assigntable3d(const unsigned int i0, const unsigned int i1, T* data, const unsigned int len)
    {
       newOne->assigntable3d(i0, i1, data, len);
    }
 
-   __global__ void assigntable4d(const unsigned int i0, const unsigned int i1, const unsigned int d2, double* data, const unsigned int len)
+   template<typename T>
+   __global__ void assigntable4d(const unsigned int i0, const unsigned int i1, const unsigned int d2, T* data, const unsigned int len)
    {
       newOne->assigntable4d(i0, i1, d2, data, len);
    }
 
-   __global__ void assignx(const unsigned int i0, double* data, const unsigned int len)
+   template<typename T>
+   __global__ void assignx(const unsigned int i0, T* data, const unsigned int len)
    {
       newOne->assignx(i0, data, len);
    }
 
-   __global__ void assigndomain(const unsigned int i0, double* data, const unsigned int len)
+   template<typename T>
+   __global__ void assigndomain(const unsigned int i0, T* data, const unsigned int len)
    {
       newOne->assigndomain(i0, data, len);
    }
 
-   __global__ void assignrange(double* data, const unsigned int len)
+   template<typename T>
+   __global__ void assignrange(T* data, const unsigned int len)
    {
       newOne->assignrange(data, len);
    }
@@ -473,6 +445,8 @@ namespace NUTableInterpolation
       ptr[i][j] = new float[sz];
    }
 
+   typedef float data_type;
+
    void transferDataToCuda(char const * tableFileName)
    {
       NUTableInterpolation const * ptr = getInstance(tableFileName);
@@ -486,20 +460,20 @@ namespace NUTableInterpolation
       checkCudaErrors(cudaGetLastError());
       checkCudaErrors(cudaFree(d_tableFileName));
 
-      double* d_table1d = nullptr;
-      checkCudaErrors(cudaMalloc((void **)&d_table1d, ptr->gettable1d().size() * sizeof(double)));
-      checkCudaErrors(cudaMemcpy(d_table1d, ptr->gettable1d().data(), ptr->gettable1d().size() * sizeof(double), cudaMemcpyHostToDevice));
+      data_type* d_table1d = nullptr;
+      checkCudaErrors(cudaMalloc((void **)&d_table1d, ptr->gettable1d().size() * sizeof(data_type)));
+      checkCudaErrors(cudaMemcpy(d_table1d, ptr->gettable1d().data(), ptr->gettable1d().size() * sizeof(data_type), cudaMemcpyHostToDevice));
       assigntable1d << <1, 1 >> >(d_table1d, ptr->gettable1d().size());
       checkCudaErrors(cudaDeviceSynchronize());
       checkCudaErrors(cudaGetLastError());
 
-      double** d_table2d = new double*[ptr->gettable2d().size()];
+      data_type** d_table2d = new data_type*[ptr->gettable2d().size()];
       resizetable2d << <1, 1 >> >(ptr->gettable2d().size());
       checkCudaErrors(cudaDeviceSynchronize());
       checkCudaErrors(cudaGetLastError());
       for (int i = 0; i < ptr->gettable2d().size(); ++i) {
-         checkCudaErrors(cudaMalloc((void **)&d_table2d[i], ptr->gettable2d()[i].size() * sizeof(double)));
-         checkCudaErrors(cudaMemcpy(d_table2d[i], ptr->gettable2d()[i].data(), ptr->gettable2d()[i].size() * sizeof(double), cudaMemcpyHostToDevice));
+         checkCudaErrors(cudaMalloc((void **)&d_table2d[i], ptr->gettable2d()[i].size() * sizeof(data_type)));
+         checkCudaErrors(cudaMemcpy(d_table2d[i], ptr->gettable2d()[i].data(), ptr->gettable2d()[i].size() * sizeof(data_type), cudaMemcpyHostToDevice));
          assigntable2d << <1, 1 >> >(i, d_table2d[i], ptr->gettable2d()[i].size());
       }
       checkCudaErrors(cudaDeviceSynchronize());
@@ -527,19 +501,19 @@ namespace NUTableInterpolation
       }
       delete[] d_table3d;
 
-      double**** d_table4d = new double***[ptr->gettable4d().size()];
+      data_type**** d_table4d = new data_type***[ptr->gettable4d().size()];
       resizetable4d_0 << <1, 1 >> >(ptr->gettable4d().size());
       checkCudaErrors(cudaDeviceSynchronize());
       checkCudaErrors(cudaGetLastError());
       for (int i = 0; i < ptr->gettable4d().size(); ++i) {
-         d_table4d[i] = new double**[ptr->gettable4d()[i].size()];
+         d_table4d[i] = new data_type**[ptr->gettable4d()[i].size()];
          resizetable4d_1 << <1, 1 >> >(i, ptr->gettable4d()[i].size());
          for (int j = 0; j < ptr->gettable4d()[i].size(); ++j) {
-            d_table4d[i][j] = new double*[ptr->gettable4d()[i][j].size()];
+            d_table4d[i][j] = new data_type*[ptr->gettable4d()[i][j].size()];
             resizetable4d_2 << <1, 1 >> >(i, j, ptr->gettable4d()[i][j].size());
             for (int k = 0; k < ptr->gettable4d()[i][j].size(); ++k) {
-               checkCudaErrors(cudaMalloc((void **)&d_table4d[i][j][k], ptr->gettable4d()[i][j][k].size() * sizeof(double)));
-               checkCudaErrors(cudaMemcpy(d_table4d[i][j][k], ptr->gettable4d()[i][j][k].data(), ptr->gettable4d()[i][j][k].size() * sizeof(double), cudaMemcpyHostToDevice));
+               checkCudaErrors(cudaMalloc((void **)&d_table4d[i][j][k], ptr->gettable4d()[i][j][k].size() * sizeof(data_type)));
+               checkCudaErrors(cudaMemcpy(d_table4d[i][j][k], ptr->gettable4d()[i][j][k].data(), ptr->gettable4d()[i][j][k].size() * sizeof(data_type), cudaMemcpyHostToDevice));
                assigntable4d << <1, 1 >> >(i, j, k, d_table4d[i][j][k], ptr->gettable4d()[i][j][k].size());
             }
          }
@@ -554,35 +528,35 @@ namespace NUTableInterpolation
       }
       delete[] d_table4d;
 
-      double** d_x = new double*[ptr->getx().size()];
+      data_type** d_x = new data_type*[ptr->getx().size()];
       resizex << <1, 1 >> >(ptr->getx().size());
       checkCudaErrors(cudaDeviceSynchronize());
       checkCudaErrors(cudaGetLastError());
       for (int i = 0; i < ptr->getx().size(); ++i) {
-         checkCudaErrors(cudaMalloc((void **)&d_x[i], ptr->getx()[i].size() * sizeof(double)));
-         checkCudaErrors(cudaMemcpy(d_x[i], ptr->getx()[i].data(), ptr->getx()[i].size() * sizeof(double), cudaMemcpyHostToDevice));
+         checkCudaErrors(cudaMalloc((void **)&d_x[i], ptr->getx()[i].size() * sizeof(data_type)));
+         checkCudaErrors(cudaMemcpy(d_x[i], ptr->getx()[i].data(), ptr->getx()[i].size() * sizeof(data_type), cudaMemcpyHostToDevice));
          assignx << <1, 1 >> >(i, d_x[i], ptr->getx()[i].size());
       }
       checkCudaErrors(cudaDeviceSynchronize());
       checkCudaErrors(cudaGetLastError());
       delete[] d_x;
 
-      double** d_domain = new double*[ptr->getdomain().size()];
+      data_type** d_domain = new data_type*[ptr->getdomain().size()];
       resizedomain << <1, 1 >> >(ptr->getdomain().size());
       checkCudaErrors(cudaDeviceSynchronize());
       checkCudaErrors(cudaGetLastError());
       for (int i = 0; i < ptr->getdomain().size(); ++i) {
-         checkCudaErrors(cudaMalloc((void **)&d_domain[i], ptr->getdomain()[i].size() * sizeof(double)));
-         checkCudaErrors(cudaMemcpy(d_domain[i], ptr->getdomain()[i].data(), ptr->getdomain()[i].size() * sizeof(double), cudaMemcpyHostToDevice));
+         checkCudaErrors(cudaMalloc((void **)&d_domain[i], ptr->getdomain()[i].size() * sizeof(data_type)));
+         checkCudaErrors(cudaMemcpy(d_domain[i], ptr->getdomain()[i].data(), ptr->getdomain()[i].size() * sizeof(data_type), cudaMemcpyHostToDevice));
          assigndomain << <1, 1 >> >(i, d_domain[i], ptr->getdomain()[i].size());
       }
       checkCudaErrors(cudaDeviceSynchronize());
       checkCudaErrors(cudaGetLastError());
       delete[] d_domain;
 
-      double* d_range = nullptr;
-      checkCudaErrors(cudaMalloc((void **)&d_range, ptr->getrange().size() * sizeof(double)));
-      checkCudaErrors(cudaMemcpy(d_range, ptr->getrange().data(), ptr->getrange().size() * sizeof(double), cudaMemcpyHostToDevice));
+      data_type* d_range = nullptr;
+      checkCudaErrors(cudaMalloc((void **)&d_range, ptr->getrange().size() * sizeof(data_type)));
+      checkCudaErrors(cudaMemcpy(d_range, ptr->getrange().data(), ptr->getrange().size() * sizeof(data_type), cudaMemcpyHostToDevice));
       assignrange << <1, 1 >> >(d_range, ptr->getrange().size());
       checkCudaErrors(cudaDeviceSynchronize());
       checkCudaErrors(cudaGetLastError());

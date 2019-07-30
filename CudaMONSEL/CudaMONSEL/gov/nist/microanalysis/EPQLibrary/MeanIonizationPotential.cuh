@@ -84,7 +84,7 @@ namespace MeanIonizationPotential
       __host__ __device__ Berger64MeanIonizationPotential();
       __host__ __device__ double compute(const ElementT& el) const override;
       void readTabulatedValues();
-      __host__ __device__ const VectorXd& getData() const;
+      __host__ __device__ const VectorXf& getData() const;
       template<typename T>
       __device__ void assignData(T* data, const unsigned int len)
       {
@@ -92,7 +92,7 @@ namespace MeanIonizationPotential
       }
 
    private:
-      VectorXd mMeasured; // nominal, in Joules
+      VectorXf mMeasured; // nominal, in Joules
    };
 
    class Berger83MeanIonizationPotential : public MeanIonizationPotential
@@ -101,7 +101,7 @@ namespace MeanIonizationPotential
       __host__ __device__ Berger83MeanIonizationPotential();
       __host__ __device__ double compute(const ElementT& el) const override;
       void readTabulatedValues();
-      __host__ __device__ const VectorXd& getData() const;
+      __host__ __device__ const VectorXf& getData() const;
       template<typename T>
       __device__ void assignData(T* data, const unsigned int len)
       {
@@ -109,7 +109,7 @@ namespace MeanIonizationPotential
       }
 
    private:
-      VectorXd mMeasured; // nominal, in Joules
+      VectorXf mMeasured; // nominal, in Joules
    };
 
    extern Berger64MeanIonizationPotential& Berger64;

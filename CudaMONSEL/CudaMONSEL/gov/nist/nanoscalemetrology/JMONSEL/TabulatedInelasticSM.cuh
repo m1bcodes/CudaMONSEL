@@ -52,7 +52,7 @@ namespace TabulatedInelasticSM
       double bandgap;
       double energyGap;
       bool defaultRatios;
-      MatrixXd cumulativeBranchingProbabilities;
+      MatrixXf cumulativeBranchingProbabilities;
 
       /*
       * bEref is the energy (relative to conduction band bottom) to which core
@@ -60,17 +60,17 @@ namespace TabulatedInelasticSM
       * for metals and 0 for insulators or semiconductors.
       */
       double bEref;
-      VectorXd kEa; // For convenience, because 1-d
+      VectorXf kEa; // For convenience, because 1-d
       // tables
       // still require an array for input
-      VectorXd coreEnergies;
-      VectorXd interpInput;
+      VectorXf coreEnergies;
+      VectorXf interpInput;
 
       // Allowed energy ranges for interpolation table inputs
-      VectorXd tableEiDomain;
-      VectorXd tableIIMFPEiDomain;
+      VectorXf tableEiDomain;
+      VectorXf tableIIMFPEiDomain;
       // Range of allowed SE initial energies on output
-      VectorXd energyRangeSE0;
+      VectorXf energyRangeSE0;
 
       // temp? IIMFP multiplier
       double rateMult;

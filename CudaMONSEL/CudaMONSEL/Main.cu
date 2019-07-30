@@ -138,7 +138,7 @@ __global__ void testLibraryCuda()
    StackTest::testOne();
 }
 
-const unsigned int W = 80, H = 128;
+const unsigned int W = 80, H = 64;
 const unsigned int TX = 16, TY = 16;
 dim3 blockSize(TX, TY); // Equivalent to dim3 blockSize(TX, TY, 1);
 unsigned int bx = (W + blockSize.x - 1) / blockSize.x;

@@ -23,16 +23,16 @@ namespace EdgeEnergy
    {
    }
 
-   //double compute(XRayTransition xrt)
+   //float compute(XRayTransition xrt)
    //{
    //   return compute(xrt.getDestination());
    //}
 
    // https://www.oreilly.com/library/view/c-cookbook/0596007612/ch03s06.html
-   static double sciToDub(const std::string& str)
+   static float sciToDub(const std::string& str)
    {
       std::stringstream ss(str);
-      double d = 0;
+      float d = 0;
       ss >> d;
 
       if (ss.fail()) {
@@ -61,7 +61,7 @@ namespace EdgeEnergy
             int z = std::stoi((*loop)[0]);
             if (z != idx + 1) printf("loadxionUis: wrong line %d\n", z);
             for (int k = 1; k < (*loop).size(); ++k) {
-               double cur = sciToDub((*loop)[k]);
+               float cur = sciToDub((*loop)[k]);
                Uis[z].push_back(cur);
             }
             ++idx;
@@ -80,7 +80,7 @@ namespace EdgeEnergy
    {
    }
 
-   double DiracHartreeSlaterIonizationEnergies::compute(const AtomicShellT& shell) const
+   float DiracHartreeSlaterIonizationEnergies::compute(const AtomicShellT& shell) const
    {
       if (Uis.empty()) printf("DTSAEdgeEnergy::compute: DTSAEdgeEnergies.empty()\n");
       return ToSI::eV(Uis[shell.getElement().getAtomicNumber()][shell.getShell()]);
@@ -111,7 +111,7 @@ namespace EdgeEnergy
          int idx = 0;
          for (CSVIterator loop(file); loop != CSVIterator(); ++loop) {
             for (int k = 0; k < (*loop).size(); ++k) {
-               double cur = sciToDub((*loop)[k]);
+               float cur = sciToDub((*loop)[k]);
                NISTEdgeEnergies[idx][k] = cur;
             }
             ++idx;
@@ -127,7 +127,7 @@ namespace EdgeEnergy
    {
    }
 
-   double NISTEdgeEnergy::compute(const AtomicShellT& shell) const
+   float NISTEdgeEnergy::compute(const AtomicShellT& shell) const
    {
       if (NISTEdgeEnergies.empty()) printf("DTSAEdgeEnergy::compute: DTSAEdgeEnergies.empty()\n");
       int an = shell.getElement().getAtomicNumber();
@@ -163,7 +163,7 @@ namespace EdgeEnergy
          for (CSVIterator loop(file); loop != CSVIterator(); ++loop) {
             ChantlerEdgeEnergies[idx].reserve((*loop).size());
             for (int k = 0; k < (*loop).size(); ++k) {
-               double cur = sciToDub((*loop)[k]);
+               float cur = sciToDub((*loop)[k]);
                if (cur) ChantlerEdgeEnergies[idx].push_back(ToSI::eV(cur));
             }
             ++idx;
@@ -190,7 +190,7 @@ namespace EdgeEnergy
       return -1;
    }
 
-   double ChantlerEdgeEnergy::compute(const AtomicShellT& shell) const
+   float ChantlerEdgeEnergy::compute(const AtomicShellT& shell) const
    {
       if (ChantlerEdgeEnergies.empty()) printf("ChantlerEdgeEnergy::compute ChantlerEdgeEnergies empty!\n");
       int an = shell.getElement().getAtomicNumber();
@@ -216,9 +216,9 @@ namespace EdgeEnergy
    WernishEdgeEnergy::WernishEdgeEnergy() : EdgeEnergy("Wernisch et al., 1984", "Wernisch et al., 1984 - Taken from Markowitz in the Handbook of X-ray Spectroscopy") {
    }
 
-   double WernishEdgeEnergy::compute(const AtomicShellT& shell) const
+   float WernishEdgeEnergy::compute(const AtomicShellT& shell) const
    {
-      double z = shell.getElement().getAtomicNumber();
+      float z = shell.getElement().getAtomicNumber();
       if (!isSupported(shell)) printf(StringT("Unsupported shell " + StringT(shell.toString()) + " in " + toString() + "\n").c_str());
       if (shell.getShell() == AtomicShell::K) return ToSI::keV(-1.304e-1 + z * (-2.633e-3 + z * (9.718e-3 + z * 4.144e-5)));
       if (shell.getShell() == AtomicShell::LI) return ToSI::keV(-4.506e-1 + z * (1.566e-2 + z * (7.599e-4 + z * 1.792e-5)));
@@ -267,7 +267,7 @@ namespace EdgeEnergy
             if ((*loop).size()) {
                DTSAEdgeEnergies[idx].reserve((*loop).size());
                for (int k = 0; k < (*loop).size(); ++k) {
-                  double cur = sciToDub((*loop)[k]);
+                  float cur = sciToDub((*loop)[k]);
                   if (cur) DTSAEdgeEnergies[idx].push_back(cur);
                }
                ++idx;
@@ -284,7 +284,7 @@ namespace EdgeEnergy
    {
    }
 
-   double DTSAEdgeEnergy::compute(const AtomicShellT& shell) const
+   float DTSAEdgeEnergy::compute(const AtomicShellT& shell) const
    {
       StringT shellinfo(shell.toString());
       if (DTSAEdgeEnergies.empty()) printf("DTSAEdgeEnergy::compute: DTSAEdgeEnergies.empty()\n");
@@ -310,7 +310,7 @@ namespace EdgeEnergy
    {
    }
 
-   double SuperSetEdgeEnergy::compute(const AtomicShellT& shell) const
+   float SuperSetEdgeEnergy::compute(const AtomicShellT& shell) const
    {
       try {
          return Chantler2005.compute(shell);

@@ -16,7 +16,7 @@ namespace EdgeEnergy
 
    public:
       AlgorithmClassT const * const * getAllImplementations() const override;
-      virtual double compute(const AtomicShellT& shell) const = 0;
+      virtual float compute(const AtomicShellT& shell) const = 0;
       virtual bool isSupported(const AtomicShellT& shell) const = 0;
    };
 
@@ -24,7 +24,7 @@ namespace EdgeEnergy
    {
    public:
       DiracHartreeSlaterIonizationEnergies();
-      double compute(const AtomicShellT& shell) const override;
+      float compute(const AtomicShellT& shell) const override;
       bool isSupported(const AtomicShellT& shell) const override;
       static void loadxionUis();
 
@@ -36,7 +36,7 @@ namespace EdgeEnergy
    {
    public:
       NISTEdgeEnergy();
-      double compute(const AtomicShellT& shell) const override;
+      float compute(const AtomicShellT& shell) const override;
       bool isSupported(const AtomicShellT& shell) const override;
       static void loadNISTxrtdb();
 
@@ -48,7 +48,7 @@ namespace EdgeEnergy
    {
    public:
       ChantlerEdgeEnergy();
-      double compute(const AtomicShellT& shell) const override;
+      float compute(const AtomicShellT& shell) const override;
       bool isSupported(const AtomicShellT& shell) const override;
       static void loadFFastEdgeDB();
 
@@ -60,7 +60,7 @@ namespace EdgeEnergy
    {
    public:
       WernishEdgeEnergy();
-      double compute(const AtomicShellT& shell) const override;
+      float compute(const AtomicShellT& shell) const override;
       bool isSupported(const AtomicShellT& shell) const override;
    };
 
@@ -68,7 +68,7 @@ namespace EdgeEnergy
    {
    public:
       DTSAEdgeEnergy();
-      double compute(const AtomicShellT& shell) const override;
+      float compute(const AtomicShellT& shell) const override;
       bool isSupported(const AtomicShellT& shell) const override;
       static void loadEdgeEnergies();
 
@@ -80,7 +80,7 @@ namespace EdgeEnergy
    {
    public:
       SuperSetEdgeEnergy();
-      double compute(const AtomicShellT& shell) const override;
+      float compute(const AtomicShellT& shell) const override;
       bool isSupported(const AtomicShellT& shell) const override;
    };
 

@@ -40,7 +40,7 @@ namespace LinesOnLayers
    __global__ void verifyNUTable1d(const char* fn)
    {
       const NUTableInterpolationT* table = NUTableInterpolation::getInstance(fn);
-      const VectorXd& data = table->gettable1d();
+      const VectorXf& data = table->gettable1d();
       printf("GPU %s\n", fn);
       for (auto v : data) {
          printf("%.5e ", v);
@@ -51,7 +51,7 @@ namespace LinesOnLayers
    __global__ void verifyNUTable2d(const char* fn, const int r)
    {
       const NUTableInterpolationT* table = NUTableInterpolation::getInstance(fn);
-      const MatrixXd& data = table->gettable2d();
+      const MatrixXf& data = table->gettable2d();
       printf("GPU %s: row %d\n", fn, r);
       for (auto v : data[r]) {
          printf("%.5e ", v);
@@ -107,7 +107,7 @@ namespace LinesOnLayers
       checkCudaErrors(cudaGetLastError());
       checkCudaErrors(cudaFree(d_fn));
       const NUTableInterpolationT* table0 = NUTableInterpolation::getInstance(fn);
-      const VectorXd& data0 = table0->gettable1d();
+      const VectorXf& data0 = table0->gettable1d();
       printf("CPU %s\n", fn);
       for (auto v : data0) {
          printf("%.5e ", v);
@@ -123,7 +123,7 @@ namespace LinesOnLayers
       checkCudaErrors(cudaGetLastError());
       checkCudaErrors(cudaFree(d_fn));
       const NUTableInterpolationT* table1 = NUTableInterpolation::getInstance(fn);
-      const MatrixXd& data1 = table1->gettable2d();
+      const MatrixXf& data1 = table1->gettable2d();
       printf("CPU %s: row %d\n", fn, 0);
       for (auto v : data1[0]) {
          printf("%.5e ", v);

@@ -1102,7 +1102,7 @@ namespace Element
       return (an > 0) && (an <= numAtomicWeight) ? *mAllElements[an - 1] : None;
    }
 
-   __host__ __device__ double getAtomicWeight(int atomicNo)
+   __host__ __device__ float getAtomicWeight(int atomicNo)
    {
       if (atomicNo <= 0 || atomicNo >= numAtomicWeight) {
          printf("invalid atmoic number: %d\n", atomicNo);
@@ -1123,7 +1123,7 @@ namespace Element
 #endif
    }
 
-   //__device__ double getAtomicWeightDevice(int atomicNo)
+   //__device__ float getAtomicWeightDevice(int atomicNo)
    //{
    //   if (atomicNo <= 0 || atomicNo >= numAtomicWeight) {
    //      printf("invalid atmoic number: %d\n", atomicNo);
@@ -1151,7 +1151,7 @@ namespace Element
    //   return res;
    //}
 
-   //double Element::meanIonizationPotential(int atomicNo) {
+   //float Element::meanIonizationPotential(int atomicNo) {
    //   try {
    //      return MeanIonizationPotential.Berger64.compute(Element.byAtomicNumber(atomicNo));
    //   }
@@ -1165,12 +1165,12 @@ namespace Element
       return mAtomicNumber;
    }
 
-   __host__ __device__ double Element::getAtomicWeight() const
+   __host__ __device__ float Element::getAtomicWeight() const
    {
       return ::Element::getAtomicWeight(mAtomicNumber);
    }
 
-   __host__ __device__ double Element::getMass() const
+   __host__ __device__ float Element::getMass() const
    {
       return ToSI::AMU(::Element::getAtomicWeight(mAtomicNumber));
    }
@@ -1190,7 +1190,7 @@ namespace Element
       return mElementNames[el];
    }
 
-   //double meanIonizationPotential()
+   //float meanIonizationPotential()
    //{
    //   try {
    //      return MeanIonizationPotential.Berger64.compute(this);
@@ -1200,17 +1200,17 @@ namespace Element
    //   }
    //}
 
-   //public double energyLoss(double eK) {
+   //public float energyLoss(float eK) {
    //   return BetheElectronEnergyLoss.JoyLuo1989.compute(this, eK);
    //}
    //
 
-   //public double massAbsorptionCoefficient(double energy) {
+   //public float massAbsorptionCoefficient(float energy) {
    //   return AlgorithmUser.getDefaultMAC().compute(this, energy);
    //}
    //
 
-   //public double massAbsorptionCoefficient(XRayTransition xrt)
+   //public float massAbsorptionCoefficient(XRayTransition xrt)
    //throws EPQException{
    //   return AlgorithmUser.getDefaultMAC().compute(this, xrt);
    //}
@@ -1253,7 +1253,7 @@ namespace Element
       return mElementNames[mAtomicNumber];
    }
 
-   __host__ __device__ double Element::getIonizationEnergy() const
+   __host__ __device__ float Element::getIonizationEnergy() const
    {
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
       if (d_IonizationEnergy[mAtomicNumber - 1] <= 0) {
@@ -1261,7 +1261,7 @@ namespace Element
          return -1.0;
       }
 
-      const double res = (mAtomicNumber - 1 <= numIonizationEnergy) ? d_IonizationEnergy[mAtomicNumber - 1] : -1.0;
+      const float res = (mAtomicNumber - 1 <= numIonizationEnergy) ? d_IonizationEnergy[mAtomicNumber - 1] : -1.0;
       if (res == -1.0) {
          printf("Element::getIonizationEnergy: The ionization energy is not available for %s\n", toAbbrev());
       }
@@ -1272,7 +1272,7 @@ namespace Element
          printf("Element::getIonizationEnergy: load mIonizationEnergy by calling readIonizationEnergy first\n");
       }
 
-      const double res = (mAtomicNumber - 1 <= numIonizationEnergy) ? mIonizationEnergy[mAtomicNumber - 1] : -1.0;
+      const float res = (mAtomicNumber - 1 <= numIonizationEnergy) ? mIonizationEnergy[mAtomicNumber - 1] : -1.0;
       if (res == -1.0) {
          printf("Element::getIonizationEnergy: The ionization energy is not available for %s\n", toAbbrev());
       }

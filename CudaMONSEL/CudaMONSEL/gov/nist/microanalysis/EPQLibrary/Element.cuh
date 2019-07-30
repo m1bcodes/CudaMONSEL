@@ -264,8 +264,8 @@ namespace Element
       bool operator<(const Element&) const;
 
       __host__ __device__ int getAtomicNumber() const;
-      __host__ __device__ double getAtomicWeight() const;
-      __host__ __device__ double getMass() const;
+      __host__ __device__ float getAtomicWeight() const;
+      __host__ __device__ float getMass() const;
       __host__ __device__ char const * toAbbrev() const;
 
       bool isValid() const;
@@ -273,7 +273,7 @@ namespace Element
       __host__ __device__ unsigned int hashCode() const;
       bool equals(const Element& el);
       char const * toString() const;
-      __host__ __device__ double getIonizationEnergy() const;
+      __host__ __device__ float getIonizationEnergy() const;
 
    private:
       const Element& readResolve();
@@ -514,11 +514,11 @@ namespace Element
    int atomicNumberForName(char const *);
    const Element& byName(char const *);
    const Element& byAtomicNumber(int);
-   __host__ __device__ double getAtomicWeight(int);
-   //__device__ double getAtomicWeightDevice(int);
+   __host__ __device__ float getAtomicWeight(int);
+   //__device__ float getAtomicWeightDevice(int);
    Element const * const * allElements();
    //std::vector<const Element*> range(const Element& min, const Element& max);
-   //double meanIonizationPotential(int atomicNo);
+   //float meanIonizationPotential(int atomicNo);
 
    __host__ __device__ char const * toAbbrev(int atomicNo);
    char const * toString(int el);

@@ -12,9 +12,9 @@ namespace BrowningEmpiricalCrossSection
 {
    __host__ __device__ BrowningEmpiricalCrossSection::BrowningEmpiricalCrossSection(const ElementT& elm) :
       mElement(elm),
-      mZp17(powf(elm.getAtomicNumber(), 1.7)),
-      mZp2(powf(elm.getAtomicNumber(), 2.0)),
-      mZp3(powf(elm.getAtomicNumber(), 3.0))
+      mZp17(::powf(elm.getAtomicNumber(), 1.7)),
+      mZp2(::powf(elm.getAtomicNumber(), 2.0)),
+      mZp3(::powf(elm.getAtomicNumber(), 3.0))
    {
    }
 

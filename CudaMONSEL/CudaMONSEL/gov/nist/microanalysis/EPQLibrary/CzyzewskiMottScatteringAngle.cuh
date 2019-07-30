@@ -42,18 +42,17 @@ namespace CzyzewskiMottScatteringAngle
          mCummulativeDF[r].set_data(data, len);
       }
 
-      __host__ __device__ const VectorXd& getMeanFreePath() const;
-      __host__ __device__ const VectorXd& getTotalCrossSection() const;
-      __host__ __device__ const MatrixXd& getCummulativeDF() const;
+      __host__ __device__ const VectorXf& getMeanFreePath() const;
+      __host__ __device__ const VectorXf& getTotalCrossSection() const;
+      __host__ __device__ const MatrixXf& getCummulativeDF() const;
 
    private:
       __host__ __device__ double scatteringAngleForSpecialEnergy(int ei, double rand) const;
 
-   private:
       const ElementT& mElement;
-      VectorXd mMeanFreePath;
-      VectorXd mTotalCrossSection;
-      MatrixXd mCummulativeDF;
+      VectorXf mMeanFreePath;
+      VectorXf mTotalCrossSection;
+      MatrixXf mCummulativeDF;
       const ScreenedRutherfordScatteringAngleT& mRutherford;
    };
    

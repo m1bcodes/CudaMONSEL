@@ -17,11 +17,11 @@ namespace TabulatedInelasticSM
       tableReducedDeltaE(NUTableInterpolation::getInstance(tables[1])),
       tableTheta(NUTableInterpolation::getInstance(tables[2])),
       tableSEE0((methodSE == 2) || (methodSE == 3) ? NUTableInterpolation::getInstance(tables[3]) : nullptr),
-      energyRangeSE0((methodSE == 2) || (methodSE == 3) ? tableSEE0->getrange() : VectorXd()),
+      energyRangeSE0((methodSE == 2) || (methodSE == 3) ? tableSEE0->getrange() : VectorXf()),
       rateMult(1.), 
       E0fromDispersion(false),
-      kEa(VectorXd(1, 0)), 
-      interpInput(VectorXd(3, 0)),
+      kEa(VectorXf(1, 0)), 
+      interpInput(VectorXf(3, 0)),
       defaultRatios(true)
    {
       ///* Read interpolation tables into memory */
@@ -64,8 +64,8 @@ namespace TabulatedInelasticSM
       tableSEE0((methodSE == 2) || (methodSE == 3) ? NUTableInterpolation::getInstance(tables[3]) : nullptr),
       rateMult(1.),
       E0fromDispersion(false),
-      kEa(VectorXd(1, 0)),
-      interpInput(VectorXd(3, 0)),
+      kEa(VectorXf(1, 0)),
+      interpInput(VectorXf(3, 0)),
       defaultRatios(true)
    {
       setMaterial(&mat);

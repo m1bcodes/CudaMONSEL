@@ -305,9 +305,74 @@ namespace NULagrangeInterpolation
       return d1(y.data(), y.size(), xtemp.data(), xtemp.size(), order, x[0]);
    }
 
-   __host__ __device__ static VectorXd neville(const float f[], int flen, const double xsamp[], int xsamplen, const int location[], int locationlen, int order, double x)
+   __host__ __device__ static VectorXi locate(float x, const float xsamp[], int xsamplen, int order)
    {
-      int offset = location[0];
+      /* Use bisection to find the xsamp value nearest x. */
+
+      /* Initialize limits between which the desired index must lie */
+      int lowlim = -1;
+      int uplim = xsamplen;
+      int maxindex = uplim - 1;
+      int midpoint;
+      int nindex; // nearest index
+      bool ascending = xsamp[maxindex] > xsamp[0];
+
+      while ((uplim - lowlim) > 1) {
+         midpoint = (uplim + lowlim) >> 1;
+         if ((x > xsamp[midpoint]) == ascending)
+            lowlim = midpoint;
+         else
+            uplim = midpoint;
+      }
+
+      if (lowlim < 0) {
+         int tmp[] = { 0, 0 };
+         return VectorXi(tmp, tmp + 2);
+      }
+      else if (uplim > maxindex) {
+         int tmp[] = { maxindex - order, maxindex };
+         return VectorXi(tmp, tmp + 2);
+      }
+      if (ascending) {
+         if ((x - xsamp[lowlim]) <= (xsamp[uplim] - x))
+            nindex = lowlim;
+         else
+            nindex = uplim;
+      }
+      else if ((xsamp[lowlim] - x) <= (x - xsamp[uplim]))
+         nindex = lowlim;
+      else
+         nindex = uplim;
+      /*
+      * At this point lowlim and uplim differ by 1. x is between xsamp[lowlim]
+      * and xsamp[uplim]. If order>1 these 2 points are not enough. We need
+      * order+1 points for our interpolation. We widen the range by adding
+      * points either above or below, adding them in order of proximity to the
+      * original interval.
+      */
+      int firstInd = lowlim; // Initialize
+      int lastInd = uplim;
+
+      while (((lastInd - firstInd) < order) && (firstInd > 0) && (lastInd < maxindex))
+         if (((((xsamp[lowlim] - xsamp[firstInd - 1]) + xsamp[uplim]) - xsamp[lastInd + 1]) >= 0) == ascending)
+            lastInd += 1;
+         else
+            firstInd -= 1;
+      if (lastInd >= maxindex) {
+         int tmp[] = { maxindex - order, nindex }; // Extrapolating off high index end of table
+         return VectorXi(tmp, tmp + 2);
+      }
+      else if (firstInd <= 0) {
+         int tmp[] = { 0, nindex }; // Extrapolating off the low end
+         return VectorXi(tmp, tmp + 2);
+      }
+      int tmp[] = { firstInd, nindex };
+      return VectorXi(tmp, tmp + 2);
+   }
+
+   __host__ __device__ static VectorXf neville(const float f[], int flen, const float xsamp[], int xsamplen, const int location[], int locationlen, int order, float x)
+   {
+      const int offset = location[0];
       int ns = location[1] - offset; // Nearest grid point
 
       VectorXf c(f + offset, f + offset + order + 1);
@@ -330,11 +395,11 @@ namespace NULagrangeInterpolation
          dy = ((2 * ns) < (order - 1 - m)) ? c[ns + 1] : d[ns--];
          y += dy;
       }
-      VectorXd res(2, 0); res[0] = y; res[1] = dy;
+      VectorXf res(2, 0); res[0] = y; res[1] = dy;
       return res;
    }
 
-   __host__ __device__ VectorXd d1(const float fsamp[], int fsamplen, const double xsamp[], int xsamplen, int order, double x)
+   __host__ __device__ VectorXf d1(const float fsamp[], int fsamplen, const float xsamp[], int xsamplen, int order, float x)
    {
       /*
       * The interpolation is performed by a call to neville, a separate static
@@ -352,7 +417,7 @@ namespace NULagrangeInterpolation
       return neville(fsamp, fsamplen, xsamp, xsamplen, location.data(), location.size(), order, x);
    }
 
-   __host__ __device__ VectorXd d2(const MatrixXf& f, const MatrixXd& xsamp, int order, const double x[], int xlen)
+   __host__ __device__ VectorXf d2(const MatrixXf& f, const MatrixXf& xsamp, int order, const float x[], int xlen)
    {
       /*
       * N-dimensional interpolation is performed by calling the N-1 dimensional
@@ -364,20 +429,20 @@ namespace NULagrangeInterpolation
       if (f.size() < (order + 1))
          printf("NULagrangeInterpolation d2: 0 < order <= table.length-1 is required.\n");
 
-      int index0 = locate(x[0], xsamp[0].data(), xsamp[0].size(), order)[0];
+      const int index0 = locate(x[0], xsamp[0].data(), xsamp[0].size(), order)[0];
 
       /* Generate and populate an array of function values at x2 */
-      VectorXd y(order + 1, 0);
+      VectorXf y(order + 1, 0);
       for (int i = 0; i <= order; i++)
          y[i] = d1(f[index0 + i].data(), f[index0 + i].size(), xsamp[1].data(), xsamp[1].size(), order, x[1])[0];
       /* Make corresponding x array */
-      VectorXd xtemp(xsamp[0].data() + index0, xsamp[0].data() + index0 + order + 1);
+      VectorXf xtemp(xsamp[0].data() + index0, xsamp[0].data() + index0 + order + 1);
 
       /* Interpolate these to find the value at x1 */
       return d1(y.data(), y.size(), xtemp.data(), xtemp.size(), order, x[0]);
    }
 
-   __host__ __device__ VectorXd d3(const Matrix3DXf& f, const MatrixXd& xsamp, int order, const double x[], int xlen)
+   __host__ __device__ VectorXf d3(const Matrix3DXf& f, const MatrixXf& xsamp, int order, const float x[], int xlen)
    {
       /*
       * N-dimensional interpolation is performed by calling the N-1 dimensional
@@ -389,16 +454,38 @@ namespace NULagrangeInterpolation
       if (f.size() < (order + 1))
          printf("NULagrangeInterpolation d3: 0 < order <= table.length-1 is required.\n");
 
-      int index0 = locate(x[0], xsamp[0].data(), xsamp[0].size(), order)[0];
+      const int index0 = locate(x[0], xsamp[0].data(), xsamp[0].size(), order)[0];
 
       /* Generate and populate an array of function values at x2,x3 */
-      VectorXd y(order + 1, 0);
-      double reducedx[] = { x[1], x[2] };
-      MatrixXd reducedxsamp(2, VectorXd()); reducedxsamp[0] = xsamp[1]; reducedxsamp[1] = xsamp[2];
+      VectorXf y(order + 1, 0);
+      float reducedx[] = { x[1], x[2] };
+      MatrixXf reducedxsamp(2, VectorXf()); reducedxsamp[0] = xsamp[1]; reducedxsamp[1] = xsamp[2];
       for (int i = 0; i <= order; i++)
          y[i] = d2(f[index0 + i], reducedxsamp, order, reducedx, 2)[0];
       /* Make corresponding x array */
-      VectorXd xtemp(xsamp[0].data(), xsamp[0].data() + order + 1);
+      VectorXf xtemp(xsamp[0].data(), xsamp[0].data() + order + 1);
+
+      /* Interpolate these to find the value at x1 */
+      return d1(y.data(), y.size(), xtemp.data(), xtemp.size(), order, x[0]);
+   }
+
+   __host__ __device__ VectorXf d4(const Matrix4DXf& f, const MatrixXf& xsamp, int order, const float x[], int xlen)
+   {
+      if (xlen < 4)
+         printf("NULagrangeInterpolation d4: Input array is too short.\n");
+      if (f.size() < (order + 1))
+         printf("NULagrangeInterpolation d4: 0 < order <= table.length-1 is required.\n");
+
+      const int index0 = locate(x[0], xsamp[0].data(), xsamp[0].size(), order)[0];
+
+      /* Generate and populate an array of function values at x2,x3,x4 */
+      VectorXf y(order + 1, 0);
+      float reducedx[] = { x[1], x[2], x[3] };
+      MatrixXf reducedxsamp(3, VectorXf()); reducedxsamp[0] = xsamp[1]; reducedxsamp[1] = xsamp[2]; reducedxsamp[2] = xsamp[3];
+      for (int i = 0; i <= order; i++)
+         y[i] = d3(f[index0 + i], reducedxsamp, order, reducedx, 3)[0];
+      /* Make corresponding x array */
+      VectorXf xtemp(xsamp[0].data() + index0, xsamp[0].data() + index0 + order + 1);
 
       /* Interpolate these to find the value at x1 */
       return d1(y.data(), y.size(), xtemp.data(), xtemp.size(), order, x[0]);
