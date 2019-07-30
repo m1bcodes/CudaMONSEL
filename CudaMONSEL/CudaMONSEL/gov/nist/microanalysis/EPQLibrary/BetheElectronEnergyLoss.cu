@@ -19,15 +19,15 @@ namespace BetheElectronEnergyLoss
 
    __host__ __device__ JoyLuoBetheElectronEnergyLoss::JoyLuoBetheElectronEnergyLoss() :
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-      BetheElectronEnergyLoss("Joy-Luo", *Reference::d_NullReference), K(-(785 * ToSI::EV * ::pow(ToSI::CM, 3.0)) / (ToSI::ANGSTROM * ToSI::GRAM))
+      BetheElectronEnergyLoss("Joy-Luo", *Reference::d_NullReference), K(-(785 * ToSI::EV * ::powf(ToSI::CM, 3.0)) / (ToSI::ANGSTROM * ToSI::GRAM))
 #else
-      BetheElectronEnergyLoss("Joy-Luo", Reference::GoldsteinBook), K(-(785 * ToSI::EV * ::pow(ToSI::CM, 3.0)) / (ToSI::ANGSTROM * ToSI::GRAM))
+      BetheElectronEnergyLoss("Joy-Luo", Reference::GoldsteinBook), K(-(785 * ToSI::EV * ::powf(ToSI::CM, 3.0)) / (ToSI::ANGSTROM * ToSI::GRAM))
 #endif
    {
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
       mK.resize(Element::elmEndOfElements);
       for (int z = Element::elmH; z < Element::elmEndOfElements; ++z)
-         mK[z] = 0.731 + 0.0688 * ::logf(z)/::logf(10);
+         mK[z] = 0.731f + 0.0688f * ::logf(z)/::logf(10);
 #else
       mK.resize(Element::elmEndOfElements);
       for (int z = Element::elmH; z < Element::elmEndOfElements; ++z)
@@ -35,13 +35,13 @@ namespace BetheElectronEnergyLoss
 #endif
    }
 
-   __host__ __device__ double JoyLuoBetheElectronEnergyLoss::compute(const ElementT& el, double eB) const
+   __host__ __device__ float JoyLuoBetheElectronEnergyLoss::compute(const ElementT& el, float eB) const
    {
       const int z = el.getAtomicNumber();
       const MeanIonizationPotentialT* mip = (MeanIonizationPotentialT*)getAlgorithm("MeanIonizationPotential");
-      const double j = mip->compute(el);
-      const double j_star = j / (1.0 + (mK[z] * j / eB));
-      return ((K * z) / (el.getAtomicWeight() * FromSI::eV(eB))) * ::log((1.166 * eB) / j_star);
+      const float j = mip->compute(el);
+      const float j_star = j / (1.0f + (mK[z] * j / eB));
+      return ((K * z) / (el.getAtomicWeight() * FromSI::eV(eB))) * ::logf((1.166f * eB) / j_star);
    }
 
    const JoyLuoBetheElectronEnergyLoss JoyLuo1989Ref;
@@ -57,19 +57,19 @@ namespace BetheElectronEnergyLoss
    Reference::CrudeReference Leipzig1930CR("Bethe H. Ann. Phys. (Leipzig) 1930; 5: 325");
    Bethe30ModElectronEnergyLoss::Bethe30ModElectronEnergyLoss() :
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-      BetheElectronEnergyLoss("Bethe(Modified)", *Reference::d_NullReference), K(-(785 * ToSI::EV * ::pow(ToSI::CM, 3.0)) / (ToSI::ANGSTROM * ToSI::GRAM))
+      BetheElectronEnergyLoss("Bethe(Modified)", *Reference::d_NullReference), K(-(785 * ToSI::EV * ::powf(ToSI::CM, 3.0)) / (ToSI::ANGSTROM * ToSI::GRAM))
 #else
-      BetheElectronEnergyLoss("Bethe(Modified)", Leipzig1930CR), K(-(785 * ToSI::EV * ::pow(ToSI::CM, 3.0)) / (ToSI::ANGSTROM * ToSI::GRAM))
+      BetheElectronEnergyLoss("Bethe(Modified)", Leipzig1930CR), K(-(785 * ToSI::EV * ::powf(ToSI::CM, 3.0)) / (ToSI::ANGSTROM * ToSI::GRAM))
 #endif
    {
    }
 
-   __host__ __device__ double Bethe30ModElectronEnergyLoss::compute(const ElementT& el, double eB) const
+   __host__ __device__ float Bethe30ModElectronEnergyLoss::compute(const ElementT& el, float eB) const
    {
       const MeanIonizationPotentialT* mip = (MeanIonizationPotentialT*)getAlgorithm("MeanIonizationPotential");
-      const double e_eV = FromSI::eV(eB);
-      const double j = FromSI::eV(mip->compute(el));
-      double f = 1.166 * e_eV / j;
+      const float e_eV = FromSI::eV(eB);
+      const float j = FromSI::eV(mip->compute(el));
+      float f = 1.166 * e_eV / j;
       // The low energy modification...
       if (f < 1.1)
          f = 1.1;
@@ -87,20 +87,20 @@ namespace BetheElectronEnergyLoss
    */
    __host__ __device__ Bethe30ElectronEnergyLoss::Bethe30ElectronEnergyLoss() :
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-      BetheElectronEnergyLoss("Bethe(Modified)", *Reference::d_NullReference), K(-(785 * ToSI::EV * ::pow(ToSI::CM, 3.0)) / (ToSI::ANGSTROM * ToSI::GRAM))
+      BetheElectronEnergyLoss("Bethe(Modified)", *Reference::d_NullReference), K(-(785 * ToSI::EV * ::powf(ToSI::CM, 3.0)) / (ToSI::ANGSTROM * ToSI::GRAM))
 #else
-      BetheElectronEnergyLoss("Bethe(Modified)", Leipzig1930CR), K(-(785 * ToSI::EV * ::pow(ToSI::CM, 3.0)) / (ToSI::ANGSTROM * ToSI::GRAM))
+      BetheElectronEnergyLoss("Bethe(Modified)", Leipzig1930CR), K(-(785 * ToSI::EV * ::powf(ToSI::CM, 3.0)) / (ToSI::ANGSTROM * ToSI::GRAM))
 #endif
    {
    }
 
-   __host__ __device__ double Bethe30ElectronEnergyLoss::compute(const ElementT& el, double eB) const
+   __host__ __device__ float Bethe30ElectronEnergyLoss::compute(const ElementT& el, float eB) const
    {
       const MeanIonizationPotentialT* mip = (MeanIonizationPotentialT*)getAlgorithm("MeanIonizationPotential");
-      const double e_eV = FromSI::eV(eB);
-      const double j = FromSI::eV(mip->compute(el));
-      const double f = 1.166 * e_eV / j;
-      return ((K * el.getAtomicNumber()) / (el.getAtomicWeight() * e_eV)) * ::log(f);
+      const float e_eV = FromSI::eV(eB);
+      const float j = FromSI::eV(mip->compute(el));
+      const float f = 1.166f * e_eV / j;
+      return ((K * el.getAtomicNumber()) / (el.getAtomicWeight() * e_eV)) * ::logf(f);
    }
 
    const Bethe30ElectronEnergyLoss Bethe1930StrictRef;
@@ -127,17 +127,17 @@ namespace BetheElectronEnergyLoss
    * @author nritchie
    * @version 1.0
    */
-   __host__ __device__ StragglingModified::StragglingModified(const BetheElectronEnergyLoss& base, double percent) :
+   __host__ __device__ StragglingModified::StragglingModified(const BetheElectronEnergyLoss& base, float percent) :
       BetheElectronEnergyLoss("Straggling[" + base.getName() + "]", base.getReferenceObj()),
       mBethe(base),
       mPercent(percent)
    {
    }
 
-   __host__ __device__ double StragglingModified::compute(const ElementT& elm, double eB) const
+   __host__ __device__ float StragglingModified::compute(const ElementT& elm, float eB) const
    {
-      const double bee = mBethe.compute(elm, eB);
-      return ::fmin(0.0, bee * (1.0 + Random::generateGaussianNoise(0, 1) * mPercent));
+      const float bee = mBethe.compute(elm, eB);
+      return ::fminf(0.0f, bee * (1.0f + Random::generateGaussianNoise(0, 1) * mPercent));
    }
 
    static const AlgorithmClassT* mAllImplementations[] = {

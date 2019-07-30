@@ -7,16 +7,14 @@
 
 namespace JoyLuoNieminenCSD
 {
-   __host__ __device__ JoyLuoNieminenCSD::JoyLuoNieminenCSD(SEmaterialT& mat, double breakE) : mat(mat)
+   __host__ __device__ JoyLuoNieminenCSD::JoyLuoNieminenCSD(SEmaterialT& mat, float breakE) : mat(mat), breakE(breakE)
    {
-      if (breakE > (mat.getWorkfunction() + ToSI::eV(1.)))
-         this->breakE = breakE;
-      else
+      if (!(breakE > (mat.getWorkfunction() + ToSI::eV(1.))))
          printf("JoyLuoNieminenCSD::JoyLuoNieminenCSD: Supplied breakpoint energy is too small.");
       setMaterial(&mat);
    }
 
-   JoyLuoNieminenCSD::JoyLuoNieminenCSD(MaterialT& mat, double bh, double breakE) : mat(mat)
+   JoyLuoNieminenCSD::JoyLuoNieminenCSD(MaterialT& mat, float bh, float breakE) : mat(mat)
    {
       if (breakE > (bh + ToSI::eV(1.)))
          this->breakE = breakE;
@@ -25,7 +23,7 @@ namespace JoyLuoNieminenCSD
       setMaterial(mat, bh);
    }
 
-   void JoyLuoNieminenCSD::setMaterial(const MaterialT& mat, double bh)
+   void JoyLuoNieminenCSD::setMaterial(const MaterialT& mat, float bh)
    {
       this->mat = mat;
       this->bh = bh;
@@ -51,29 +49,31 @@ namespace JoyLuoNieminenCSD
       if (breakE < bhplus1eV)
          breakE = bhplus1eV;
 
-      int i = 0;
+      unsigned int i = 0;
       for (const auto &el : mat.getElementSet()) {
-         recipJ[i] = 1.166 / (el->getAtomicNumber() < 13 ? MeanIonizationPotential::computeWilson41(*el) : MeanIonizationPotential::computeSternheimer64(*el));
-         beta[i] = 1. - (recipJ[i] * bhplus1eV);
-         coef[i] = 2.01507E-28 * mat.getDensity() * mat.weightFraction(*el, true) * el->getAtomicNumber() / el->getAtomicWeight();
+         recipJ[i] = 1.166f / (el->getAtomicNumber() < 13 ? MeanIonizationPotential::computeWilson41(*el) : MeanIonizationPotential::computeSternheimer64(*el));
+         beta[i] = 1.f - (recipJ[i] * bhplus1eV);
+         coef[i] = 2.01507e-28f * mat.getDensity() * mat.weightFraction(*el, true) * el->getAtomicNumber() / el->getAtomicWeight();
          ++i;
       }
       minEforTracking = bh;
 
       // Determine the proportionality constant
-      gamma = 0.;
+      gamma = 0.f;
       for (int i = 0; i < nce; i++)
-         gamma += coef[i] * ::log((recipJ[i] * breakE) + beta[i]);
-      gamma /= ::pow(breakE, 3.5); // note: breaks if powf is used instead of pow (gamma becomes #1.ind due to division by 0)
-#ifdef _DEBUG
+         gamma += coef[i] * ::logf((recipJ[i] * breakE) + beta[i]);
+      //gamma /= ::pow(breakE, 3.5); // note: breaks if powf is used instead of pow (gamma becomes #1.ind due to division by 0)
+      gamma /= breakE;
+      gamma /= breakE;
+      gamma /= breakE;
+      gamma /= ::sqrtf(breakE);
       if (gamma != gamma) printf("JoyLuoNieminenCSD::init(): gamma is NaN");
-#endif
    }
 
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-   __constant__ static double MaxLossFraction = 0.1;
+   __constant__ static float MaxLossFraction = 0.1;
 #else
-   static double MaxLossFraction = 0.1;
+   static float MaxLossFraction = 0.1;
 #endif
 
    __host__ __device__ double JoyLuoNieminenCSD::compute(double len, const ElectronT *pe) const
@@ -81,34 +81,32 @@ namespace JoyLuoNieminenCSD
       return compute(len, pe->getEnergy());
    }
 
-   __host__ __device__ double JoyLuoNieminenCSD::compute(const double len, const double kE) const
+   __host__ __device__ float JoyLuoNieminenCSD::compute(const float len, const float kE) const
    {
-      if ((nce == 0) || (kE < minEforTracking) || (kE <= 0.))
-         return 0.;
+      if ((nce == 0) || (kE < minEforTracking) || (kE <= 0.f))
+         return 0.f;
       if (kE <= breakE)
-         return (kE / ::pow(1. + (1.5 * gamma * len * kE * ::sqrt(kE)), 2. / 3.)) - kE;
+         return (kE / ::powf(1.f + (1.5f * gamma * len * kE * ::sqrtf(kE)), 2.f / 3.f)) - kE;
 
       // Otherwise, Joy/Luo formula
-      double loss = 0.;
+      float loss = 0.f;
       for (int i = 0; i < nce; i++)
-         loss += coef[i] * ::log((recipJ[i] * kE) + beta[i]);
+         loss += coef[i] * ::logf((recipJ[i] * kE) + beta[i]);
       loss *= len / kE;
 
       if (loss <= (MaxLossFraction * kE))
          return -loss;
-      loss = compute(len / 2., kE); // loss from 1st half of step
-#ifdef _DEBUG
+      loss = compute(len / 2.f, kE); // loss from 1st half of step
       if (loss != loss) printf("JoyLuoNieminenCSD::compute(): loss is NaN");
-#endif
-      return loss + compute(len / 2., kE + loss); // add loss from second half
+      return loss + compute(len / 2.f, kE + loss); // add loss from second half
    }
 
-   double JoyLuoNieminenCSD::getBreakE() const
+   float JoyLuoNieminenCSD::getBreakE() const
    {
       return breakE;
    }
 
-   void JoyLuoNieminenCSD::setBreakE(double breakE)
+   void JoyLuoNieminenCSD::setBreakE(float breakE)
    {
       this->breakE = breakE;
       setMaterial(mat, bh);

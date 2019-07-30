@@ -16,29 +16,29 @@
 namespace NISTMottRS
 {
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-   __constant__ static const double MAX_NISTMOTT = 3.2043531e-15;
-   __constant__ static const double MIN_NISTMOTT = 8.0108827e-18;
+   __constant__ static const float MAX_NISTMOTT = 3.2043531e-15f;
+   __constant__ static const float MIN_NISTMOTT = 8.0108827e-18f;
 
    __constant__ static const int qINTERPOLATIONORDER = 3;
    __constant__ static const int sigmaINTERPOLATIONORDER = 3;
-   __constant__ static const double scale = 2.8002852e-21;
+   __constant__ static const float scale = 2.8002852e-21f;
 
    __constant__ static const int SPWEM_LEN = 61;
    __constant__ static const int X1_LEN = 201;
-   __constant__ static const double DL50 = -39.3657307254;
-   __constant__ static const double PARAM = 0.09985774245;
+   __constant__ static const float DL50 = -39.3657307254f;
+   __constant__ static const float PARAM = 0.09985774245f;
 #else
-   static const double MAX_NISTMOTT = ToSI::keV(20.0);
-   static const double MIN_NISTMOTT = ToSI::keV(0.050);
+   static const float MAX_NISTMOTT = ToSI::keV(20.0);
+   static const float MIN_NISTMOTT = ToSI::keV(0.050);
 
    static const int qINTERPOLATIONORDER = 3;
    static const int sigmaINTERPOLATIONORDER = 3;
-   static const double scale = PhysicalConstants::BohrRadius * PhysicalConstants::BohrRadius;
+   static const float scale = PhysicalConstants::BohrRadius * PhysicalConstants::BohrRadius;
 
    static const int SPWEM_LEN = 61;
    static const int X1_LEN = 201;
-   static const double DL50 = ::log(MIN_NISTMOTT);
-   static const double PARAM = (::log(MAX_NISTMOTT) - DL50) / 60.0;
+   static const float DL50 = ::log(MIN_NISTMOTT);
+   static const float PARAM = (::log(MAX_NISTMOTT) - DL50) / 60.0;
 #endif
 
    static const Reference::Author* al[] = {

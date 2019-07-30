@@ -4,44 +4,44 @@
 namespace FromSI
 {
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-   __constant__ const double KEV = 1.0 / (1.60217653e-19 * 1.0e3); // 1.0 / (PhysicalConstants::ElectronCharge * 1.0e3);
-   __constant__ const double EV = 1.0 / 1.60217653e-19; // 1.0 / PhysicalConstants::ElectronCharge;
-   __constant__ const double GRAM = 1000.0;
-   __constant__ const double CM = 100.0;
+   __constant__ const float KEV = 1.0 / (1.60217653e-19 * 1.0e3); // 1.0 / (PhysicalConstants::ElectronCharge * 1.0e3);
+   __constant__ const float EV = 1.0 / 1.60217653e-19; // 1.0 / PhysicalConstants::ElectronCharge;
+   __constant__ const float GRAM = 1000.0;
+   __constant__ const float CM = 100.0;
 
-   __constant__ const double MICROMETER = 1.0e6;
+   __constant__ const float MICROMETER = 1.0e6;
    //const double AMU = 1.0 / PhysicalConstants.UnifiedAtomicMass;
 
-   __constant__ const double ANGSTROM = 1.0e10;
-   __constant__ const double TORR = 760.0 / 101325.0; // 760.0 / PhysicalConstants::StandardAtmosphere;
+   __constant__ const float ANGSTROM = 1.0e10;
+   __constant__ const float TORR = 760.0 / 101325.0; // 760.0 / PhysicalConstants::StandardAtmosphere;
 
-   __constant__ const double NANO = 1.0e9;
-   __constant__ const double PICO = 1.0e12;
+   __constant__ const float NANO = 1.0e9;
+   __constant__ const float PICO = 1.0e12;
 #else
-   const double KEV = 1.0 / (1.60217653e-19 * 1.0e3); // 1.0 / (PhysicalConstants::ElectronCharge * 1.0e3);
-   const double EV = 1.0 / 1.60217653e-19; // 1.0 / PhysicalConstants::ElectronCharge;
-   const double GRAM = 1000.0;
-   const double CM = 100.0;
+   const float KEV = 1.0 / (1.60217653e-19 * 1.0e3); // 1.0 / (PhysicalConstants::ElectronCharge * 1.0e3);
+   const float EV = 1.0 / 1.60217653e-19; // 1.0 / PhysicalConstants::ElectronCharge;
+   const float GRAM = 1000.0;
+   const float CM = 100.0;
 
-   const double MICROMETER = 1.0e6;
+   const float MICROMETER = 1.0e6;
    //const double AMU = 1.0 / PhysicalConstants.UnifiedAtomicMass;
 
-   const double ANGSTROM = 1.0e10;
-   const double TORR = 760.0 / 101325.0; // 760.0 / PhysicalConstants::StandardAtmosphere;
+   const float ANGSTROM = 1.0e10;
+   const float TORR = 760.0 / 101325.0; // 760.0 / PhysicalConstants::StandardAtmosphere;
 
-   const double NANO = 1.0e9;
-   const double PICO = 1.0e12;
+   const float NANO = 1.0e9;
+   const float PICO = 1.0e12;
 #endif
 
    double Torr(double pascal) {
       return TORR * pascal;
    }
 
-   __host__ __device__ double keV(const double e) {
+   __host__ __device__ float keV(const float e) {
       return e * KEV;
    }
 
-   __host__ __device__ double eV(const double e) {
+   __host__ __device__ float eV(const float e) {
       return e * EV;
    }
 

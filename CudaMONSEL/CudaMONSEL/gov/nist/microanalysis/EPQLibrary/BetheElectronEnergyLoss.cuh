@@ -17,49 +17,49 @@ namespace BetheElectronEnergyLoss
 
       AlgorithmClassT const * const * getAllImplementations() const override;
 
-      __host__ __device__ virtual double compute(const ElementT& elm, double eB) const = 0;
+      __host__ __device__ virtual float compute(const ElementT& elm, float eB) const = 0;
    };
 
    class JoyLuoBetheElectronEnergyLoss : public BetheElectronEnergyLoss
    {
    public:
       __host__ __device__ JoyLuoBetheElectronEnergyLoss();
-      __host__ __device__ double compute(const ElementT& el, double eB) const override;
+      __host__ __device__ float compute(const ElementT& el, float eB) const override;
 
    private:
-      VectorXd mK;
-      const double K;
+      VectorXf mK;
+      const float K;
    };
 
    class Bethe30ModElectronEnergyLoss : public BetheElectronEnergyLoss
    {
    public:
       __host__ __device__ Bethe30ModElectronEnergyLoss();
-      __host__ __device__ double compute(const ElementT& el, double eB) const override;
+      __host__ __device__ float compute(const ElementT& el, float eB) const override;
 
    private:
-      const double K;
+      const float K;
    };
 
    class Bethe30ElectronEnergyLoss : public BetheElectronEnergyLoss
    {
    public:
       __host__ __device__ Bethe30ElectronEnergyLoss();
-      __host__ __device__ double compute(const ElementT& el, double eB) const override;
+      __host__ __device__ float compute(const ElementT& el, float eB) const override;
 
    private:
-      const double K;
+      const float K;
    };
 
    class StragglingModified : public BetheElectronEnergyLoss
    {
    public:
-      __host__ __device__ StragglingModified(const BetheElectronEnergyLoss& base, double percent);
-      __host__ __device__ double compute(const ElementT& el, double eB) const override;
+      __host__ __device__ StragglingModified(const BetheElectronEnergyLoss& base, float percent);
+      __host__ __device__ float compute(const ElementT& el, float eB) const override;
 
    private:
       const BetheElectronEnergyLoss& mBethe;
-      const double mPercent;
+      const float mPercent;
    };
 
    extern const BetheElectronEnergyLoss& JoyLuo1989;

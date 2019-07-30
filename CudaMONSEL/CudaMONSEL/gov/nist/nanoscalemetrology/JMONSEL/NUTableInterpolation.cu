@@ -39,22 +39,7 @@ namespace NUTableInterpolation
 #endif
    }
 
-   /**
-   * interpolate - Interpolates this object's table to determine the value at
-   * the supplied input coordinate. If the supplied coordinate lies outside the
-   * domain of the table, this method extrapolates. This can very quickly lead
-   * to very poor estimates. The calling routine is responsible for checking
-   * the input against the domain if extrapolation is to be avoided.
-   *
-   * @param xval - double[] of length in principle equal to the dimension of
-   *           the table. For convenience it is allowed to be greater, in which
-   *           case the unnecessary values at the end of the array are ignored.
-   * @param order - int The interpolation order, 1 for linear, 3 for cubic,
-   *           etc.
-   * @return double - The estimated value of the tabulated function at the
-   *         supplied coordinate.
-   */
-   __host__ __device__ double NUTableInterpolation::interpolate(float xval[], int xvallen, int order) const
+   __host__ __device__ float NUTableInterpolation::interpolate(float xval[], int xvallen, int order) const
    {
       if (xvallen < dim)
          printf("Attempt to interpolate %s at x with %d dimensions", tableFileName.c_str(), dim);
@@ -119,9 +104,7 @@ namespace NUTableInterpolation
             case 1:
                table1d.resize(nPoints[0]);
                for (int i = 0; i < nPoints[0]; i++) {
-                  float tmp;
-                  myfile >> tmp;
-                  table1d[i] = tmp;
+                  myfile >> table1d[i];
                   if (table1d[i] < range[0])
                      range[0] = table1d[i];
                   else if (table1d[i] > range[1])
@@ -132,9 +115,7 @@ namespace NUTableInterpolation
                table2d.resize(nPoints[0], VectorXf(nPoints[1], 0));
                for (int i = 0; i < nPoints[0]; i++)
                   for (int j = 0; j < nPoints[1]; j++) {
-                     float tmp;
-                     myfile >> tmp;
-                     table2d[i][j] = tmp;
+                     myfile >> table2d[i][j];
                      if (table2d[i][j] < range[0])
                         range[0] = table2d[i][j];
                      else if (table2d[i][j] > range[1])
@@ -142,14 +123,11 @@ namespace NUTableInterpolation
                   }
                break;
             case 3:
-               //table3d.resize(nPoints[0], MatrixXd(nPoints[1], VectorXd(nPoints[2], 0)));
                table3d.resize(nPoints[0], MatrixXf(nPoints[1], VectorXf(nPoints[2], 0)));
                for (int i = 0; i < nPoints[0]; i++)
                   for (int j = 0; j < nPoints[1]; j++)
                      for (int k = 0; k < nPoints[2]; k++) {
-                        float tmp;
-                        myfile >> tmp;
-                        table3d[i][j][k] = tmp;
+                        myfile >> table3d[i][j][k];
                         if (table3d[i][j][k] < range[0])
                            range[0] = table3d[i][j][k];
                         else if (table3d[i][j][k] > range[1])
@@ -162,9 +140,7 @@ namespace NUTableInterpolation
                   for (int j = 0; j < nPoints[1]; j++) {
                      for (int k = 0; k < nPoints[2]; k++) {
                         for (int m = 0; m < nPoints[3]; m++) {
-                           float tmp;
-                           myfile >> tmp;
-                           table4d[i][j][k][m] = tmp;
+                           myfile >> table4d[i][j][k][m];
                            if (table4d[i][j][k][m] < range[0])
                               range[0] = table4d[i][j][k][m];
                            else if (table4d[i][j][k][m] > range[1])
@@ -480,16 +456,16 @@ namespace NUTableInterpolation
       checkCudaErrors(cudaGetLastError());
       delete[] d_table2d;
 
-      float*** d_table3d = new float**[ptr->gettable3d().size()]; // 2d matrix of pointers on CPU each points to 1d vector of data on GPU
+      data_type*** d_table3d = new data_type**[ptr->gettable3d().size()]; // 2d matrix of pointers on CPU each points to 1d vector of data on GPU
       resizetable3d_0 << <1, 1 >> >(ptr->gettable3d().size());
       checkCudaErrors(cudaDeviceSynchronize());
       checkCudaErrors(cudaGetLastError());
       for (int i = 0; i < ptr->gettable3d().size(); ++i) {
-         d_table3d[i] = new float*[ptr->gettable3d()[i].size()];
+         d_table3d[i] = new data_type*[ptr->gettable3d()[i].size()];
          resizetable3d_1 << <1, 1 >> >(i, ptr->gettable3d()[i].size());
          for (int j = 0; j < ptr->gettable3d()[i].size(); ++j) {
-            checkCudaErrors(cudaMalloc((void **)&d_table3d[i][j], ptr->gettable3d()[i][j].size() * sizeof(float)));
-            checkCudaErrors(cudaMemcpy(d_table3d[i][j], ptr->gettable3d()[i][j].data(), ptr->gettable3d()[i][j].size() * sizeof(float), cudaMemcpyHostToDevice));
+            checkCudaErrors(cudaMalloc((void **)&d_table3d[i][j], ptr->gettable3d()[i][j].size() * sizeof(data_type)));
+            checkCudaErrors(cudaMemcpy(d_table3d[i][j], ptr->gettable3d()[i][j].data(), ptr->gettable3d()[i][j].size() * sizeof(data_type), cudaMemcpyHostToDevice));
             assigntable3d << <1, 1 >> >(i, j, d_table3d[i][j], ptr->gettable3d()[i][j].size());
          }
       }

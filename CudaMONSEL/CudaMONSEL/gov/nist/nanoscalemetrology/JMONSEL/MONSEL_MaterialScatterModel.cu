@@ -84,6 +84,7 @@ namespace MONSEL_MaterialScatterModel
       const double maxFreePath = 2. * MonteCarloSS::ChamberRadius;
       if (totalScatterRate != 0.) {
          const double freepath = -::log(Random::random()) / totalScatterRate;
+         if (freepath != freepath) printf("MONSEL_MaterialScatterModel::randomMeanPathLength: freepath is NaN\n");
          return freepath > maxFreePath ? maxFreePath : freepath;
       }
       /*

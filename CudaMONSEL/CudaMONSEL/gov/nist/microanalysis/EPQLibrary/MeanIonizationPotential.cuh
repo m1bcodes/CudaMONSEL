@@ -13,8 +13,8 @@ namespace MeanIonizationPotential
    public:
       AlgorithmClassT const * const * getAllImplementations() const;
 
-      double computeLn(const CompositionT& comp) const;
-      __host__ __device__ virtual double compute(const ElementT& el) const = 0;
+      float computeLn(const CompositionT& comp) const;
+      __host__ __device__ virtual float compute(const ElementT& el) const = 0;
 
    protected:
       __host__ __device__ MeanIonizationPotential(StringT name, const ReferenceT& reference);
@@ -24,65 +24,65 @@ namespace MeanIonizationPotential
    {
    public:
       __host__ __device__ Sternheimer64MeanIonizationPotential();
-      __host__ __device__ double compute(const ElementT& el) const override;
+      __host__ __device__ float compute(const ElementT& el) const override;
    };
-   extern __host__ __device__ double computeSternheimer64(const ElementT& el);
+   extern __host__ __device__ float computeSternheimer64(const ElementT& el);
 
    class BergerAndSeltzerCITZAFMeanIonizationPotential : public MeanIonizationPotential
    {
    public:
       __host__ __device__ BergerAndSeltzerCITZAFMeanIonizationPotential();
-      __host__ __device__ double compute(const ElementT& el) const override;
+      __host__ __device__ float compute(const ElementT& el) const override;
    };
 
    class Bloch33MeanIonizationPotential : public MeanIonizationPotential
    {
    public:
       __host__ __device__ Bloch33MeanIonizationPotential();
-      __host__ __device__ double compute(const ElementT& el) const override;
+      __host__ __device__ float compute(const ElementT& el) const override;
    };
 
    class Wilson41MeanIonizationPotential : public MeanIonizationPotential
    {
    public:
       __host__ __device__ Wilson41MeanIonizationPotential();
-      __host__ __device__ double compute(const ElementT& el) const override;
+      __host__ __device__ float compute(const ElementT& el) const override;
    };
-   extern __host__ __device__ double computeWilson41(const ElementT& el);
+   extern __host__ __device__ float computeWilson41(const ElementT& el);
 
    class Springer67MeanIonizationPotential : public MeanIonizationPotential
    {
    public:
       __host__ __device__ Springer67MeanIonizationPotential();
-      __host__ __device__ double compute(const ElementT& el) const override;
+      __host__ __device__ float compute(const ElementT& el) const override;
    };
 
    class Heinrich70MeanIonizationPotential : public MeanIonizationPotential
    {
    public:
       __host__ __device__ Heinrich70MeanIonizationPotential();
-      __host__ __device__ double compute(const ElementT& el) const override;
+      __host__ __device__ float compute(const ElementT& el) const override;
    };
 
    class Duncumb69MeanIonizationPotential : public MeanIonizationPotential
    {
    public:
       __host__ __device__ Duncumb69MeanIonizationPotential();
-      __host__ __device__ double compute(const ElementT& el) const override;
+      __host__ __device__ float compute(const ElementT& el) const override;
    };
 
    class Zeller75MeanIonizationPotential : public MeanIonizationPotential
    {
    public:
       __host__ __device__ Zeller75MeanIonizationPotential();
-      __host__ __device__ double compute(const ElementT& el) const override;
+      __host__ __device__ float compute(const ElementT& el) const override;
    };
 
    class Berger64MeanIonizationPotential : public MeanIonizationPotential
    {
    public:
       __host__ __device__ Berger64MeanIonizationPotential();
-      __host__ __device__ double compute(const ElementT& el) const override;
+      __host__ __device__ float compute(const ElementT& el) const override;
       void readTabulatedValues();
       __host__ __device__ const VectorXf& getData() const;
       template<typename T>
@@ -99,7 +99,7 @@ namespace MeanIonizationPotential
    {
    public:
       __host__ __device__ Berger83MeanIonizationPotential();
-      __host__ __device__ double compute(const ElementT& el) const override;
+      __host__ __device__ float compute(const ElementT& el) const override;
       void readTabulatedValues();
       __host__ __device__ const VectorXf& getData() const;
       template<typename T>

@@ -25,8 +25,8 @@ namespace MonteCarloSS
 
    extern __constant__ const int  BeamEnergyChanged;
 
-   extern __constant__ const double ChamberRadius;
-   extern __constant__ const double SMALL_DISP;
+   extern __constant__ const float ChamberRadius;
+   extern __constant__ const float SMALL_DISP;
 #else
    extern const int ScatterEvent;
    extern const int NonScatterEvent;
@@ -42,8 +42,8 @@ namespace MonteCarloSS
 
    extern const int BeamEnergyChanged;
 
-   extern const double ChamberRadius;
-   extern const double SMALL_DISP;
+   extern const float ChamberRadius;
+   extern const float SMALL_DISP;
 #endif
 
    class MonteCarloSS final

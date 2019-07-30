@@ -132,8 +132,7 @@ namespace ExpQMBarrierSM
          * of motion. We give it a nudge away from the barrier towards the
          * inside
          */
-         const double* pos0 = pe->getPosition();
-         const double tmppos[] = { pos0[0] - (MonteCarloSS::SMALL_DISP * nb[0]), pos0[1] - (MonteCarloSS::SMALL_DISP * nb[1]), pos0[2] - (MonteCarloSS::SMALL_DISP * nb[2]) };
+         const double tmppos[] = { pe->getPosition()[0] - (MonteCarloSS::SMALL_DISP * nb[0]), pe->getPosition()[1] - (MonteCarloSS::SMALL_DISP * nb[1]), pe->getPosition()[2] - (MonteCarloSS::SMALL_DISP * nb[2]) };
          pe->setPosition(tmppos);
 
          return nullptr;
@@ -146,8 +145,7 @@ namespace ExpQMBarrierSM
          * transmits, so we give it a nudge off of the barrier toward the
          * outside, update the electron's region, and return.
          */
-         const double* pos0 = pe->getPosition();
-         const double tmppos[] = { pos0[0] + (MonteCarloSS::SMALL_DISP * nb[0]), pos0[1] + (MonteCarloSS::SMALL_DISP * nb[1]), pos0[2] + (MonteCarloSS::SMALL_DISP * nb[2]) };
+         const double tmppos[] = { pe->getPosition()[0] + (MonteCarloSS::SMALL_DISP * nb[0]), pe->getPosition()[1] + (MonteCarloSS::SMALL_DISP * nb[1]), pe->getPosition()[2] + (MonteCarloSS::SMALL_DISP * nb[2]) };
          pe->setPosition(tmppos);
          pe->setCurrentRegion(nextRegion);
 
@@ -194,9 +192,8 @@ namespace ExpQMBarrierSM
 
          pe->setEnergy(kE0 - deltaU);
          pe->setCurrentRegion(nextRegion);
-         const double* pos0 = pe->getPosition();
 
-         const double tmppos[] = { pos0[0] + (MonteCarloSS::SMALL_DISP * nb[0]), pos0[1] + (MonteCarloSS::SMALL_DISP * nb[1]), pos0[2] + (MonteCarloSS::SMALL_DISP * nb[2]) };
+         const double tmppos[] = { pe->getPosition()[0] + (MonteCarloSS::SMALL_DISP * nb[0]), pe->getPosition()[1] + (MonteCarloSS::SMALL_DISP * nb[1]), pe->getPosition()[2] + (MonteCarloSS::SMALL_DISP * nb[2]) };
          pe->setPosition(tmppos);
       }
       else { // Total internal reflection
@@ -204,8 +201,7 @@ namespace ExpQMBarrierSM
          for (int i = 0; i < 3; i++)
             nf[i] = n0[i] - (nb[i] * twocosalpha);
 
-         const double* pos0 = pe->getPosition();
-         const double tmppos[] = { pos0[0] - (MonteCarloSS::SMALL_DISP * nb[0]), pos0[1] - (MonteCarloSS::SMALL_DISP * nb[1]), pos0[2] - (MonteCarloSS::SMALL_DISP * nb[2]) };
+         const double tmppos[] = { pe->getPosition()[0] - (MonteCarloSS::SMALL_DISP * nb[0]), pe->getPosition()[1] - (MonteCarloSS::SMALL_DISP * nb[1]), pe->getPosition()[2] - (MonteCarloSS::SMALL_DISP * nb[2]) };
          pe->setPosition(tmppos);
       }
 

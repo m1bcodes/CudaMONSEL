@@ -9,44 +9,44 @@ namespace JoyLuoNieminenCSD
    class JoyLuoNieminenCSD : public SlowingDownAlgT
    {
    public:
-      __host__ __device__ JoyLuoNieminenCSD(SEmaterialT& mat, double breakE);
-      JoyLuoNieminenCSD(MaterialT& mat, double bh, double breakE);
+      __host__ __device__ JoyLuoNieminenCSD(SEmaterialT& mat, float breakE);
+      JoyLuoNieminenCSD(MaterialT& mat, float bh, float breakE);
 
-      void setMaterial(const MaterialT& mat, double bh);
+      void setMaterial(const MaterialT& mat, float bh);
 
       __host__ __device__ void init();
 
       __host__ __device__ void setMaterial(const SEmaterialT* mat) override;
       __host__ __device__ double compute(double d, const ElectronT* pe) const override;
 
-      __host__ __device__ double compute(const double len, const double kE) const;
+      __host__ __device__ float compute(const float len, const float kE) const;
 
-      double getBreakE() const;
-      void setBreakE(double breakE);
+      float getBreakE() const;
+      void setBreakE(float breakE);
 
       __host__ __device__ StringT toString() const override;
 
    private:
       MaterialT& mat;
 
-      double bh; // barrier height
+      float bh; // barrier height
 
       int nce; // # constituent elements
 
       /* Combinations of variables that we need */
-      VectorXd recipJ; // 1.166/J where J=ionization energy of const.
+      VectorXf recipJ; // 1.166/J where J=ionization energy of const.
       // elem.
 
-      VectorXd coef; // 78500 rho c[i]Z[i]/A[i] = leading coefficient in
+      VectorXf coef; // 78500 rho c[i]Z[i]/A[i] = leading coefficient in
 
-      VectorXd beta; // 1=1.166(wf+1eV)/J[i]
+      VectorXf beta; // 1=1.166(wf+1eV)/J[i]
 
-      double bhplus1eV; // BH + 1eV
+      float bhplus1eV; // BH + 1eV
 
-      double minEforTracking;
+      float minEforTracking;
 
-      double breakE; // Dividing line between Joy/Luo and Nieminen
-      double gamma; // The proportionality constant in Nieminen's formula
+      float breakE; // Dividing line between Joy/Luo and Nieminen
+      float gamma; // The proportionality constant in Nieminen's formula
    };
 }
 

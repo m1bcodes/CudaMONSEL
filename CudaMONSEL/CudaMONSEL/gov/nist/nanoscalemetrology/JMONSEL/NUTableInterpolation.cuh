@@ -30,7 +30,7 @@ namespace NUTableInterpolation
    public:
       __host__ __device__ NUTableInterpolation(char const * tableFileName);
 
-      __host__ __device__ double interpolate(float xval[], int xvallen, int order) const;
+      __host__ __device__ float interpolate(float xval[], int xvallen, int order) const;
 
       __host__ __device__ const VectorXf& gettable1d() const;
       __host__ __device__ const MatrixXf& gettable2d() const;

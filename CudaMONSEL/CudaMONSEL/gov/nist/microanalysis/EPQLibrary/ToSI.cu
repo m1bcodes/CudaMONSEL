@@ -4,31 +4,31 @@
 namespace ToSI
 {
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-   __constant__ const double MEV = 1.60217653e-19 * 1.0e6; // PhysicalConstants::ElectronCharge * 1.0e6;
-   __constant__ const double KEV = 1.60217653e-19 * 1.0e3; // PhysicalConstants::ElectronCharge * 1.0e3;
-   __constant__ const double EV = 1.60217653e-19; // PhysicalConstants::ElectronCharge;
-   __constant__ const double GRAM = 1.0e-3;
-   __constant__ const double CM = 1.0e-2;
-   __constant__ const double MICROMETER = 1.0e-6;
+   __constant__ const float MEV = 1.60217653e-19 * 1.0e6; // PhysicalConstants::ElectronCharge * 1.0e6;
+   __constant__ const float KEV = 1.60217653e-19 * 1.0e3; // PhysicalConstants::ElectronCharge * 1.0e3;
+   __constant__ const float EV = 1.60217653e-19; // PhysicalConstants::ElectronCharge;
+   __constant__ const float GRAM = 1.0e-3;
+   __constant__ const float CM = 1.0e-2;
+   __constant__ const float MICROMETER = 1.0e-6;
    // const double AMU = PhysicalConstants::UnifiedAtomicMass;
-   __constant__ const double ANGSTROM = 1.0e-10;
-   __constant__ const double BARN = 1.0e-28;
-   __constant__ const double TORR = 101325.0 / 760; // PhysicalConstants::StandardAtmosphere / 760.0;
-   __constant__ const double NANO = 1.0e-9;
-   __constant__ const double PICO = 1.0e-12;
+   __constant__ const float ANGSTROM = 1.0e-10;
+   __constant__ const float BARN = 1.0e-28;
+   __constant__ const float TORR = 101325.0 / 760; // PhysicalConstants::StandardAtmosphere / 760.0;
+   __constant__ const float NANO = 1.0e-9;
+   __constant__ const float PICO = 1.0e-12;
 #else
-   const double MEV = 1.60217653e-19 * 1.0e6; // PhysicalConstants::ElectronCharge * 1.0e6;
-   const double KEV = 1.60217653e-19 * 1.0e3; // PhysicalConstants::ElectronCharge * 1.0e3;
-   const double EV = 1.60217653e-19; // PhysicalConstants::ElectronCharge;
-   const double GRAM = 1.0e-3;
-   const double CM = 1.0e-2;
-   const double MICROMETER = 1.0e-6;
+   const float MEV = 1.60217653e-19 * 1.0e6; // PhysicalConstants::ElectronCharge * 1.0e6;
+   const float KEV = 1.60217653e-19 * 1.0e3; // PhysicalConstants::ElectronCharge * 1.0e3;
+   const float EV = 1.60217653e-19; // PhysicalConstants::ElectronCharge;
+   const float GRAM = 1.0e-3;
+   const float CM = 1.0e-2;
+   const float MICROMETER = 1.0e-6;
    // const double AMU = PhysicalConstants::UnifiedAtomicMass;
-   const double ANGSTROM = 1.0e-10;
-   const double BARN = 1.0e-28;
-   const double TORR = 101325.0 / 760; // PhysicalConstants::StandardAtmosphere / 760.0;
-   const double NANO = 1.0e-9;
-   const double PICO = 1.0e-12;
+   const float ANGSTROM = 1.0e-10;
+   const float BARN = 1.0e-28;
+   const float TORR = 101325.0 / 760; // PhysicalConstants::StandardAtmosphere / 760.0;
+   const float NANO = 1.0e-9;
+   const float PICO = 1.0e-12;
 #endif
 
    double Torr(double torr)
@@ -41,17 +41,17 @@ namespace ToSI
       return MEV * e;
    }
 
-   __host__ __device__ double keV(double e)
+   __host__ __device__ float keV(float e)
    {
       return KEV * e;
    }
 
-   __host__ __device__ double eV(double e)
+   __host__ __device__ float eV(float e)
    {
       return EV * e;
    }
 
-   __host__ __device__ double AMU(double amu)
+   __host__ __device__ float AMU(float amu)
    {
       return PhysicalConstants::UnifiedAtomicMass * amu;
    }
@@ -76,7 +76,7 @@ namespace ToSI
       return d * (1 / CM);
    }
 
-   __host__ __device__ double angstrom(double a)
+   __host__ __device__ float angstrom(float a)
    {
       return ANGSTROM * a;
    }
@@ -86,7 +86,7 @@ namespace ToSI
       return MICROMETER * m;
    }
 
-   __host__ __device__ double sqrAngstrom(double a2)
+   __host__ __device__ float sqrAngstrom(float a2)
    {
       return ANGSTROM * ANGSTROM * a2;
    }

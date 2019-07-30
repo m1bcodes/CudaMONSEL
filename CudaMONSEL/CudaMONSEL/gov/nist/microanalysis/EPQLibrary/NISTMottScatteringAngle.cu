@@ -19,17 +19,17 @@ namespace NISTMottScatteringAngle
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
    __constant__ const int SPWEM_LEN = 61;
    __constant__ const int X1_LEN = 201;
-   __constant__ const double DL50 = 3.91202300543;
-   __constant__ const double PARAM = 0.09985774245;
+   __constant__ const float DL50 = 3.91202300543f;
+   __constant__ const float PARAM = 0.09985774245f;
 
-   __constant__ static const double MAX_NISTMOTT = 3.2043531e-15;
+   __constant__ static const float MAX_NISTMOTT = 3.2043531e-15;
 #else
    const int SPWEM_LEN = 61;
    const int X1_LEN = 201;
-   const double DL50 = ::log(50.0);
-   const double PARAM = (::log(2.0e4) - DL50) / 60.0;
+   const float DL50 = ::log(50.0);
+   const float PARAM = (::log(2.0e4) - DL50) / 60.0;
 
-   static const double MAX_NISTMOTT = ToSI::keV(20.0);
+   static const float MAX_NISTMOTT = ToSI::keV(20.0);
 #endif
 
    __host__ __device__ static double value(double a, double b, double c, double y0, double y1, double y2, double x)

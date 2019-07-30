@@ -11,8 +11,8 @@ namespace NISTMottScatteringAngle
 {
    extern const int SPWEM_LEN;
    extern const int X1_LEN;
-   extern const double DL50;
-   extern const double PARAM;
+   extern const float DL50;
+   extern const float PARAM;
 
    class NISTMottScatteringAngle : public RandomizedScatterT
    {

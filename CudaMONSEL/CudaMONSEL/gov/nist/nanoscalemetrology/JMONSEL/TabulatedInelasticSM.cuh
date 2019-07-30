@@ -9,20 +9,20 @@ namespace TabulatedInelasticSM
    class TabulatedInelasticSM : public ScatterMechanismT
    {
    public:
-      __host__ __device__ TabulatedInelasticSM(const SEmaterialT& mat, int methodSE, const char* tables[], double energyOffset);
+      __host__ __device__ TabulatedInelasticSM(const SEmaterialT& mat, int methodSE, const char* tables[], float energyOffset);
       __host__ __device__ TabulatedInelasticSM(const SEmaterialT& mat, int methodSE, const char* tables[]);
 
       __host__ __device__ double scatterRate(const ElectronT* pe) override;
       __host__ __device__ ElectronT* scatter(ElectronT* pe) override;
       __host__ __device__ void setMaterial(const MaterialT* mat) override;
 
-      void setMinEgenSE(double minEgenSE);
-      double getMinEgenSE() const;
+      void setMinEgenSE(float minEgenSE);
+      float getMinEgenSE() const;
       int getMethodSE() const;
       void setBranchingRatios();
-      void setBranchingRatios(double ratios[], int);
-      void setEnergyGap(double energyGap);
-      void setRateMult(double rateMult);
+      void setBranchingRatios(float ratios[], int);
+      void setEnergyGap(float energyGap);
+      void setRateMult(float rateMult);
       bool isE0fromDispersion() const;
       void setE0fromDispersion(bool e0fromDispersion);
 
@@ -34,23 +34,23 @@ namespace TabulatedInelasticSM
       __host__ __device__ const NUTableInterpolationT* gettableSEE0() const;
 
    private:
-      __host__ __device__ void simESEf(double Eq, double deltaE, double r, double[2]);
-      __host__ __device__ double pickBE(double Eq, double deltaE);
+      __host__ __device__ void simESEf(float Eq, float deltaE, float r, float[2]);
+      __host__ __device__ float pickBE(float Eq, float deltaE);
 
       const int methodSE;
-      double energyOffset;
+      float energyOffset;
 
       const NUTableInterpolationT* tableIIMFP;
       const NUTableInterpolationT* tableReducedDeltaE;
       const NUTableInterpolationT* tableTheta;
       const NUTableInterpolationT* tableSEE0;
 
-      double offsetFermiEnergy;
-      double energyCBbottom;
-      double minEgenSE;
-      double workfunction;
-      double bandgap;
-      double energyGap;
+      float offsetFermiEnergy;
+      float energyCBbottom;
+      float minEgenSE;
+      float workfunction;
+      float bandgap;
+      float energyGap;
       bool defaultRatios;
       MatrixXf cumulativeBranchingProbabilities;
 
@@ -59,7 +59,7 @@ namespace TabulatedInelasticSM
       * level binding energies are referenced. This is generally the Fermi energy
       * for metals and 0 for insulators or semiconductors.
       */
-      double bEref;
+      float bEref;
       VectorXf kEa; // For convenience, because 1-d
       // tables
       // still require an array for input
@@ -73,7 +73,7 @@ namespace TabulatedInelasticSM
       VectorXf energyRangeSE0;
 
       // temp? IIMFP multiplier
-      double rateMult;
+      float rateMult;
 
       /*
       * E0 method. E0 is the energy available to ionize an inner shell. My

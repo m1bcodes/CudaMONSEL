@@ -9,7 +9,7 @@
 
 namespace TabulatedInelasticSM
 {
-   __host__ __device__ TabulatedInelasticSM::TabulatedInelasticSM(const SEmaterialT& mat, int methodSE, const char* tables[], double energyOffset) :
+   __host__ __device__ TabulatedInelasticSM::TabulatedInelasticSM(const SEmaterialT& mat, int methodSE, const char* tables[], float energyOffset) :
       methodSE((methodSE != 2) && (methodSE != 3) ? 1 : methodSE),
       energyOffset(energyOffset),
       minEgenSE(0.),
@@ -71,41 +71,41 @@ namespace TabulatedInelasticSM
       setMaterial(&mat);
    }
 
-   __host__ __device__ static void updateDirection(const double theta, const double phi, const double dTheta, const double dPhi, double res[2])
+   __host__ __device__ static void updateDirection(const float theta, const float phi, const float dTheta, const float dPhi, float res[2])
    {
-      const double ct = ::cos(theta), st = ::sin(theta);
-      const double cp = ::cos(phi), sp = ::sin(phi);
-      const double ca = ::cos(dTheta), sa = ::sin(dTheta);
-      const double cb = ::cos(dPhi);
+      const float ct = ::cos(theta), st = ::sin(theta);
+      const float cp = ::cos(phi), sp = ::sin(phi);
+      const float ca = ::cos(dTheta), sa = ::sin(dTheta);
+      const float cb = ::cos(dPhi);
 
-      const double xx = (cb * ct * sa) + (ca * st);
-      const double yy = sa * ::sin(dPhi);
-      const double dx = (cp * xx) - (sp * yy);
-      const double dy = (cp * yy) + (sp * xx);
-      const double dz = (ca * ct) - (cb * sa * st);
+      const float xx = (cb * ct * sa) + (ca * st);
+      const float yy = sa * ::sin(dPhi);
+      const float dx = (cp * xx) - (sp * yy);
+      const float dy = (cp * yy) + (sp * xx);
+      const float dz = (ca * ct) - (cb * sa * st);
 
       res[0] = ::atan2(::sqrt((dx * dx) + (dy * dy)), dz);
       res[1] = ::atan2(dy, dx);
    }
 
-   __host__ __device__ void TabulatedInelasticSM::simESEf(double Eq, double deltaE, double r, double res[2])
+   __host__ __device__ void TabulatedInelasticSM::simESEf(float Eq, float deltaE, float r, float res[2])
    {
-      const double q = ::sqrt(Eq);
-      const double kz = (deltaE - Eq) / 2. / q;
-      const double kzf = kz + q;
-      const double Ezq = kzf * kzf;
-      double minE = (offsetFermiEnergy + bandgap) - Ezq;
+      const float q = ::sqrt(Eq);
+      const float kz = (deltaE - Eq) / 2. / q;
+      const float kzf = kz + q;
+      const float Ezq = kzf * kzf;
+      float minE = (offsetFermiEnergy + bandgap) - Ezq;
       if (minE < 0.) minE = 0.;
-      double maxE = offsetFermiEnergy - (kz * kz);
+      float maxE = offsetFermiEnergy - (kz * kz);
       if (!(minE <= maxE)) printf("TabulatedInelasticSM::simESEf: minE (%.10e) <= maxE (%.10e)\n", minE, maxE);
-      const double Exy = (minE * (1. - r)) + (maxE * r);
-      const double ESEf = Exy + Ezq;
-      const double theta = ::acos(kzf / ::sqrt(ESEf));
+      const float Exy = (minE * (1. - r)) + (maxE * r);
+      const float ESEf = Exy + Ezq;
+      const float theta = ::acos(kzf / ::sqrt(ESEf));
       res[0] = ESEf;
       res[1] = theta;
    }
 
-   __host__ __device__ static double computeE0fromDispersion(double Eq, double deltaE)
+   __host__ __device__ static float computeE0fromDispersion(float Eq, float deltaE)
    {
       /*
       * Note to self: The derivation of this algorithm is in
@@ -116,46 +116,46 @@ namespace TabulatedInelasticSM
       if (Eq == 0.)
          return deltaE;
       /* Precompute quantities we're going to need more than once. */
-      const double x = Eq / deltaE;
+      const float x = Eq / deltaE;
       /*
       * The numeric constant on the next line is a constant that appears in the
       * solution of Penn's dispersion equation. It has units of 1/Joule.
       */
-      const double y = 3.77300614251479e17 * Eq;
-      const double x13 = ::pow(x, 1 / 3.);
-      const double x2 = x * x;
-      const double c1 = x2 * x2 * (27. + (18. * y) + (2 * y * y));
-      const double c2 = x2 * (27. + (4. * y));
-      const double c3 = c2 - 27.;
-      const double c4 = x2 * (3. + y);
-      const double c6 = 1 - x2;
+      const float y = 3.77300614251479e17f * Eq;
+      const float x13 = ::powf(x, 1 / 3.f);
+      const float x2 = x * x;
+      const float c1 = x2 * x2 * (27. + (18. * y) + (2 * y * y));
+      const float c2 = x2 * (27. + (4. * y));
+      const float c3 = c2 - 27.;
+      const float c4 = x2 * (3. + y);
+      const float c6 = 1 - x2;
       if (c3 > 0.) {
-         const double tanPart = ::atan2(3. * c6 * ::sqrt(3. * c3 * c6), (18. * c4) - c1 - 27.);
-         double trigPart = ::cos(tanPart / 3.);
-         const double prefactor = 2. * x * ::sqrt(y * (y - (c6 * (y + 6.))));
+         const float tanPart = ::atan2f(3. * c6 * ::sqrtf(3. * c3 * c6), (18. * c4) - c1 - 27.);
+         float trigPart = ::cosf(tanPart / 3.);
+         const float prefactor = 2. * x * ::sqrtf(y * (y - (c6 * (y + 6.))));
          trigPart *= prefactor;
-         const double result = deltaE * ::sqrt(((3. - c4) + trigPart) / 3.);
+         const float result = deltaE * ::sqrtf(((3. - c4) + trigPart) / 3.);
          return result;
       }
       else {
-         const double c5 = ::pow(-c1 + (18. * c4) + (3. * (-9. + (c6 * ::sqrt(-(3. * c3 * c6))))), 1. / 3.);
-         const double term1 = -2. * c4;
-         const double x23 = x13 * x13;
-         const double x43 = x * x13;
-         const double y13 = ::pow(y, 1. / 3.);
-         const double y23 = y13 * y13;
-         const double x43y23 = x43 * y23;
-         const double two13 = ::pow(2., 1. / 3.);
-         const double term2 = -12. * two13 * x43y23 * c6;
-         const double term3 = 2. * two13 * x43y23 * x2 * y;
-         const double term23 = (term2 + term3) / c5;
-         const double term4 = two13 * two13 * x23 * y13 * c5;
-         const double result = deltaE * ::sqrt((6 + term1 + term23 + term4) / 6.);
+         const float c5 = ::powf(-c1 + (18. * c4) + (3. * (-9. + (c6 * ::sqrtf(-(3. * c3 * c6))))), 1. / 3.);
+         const float term1 = -2. * c4;
+         const float x23 = x13 * x13;
+         const float x43 = x * x13;
+         const float y13 = ::powf(y, 1. / 3.f);
+         const float y23 = y13 * y13;
+         const float x43y23 = x43 * y23;
+         const float two13 = ::powf(2., 1. / 3.);
+         const float term2 = -12. * two13 * x43y23 * c6;
+         const float term3 = 2. * two13 * x43y23 * x2 * y;
+         const float term23 = (term2 + term3) / c5;
+         const float term4 = two13 * two13 * x23 * y13 * c5;
+         const float result = deltaE * ::sqrtf((6 + term1 + term23 + term4) / 6.);
          return result;
       }
    }
 
-   __host__ __device__ double TabulatedInelasticSM::pickBE(double Eq, double deltaE)
+   __host__ __device__ float TabulatedInelasticSM::pickBE(float Eq, float deltaE)
    {
       int i;
       /*
@@ -169,7 +169,7 @@ namespace TabulatedInelasticSM
       * shell electron. In this case we must compute E0 from the dispersion
       * equation, given Eq and deltaE.
       */
-      double energyForIonization;
+      float energyForIonization;
       if (E0fromDispersion)
          energyForIonization = computeE0fromDispersion(Eq, deltaE);
       else
@@ -186,8 +186,8 @@ namespace TabulatedInelasticSM
          */
          return coreEnergies[i - 1];
       else {
-         auto cprob = cumulativeBranchingProbabilities[i - 1];
-         double r = Random::random();
+         const VectorXf& cprob = cumulativeBranchingProbabilities[i - 1];
+         float r = Random::random();
          int index = Algorithm::binarySearch(cprob.data(), 0, cprob.size()-1, r);
          /*
          * Above binary search returns a positive index in the rare case when r
@@ -213,8 +213,8 @@ namespace TabulatedInelasticSM
 
    __host__ __device__ ElectronT* TabulatedInelasticSM::scatter(ElectronT* pe)
    {
-      const double kE0 = pe->getEnergy(); // PE initial energy rel to CB bottom
-      const double kE = kE0 + energyOffset; // PE initial energy rel to
+      const float kE0 = pe->getEnergy(); // PE initial energy rel to CB bottom
+      const float kE = kE0 + energyOffset; // PE initial energy rel to
       // scattering band bottom
       if (kE < tableEiDomain[0])
          /*
@@ -227,15 +227,15 @@ namespace TabulatedInelasticSM
          return nullptr;
       if (kE > tableEiDomain[1])
          printf("PE energy %.10e is outside the interpolation table interval of [%.10e, %.10e]\n", kE, tableEiDomain[0], tableEiDomain[1]);
-      double theta = 0.;
-      double phi = 0.; // PE trajectory parameters
-      double energySE, thetaSE, phiSE; // SE trajectory parameters
+      float theta = 0.;
+      float phi = 0.; // PE trajectory parameters
+      float energySE, thetaSE, phiSE; // SE trajectory parameters
       // TODO Do I need to check that kE>offsetFermiEnergy?
-      const double randoms[] = { Random::random(), Random::random(), Random::random(), Random::random() };
+      const float randoms[] = { Random::random(), Random::random(), Random::random(), Random::random() };
       interpInput[0] = kE;
       interpInput[1] = randoms[0];
       // Energy loss by PE
-      double deltaE = kE * tableReducedDeltaE->interpolate(interpInput.data(), interpInput.size(), 3);
+      float deltaE = kE * tableReducedDeltaE->interpolate(interpInput.data(), interpInput.size(), 3);
       /*
       * Cubic interpolation of the table can undershoot. Treat deltaE close to
       * but below the energyGap as such undershoot and correct it.
@@ -254,8 +254,8 @@ namespace TabulatedInelasticSM
       * return after we deal with the PE energy loss.
       */
 
-      const double theta0PE = pe->getTheta(); // Remember original direction;
-      const double phi0PE = pe->getPhi(); // to use for SE
+      const float theta0PE = pe->getTheta(); // Remember original direction;
+      const float phi0PE = pe->getPhi(); // to use for SE
       if (deltaE >= bandgap) {
          // Determine theta and phi here
          /*
@@ -299,7 +299,7 @@ namespace TabulatedInelasticSM
 
       // Determine SE final energy and trajectory
       ElectronT* se = nullptr;
-      double be = 0.;
+      float be = 0.;
 
       /*
       * Some measured ELF data have nonzero values for deltaE less than the
@@ -312,7 +312,7 @@ namespace TabulatedInelasticSM
       if (deltaE < bandgap)
          return nullptr;
 
-      const double Eq = (2. * kE) - deltaE - (2. * ::sqrt(kE * (kE - deltaE)) * ::cos(theta));
+      const float Eq = (2. * kE) - deltaE - (2. * ::sqrt(kE * (kE - deltaE)) * ::cos(theta));
 
       switch (methodSE) {
       case 1:
@@ -343,7 +343,7 @@ namespace TabulatedInelasticSM
          else {
             interpInput[0] = deltaE;
             interpInput[1] = randoms[3];
-            double energy0SE = tableSEE0->interpolate(interpInput.data(), interpInput.size(), 3);
+            float energy0SE = tableSEE0->interpolate(interpInput.data(), interpInput.size(), 3);
             /*
             * The values in the SEE0 table should range from 0 to EFermi,
             * which represents the range of allowed values. If the
@@ -382,13 +382,13 @@ namespace TabulatedInelasticSM
             if (!se) printf("ElectronT* TabulatedInelasticSM::scatter 2: failed creating electron.\n");
          }
          else { // SE generation from extended band
-            const double root = 2. * ::sqrt(offsetFermiEnergy * (offsetFermiEnergy + deltaE));
-            const double sum = (2. * offsetFermiEnergy) + deltaE;
-            const double Eqmin = sum - root;
-            const double Eqmax = sum + root;
+            const float root = 2. * ::sqrt(offsetFermiEnergy * (offsetFermiEnergy + deltaE));
+            const float sum = (2. * offsetFermiEnergy) + deltaE;
+            const float Eqmin = sum - root;
+            const float Eqmax = sum + root;
             if ((Eqmin <= Eq) && (Eq <= Eqmax)) { // single-electron
                // scattering
-               double energytheta[2];
+               float energytheta[2];
                simESEf(Eq, deltaE, randoms[3], energytheta);
                energySE = energytheta[0] - energyOffset;
                if ((energySE + energyCBbottom) < minEgenSE)
@@ -400,7 +400,7 @@ namespace TabulatedInelasticSM
                thetaSE = Math2::PI / 2. - theta;
                phiSE = phi + Math2::PI;
                // Combine with adjustment for additional simESEf deflection
-               double newdir[2];
+               float newdir[2];
                updateDirection(thetaSE, phiSE, energytheta[1], 2. * Math2::PI * Random::random(), newdir);
                //Update SE direction by this combined amount
                se->updateDirection(newdir[0], newdir[1]);
@@ -409,7 +409,7 @@ namespace TabulatedInelasticSM
             else { // plasmon scattering
                interpInput[0] = deltaE;
                interpInput[1] = randoms[3];
-               double energy0SE = tableSEE0->interpolate(interpInput.data(), interpInput.size(), 3);
+               float energy0SE = tableSEE0->interpolate(interpInput.data(), interpInput.size(), 3);
                /*
                * The values in the SEE0 table should range from 0 to EFermi,
                * which represents the range of allowed values. If the
@@ -532,7 +532,7 @@ namespace TabulatedInelasticSM
       return tableSEE0;
    }
 
-   void TabulatedInelasticSM::setMinEgenSE(double minEgenSE)
+   void TabulatedInelasticSM::setMinEgenSE(float minEgenSE)
    {
       if (minEgenSE > -workfunction)
          this->minEgenSE = minEgenSE;
@@ -543,7 +543,7 @@ namespace TabulatedInelasticSM
    /**
    * @return Returns the minEgenSE.
    */
-   double TabulatedInelasticSM::getMinEgenSE() const
+   float TabulatedInelasticSM::getMinEgenSE() const
    {
       return minEgenSE;
    }
@@ -591,13 +591,13 @@ namespace TabulatedInelasticSM
       defaultRatios = true;
    }
 
-   void TabulatedInelasticSM::setBranchingRatios(double ratios[], int len)
+   void TabulatedInelasticSM::setBranchingRatios(float ratios[], int len)
    {
       defaultRatios = false;
       int cElen = coreEnergies.size();
       if (len != cElen)
          printf("The number of branching ratios must be equal to the number of core energies, %d, in this case.", cElen);
-      MatrixXd probabilities(cElen);
+      MatrixXf probabilities(cElen);
       cumulativeBranchingProbabilities.resize(cElen);
       probabilities[0].push_back(ratios[0]);
       cumulativeBranchingProbabilities[0].push_back(ratios[0]);
@@ -613,7 +613,7 @@ namespace TabulatedInelasticSM
       }
    }
 
-   void TabulatedInelasticSM::setEnergyGap(double energyGap)
+   void TabulatedInelasticSM::setEnergyGap(float energyGap)
    {
       this->energyGap = energyGap;
    }
@@ -629,7 +629,7 @@ namespace TabulatedInelasticSM
    *
    * @param rateMult
    */
-   void TabulatedInelasticSM::setRateMult(double rateMult)
+   void TabulatedInelasticSM::setRateMult(float rateMult)
    {
       this->rateMult = rateMult;
    }

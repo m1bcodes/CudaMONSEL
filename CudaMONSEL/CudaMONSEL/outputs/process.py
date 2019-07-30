@@ -5,7 +5,7 @@ import matplotlib.image as mim
 #data = np.loadtxt("CudaMONSEL\outputs\data54.txt")
 #SE = data[:, 4]
 
-data = np.loadtxt("CudaMONSEL\outputs\data57.txt")
+data = np.loadtxt("CudaMONSEL\output.txt")
 SE = data
 
 print(SE)
@@ -22,4 +22,4 @@ SE = SE.reshape((r, c))
 plt.imshow(SE, cmap='gray')
 plt.show()
 
-mim.imsave("SE57.png",  SE, cmap='gray')
+mim.imsave("SE0.png",  SE, cmap='gray')

@@ -6,38 +6,38 @@
 namespace FromSI
 {
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-   __constant__ extern const double KEV;
-   __constant__ extern const double EV;
-   __constant__ extern const double GRAM;
-   __constant__ extern const double CM;
+   __constant__ extern const float KEV;
+   __constant__ extern const float EV;
+   __constant__ extern const float GRAM;
+   __constant__ extern const float CM;
 
-   __constant__ extern const double MICROMETER;
+   __constant__ extern const float MICROMETER;
    //__constant__ extern const double AMU;
 
-   __constant__ extern const double ANGSTROM;
-   __constant__ extern const double TORR;
+   __constant__ extern const float ANGSTROM;
+   __constant__ extern const float TORR;
 
-   __constant__ extern const double NANO;
-   __constant__ extern const double PICO;
+   __constant__ extern const float NANO;
+   __constant__ extern const float PICO;
 #else
-   extern const double KEV;
-   extern const double EV;
-   extern const double GRAM;
-   extern const double CM;
+   extern const float KEV;
+   extern const float EV;
+   extern const float GRAM;
+   extern const float CM;
 
-   extern const double MICROMETER;
+   extern const float MICROMETER;
    //extern const double AMU;
 
-   extern const double ANGSTROM;
-   extern const double TORR;
+   extern const float ANGSTROM;
+   extern const float TORR;
 
-   extern const double NANO;
-   extern const double PICO;
+   extern const float NANO;
+   extern const float PICO;
 #endif
 
    double Torr(double pascal);
-   __host__ __device__ double keV(const double e);
-   __host__ __device__ double eV(const double e);
+   __host__ __device__ float keV(const float e);
+   __host__ __device__ float eV(const float e);
    double AMU(double kg);
    double dyne(double f);
    double gPerCC(double d);

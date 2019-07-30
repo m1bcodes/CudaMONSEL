@@ -28,16 +28,16 @@ namespace MeanIonizationPotential
       return res;
    }
 
-   double MeanIonizationPotential::computeLn(const CompositionT &comp) const
+   float MeanIonizationPotential::computeLn(const CompositionT &comp) const
    {
-      double m = 0.0;
-      double lnJ = 0.0;
+      float m = 0.0f;
+      float lnJ = 0.0f;
       for (auto &el : comp.getElementSet()) {
-         double cz_a = comp.weightFraction(*el, true) * el->getAtomicNumber() / el->getAtomicWeight();
+         float cz_a = comp.weightFraction(*el, true) * el->getAtomicNumber() / el->getAtomicWeight();
          m += cz_a;
-         lnJ += cz_a * ::log(FromSI::keV(compute(*el)));
+         lnJ += cz_a * ::logf(FromSI::keV(compute(*el)));
       }
-      return ToSI::keV(::exp(lnJ / m));
+      return ToSI::keV(::expf(lnJ / m));
    }
 
    Reference::CrudeReference SternheimerCR("Sternheimer quoted in Berger MJ, Seltzer S. NASA Technical Publication SP-4012 (1964)");
@@ -50,17 +50,17 @@ namespace MeanIonizationPotential
    {
    }
 
-   __host__ __device__ double Sternheimer64MeanIonizationPotential::compute(const ElementT &el) const
+   __host__ __device__ float Sternheimer64MeanIonizationPotential::compute(const ElementT &el) const
    {
-      const double z = el.getAtomicNumber();
-      return ToSI::eV(9.76 * z + 58.8 * ::powf(z, -0.19));
+      const float z = el.getAtomicNumber();
+      return ToSI::eV(9.76f * z + 58.8f * ::powf(z, -0.19f));
    }
 
    const Sternheimer64MeanIonizationPotential Sternheimer64Ref;
    const MeanIonizationPotential &Sternheimer64 = Sternheimer64Ref;
    __device__ const MeanIonizationPotential *d_Sternheimer64;
 
-   __host__ __device__ double computeSternheimer64(const ElementT &el)
+   __host__ __device__ float computeSternheimer64(const ElementT &el)
    {
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
       if (d_Sternheimer64 == nullptr) {
@@ -83,10 +83,10 @@ namespace MeanIonizationPotential
    {
    }
 
-   __host__ __device__ double BergerAndSeltzerCITZAFMeanIonizationPotential::compute(const ElementT &el) const
+   __host__ __device__ float BergerAndSeltzerCITZAFMeanIonizationPotential::compute(const ElementT &el) const
    {
-      const double z = el.getAtomicNumber();
-      return ToSI::eV(9.76 * z + 58.5 * ::powf(z, -0.19));
+      const float z = el.getAtomicNumber();
+      return ToSI::eV(9.76f * z + 58.5f * ::powf(z, -0.19f));
    }
 
    const BergerAndSeltzerCITZAFMeanIonizationPotential BergerAndSeltzerCITZAFRef;
@@ -103,10 +103,10 @@ namespace MeanIonizationPotential
    {
    }
 
-   __host__ __device__ double Bloch33MeanIonizationPotential::compute(const ElementT &el) const
+   __host__ __device__ float Bloch33MeanIonizationPotential::compute(const ElementT &el) const
    {
-      const double z = el.getAtomicNumber();
-      return ToSI::eV(13.5 * z);
+      const float z = el.getAtomicNumber();
+      return ToSI::eV(13.5f * z);
    }
 
    const Bloch33MeanIonizationPotential Bloch33Ref;
@@ -123,17 +123,17 @@ namespace MeanIonizationPotential
    {
    }
 
-   __host__ __device__ double Wilson41MeanIonizationPotential::compute(const ElementT &el) const
+   __host__ __device__ float Wilson41MeanIonizationPotential::compute(const ElementT &el) const
    {
-      const double z = el.getAtomicNumber();
-      return ToSI::eV(11.5 * z);
+      const float z = el.getAtomicNumber();
+      return ToSI::eV(11.5f * z);
    }
 
    const Wilson41MeanIonizationPotential Wilson41Ref;
    const MeanIonizationPotential &Wilson41 = Wilson41Ref;
    __device__ const MeanIonizationPotential *d_Wilson41;
 
-   __host__ __device__ double computeWilson41(const ElementT &el)
+   __host__ __device__ float computeWilson41(const ElementT &el)
    {
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
       if (d_Wilson41 == nullptr) {
@@ -156,10 +156,10 @@ namespace MeanIonizationPotential
    {
    }
 
-   __host__ __device__ double Springer67MeanIonizationPotential::compute(const ElementT &el) const
+   __host__ __device__ float Springer67MeanIonizationPotential::compute(const ElementT &el) const
    {
-      const double z = el.getAtomicNumber();
-      return ToSI::eV(z * (9.0 * (1.0 + ::powf(z, -0.67)) + 0.03 * z));
+      const float z = el.getAtomicNumber();
+      return ToSI::eV(z * (9.0f * (1.0f + ::powf(z, -0.67f)) + 0.03f * z));
    }
 
    const Springer67MeanIonizationPotential Springer67Ref;
@@ -176,10 +176,10 @@ namespace MeanIonizationPotential
    {
    }
 
-   __host__ __device__ double Heinrich70MeanIonizationPotential::compute(const ElementT &el) const
+   __host__ __device__ float Heinrich70MeanIonizationPotential::compute(const ElementT &el) const
    {
-      const double z = el.getAtomicNumber();
-      return ToSI::eV(z * (12.4 + 0.027 * z));
+      const float z = el.getAtomicNumber();
+      return ToSI::eV(z * (12.4f + 0.027f * z));
    }
 
    const Heinrich70MeanIonizationPotential Heinrich70Ref;
@@ -196,10 +196,10 @@ namespace MeanIonizationPotential
    {
    }
 
-   __host__ __device__ double Duncumb69MeanIonizationPotential::compute(const ElementT &el) const
+   __host__ __device__ float Duncumb69MeanIonizationPotential::compute(const ElementT &el) const
    {
-      const double z = el.getAtomicNumber();
-      return ToSI::eV((14.0 * (1.0 - ::expf(-0.1 * z)) + 75.5 / ::powf(z, z / 7.5) - z / (100 + z)) * z);
+      const float z = el.getAtomicNumber();
+      return ToSI::eV((14.0f * (1.0f - ::expf(-0.1f * z)) + 75.5f / ::powf(z, z / 7.5f) - z / (100.f + z)) * z);
    }
 
    const Duncumb69MeanIonizationPotential Duncumb69Ref;
@@ -216,10 +216,10 @@ namespace MeanIonizationPotential
    {
    }
 
-   __host__ __device__ double Zeller75MeanIonizationPotential::compute(const ElementT &el) const
+   __host__ __device__ float Zeller75MeanIonizationPotential::compute(const ElementT &el) const
    {
-      const double z = el.getAtomicNumber();
-      return ToSI::eV((10.04 + 8.25 * ::expf(-z / 11.22)) * z);
+      const float z = el.getAtomicNumber();
+      return ToSI::eV((10.04f + 8.25f * ::expf(-z / 11.22f)) * z);
    }
 
    const Zeller75MeanIonizationPotential Zeller75Ref;
@@ -227,10 +227,10 @@ namespace MeanIonizationPotential
    __device__ const MeanIonizationPotential *d_Zeller75;
 
    // https://www.oreilly.com/library/view/c-cookbook/0596007612/ch03s06.html
-   static double sciToDub(const std::string& str)
+   static float sciToDub(const std::string& str)
    {
       std::stringstream ss(str);
-      double d = 0;
+      float d = 0;
       ss >> d;
 
       if (ss.fail()) {
@@ -285,7 +285,7 @@ namespace MeanIonizationPotential
    //   memcpy(mMeasured.data(), data, len * sizeof(double));
    //}
 
-   __host__ __device__ double Berger64MeanIonizationPotential::compute(const ElementT &el) const
+   __host__ __device__ float Berger64MeanIonizationPotential::compute(const ElementT &el) const
    {
       return mMeasured[el.getAtomicNumber() - 1];
    }
@@ -336,7 +336,7 @@ namespace MeanIonizationPotential
    //   memcpy(mMeasured.data(), data, len * sizeof(double));
    //}
 
-   __host__ __device__ double Berger83MeanIonizationPotential::compute(const ElementT &el) const
+   __host__ __device__ float Berger83MeanIonizationPotential::compute(const ElementT &el) const
    {
       return mMeasured[el.getAtomicNumber() - 1];
    }

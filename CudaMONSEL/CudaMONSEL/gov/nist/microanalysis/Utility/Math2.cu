@@ -128,6 +128,11 @@ namespace Math2
    {
       return x * x;
    }
+
+   __host__ __device__ float sqr(float x)
+   {
+      return x * x;
+   }
    //
    //   /**
    //   * erf - The error function (2/sqrt(pi))*Integrate[Exp[-t^2],{t,0,x}] <br>
@@ -354,6 +359,11 @@ namespace Math2
    __host__ __device__ double distance3d(const double p1[], const double p2[])
    {
       return ::sqrt(Math2::sqr(p2[0] - p1[0]) + Math2::sqr(p2[1] - p1[1]) + Math2::sqr(p2[2] - p1[2]));
+   }
+
+   __host__ __device__ float distance3d(const float p1[], const float p2[])
+   {
+      return ::sqrtf(Math2::sqr(p2[0] - p1[0]) + Math2::sqr(p2[1] - p1[1]) + Math2::sqr(p2[2] - p1[2]));
    }
    
    //   final public double distanceSqr(double[] p1, double[] p2) {

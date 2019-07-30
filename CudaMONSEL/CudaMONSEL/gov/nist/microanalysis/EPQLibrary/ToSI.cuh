@@ -6,45 +6,45 @@
 namespace ToSI
 {
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-   __constant__ extern const double MEV;
-   __constant__ extern const double KEV;
-   __constant__ extern const double EV;
-   __constant__ extern const double GRAM;
-   __constant__ extern const double CM;
-   __constant__ extern const double MICROMETER;
+   __constant__ extern const float MEV;
+   __constant__ extern const float KEV;
+   __constant__ extern const float EV;
+   __constant__ extern const float GRAM;
+   __constant__ extern const float CM;
+   __constant__ extern const float MICROMETER;
    //__constant__extern const double AMU;
-   __constant__ extern const double ANGSTROM;
-   __constant__ extern const double BARN;
-   __constant__ extern const double TORR;
-   __constant__ extern const double NANO;
-   __constant__ extern const double PICO;
+   __constant__ extern const float ANGSTROM;
+   __constant__ extern const float BARN;
+   __constant__ extern const float TORR;
+   __constant__ extern const float NANO;
+   __constant__ extern const float PICO;
 #else
-   extern const double MEV;
-   extern const double KEV;
-   extern const double EV;
-   extern const double GRAM;
-   extern const double CM;
-   extern const double MICROMETER;
+   extern const float MEV;
+   extern const float KEV;
+   extern const float EV;
+   extern const float GRAM;
+   extern const float CM;
+   extern const float MICROMETER;
    //extern const double AMU;
-   extern const double ANGSTROM;
-   extern const double BARN;
-   extern const double TORR;
-   extern const double NANO;
-   extern const double PICO;
+   extern const float ANGSTROM;
+   extern const float BARN;
+   extern const float TORR;
+   extern const float NANO;
+   extern const float PICO;
 #endif
 
    double Torr(double torr);
    double MeV(double e);
-   __host__ __device__ double keV(double e);
-   __host__ __device__ double eV(double e);
-   __host__ __device__ double AMU(double amu);
+   __host__ __device__ float keV(float e);
+   __host__ __device__ float eV(float e);
+   __host__ __device__ float AMU(float amu);
    double dyne(double f);
    double gPerCC(double d);
    double inverse_gPerCC(double d);
    double percm(double d);
-   __host__ __device__ double angstrom(double a);
+   __host__ __device__ float angstrom(float a);
    double micrometer(double m);
-   __host__ __device__ double sqrAngstrom(double a2);
+   __host__ __device__ float sqrAngstrom(float a2);
    double barn(double a2);
    double cmSqrPerg(double x);
    double cm(double x);
