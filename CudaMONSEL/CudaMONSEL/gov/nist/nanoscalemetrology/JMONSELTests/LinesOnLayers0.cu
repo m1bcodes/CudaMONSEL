@@ -535,194 +535,11 @@ namespace LinesOnLayers
    }
 
    __global__ void initCuda()
-   //void initCuda()
    {
       printf("LinesOnLayers: initCuda\n");
       for (int i = 0; i < 10; ++i) {
          printf("%.10e\n", Random::random());
       }
-
-      //vacuum = new SEmaterialT();
-      //vacuum->setName("SE vacuum");
-      //vacuumBarrier = new ExpQMBarrierSMT(vacuum);
-      //sZeroCSD = new ZeroCSDT();
-
-      //vacuumMSM = new MONSEL_MaterialScatterModelT(vacuum, vacuumBarrier, sZeroCSD);
-
-//#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-//      const ElementT* componentsCOH[] = { Element::dC, Element::dO, Element::dH };
-//#else
-//      const ElementT* componentsCOH[] = { &Element::C, &Element::O, &Element::H };
-//#endif
-      //CompositionT* PMMAcomp = new CompositionT();
-      //const double compositionCOH[] = { 5, 2, 8 };
-      //PMMAcomp->defineByMoleFraction(componentsCOH, 3, compositionCOH, 3);
-      //SEmaterialT* PMMA = new SEmaterialT(*PMMAcomp, PMMAdensity);
-      //PMMA->setName("PMMA");
-      //PMMA->setWorkfunction(ToSI::eV(PMMAworkfun));
-      //PMMA->setBandgap(ToSI::eV(PMMAbandgap));
-      //PMMA->setEnergyCBbottom(ToSI::eV(PMMApotU));
-
-//#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-//      PMMANISTMott = new SelectableElasticSMT(*PMMA, *NISTMottRS::d_Factory);
-//#else
-//      PMMANISTMott = new SelectableElasticSMT(*PMMA, NISTMottRS::Factory);
-//#endif
-
-      //PMMACSD = new JoyLuoNieminenCSDT(*PMMA, PMMAbreakE);
-      //PMMAfittedInel = new FittedInelSMT(*PMMA, ToSI::eV(65.4), *PMMACSD);
-      //PMMApolaron = new GanachaudMokraniPolaronTrapSMT(2.e7, 1. / ToSI::eV(4.));
-
-      //pmmaeqmbsm = new ExpQMBarrierSMT(PMMA);
-
-      //PMMAMSM = new MONSEL_MaterialScatterModelT(PMMA, pmmaeqmbsm, sZeroCSD);
-      //PMMAMSM->addScatterMechanism(PMMANISTMott);
-      //PMMAMSM->addScatterMechanism(PMMAfittedInel);
-      //PMMAMSM->addScatterMechanism(PMMApolaron);
-
-      //PMMAMSM->setCSD(PMMACSD);
-
-      //PMMAMSMDeep = new MONSEL_MaterialScatterModelT(PMMA, pmmaeqmbsm, sZeroCSD);
-      //PMMAMSMDeep->addScatterMechanism(PMMANISTMott);
-      //PMMAMSMDeep->addScatterMechanism(PMMAfittedInel);
-      //PMMAMSMDeep->addScatterMechanism(PMMApolaron);
-
-      //PMMAMSMDeep->setCSD(PMMACSD);
-      //PMMAMSMDeep->setMinEforTracking(ToSI::eV(50.));
-
-      //ARCMSM = PMMAMSM;
-
-//#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-//      const ElementT* glCComponents[] = { Element::dC };
-//#else
-//      const ElementT* glCComponents[] = { &Element::C };
-//#endif
-//      const double glCComposition[] = { 1. };
-//      glC = new SEmaterialT(glCComponents, 1, glCComposition, 1, glCdensity, "glassy Carbon");
-//      glC->setWorkfunction(ToSI::eV(glCworkfun));
-//      glC->setEnergyCBbottom(ToSI::eV(glCpotU));
-//      glC->setBandgap(ToSI::eV(glCbandgap));
-//      const double glCCoreEnergy[] = { ToSI::eV(284.2) };
-//      glC->setCoreEnergy(glCCoreEnergy, 1);
-//
-//#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-//      glCNISTMott = new SelectableElasticSMT(*glC, *NISTMottRS::d_Factory);
-//#else
-//      glCNISTMott = new SelectableElasticSMT(*glC, NISTMottRS::Factory);
-//#endif
-
-      //StringT tablePath = "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\glassyCTables\\";
-      //const StringT IIMFPPennInterpglassy = tablePath + "IIMFPPennInterpglassyCSI.csv";
-      //const StringT SimReducedDeltaEglassy = tablePath + "interpNUSimReducedDeltaEglassyCSI.csv";
-      //const StringT simTableThetaNUglassy = tablePath + "interpsimTableThetaNUglassyCSI.csv";
-      //const StringT SimESE0NUglassy = tablePath + "interpSimESE0NUglassyCSI.csv";
-      //const char* glCTables[] = {
-      //   IIMFPPennInterpglassy.c_str(),
-      //   SimReducedDeltaEglassy.c_str(),
-      //   simTableThetaNUglassy.c_str(),
-      //   SimESE0NUglassy.c_str()
-      //};
-
-      //glCDS = new TabulatedInelasticSMT(*glC, 3, glCTables);
-
-      //glceqmbsm = new ExpQMBarrierSMT(glC);
-
-      //glCMSM = new MONSEL_MaterialScatterModelT(glC, glceqmbsm, sZeroCSD);
-      //glCMSM->addScatterMechanism(glCNISTMott);
-      //glCMSM->addScatterMechanism(glCDS);
-
-      //glCMSMDeep = new MONSEL_MaterialScatterModelT(glC, glceqmbsm, sZeroCSD);
-      //glCMSMDeep->addScatterMechanism(glCNISTMott);
-      //glCMSMDeep->addScatterMechanism(glCDS);
-
-      //glCMSMDeep->setMinEforTracking(ToSI::eV(50.));
-
-//#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-//      const ElementT* SiComponent[] = { Element::dSi };
-//#else
-//      const ElementT* SiComponent[] = { &Element::Si };
-//#endif
-      //const double SiComposition[] = { 1. };
-      //Si = new SEmaterialT(SiComponent, 1, SiComposition, 1, Sidensity, "Silicon");
-      //Si->setWorkfunction(ToSI::eV(Siworkfun));
-      //Si->setEnergyCBbottom(ToSI::eV(SipotU));
-      //Si->setBandgap(ToSI::eV(Sibandgap));
-      //const double SiCoreEnergy[] = { ToSI::eV(99.2), ToSI::eV(99.8), ToSI::eV(149.7), ToSI::eV(1839.) };
-      //Si->setCoreEnergy(SiCoreEnergy, 4);
-
-//#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-//      SiNISTMott = new SelectableElasticSMT(*Si, *NISTMottRS::d_Factory);
-//#else
-//      SiNISTMott = new SelectableElasticSMT(*Si, NISTMottRS::Factory);
-//#endif
-
-      //tablePath = "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\SiTables\\";
-      //const StringT IIMFPFullPennInterpSiSI = tablePath + "IIMFPFullPennInterpSiSI.csv";
-      //const StringT interpNUSimReducedDeltaEFullPennSiSI = tablePath + "interpNUSimReducedDeltaEFullPennSiSI.csv";
-      //const StringT interpNUThetaFullPennSiBGSI = tablePath + "interpNUThetaFullPennSiBGSI.csv";
-      //const StringT interpSimESE0NUSiBGSI = tablePath + "interpSimESE0NUSiBGSI.csv";
-      //const char* SiTables[] = {
-      //   IIMFPFullPennInterpSiSI.c_str(),
-      //   interpNUSimReducedDeltaEFullPennSiSI.c_str(),
-      //   interpNUThetaFullPennSiBGSI.c_str(),
-      //   interpSimESE0NUSiBGSI.c_str()
-      //};
-
-      //SiDS = new TabulatedInelasticSMT(*Si, 3, SiTables, ToSI::eV(13.54));
-
-      //Siphonon = new GanachaudMokraniPhononInelasticSMT(phononStrength, ToSI::eV(phononE), 300., 11.7, 1.);
-
-      //sieqmbsm = new ExpQMBarrierSMT(Si);
-
-      //SiMSM = new MONSEL_MaterialScatterModelT(Si, sieqmbsm, sZeroCSD);
-      //SiMSM->addScatterMechanism(SiNISTMott);
-      //SiMSM->addScatterMechanism(SiDS);
-      //SiMSM->addScatterMechanism(Siphonon);
-
-      //SiMSMDeep = new MONSEL_MaterialScatterModelT(Si, sieqmbsm, sZeroCSD);
-      //SiMSMDeep->addScatterMechanism(SiNISTMott);
-      //SiMSMDeep->addScatterMechanism(SiDS);
-      //SiMSMDeep->addScatterMechanism(Siphonon);
-
-      //SiMSMDeep->setMinEforTracking(ToSI::eV(50.));
-
-      //sphere = new SphereT(center, MonteCarloSS::ChamberRadius);
-
-      //NULL_MSM = new NullMaterialScatterModelT();
-      //chamber = new RegionT(nullptr, NULL_MSM, sphere);
-      //chamber->updateMaterial(*(chamber->getScatterModel()), *vacuumMSM);
-
-      //layer1 = new NormalMultiPlaneShapeT();
-      //pl1 = new PlaneT(normalvector, layer1Pos);
-      //layer1->addPlane(pl1);
-      //layer1Region = new RegionT(chamber, ARCMSM, (NormalShapeT*)layer1);
-
-      //layer2 = new NormalMultiPlaneShapeT();
-      //pl2 = new PlaneT(normalvector, layer2Pos);
-      //layer2->addPlane(pl2);
-      //layer2Region = new RegionT(layer1Region, glCMSM, (NormalShapeT*)layer2);
-
-      //layer3 = new NormalMultiPlaneShapeT();
-      //pl3 = new PlaneT(normalvector, layer2Pos);
-      //layer3->addPlane(pl3);
-      //layer3Region = new RegionT(layer2Region, SiMSM, (NormalShapeT*)layer3);
-
-      //layer4 = new NormalMultiPlaneShapeT();
-      //pl4 = new PlaneT(normalvector, layer4Pos);
-      //layer4Region = new RegionT(layer3Region, SiMSM, (NormalShapeT*)layer4);
-
-      //deepRegion = new RegionT(layer3Region, SiMSMDeep, (NormalShapeT*)layer4);
-
-      //for (int i = 0; i < nlines; ++i) {
-      //   double xcenter = leftmostLineCenterx + i*pitch;
-      //   NormalIntersectionShapeT* line = (NormalIntersectionShapeT*)NShapes::createLine(-h, w, linelength, thetal, thetar, radl, radr);
-      //   const double newLinePos[] = { xcenter, 0., 0. };
-      //   line->translate(newLinePos);
-      //   RegionT lineRegion(&chamber, &PMMAMSM, line);
-      //}
-
-      //line = (NormalIntersectionShapeT*)NShapes::createLine(-h, w, linelength, thetal, thetar, radl, radr);
-      //lineRegion = new RegionT(chamber, PMMAMSM, line);
 
       initRange();
 
@@ -926,8 +743,8 @@ namespace LinesOnLayers
 
       const HistogramT& hist = back.backscatterEnergyHistogram(); //printf("49\n");
 
-      const double energyperbineV = beamEeV / hist.binCount();
-      const double maxSEbin = 50. / energyperbineV;
+      const float energyperbineV = beamEeV / hist.binCount();
+      const float maxSEbin = 50. / energyperbineV;
       int totalSE = 0;
       for (int j = 0; j < (int)maxSEbin; ++j) {
          totalSE = totalSE + hist.counts(j);
@@ -943,7 +760,7 @@ namespace LinesOnLayers
 
    __global__ void
    //__launch_bounds__(256, 3)
-   runCudaSinglePixel(float* result)
+   runCuda(float* result)
    {
       const unsigned int r = blockIdx.y*blockDim.y + threadIdx.y;
       const unsigned int c = blockIdx.x*blockDim.x + threadIdx.x;

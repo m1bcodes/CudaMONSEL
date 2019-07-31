@@ -6,9 +6,9 @@ namespace ZeroCSD
    {
    }
 
-   __host__ __device__ double ZeroCSD::compute(double d, const ElectronT* pe) const
+   __host__ __device__::SlowingDownAlg::data_type ZeroCSD::compute(::SlowingDownAlg::data_type d, const ElectronT* pe) const
    {
-      return 0.;
+      return 0.f;
    }
 
    __host__ __device__ void ZeroCSD::setMaterial(const SEmaterialT* mat)

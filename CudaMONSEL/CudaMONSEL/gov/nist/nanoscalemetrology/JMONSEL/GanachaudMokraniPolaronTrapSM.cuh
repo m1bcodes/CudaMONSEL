@@ -6,21 +6,23 @@
 
 namespace GanachaudMokraniPolaronTrapSM
 {
+   typedef ::ScatterMechanism::data_type data_type;
+
    class GanachaudMokraniPolaronTrapSM : public ScatterMechanismT
    {
    public:
-      __host__ __device__ GanachaudMokraniPolaronTrapSM(double prefactor, double extinction);
+      __host__ __device__ GanachaudMokraniPolaronTrapSM(data_type prefactor, data_type extinction);
 
-      __host__ __device__ double scatterRate(const ElectronT* pe) override;
+      __host__ __device__ data_type scatterRate(const ElectronT* pe) override;
       __host__ __device__ ElectronT* scatter(ElectronT* pe) override;
       __host__ __device__ void setMaterial(const MaterialT* mat) override;
 
       StringT toString() const;
 
    private:
-      double prefactor;
-      double extinction;
-      double CUTOFF;
+      data_type prefactor;
+      data_type extinction;
+      data_type CUTOFF;
    };
 }
 

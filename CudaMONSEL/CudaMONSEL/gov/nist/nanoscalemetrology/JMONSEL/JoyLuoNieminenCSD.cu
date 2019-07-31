@@ -76,12 +76,12 @@ namespace JoyLuoNieminenCSD
    static float MaxLossFraction = 0.1;
 #endif
 
-   __host__ __device__ double JoyLuoNieminenCSD::compute(double len, const ElectronT *pe) const
+   __host__ __device__::SlowingDownAlg::data_type JoyLuoNieminenCSD::compute(::SlowingDownAlg::data_type len, const ElectronT *pe) const
    {
       return compute(len, pe->getEnergy());
    }
 
-   __host__ __device__ float JoyLuoNieminenCSD::compute(const float len, const float kE) const
+   __host__ __device__::SlowingDownAlg::data_type JoyLuoNieminenCSD::compute(const ::SlowingDownAlg::data_type len, const ::SlowingDownAlg::data_type kE) const
    {
       if ((nce == 0) || (kE < minEforTracking) || (kE <= 0.f))
          return 0.f;

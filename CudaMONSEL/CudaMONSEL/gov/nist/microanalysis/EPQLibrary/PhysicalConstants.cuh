@@ -6,75 +6,75 @@
 namespace PhysicalConstants
 {
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-   __constant__ extern const double AvagadroNumber; // dimensionless
-   __constant__ extern const double SpeedOfLight; // m/s
+   __constant__ extern const float AvagadroNumber; // dimensionless
+   __constant__ extern const float SpeedOfLight; // m/s
 
-   __constant__ extern const double ElectronCharge; // c
-   __constant__ extern const double PlanckConstant; // j s
-   __constant__ extern const double PlanckReduced; // j s
-   __constant__ extern const double ElectronMass; // kg
+   __constant__ extern const float ElectronCharge; // c
+   __constant__ extern const float PlanckConstant; // j s
+   __constant__ extern const float PlanckReduced; // j s
+   __constant__ extern const float ElectronMass; // kg
 
-   __constant__ extern const double ElectronRestMass; // j
-   __constant__ extern const double ProtonMass; // kg
-   __constant__ extern const double NeutronMass; // kg
-   __constant__ extern const double UnifiedAtomicMass; // kg
-   __constant__ extern const double PermittivityOfFreeSpace; // f/m
-   __constant__ extern const double PermeabilityOfFreeSpace; // n/(a^2)
-   __constant__ extern const double BoltzmannConstant; // j/k
+   __constant__ extern const float ElectronRestMass; // j
+   __constant__ extern const float ProtonMass; // kg
+   __constant__ extern const float NeutronMass; // kg
+   __constant__ extern const float UnifiedAtomicMass; // kg
+   __constant__ extern const float PermittivityOfFreeSpace; // f/m
+   __constant__ extern const float PermeabilityOfFreeSpace; // n/(a^2)
+   __constant__ extern const float BoltzmannConstant; // j/k
 
-   __constant__ extern const double GravitationConstant; // kg m^2
-   __constant__ extern const double PlanckLength; // m
-   __constant__ extern const double PlanckMass; // kg
-   __constant__ extern const double PlanckTemperature; // dimensionless
-   __constant__ extern const double PlanckTime; // s
+   __constant__ extern const float GravitationConstant; // kg m^2
+   __constant__ extern const float PlanckLength; // m
+   __constant__ extern const float PlanckMass; // kg
+   __constant__ extern const float PlanckTemperature; // dimensionless
+   __constant__ extern const float PlanckTime; // s
 
-   __constant__ extern const double RydbergEnergy; // joules
+   __constant__ extern const float RydbergEnergy; // joules
 
-   __constant__ extern const double BohrRadius; // meter
+   __constant__ extern const float BohrRadius; // meter
 
-   __constant__ extern const double FineStructure;
+   __constant__ extern const float FineStructure;
 
-   __constant__ extern const double ClassicalElectronRadius;
+   __constant__ extern const float ClassicalElectronRadius;
 
-   __constant__ extern const double IcePoint; // kelvin
-   __constant__ extern const double StandardAtmosphere; // pascal
+   __constant__ extern const float IcePoint; // kelvin
+   __constant__ extern const float StandardAtmosphere; // pascal
 
-   __constant__ extern const double PI; // pi
+   __constant__ extern const float PI; // pi
 #else
-   extern const double AvagadroNumber; // dimensionless
-   extern const double SpeedOfLight; // m/s
+   extern const float AvagadroNumber; // dimensionless
+   extern const float SpeedOfLight; // m/s
 
-   extern const double ElectronCharge; // c
-   extern const double PlanckConstant; // j s
-   extern const double PlanckReduced; // j s
-   extern const double ElectronMass; // kg
+   extern const float ElectronCharge; // c
+   extern const float PlanckConstant; // j s
+   extern const float PlanckReduced; // j s
+   extern const float ElectronMass; // kg
 
-   extern const double ElectronRestMass; // j
-   extern const double ProtonMass; // kg
-   extern const double NeutronMass; // kg
-   extern const double UnifiedAtomicMass; // kg
-   extern const double PermittivityOfFreeSpace; // f/m
-   extern const double PermeabilityOfFreeSpace; // n/(a^2)
-   extern const double BoltzmannConstant; // j/k
+   extern const float ElectronRestMass; // j
+   extern const float ProtonMass; // kg
+   extern const float NeutronMass; // kg
+   extern const float UnifiedAtomicMass; // kg
+   extern const float PermittivityOfFreeSpace; // f/m
+   extern const float PermeabilityOfFreeSpace; // n/(a^2)
+   extern const float BoltzmannConstant; // j/k
 
-   extern const double GravitationConstant; // kg m^2
-   extern const double PlanckLength; // m
-   extern const double PlanckMass; // kg
-   extern const double PlanckTemperature; // dimensionless
-   extern const double PlanckTime; // s
+   extern const float GravitationConstant; // kg m^2
+   extern const float PlanckLength; // m
+   extern const float PlanckMass; // kg
+   extern const float PlanckTemperature; // dimensionless
+   extern const float PlanckTime; // s
 
-   extern const double RydbergEnergy; // joules
+   extern const float RydbergEnergy; // joules
 
-   extern const double BohrRadius; // meter
+   extern const float BohrRadius; // meter
 
-   extern const double FineStructure;
+   extern const float FineStructure;
 
-   extern const double ClassicalElectronRadius;
+   extern const float ClassicalElectronRadius;
 
-   extern const double IcePoint; // kelvin
-   extern const double StandardAtmosphere; // pascal
+   extern const float IcePoint; // kelvin
+   extern const float StandardAtmosphere; // pascal
 
-   extern const double PI; // pi
+   extern const float PI; // pi
 #endif
 };
 

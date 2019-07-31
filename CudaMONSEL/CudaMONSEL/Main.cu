@@ -496,7 +496,7 @@ int main()
    auto start = std::chrono::system_clock::now();
    printf("start timing\n");
 
-   //LinesOnLayers::runCudaSinglePixel << <gridSize, blockSize >> >(d_result);
+   //LinesOnLayers::runCuda << <gridSize, blockSize >> >(d_result);
    //checkCudaErrors(cudaDeviceSynchronize());
    //checkCudaErrors(cudaGetLastError());
 

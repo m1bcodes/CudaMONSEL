@@ -18,7 +18,7 @@ namespace SelectableElasticSM
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
       rsf(*NISTMottScatteringAngle::d_Factory), cached_kE(-1.)
 #else
-      rsf(NISTMottScatteringAngle::Factory), cached_kE(-1.)
+      rsf(NISTMottScatteringAngle::Factory), cached_kE(-1.f)
 #endif
    {
       setMaterial(&mat);
@@ -29,7 +29,7 @@ namespace SelectableElasticSM
    //   setMaterial(sm.mat);
    //}
 
-   __host__ __device__ void SelectableElasticSM::setCache(double kE)
+   __host__ __device__ void SelectableElasticSM::setCache(data_type kE)
    {
       /*
       * Algorithm: 1. Get scaled cross section (cross section times weight
@@ -46,7 +46,7 @@ namespace SelectableElasticSM
       cached_kE = kE;
    }
 
-   __host__ __device__ double SelectableElasticSM::scatterRate(const ElectronT* pe)
+   __host__ __device__ data_type SelectableElasticSM::scatterRate(const ElectronT* pe)
    {
       setCache(pe->getEnergy()); // computes totalScaledCrossSection for this eK
       return totalScaledCrossSection * densityNa;
@@ -54,20 +54,20 @@ namespace SelectableElasticSM
 
    __host__ __device__ ElectronT* SelectableElasticSM::scatter(ElectronT* pe)
    {
-      const double kE = pe->getPreviousEnergy();
+      const data_type kE = pe->getPreviousEnergy();
       if (kE != cached_kE)
          setCache(kE);
       // Decide which element we scatter from
-      const double r = Random::random() * totalScaledCrossSection;
+      const data_type r = Random::random() * totalScaledCrossSection;
       int index = 0; // Index is first index
 
       // Increment index and mechanism until cumulative scatter rate exceeds r
       while (cumulativeScaledCrossSection[index] < r)
          index++;
 
-      const double alpha = rse[index]->randomScatteringAngle(kE);
+      const data_type alpha = rse[index]->randomScatteringAngle(kE);
       if (alpha != alpha) printf("%s\n", rse[index]->toString().c_str());
-      const double beta = 2 * Math2::PI * Random::random();
+      const data_type beta = 2.f * Math2::PI * Random::random();
       pe->updateDirection(alpha, beta);
       pe->setScatteringElement(&(rse[index]->getElement()));
       return nullptr; // This mechanism is elastic. No SE.
@@ -89,7 +89,7 @@ namespace SelectableElasticSM
             rse[i] = &rsf.get(*elm);
             // The factor of 1000 in the next line is to convert atomic
             // weight in g/mole to kg/mole.
-            scalefactor[i] = (1000. * mat->weightFraction(*elm, true)) / elm->getAtomicWeight();
+            scalefactor[i] = (1000.f * mat->weightFraction(*elm, true)) / elm->getAtomicWeight();
             i++;
          }
       }

@@ -7,13 +7,13 @@
 
 namespace GanachaudMokraniPhononInelasticSM
 {
-   __host__ __device__ GanachaudMokraniPhononInelasticSM::GanachaudMokraniPhononInelasticSM(double ratemultiplier, double phononE, double temperature, double eps0, double epsInfinity) : 
+   __host__ __device__ GanachaudMokraniPhononInelasticSM::GanachaudMokraniPhononInelasticSM(data_type ratemultiplier, data_type phononE, data_type temperature, data_type eps0, data_type epsInfinity) : 
       ratemultiplier(ratemultiplier),
       phononE(phononE),
       temperature(temperature),
       eps0(eps0),
       epsInfinity(epsInfinity),
-      occupationFactor(0.5 * (1. + (1. / (::exp(phononE / (PhysicalConstants::BoltzmannConstant * temperature)) - 1.)))),
+      occupationFactor(0.5f * (1.f + (1.f / (::expf(phononE / (PhysicalConstants::BoltzmannConstant * temperature)) - 1.f)))),
       epsRatio((eps0 - epsInfinity) / eps0 / epsInfinity),
       prefactor((ratemultiplier * occupationFactor * epsRatio) / PhysicalConstants::BohrRadius)
    {
@@ -24,37 +24,37 @@ namespace GanachaudMokraniPhononInelasticSM
 
    __host__ __device__ ElectronT* GanachaudMokraniPhononInelasticSM::scatter(ElectronT* pe)
    {
-      const double kE0 = pe->getEnergy();
+      const data_type kE0 = pe->getEnergy();
       if (kE0 < phononE)
          return nullptr;
 
-      const double x = phononE / kE0; // Energy ratio
+      const data_type x = phononE / kE0; // Energy ratio
 
-      const double randoms[] = { Random::random(), Random::random() };
+      const data_type randoms[] = { Random::random(), Random::random() };
 
-      double costheta; // scattering angle
-      if (x < 0.1)
-         costheta = 1 + (((x * x) - (::pow(16., randoms[0]) * ::pow(x, 2. - (2. * randoms[0])))) / 8.);
+      data_type costheta; // scattering angle
+      if (x < 0.1f)
+         costheta = 1.f + (((x * x) - (::powf(16.f, randoms[0]) * ::powf(x, 2.f - (2.f * randoms[0])))) / 8.f);
       else { // Using general formula
-         const double root = ::sqrt(1. - x);
-         const double temp = ::pow(((-2. * (1 + root)) + x) / ((-2. * (1 - root)) + x), randoms[0]);
+         const data_type root = ::sqrtf(1. - x);
+         const data_type temp = ::powf(((-2. * (1 + root)) + x) / ((-2. * (1 - root)) + x), randoms[0]);
          costheta = temp + (((x - 2.) * (temp - 1)) / 2. / root);
       }
-      const double phi = 2. * Math2::PI * randoms[1];
+      const data_type phi = 2.f * Math2::PI * randoms[1];
 
-      pe->updateDirection(::acos(costheta), phi);
+      pe->updateDirection(::acosf(costheta), phi);
       pe->setEnergy(kE0 - phononE);
       pe->setPreviousEnergy(kE0);
 
       return nullptr;
    }
 
-   __host__ __device__ double GanachaudMokraniPhononInelasticSM::scatterRate(const ElectronT* pe)
+   __host__ __device__ data_type GanachaudMokraniPhononInelasticSM::scatterRate(const ElectronT* pe)
    {
-      const double kE = pe->getEnergy();
+      const data_type kE = pe->getEnergy();
       if (kE < phononE)
-         return 0.;
-      const double x = phononE / kE; // Energy ratio
+         return 0.f;
+      const data_type x = phononE / kE; // Energy ratio
       /*
       * In the usual case the PE has energy of a few eV. Phonons typically have
       * energies ~0.1 eV or lower, so the above ratio is usually ~1/50 or so.
@@ -63,16 +63,16 @@ namespace GanachaudMokraniPhononInelasticSM
       * numerical round-off problems. For larger x, which we expect to
       * encounter only rarely, we use the exact expression.
       */
-      double result;
-      if (x < 0.1) {
-         result = prefactor * x * ::logf(4. / x);
+      data_type result;
+      if (x < 0.1f) {
+         result = prefactor * x * ::logf(4.f / x);
          return result;
       }
-      else if (x >= 1.) // phonon energy >= PE energy: no scattering possible
+      else if (x >= 1.f) // phonon energy >= PE energy: no scattering possible
          return 0.;
       else {
-         const double temp = ::sqrt(1. - x);
-         result = prefactor * x * ::logf((1. + temp) / (1. - temp));
+         const data_type temp = ::sqrt(1.f - x);
+         result = prefactor * x * ::logf((1.f + temp) / (1.f - temp));
          return result;
       }
    }
@@ -91,5 +91,4 @@ namespace GanachaudMokraniPhononInelasticSM
       sprintf(buff, "GanachaudMokraniPhononInelasticSM(%.10e, %.10e, %.10e, %.10e, %.10e)", ratemultiplier, phononE, temperature, eps0, epsInfinity);
       return buff;
    }
-
 }

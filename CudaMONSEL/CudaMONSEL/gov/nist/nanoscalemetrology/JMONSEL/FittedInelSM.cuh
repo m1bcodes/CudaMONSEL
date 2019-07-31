@@ -10,9 +10,9 @@ namespace FittedInelSM
    class FittedInelSM : public ScatterMechanismT
    {
    public:
-      __host__ __device__ FittedInelSM(const SEmaterialT& mat, double energySEgen, const SlowingDownAlgT& sdAlg);
+      __host__ __device__ FittedInelSM(const SEmaterialT& mat, float energySEgen, const SlowingDownAlgT& sdAlg);
 
-      __host__ __device__ double scatterRate(const ElectronT* pe) override;
+      __host__ __device__ ::ScatterMechanism::data_type scatterRate(const ElectronT* pe) override;
       __host__ __device__ ElectronT* scatter(ElectronT* pe) override;
       __host__ __device__ void setMaterial(const MaterialT* mat) override;
 
@@ -20,8 +20,8 @@ namespace FittedInelSM
 
    private:
       const SlowingDownAlgT& sdAlg;
-      const double energySEgen; // Average energy for SE generation
-      double eFermi;
+      const float energySEgen; // Average energy for SE generation
+      float eFermi;
    };
 }
 

@@ -5,27 +5,27 @@
 
 namespace GanachaudMokraniPolaronTrapSM
 {
-   __host__ __device__ GanachaudMokraniPolaronTrapSM::GanachaudMokraniPolaronTrapSM(double prefactor, double extinction) :
+   __host__ __device__ GanachaudMokraniPolaronTrapSM::GanachaudMokraniPolaronTrapSM(data_type prefactor, data_type extinction) :
       prefactor(prefactor),
       extinction(extinction),
-      CUTOFF(-::log(10. / prefactor) / extinction)
+      CUTOFF(-::logf(10.f / prefactor) / extinction)
    {
-      if (prefactor < 0.) printf("ERROR: Nonpositive prefactor in GanachaudMokraniPolaronTrapSM constructor.");
-      if (extinction < 0.) printf("ERROR: Nonpositive extinction in GanachaudMokraniPolaronTrapSM constructor.");
+      if (prefactor < 0.f) printf("ERROR: Nonpositive prefactor in GanachaudMokraniPolaronTrapSM constructor.");
+      if (extinction < 0.f) printf("ERROR: Nonpositive extinction in GanachaudMokraniPolaronTrapSM constructor.");
    }
 
    __host__ __device__ ElectronT* GanachaudMokraniPolaronTrapSM::scatter(ElectronT* pe)
    {
-      pe->setEnergy(0.); // So listeners, if any, will record the energy change.
+      pe->setEnergy(0.f); // So listeners, if any, will record the energy change.
       pe->setTrajectoryComplete(true); // It's trapped
       return NULL;
    }
 
-   __host__ __device__ double GanachaudMokraniPolaronTrapSM::scatterRate(const ElectronT* pe)
+   __host__ __device__ data_type GanachaudMokraniPolaronTrapSM::scatterRate(const ElectronT* pe)
    {
-      const double kE0 = pe->getEnergy();
-      if (kE0 > CUTOFF) return 0.;
-      const double result = prefactor * ::exp(-extinction * kE0);
+      const data_type kE0 = pe->getEnergy();
+      if (kE0 > CUTOFF) return 0.f;
+      const data_type result = prefactor * ::expf(-extinction * kE0);
       return result;
    }
 

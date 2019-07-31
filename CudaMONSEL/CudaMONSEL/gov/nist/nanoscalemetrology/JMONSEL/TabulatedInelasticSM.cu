@@ -445,7 +445,7 @@ namespace TabulatedInelasticSM
       return se;
    }
 
-   __host__ __device__ double TabulatedInelasticSM::scatterRate(const ElectronT* pe)
+   __host__ __device__ data_type TabulatedInelasticSM::scatterRate(const ElectronT* pe)
    {
       kEa[0] = pe->getEnergy() + energyOffset; // The PE kinetic energy
       /*

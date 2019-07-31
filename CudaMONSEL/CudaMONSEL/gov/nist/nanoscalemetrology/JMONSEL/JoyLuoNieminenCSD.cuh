@@ -17,7 +17,7 @@ namespace JoyLuoNieminenCSD
       __host__ __device__ void init();
 
       __host__ __device__ void setMaterial(const SEmaterialT* mat) override;
-      __host__ __device__ double compute(double d, const ElectronT* pe) const override;
+      __host__ __device__::SlowingDownAlg::data_type compute(::SlowingDownAlg::data_type d, const ElectronT* pe) const override;
 
       __host__ __device__ float compute(const float len, const float kE) const;
 

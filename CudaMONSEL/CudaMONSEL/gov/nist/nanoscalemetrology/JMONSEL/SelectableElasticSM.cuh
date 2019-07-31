@@ -8,6 +8,8 @@
 
 namespace SelectableElasticSM
 {
+   typedef ::ScatterMechanism::data_type data_type;
+
    class SelectableElasticSM : public ScatterMechanismT
    {
       typedef amp::vector<const RandomizedScatterT*> RandomizedScatterList;
@@ -17,12 +19,12 @@ namespace SelectableElasticSM
       __host__ __device__ SelectableElasticSM(const MaterialT& mat);
       //SelectableElasticSM(const SelectableElasticSM&); // clonable
 
-      __host__ __device__ double scatterRate(const ElectronT* pe) override;
+      __host__ __device__ data_type scatterRate(const ElectronT* pe) override;
       __host__ __device__ ElectronT* scatter(ElectronT* pe) override;
       __host__ __device__ void setMaterial(const MaterialT* mat) override;
 
    private:
-      __host__ __device__ void setCache(double kE);
+      __host__ __device__ void setCache(data_type kE);
 
       RandomizedScatterList rse;
       // Set scatter class default to NISTMottScatteringAngle
@@ -32,12 +34,12 @@ namespace SelectableElasticSM
       /* We use cross sections divided by atomic weight */
       VectorXd cumulativeScaledCrossSection;
 
-      double totalScaledCrossSection;
+      data_type totalScaledCrossSection;
       int nce; // # constituent elements
 
-      double densityNa; // Avagadro's # * density for this material
+      data_type densityNa; // Avagadro's # * density for this material
 
-      double cached_kE; // Initialize to impossible value
+      data_type cached_kE; // Initialize to impossible value
    };
 }
 

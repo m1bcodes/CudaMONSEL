@@ -7,26 +7,26 @@
 
 namespace FittedInelSM
 {
-   __host__ __device__ FittedInelSM::FittedInelSM(const SEmaterialT& mat, double energySEgen, const SlowingDownAlgT& sdAlg) : sdAlg(sdAlg), energySEgen(energySEgen)
+   __host__ __device__ FittedInelSM::FittedInelSM(const SEmaterialT& mat, float energySEgen, const SlowingDownAlgT& sdAlg) : sdAlg(sdAlg), energySEgen(energySEgen)
    {
       setMaterial(&mat);
    }
 
    __host__ __device__ ElectronT* FittedInelSM::scatter(ElectronT* pe)
    {
-      const double phi = 2 * Math2::PI * Random::random();
-      const double theta = ::acos(1. - (2. * Random::random()));
+      const double phi = 2.f * Math2::PI * Random::random();
+      const double theta = ::acosf(1.f - (2.f * Random::random()));
 
       ElectronT* newElectron = new ElectronT(*pe, theta, phi, energySEgen + eFermi);
       if (!newElectron) printf("FittedInelSM::FittedInelSM: failed creating electron.\n");
       return newElectron;
    }
 
-   __host__ __device__ double FittedInelSM::scatterRate(const ElectronT* pe)
+   __host__ __device__::ScatterMechanism::data_type FittedInelSM::scatterRate(const ElectronT* pe)
    {
       if (pe->getEnergy() <= (energySEgen + eFermi))
-         return 0.;
-      return (-sdAlg.compute(1.e-10, pe) * 1.e10) / energySEgen;
+         return 0.f;
+      return (-sdAlg.compute(1.e-10f, pe) * 1.e10f) / energySEgen;
    }
 
    __host__ __device__ void FittedInelSM::setMaterial(const MaterialT* mat)
