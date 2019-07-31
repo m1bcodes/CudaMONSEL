@@ -17,7 +17,7 @@ namespace Electron
       return lastID;
    }
 
-   __host__ __device__ void Electron::init(const double initialPos[], double theta, double phi, double kE)
+   __host__ __device__ void Electron::init(const double initialPos[], float theta, float phi, float kE)
    {
       mPosition[0] = initialPos[0]; mPosition[1] = initialPos[1]; mPosition[2] = initialPos[2];
       mPrevPosition[0] = initialPos[0]; mPrevPosition[1] = initialPos[1]; mPrevPosition[2] = initialPos[2];
@@ -35,17 +35,17 @@ namespace Electron
       parentID = 0;
    }
 
-   __host__ __device__ Electron::Electron(const double initialPos[], double kE)
+   __host__ __device__ Electron::Electron(const double initialPos[], float kE)
    {
       init(initialPos, 0., 0., kE);
    }
 
-   Electron::Electron(const double initialPos[], double theta, double phi, double kE)
+   Electron::Electron(const double initialPos[], float theta, float phi, float kE)
    {
       init(initialPos, theta, phi, kE);
    }
 
-   __host__ __device__ Electron::Electron(const Electron& parent, double theta, double phi, double kE)
+   __host__ __device__ Electron::Electron(const Electron& parent, float theta, float phi, float kE)
    {
       init(parent.getPosition(), theta, phi, kE);
       mCurrentRegion = parent.getCurrentRegion();
@@ -53,7 +53,7 @@ namespace Electron
       parentID = parent.getIdent();
    }
 
-   __host__ __device__ void Electron::setDirection(double theta, double phi)
+   __host__ __device__ void Electron::setDirection(float theta, float phi)
    {
       mTheta = theta;
       mPhi = phi;
@@ -86,12 +86,12 @@ namespace Electron
       return mPrevRegion;
    }
 
-   __host__ __device__ double Electron::getEnergy() const
+   __host__ __device__ float Electron::getEnergy() const
    {
       return mEnergy;
    }
 
-   __host__ __device__ double Electron::getPreviousEnergy() const
+   __host__ __device__ float Electron::getPreviousEnergy() const
    {
       return previousEnergy;
    }
@@ -101,43 +101,43 @@ namespace Electron
       return mStepCount;
    }
 
-   double Electron::stepLength() const
+   float Electron::stepLength() const
    {
       return Math2::distance3d(mPrevPosition, mPosition);
    }
 
-   __host__ __device__ void Electron::candidatePoint(const double dS, double res[]) const
+   __host__ __device__ void Electron::candidatePoint(const float dS, double res[]) const
    {
-      const double st = ::sinf(mTheta);
+      const float st = ::sinf(mTheta);
       // Calculate the new point as dS distance from mPosition
       res[0] = mPosition[0] + dS * ::cosf(mPhi) * st;
       res[1] = mPosition[1] + dS * ::sinf(mPhi) * st;
       res[2] = mPosition[2] + dS * ::cosf(mTheta);
    }
 
-   __host__ __device__ void Electron::updateDirection(const double dTheta, const double dPhi)
+   __host__ __device__ void Electron::updateDirection(const float dTheta, const float dPhi)
    {
       // The candidate point is computed by rotating the current trajectory back
       // to the z-axis, deflecting the z-axis by dTheta down from the z-axis and
       // dPhi around the z-axis, then finally rotating back to the original
       // trajectory.
 
-      const double ct = ::cosf(mTheta), st = ::sinf(mTheta);
-      const double cp = ::cosf(mPhi), sp = ::sinf(mPhi);
-      const double ca = ::cosf(dTheta), sa = ::sinf(dTheta);
-      const double cb = ::cosf(dPhi);
+      const float ct = ::cosf(mTheta), st = ::sinf(mTheta);
+      const float cp = ::cosf(mPhi), sp = ::sinf(mPhi);
+      const float ca = ::cosf(dTheta), sa = ::sinf(dTheta);
+      const float cb = ::cosf(dPhi);
 
-      const double xx = cb * ct * sa + ca * st;
-      const double yy = sa * ::sinf(dPhi);
-      const double dx = cp * xx - sp * yy;
-      const double dy = cp * yy + sp * xx;
-      const double dz = ca * ct - cb * sa * st;
+      const float xx = cb * ct * sa + ca * st;
+      const float yy = sa * ::sinf(dPhi);
+      const float dx = cp * xx - sp * yy;
+      const float dy = cp * yy + sp * xx;
+      const float dz = ca * ct - cb * sa * st;
 
       mTheta = ::atan2f(::sqrtf(dx * dx + dy * dy), dz);
       mPhi = ::atan2f(dy, dx);
    }
 
-   __host__ __device__ void Electron::move(const double newPoint[], double dE)
+   __host__ __device__ void Electron::move(const double newPoint[], float dE)
    {
       // Update mPrevPosition and then mPosition
       mPrevPosition[0] = mPosition[0]; mPrevPosition[1] = mPosition[1]; mPrevPosition[2] = mPosition[2];
@@ -149,12 +149,12 @@ namespace Electron
       ++mStepCount;
    }
 
-   __host__ __device__ void Electron::setEnergy(double newEnergy)
+   __host__ __device__ void Electron::setEnergy(float newEnergy)
    {
       mEnergy = newEnergy;
    }
 
-   __host__ __device__ void Electron::setPreviousEnergy(double newPreviousEnergy)
+   __host__ __device__ void Electron::setPreviousEnergy(float newPreviousEnergy)
    {
       previousEnergy = newPreviousEnergy;
    }
@@ -175,12 +175,12 @@ namespace Electron
       mScatteringElement = scatteringElement;
    }
 
-   __host__ __device__ double Electron::getPhi() const
+   __host__ __device__ float Electron::getPhi() const
    {
       return mPhi;
    }
 
-   __host__ __device__ double Electron::getTheta() const
+   __host__ __device__ float Electron::getTheta() const
    {
       return mTheta;
    }

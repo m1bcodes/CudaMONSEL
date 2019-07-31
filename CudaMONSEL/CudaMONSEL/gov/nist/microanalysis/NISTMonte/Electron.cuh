@@ -8,32 +8,32 @@ namespace Electron
    class Electron
    {
    public:
-      __host__ __device__ Electron(const double initialPos[], double kE);
-      Electron(const double initialPos[], double theta, double phi, double kE);
-      __host__ __device__ Electron(const Electron& parent, double theta, double phi, double kE);
+      __host__ __device__ Electron(const double initialPos[], float kE);
+      Electron(const double initialPos[], float theta, float phi, float kE);
+      __host__ __device__ Electron(const Electron& parent, float theta, float phi, float kE);
 
-      __host__ __device__ void init(const double initialPos[], double theta, double phi, double kE);
+      __host__ __device__ void init(const double initialPos[], float theta, float phi, float kE);
 
-      __host__ __device__ void setDirection(double theta, double phi);
+      __host__ __device__ void setDirection(float theta, float phi);
       __host__ __device__ const double * getPosition() const;
       __host__ __device__ void setPosition(const double newpos[]);
       __host__ __device__ const double * getPrevPosition() const;
       __host__ __device__ const RegionBaseT* getCurrentRegion() const;
       const RegionBaseT* getPreviousRegion() const;
-      __host__ __device__ double getEnergy() const;
-      __host__ __device__ double getPreviousEnergy() const;
+      __host__ __device__ float getEnergy() const;
+      __host__ __device__ float getPreviousEnergy() const;
       __host__ __device__ int getStepCount() const;
-      double stepLength() const;
-      __host__ __device__ void candidatePoint(const double dS, double res[]) const;
-      __host__ __device__ void updateDirection(const double dTheta, const double dPhi);
-      __host__ __device__ void move(const double newPoint[], double dE);
-      __host__ __device__ void setEnergy(double newEnergy);
-      __host__ __device__ void setPreviousEnergy(double newPreviousEnergy);
+      float stepLength() const;
+      __host__ __device__ void candidatePoint(const float dS, double res[]) const;
+      __host__ __device__ void updateDirection(const float dTheta, const float dPhi);
+      __host__ __device__ void move(const double newPoint[], float dE);
+      __host__ __device__ void setEnergy(float newEnergy);
+      __host__ __device__ void setPreviousEnergy(float newPreviousEnergy);
       __host__ __device__ void setCurrentRegion(const RegionBaseT* reg);
       __host__ __device__ const ElementT* getScatteringElement() const;
       __host__ __device__ void setScatteringElement(const ElementT* scatteringElement);
-      __host__ __device__ double getPhi() const;
-      __host__ __device__ double getTheta() const;
+      __host__ __device__ float getPhi() const;
+      __host__ __device__ float getTheta() const;
       __host__ __device__ bool isTrajectoryComplete() const;
       __host__ __device__ void setTrajectoryComplete(bool trajectoryComplete);
       __host__ __device__ long getIdent() const;
@@ -47,13 +47,13 @@ namespace Electron
       double mPrevPosition[3];
 
       // The direction of the current trajectory segment
-      double mPhi, mTheta; // transient
+      float mPhi, mTheta; // transient
 
       // The kinetic energy of the electron
-      double mEnergy; // transient
+      float mEnergy; // transient
 
       // Kinetic energy of the electron upon conclusion of the previous step
-      double previousEnergy; // transient
+      float previousEnergy; // transient
 
       int mStepCount; // transient
 
