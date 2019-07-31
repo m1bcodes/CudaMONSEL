@@ -27,7 +27,7 @@ namespace UncertainValue2
    {
    }
 
-   __host__ __device__ UncertainValue2::UncertainValue2(const double v, const double dv) : mValue(v)
+   __host__ __device__ UncertainValue2::UncertainValue2(const data_type v, const data_type dv) : mValue(v)
    {
       char tmpName[MAX_LEN];
       memcpy(tmpName, DEFAULT, sizeof(DEFAULT));
@@ -36,16 +36,16 @@ namespace UncertainValue2
       assignComponent(tmpName, dv);
    }
 
-   __host__ __device__ UncertainValue2::UncertainValue2(const double v) : mValue(v)
+   __host__ __device__ UncertainValue2::UncertainValue2(const data_type v) : mValue(v)
    {
    }
 
-   UncertainValue2::UncertainValue2(double v, const char source[], double dv) : mValue(v)
+   UncertainValue2::UncertainValue2(data_type v, const char source[], data_type dv) : mValue(v)
    {
       assignComponent(source, dv);
    }
 
-   __host__ __device__ UncertainValue2::UncertainValue2(double v, const ComponentMapT& sigmas) : mValue(v), mSigmas(sigmas)
+   __host__ __device__ UncertainValue2::UncertainValue2(data_type v, const ComponentMapT& sigmas) : mValue(v), mSigmas(sigmas)
    {
    }
 
@@ -99,7 +99,7 @@ namespace UncertainValue2
       return res;
    }
 
-   __host__ __device__ void UncertainValue2::assignComponent(const StringT& name, double sigma)
+   __host__ __device__ void UncertainValue2::assignComponent(const StringT& name, const data_type sigma)
    {
       if (sigma != 0.0) {
          mSigmas.insert(amp::make_pair(name, sigma));
@@ -109,10 +109,10 @@ namespace UncertainValue2
       }
    }
 
-   __host__ __device__ double UncertainValue2::getComponent(const StringT& src) const
+   __host__ __device__ data_type UncertainValue2::getComponent(const StringT& src) const
    {
       auto itr = mSigmas.find(src);
-      return itr == mSigmas.end() ? 0 : (double)itr->second;
+      return itr == mSigmas.end() ? 0 : (data_type)itr->second;
    }
 
    UncertainValue2::ComponentMapT& UncertainValue2::getComponents()
@@ -146,7 +146,7 @@ namespace UncertainValue2
          printf("A component named %s already exists.", newName.c_str());
          return;
       }
-      double val = mSigmas.erase(oldName);
+      data_type val = mSigmas.erase(oldName);
       if (val != NULL) {
          mSigmas.insert(amp::make_pair(newName, val));
       }
@@ -155,7 +155,7 @@ namespace UncertainValue2
    UncertainValue2 add(const UncertainValue2 uvs[], int uvsLen)
    {
       UncertainValue2::KeySetT keys;
-      double sum = 0.0;
+      data_type sum = 0.0;
       for (int k = 0; k < uvsLen; ++k) {
          sum += uvs[k].doubleValue();
 
@@ -167,7 +167,7 @@ namespace UncertainValue2
 
       for (auto itr = keys.begin(); itr != keys.end(); ++itr) {
          auto src = *itr;
-         double unc = 0.0;
+         data_type unc = 0.0;
          // This seems right but is it????
          for (int k = 0; k < uvsLen; ++k) {
             auto uv = uvs[k];
@@ -178,7 +178,7 @@ namespace UncertainValue2
       return res;
    }
 
-   __host__ __device__ UncertainValue2 add(const double a, const UncertainValue2& uva, const double b, const UncertainValue2& uvb)
+   __host__ __device__ UncertainValue2 add(const data_type a, const UncertainValue2& uva, const data_type b, const UncertainValue2& uvb)
    {
       UncertainValue2::KeySetT keys;
       UncertainValue2 res(a * uva.doubleValue() + b * uvb.doubleValue());
@@ -206,16 +206,16 @@ namespace UncertainValue2
    UncertainValue2 mean(const UncertainValue2 uvs[], int uvsLen)
    {
       auto uv = add(uvs, uvsLen);
-      return divide(uv, (double)uvsLen);
+      return divide(uv, (data_type)uvsLen);
    }
 
    UncertainValue2 weightedMean(const UncertainValue2 cuv[], int uvsLen)
    {
-      double varSum = 0.0, sum = 0.0;
+      data_type varSum = 0.0, sum = 0.0;
 
       for (int k = 0; k < uvsLen; ++k) {
          auto uv = cuv[k];
-         const double ivar = 1.0 / uv.variance();
+         const data_type ivar = 1.0 / uv.variance();
          if (isnan(ivar) || isinf(ivar)) {
             printf("%s\n", "Unable to compute the weighted mean when one or more datapoints have zero uncertainty.");
             return NaN();
@@ -223,7 +223,7 @@ namespace UncertainValue2
          varSum += ivar;
          sum += ivar * uv.doubleValue();
       }
-      const double iVarSum = 1.0 / varSum;
+      const data_type iVarSum = 1.0 / varSum;
       if (isnan(iVarSum) || isinf(iVarSum)) {
          printf("UncertainValue2::weightedMean: badddddd\n");
          return NaN();
@@ -274,13 +274,13 @@ namespace UncertainValue2
       return res;
    }
 
-   UncertainValue2 add(const UncertainValue2& v1, double v2)
+   UncertainValue2 add(const UncertainValue2& v1, data_type v2)
    {
       auto tmp = UncertainValue2(v2);
       return add(1.0, v1, 1.0, tmp);
    }
 
-   UncertainValue2 add(double v1, const UncertainValue2& v2)
+   UncertainValue2 add(data_type v1, const UncertainValue2& v2)
    {
       auto tmp = UncertainValue2(v1);
       return add(1.0, tmp, 1.0, v2);
@@ -291,7 +291,7 @@ namespace UncertainValue2
       return add(1.0, v1, 1.0, v2);
    }
 
-   __host__ __device__ UncertainValue2 multiply(double v1, const UncertainValue2& v2)
+   __host__ __device__ UncertainValue2 multiply(data_type v1, const UncertainValue2& v2)
    {
       if (v2.uncertainty() < 0.0) {
          printf("UncertainValue2 multiply: v2.uncertainty() = %.10e < 0.0", v2.uncertainty());
@@ -300,7 +300,7 @@ namespace UncertainValue2
       UncertainValue2 res(v1 * v2.doubleValue());
 
       for (auto itr = v2.getComponentsItrBegin(); itr != v2.getComponentsItrEnd(); ++itr) {
-         res.assignComponent(itr->first, v1 * (double)itr->second);
+         res.assignComponent(itr->first, v1 * (data_type)itr->second);
       }
       return res;
    }
@@ -335,7 +335,7 @@ namespace UncertainValue2
 
    __host__ __device__ UncertainValue2 divide(const UncertainValue2& v1, const UncertainValue2& v2)
    {
-      const double v = v1.doubleValue() / v2.doubleValue();
+      const data_type v = v1.doubleValue() / v2.doubleValue();
       if (isnan(v) || isinf(v)) {
          printf("UncertainValue2::divide: isnan(v) || isinf(v) (%.10e)\n");
          return v;
@@ -343,8 +343,8 @@ namespace UncertainValue2
 
       UncertainValue2::KeySetT keys;
 
-      //std::transform(v1.getComponentsItrBegin(), v1.getComponentsItrEnd(), std::inserter(keys, keys.end()), [](LinkedListKV::Node<StringT, double> pair){ return pair.first; });
-      //std::transform(v2.getComponentsItrBegin(), v2.getComponentsItrEnd(), std::inserter(keys, keys.end()), [](LinkedListKV::Node<StringT, double> pair){ return pair.first; });
+      //std::transform(v1.getComponentsItrBegin(), v1.getComponentsItrEnd(), std::inserter(keys, keys.end()), [](LinkedListKV::Node<StringT, data_type> pair){ return pair.first; });
+      //std::transform(v2.getComponentsItrBegin(), v2.getComponentsItrEnd(), std::inserter(keys, keys.end()), [](LinkedListKV::Node<StringT, data_type> pair){ return pair.first; });
 
       for (auto itr = v1.getComponentsItrBegin(); itr != v1.getComponentsItrEnd(); ++itr) {
          keys.insert(itr->first);
@@ -353,8 +353,8 @@ namespace UncertainValue2
          keys.insert(itr->first);
       }
 
-      const double ua = ::fabs(1.0 / v2.doubleValue());
-      const double ub = ::fabs(v1.doubleValue() / (v2.doubleValue() * v2.doubleValue()));
+      const data_type ua = ::fabs(1.0 / v2.doubleValue());
+      const data_type ub = ::fabs(v1.doubleValue() / (v2.doubleValue() * v2.doubleValue()));
 
       UncertainValue2 res(v);
       for (auto itr = keys.begin(); itr != keys.end(); ++itr) {
@@ -368,15 +368,15 @@ namespace UncertainValue2
 
    __host__ __device__ void divide(const UncertainValue2& v1, const UncertainValue2& v2, UncertainValue2& res)
    {
-      const double v = res.doubleValue(); // v1.doubleValue() / v2.doubleValue();
+      const data_type v = res.doubleValue(); // v1.doubleValue() / v2.doubleValue();
       if (isnan(v) || isinf(v)) {
          printf("UncertainValue2::divide: isnan(v) || isinf(v) (%.10e)\n");
       }
 
       UncertainValue2::KeySetT keys;
 
-      //std::transform(v1.getComponentsItrBegin(), v1.getComponentsItrEnd(), std::inserter(keys, keys.end()), [](LinkedListKV::Node<StringT, double> pair){ return pair.first; });
-      //std::transform(v2.getComponentsItrBegin(), v2.getComponentsItrEnd(), std::inserter(keys, keys.end()), [](LinkedListKV::Node<StringT, double> pair){ return pair.first; });
+      //std::transform(v1.getComponentsItrBegin(), v1.getComponentsItrEnd(), std::inserter(keys, keys.end()), [](LinkedListKV::Node<StringT, data_type> pair){ return pair.first; });
+      //std::transform(v2.getComponentsItrBegin(), v2.getComponentsItrEnd(), std::inserter(keys, keys.end()), [](LinkedListKV::Node<StringT, data_type> pair){ return pair.first; });
 
       for (auto itr = v1.getComponentsItrBegin(); itr != v1.getComponentsItrEnd(); ++itr) {
          keys.insert(itr->first);
@@ -385,8 +385,8 @@ namespace UncertainValue2
          keys.insert(itr->first);
       }
 
-      const double ua = fabs(1.0 / v2.doubleValue());
-      const double ub = fabs(v1.doubleValue() / (v2.doubleValue() * v2.doubleValue()));
+      const data_type ua = fabs(1.0 / v2.doubleValue());
+      const data_type ub = fabs(v1.doubleValue() / (v2.doubleValue() * v2.doubleValue()));
 
       for (auto itr = keys.begin(); itr != keys.end(); ++itr) {
          const auto &src = *itr;
@@ -395,20 +395,20 @@ namespace UncertainValue2
       //std::transform(keys.begin(), keys.end(), std::inserter(res.getComponents(), res.getComponents().end()), [&](StringT name){ return amp::make_pair(name, ua * v1.getComponent(name) + ub * v2.getComponent(name)); });
    }
 
-   UncertainValue2 divide(double a, const UncertainValue2& b)
+   UncertainValue2 divide(data_type a, const UncertainValue2& b)
    {
       UncertainValue2 res(a / b.doubleValue());
       if (!(isnan(res.doubleValue()) || isinf(res.doubleValue()))) {
-         const double ub = fabs(a / (b.doubleValue() * b.doubleValue()));
+         const data_type ub = fabs(a / (b.doubleValue() * b.doubleValue()));
 
          for (auto itr = b.getComponentsItrBegin(); itr != b.getComponentsItrEnd(); ++itr) {
-            res.assignComponent(itr->first, ub * (double)itr->second);
+            res.assignComponent(itr->first, ub * (data_type)itr->second);
          }
       }
       return res;
    }
 
-   UncertainValue2 divide(const UncertainValue2& a, double b)
+   UncertainValue2 divide(const UncertainValue2& a, data_type b)
    {
       if (isnan(1.0 / b)) {
          return UncertainValue2(NAN);
@@ -417,10 +417,10 @@ namespace UncertainValue2
          return UncertainValue2(INFINITY);
       }
       UncertainValue2 res(a.doubleValue() / b);
-      const double ua = fabs(1.0 / b);
+      const data_type ua = fabs(1.0 / b);
 
       for (auto itr = a.getComponentsItrBegin(); itr != a.getComponentsItrEnd(); ++itr) {
-         res.assignComponent(itr->first, ua * (double)itr->second);
+         res.assignComponent(itr->first, ua * (data_type)itr->second);
       }
       return res;
    }
@@ -432,19 +432,19 @@ namespace UncertainValue2
          return NULL;
       }
 
-      double ex = ::exp(x.doubleValue());
+      data_type ex = ::exp(x.doubleValue());
       UncertainValue2 res(ex);
 
       for (auto itr = x.getComponentsItrBegin(); itr != x.getComponentsItrEnd(); ++itr) {
-         res.assignComponent(itr->first, ex * (double)itr->second);
+         res.assignComponent(itr->first, ex * (data_type)itr->second);
       }
       return res;
    }
 
    UncertainValue2 log(const UncertainValue2& v2)
    {
-      double tmp = 1.0 / v2.doubleValue();
-      const double lv = ::log(v2.doubleValue());
+      data_type tmp = 1.0 / v2.doubleValue();
+      const data_type lv = ::log(v2.doubleValue());
       if (isnan(tmp) || isnan(lv)) {
          return UncertainValue2(NAN);
       }
@@ -454,23 +454,23 @@ namespace UncertainValue2
       UncertainValue2 res(lv);
 
       for (auto itr = v2.getComponentsItrBegin(); itr != v2.getComponentsItrEnd(); ++itr) {
-         res.assignComponent(itr->first, tmp * (double)itr->second);
+         res.assignComponent(itr->first, tmp * (data_type)itr->second);
       }
 
       return res;
    }
 
-   UncertainValue2 pow(const UncertainValue2& v1, double n)
+   UncertainValue2 pow(const UncertainValue2& v1, data_type n)
    {
       if (v1.doubleValue() == 0.0) {
          return UncertainValue2(0.0);
       }
-      const double f = ::pow(v1.doubleValue(), n);
-      const double df = n * ::pow(v1.doubleValue(), n - 1.0);
+      const data_type f = ::pow(v1.doubleValue(), n);
+      const data_type df = n * ::pow(v1.doubleValue(), n - 1.0);
       UncertainValue2 res(f);
 
       for (auto itr = v1.getComponentsItrBegin(); itr != v1.getComponentsItrEnd(); ++itr) {
-         res.assignComponent(itr->first, df * (double)itr->second);
+         res.assignComponent(itr->first, df * (data_type)itr->second);
       }
 
       return res;
@@ -508,7 +508,7 @@ namespace UncertainValue2
    //   return head;
    //}
 
-   __host__ __device__ double UncertainValue2::doubleValue() const
+   __host__ __device__ data_type UncertainValue2::doubleValue() const
    {
       return mValue;
    }
@@ -518,23 +518,23 @@ namespace UncertainValue2
       return !mSigmas.empty();
    }
 
-   __host__ __device__ double UncertainValue2::uncertainty() const
+   __host__ __device__ data_type UncertainValue2::uncertainty() const
    {
       return ::sqrt(variance());
    }
 
-   __host__ __device__ double UncertainValue2::variance() const
+   __host__ __device__ data_type UncertainValue2::variance() const
    {
-      double sigma2 = 0.0;
+      data_type sigma2 = 0.0;
       for (auto &s : mSigmas) {
-         //printf("%.10e, ", (double)s.second);
-         sigma2 += (double)s.second * (double)s.second;
+         //printf("%.10e, ", (data_type)s.second);
+         sigma2 += (data_type)s.second * (data_type)s.second;
       }
       //printf("\n");
       return sigma2;
    }
 
-   double UncertainValue2::fractionalUncertainty() const
+   data_type UncertainValue2::fractionalUncertainty() const
    {
       if (isnan(1.0 / mValue)) {
          return NAN;
@@ -554,7 +554,7 @@ namespace UncertainValue2
       for (auto s : other.mSigmas) {
          auto itr = mSigmas.find(s.first);
          if (itr == mSigmas.end()) return false;
-         if ((double)itr->second != (double)s.second) return false;
+         if ((data_type)itr->second != (data_type)s.second) return false;
       }
 
       return mValue == other.doubleValue();
@@ -603,8 +603,8 @@ namespace UncertainValue2
 
    UncertainValue2 atan(const UncertainValue2& uv)
    {
-      double f = ::atan(uv.doubleValue());
-      double df = 1.0 / (1.0 + uv.doubleValue() * uv.doubleValue());
+      data_type f = ::atan(uv.doubleValue());
+      data_type df = 1.0 / (1.0 + uv.doubleValue() * uv.doubleValue());
 
       if (isnan(f)) {
          return UncertainValue2(NAN);
@@ -615,7 +615,7 @@ namespace UncertainValue2
       UncertainValue2 res(f);
 
       for (auto itr = uv.getComponentsItrBegin(); itr != uv.getComponentsItrEnd(); ++itr) {
-         res.assignComponent(itr->first, df * (double)itr->second);
+         res.assignComponent(itr->first, df * (data_type)itr->second);
       }
 
       return res;
@@ -623,8 +623,8 @@ namespace UncertainValue2
 
    UncertainValue2 atan2(const UncertainValue2& y, const UncertainValue2& x)
    {
-      double f = ::atan2(y.doubleValue(), x.doubleValue());
-      double df = 1.0 / (1.0 + ::pow(y.doubleValue() / x.doubleValue(), 2.0));
+      data_type f = ::atan2(y.doubleValue(), x.doubleValue());
+      data_type df = 1.0 / (1.0 + ::pow(y.doubleValue() / x.doubleValue(), 2.0));
 
       if (isnan(f)) {
          return UncertainValue2(NAN);
@@ -636,7 +636,7 @@ namespace UncertainValue2
 
       auto m = divide(y, x).getComponents();
       for (auto itr = m.begin(); itr != m.end(); ++itr) {
-         res.assignComponent(itr->first, df * (double)itr->second);
+         res.assignComponent(itr->first, df * (data_type)itr->second);
       }
       return res;
    }
@@ -683,7 +683,7 @@ namespace UncertainValue2
    {
    }
 
-   void Correlations::add(const StringT& src1, const StringT& src2, double corr)
+   void Correlations::add(const StringT& src1, const StringT& src2, data_type corr)
    {
       if (!(corr >= -1.0) && (corr <= 1.0)) {
          printf("%s\n", "Correlations::add: invalid bound");
@@ -692,16 +692,16 @@ namespace UncertainValue2
       corr = ::fmax(corr, 1.0);
       corr = ::fmin(corr, -1.0);
       Key k = Key(src1, src2);
-      mCorrelations.insert(std::pair<Key, double>(k, corr));
+      mCorrelations.insert(std::pair<Key, data_type>(k, corr));
    }
 
-   double Correlations::get(const StringT& src1, const StringT& src2) const
+   data_type Correlations::get(const StringT& src1, const StringT& src2) const
    {
       auto k = Key(src1, src2);
       return mCorrelations.at(k);
    }
 
-   double UncertainValue2::variance(const Correlations& corr)
+   data_type UncertainValue2::variance(const Correlations& corr)
    {
       UncertainValue2::ComponentMapT sigmas = getComponents();
 
@@ -711,9 +711,9 @@ namespace UncertainValue2
       }
 
       UncertainValue2::KeySetT itr1(keys);
-      double res = 0.0;
+      data_type res = 0.0;
       for (auto s : keys) {
-         double val = sigmas[s];
+         data_type val = sigmas[s];
          if (!val) {
             printf("UncertainValue2::variance: key %s not found.", s.c_str());
          }
@@ -723,7 +723,7 @@ namespace UncertainValue2
       for (auto itr1 = keys.begin(); itr1 != keys.end(); ++itr1) {
          for (auto itr2 = itr1; itr2 != keys.end(); ++itr2) {
             auto key1 = *itr1, key2 = *itr2;
-            double sigma1 = sigmas[key1], sigma2 = sigmas[key2];
+            data_type sigma1 = sigmas[key1], sigma2 = sigmas[key2];
             if (!sigma1) {
                printf("UncertainValue2::variance: key1 %s not found.", key1.c_str());
             }
@@ -736,7 +736,7 @@ namespace UncertainValue2
       return res;
    }
 
-   double UncertainValue2::uncertainty(Correlations& corr)
+   data_type UncertainValue2::uncertainty(Correlations& corr)
    {
       return ::sqrt(variance(corr));
    }
