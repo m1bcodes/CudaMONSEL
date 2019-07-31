@@ -24,7 +24,7 @@ namespace SEmaterial
    {
    }
 
-   __host__ __device__ SEmaterial::SEmaterial(const Composition& comp, double density) :
+   __host__ __device__ SEmaterial::SEmaterial(const Composition& comp, data_type density) :
       Material(comp, density),
       workfunction(0.),
       energyCBbottom(0.),
@@ -32,7 +32,7 @@ namespace SEmaterial
    {
    }
 
-   __host__ __device__ SEmaterial::SEmaterial(const Element::Element* elms[], int elemLen, const double weightFracs[], int wfLen, double density, char* name) :
+   __host__ __device__ SEmaterial::SEmaterial(const Element::Element* elms[], int elemLen, const data_type weightFracs[], int wfLen, data_type density, char* name) :
       Material(elms, elemLen, weightFracs, wfLen, density, name),
       workfunction(0.),
       energyCBbottom(0.),
@@ -64,7 +64,7 @@ namespace SEmaterial
       return this == &other;
    }
 
-   //void SEmaterial::addBindingEnergy(double bindingEnergy, double density)
+   //void SEmaterial::addBindingEnergy(data_type bindingEnergy, data_type density)
    //{
    //   if (bindingEnergy < 0.0) {
    //      printf("Binding energies must be positive.");
@@ -86,7 +86,7 @@ namespace SEmaterial
    //   version = (version == _UI32_MAX) ? 0L : version + 1L;
    //}
 
-   //void SEmaterial::addBindingEnergy(double bindingEnergy, double kineticEnergy, double density)
+   //void SEmaterial::addBindingEnergy(data_type bindingEnergy, data_type kineticEnergy, data_type density)
    //{
    //   if (bindingEnergy < 0.0) {
    //      printf("Binding energies must be positive.");
@@ -112,13 +112,13 @@ namespace SEmaterial
    //   if (bindingEnergy.size() != density.size()) {
    //      printf("Unequal # of binding energies and densities");
    //   }
-   //   for (double b : bindingEnergy) {
+   //   for (data_type b : bindingEnergy) {
    //      if (b < 0.0) {
    //         printf("Binding energies must be positive.");
    //         return;
    //      }
    //   }
-   //   for (double d : density) {
+   //   for (data_type d : density) {
    //      if (d < 0.0) {
    //         printf("Electron density must be positive.");
    //         return;
@@ -126,7 +126,7 @@ namespace SEmaterial
    //   }
    //   this->bindingEnergy.insert(this->bindingEnergy.end(), bindingEnergy.begin(), bindingEnergy.end());
    //   // Use default kinetic energy
-   //   for (double b : bindingEnergy) {
+   //   for (data_type b : bindingEnergy) {
    //      if (-b > energyCBbottom) {
    //         this->kineticEnergy.push_back(-b - energyCBbottom);
    //      }
@@ -145,19 +145,19 @@ namespace SEmaterial
    //      printf("Lists of energies and densities must be equal length");
    //      return;
    //   }
-   //   for (double b : bindingEnergy) {
+   //   for (data_type b : bindingEnergy) {
    //      if (b < 0.0) {
    //         printf("Binding energies must be positive.");
    //         return;
    //      }
    //   }
-   //   for (double b : kineticEnergy) {
+   //   for (data_type b : kineticEnergy) {
    //      if (b < 0.0) {
    //         printf("Kinetic energies must be positive.");
    //         return;
    //      }
    //   }
-   //   for (double d : density) {
+   //   for (data_type d : density) {
    //      if (d < 0.0) {
    //         printf("Electron density must be positive.");
    //         return;
@@ -170,7 +170,7 @@ namespace SEmaterial
    //   version = (version == _UI32_MAX) ? 0L : version + 1L;
    //}
 
-   void SEmaterial::addCoreEnergy(double coreEnergy)
+   void SEmaterial::addCoreEnergy(data_type coreEnergy)
    {
       if (coreEnergy < 0.0) {
          printf("Core energies must be positive.");
@@ -184,7 +184,7 @@ namespace SEmaterial
    void SEmaterial::addCoreEnergy(const Setd& coreEnergy)
    {
       // Error checking
-      for (double cE : coreEnergy) {
+      for (data_type cE : coreEnergy) {
          if (cE < 0.0) {
             printf("Core energies must be positive.");
          }
@@ -215,7 +215,7 @@ namespace SEmaterial
       return coreEnergy;
    }
 
-   __host__ __device__ double SEmaterial::getEFermi() const
+   __host__ __device__ data_type SEmaterial::getEFermi() const
    {
       return -energyCBbottom - workfunction;
    }
@@ -225,12 +225,12 @@ namespace SEmaterial
    //   return electronDensity;
    //}
 
-   __host__ __device__ double SEmaterial::getEnergyCBbottom() const
+   __host__ __device__ data_type SEmaterial::getEnergyCBbottom() const
    {
       return energyCBbottom;
    }
 
-   double SEmaterial::getEplasmon() const
+   data_type SEmaterial::getEplasmon() const
    {
       return eplasmon;
    }
@@ -240,22 +240,22 @@ namespace SEmaterial
    //   return kineticEnergy;
    //}
 
-   __host__ __device__ double SEmaterial::getWorkfunction() const
+   __host__ __device__ data_type SEmaterial::getWorkfunction() const
    {
       return workfunction;
    }
 
-   __host__ __device__ double SEmaterial::getBandgap() const
+   __host__ __device__ data_type SEmaterial::getBandgap() const
    {
       return bandgap;
    }
 
-   double SEmaterial::getEpsr() const
+   data_type SEmaterial::getEpsr() const
    {
       return epsr;
    }
 
-   double SEmaterial::getDielectricBreakdownField() const
+   data_type SEmaterial::getDielectricBreakdownField() const
    {
       return dielectricBreakdownField;
    }
@@ -268,7 +268,7 @@ namespace SEmaterial
    //   version = (version == _UI32_MAX) ? 0L : version + 1L;
    //}
 
-   //void SEmaterial::removeCoreEnergy(double index)
+   //void SEmaterial::removeCoreEnergy(data_type index)
    //{
    //   coreEnergy.erase(index);
    //   version = (version == _UI32_MAX) ? 0L : version + 1L;
@@ -290,7 +290,7 @@ namespace SEmaterial
    //   dielectricBreakdownField = mat.getDielectricBreakdownField();
    //}
 
-   //void SEmaterial::setBindingEnergy(int index, double energy)
+   //void SEmaterial::setBindingEnergy(int index, data_type energy)
    //{
    //   if (energy < 0.) {
    //      printf("Binding energies must be positive.");
@@ -313,7 +313,7 @@ namespace SEmaterial
       this->coreEnergy.clear();
    }
 
-   __host__ __device__ void SEmaterial::setCoreEnergy(const double coreEnergy[], int len)
+   __host__ __device__ void SEmaterial::setCoreEnergy(const data_type coreEnergy[], int len)
    {
       setCoreEnergy();
       for (int i = 0; i < len; ++i) {
@@ -329,7 +329,7 @@ namespace SEmaterial
       version = (version == _UI32_MAX) ? 0L : version + 1L;
    }
 
-   //void SEmaterial::setElectronDensity(int index, double density)
+   //void SEmaterial::setElectronDensity(int index, data_type density)
    //{
    //   if (density < 0.) {
    //      printf("Electron density must be positive.");
@@ -338,7 +338,7 @@ namespace SEmaterial
    //   version = (version == _UI32_MAX) ? 0L : version + 1L;
    //}
 
-   __host__ __device__ void SEmaterial::setEnergyCBbottom(double energyCBbottom)
+   __host__ __device__ void SEmaterial::setEnergyCBbottom(data_type energyCBbottom)
    {
       this->energyCBbottom = energyCBbottom;
       if (!userSetKE) {
@@ -347,26 +347,26 @@ namespace SEmaterial
       version = (version == _UI32_MAX) ? 0L : version + 1L;
    }
 
-   __host__ __device__ void SEmaterial::setBandgap(double bandgap)
+   __host__ __device__ void SEmaterial::setBandgap(data_type bandgap)
    {
       this->bandgap = bandgap;
       version = (version == _UI32_MAX) ? 0L : version + 1L;
    }
 
-   void SEmaterial::setEplasmon(double eplasmon)
+   void SEmaterial::setEplasmon(data_type eplasmon)
    {
       this->eplasmon = eplasmon;
       version = (version == _UI32_MAX) ? 0L : version + 1L;
    }
 
-   static const double coreEnergyCutoff = ToSI::eV(20.);
+   static const data_type coreEnergyCutoff = ToSI::eV(20.);
 
    void SEmaterial::setEstimatedCoreEnergy()
    {
       setEstimatedCoreEnergy(coreEnergyCutoff);
    }
 
-   void SEmaterial::setEstimatedCoreEnergy(double cutoff)
+   void SEmaterial::setEstimatedCoreEnergy(data_type cutoff)
    {
       setCoreEnergy(); // Clear any existing ones.
       auto constituentElements = this->getElementSet();
@@ -374,7 +374,7 @@ namespace SEmaterial
          int i = 0;
          while (true) {
             AtomicShellT as(*el, i);
-            double shellenergy = as.getGroundStateOccupancy() > 0 ? as.getEdgeEnergy() : NAN;
+            data_type shellenergy = as.getGroundStateOccupancy() > 0 ? as.getEdgeEnergy() : NAN;
             if (shellenergy <= cutoff) break;
             addCoreEnergy(shellenergy);
             i++;
@@ -396,7 +396,7 @@ namespace SEmaterial
       version = (version == _UI32_MAX) ? 0L : version + 1L;
    }
 
-   //void SEmaterial::setKineticEnergy(int index, double energy)
+   //void SEmaterial::setKineticEnergy(int index, data_type energy)
    //{
    //   if (energy < 0.) {
    //      printf("Kinetic energies must be positive.");
@@ -406,7 +406,7 @@ namespace SEmaterial
    //   version = (version == _UI32_MAX) ? 0L : version + 1L;
    //}
 
-   __host__ __device__ void SEmaterial::setWorkfunction(double workfunction)
+   __host__ __device__ void SEmaterial::setWorkfunction(data_type workfunction)
    {
       this->workfunction = workfunction;
       if (energyCBbottom > -workfunction) {
@@ -415,13 +415,13 @@ namespace SEmaterial
       version = (version == _UI32_MAX) ? 0L : version + 1L;
    }
 
-   void SEmaterial::setEpsr(double epsr)
+   void SEmaterial::setEpsr(data_type epsr)
    {
       this->epsr = epsr;
       version = (version == _UI32_MAX) ? 0L : version + 1L;
    }
 
-   void SEmaterial::setDielectricBreakdownField(double breakdownField)
+   void SEmaterial::setDielectricBreakdownField(data_type breakdownField)
    {
       dielectricBreakdownField = breakdownField;
       version = (version == _UI32_MAX) ? 0L : version + 1L;

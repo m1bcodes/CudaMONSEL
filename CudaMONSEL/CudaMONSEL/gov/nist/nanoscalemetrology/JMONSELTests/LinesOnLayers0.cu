@@ -750,7 +750,7 @@ namespace LinesOnLayers
 #endif
 
       CompositionT PMMAcomp;
-      const double compositionCOH[] = { 5.f, 2.f, 8.f };
+      const ::Composition::data_type compositionCOH[] = { 5.f, 2.f, 8.f };
       PMMAcomp.defineByMoleFraction(componentsCOH, 3, compositionCOH, 3);
       SEmaterialT PMMA(PMMAcomp, PMMAdensity);
       PMMA.setName("PMMA");
@@ -793,12 +793,12 @@ namespace LinesOnLayers
       const ElementT* glCComponents[] = { &Element::C };
 #endif
 
-      const double glCComposition[] = { 1. };
+      const ::Composition::data_type glCComposition[] = { 1. };
       SEmaterialT glC(glCComponents, 1, glCComposition, 1, glCdensity, "glassy Carbon");
       glC.setWorkfunction(ToSI::eV(glCworkfun));
       glC.setEnergyCBbottom(ToSI::eV(glCpotU));
       glC.setBandgap(ToSI::eV(glCbandgap));
-      const double glCCoreEnergy[] = { ToSI::eV(284.2) };
+      const ::Composition::data_type glCCoreEnergy[] = { ToSI::eV(284.2) };
       glC.setCoreEnergy(glCCoreEnergy, 1);
 
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
@@ -838,12 +838,12 @@ namespace LinesOnLayers
       const ElementT* SiComponent[] = { &Element::Si };
 #endif
 
-      const double SiComposition[] = { 1. };
+      const ::Composition::data_type SiComposition[] = { 1. };
       SEmaterialT Si(SiComponent, 1, SiComposition, 1, Sidensity, "Silicon");
       Si.setWorkfunction(ToSI::eV(Siworkfun));
       Si.setEnergyCBbottom(ToSI::eV(SipotU));
       Si.setBandgap(ToSI::eV(Sibandgap));
-      const double SiCoreEnergy[] = { ToSI::eV(99.2), ToSI::eV(99.8), ToSI::eV(149.7), ToSI::eV(1839.) };
+      const ::Material::data_type SiCoreEnergy[] = { ToSI::eV(99.2), ToSI::eV(99.8), ToSI::eV(149.7), ToSI::eV(1839.) };
       Si.setCoreEnergy(SiCoreEnergy, 4);
 
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))

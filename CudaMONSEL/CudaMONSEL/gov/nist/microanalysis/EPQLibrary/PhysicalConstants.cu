@@ -1,6 +1,7 @@
 #include "PhysicalConstants.cuh"
 
-namespace PhysicalConstants {
+namespace PhysicalConstants
+{
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
    __constant__ const double AvagadroNumber = 6.0221415e23; // dimensionless
    __constant__ const double SpeedOfLight = 299792458; // m/s

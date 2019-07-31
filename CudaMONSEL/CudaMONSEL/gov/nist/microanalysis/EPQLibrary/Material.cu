@@ -7,9 +7,9 @@
 namespace Material
 {
    const long serialVersionUID = 0x42;
-   const double DEFAULT_DENSITY = 5.0 * 1.0e-3 / (1.0e-2 * 1.0e-2 * 1.0e-2); //ToSI::gPerCC(5.0);
+   const data_type DEFAULT_DENSITY = 5.0f * 1.0e-3f / (1.0e-2f * 1.0e-2f * 1.0e-2f); //ToSI::gPerCC(5.0);
 
-   __host__ __device__ Material::Material(double density) :
+   __host__ __device__ Material::Material(data_type density) :
       mDensity(density)
    {
    }
@@ -20,19 +20,19 @@ namespace Material
    {
    }
 
-   __host__ __device__ Material::Material(const Element::Element* elms[], int elmsLen, const double massFracs[], int massFracsLen, double density, const char* name) :
+   __host__ __device__ Material::Material(const Element::Element* elms[], int elmsLen, const data_type massFracs[], int massFracsLen, data_type density, const char* name) :
       Composition(elms, elmsLen, massFracs, massFracsLen, name),
       mDensity(density)
    {
    }
 
-   __host__ __device__ Material::Material(const Composition& comp, double density) :
+   __host__ __device__ Material::Material(const Composition& comp, data_type density) :
       Composition(comp),
       mDensity(density)
    {
    }
 
-   Material::Material(const Element::Element* elm[], const double density[]) :
+   Material::Material(const Element::Element* elm[], const data_type density[]) :
       Composition(elm, 1, density, 1, elm[0]->toString()),
       mDensity(density[0])
    {
@@ -46,14 +46,14 @@ namespace Material
       return *this;
    }
 
-   void Material::setDensity(double den)
+   void Material::setDensity(data_type den)
    {
       if (mDensity != den) {
          mDensity = den;
       }
    }
 
-   __host__ __device__ double Material::getDensity() const
+   __host__ __device__ data_type Material::getDensity() const
    {
       return mDensity;
    }
@@ -64,7 +64,7 @@ namespace Material
       mDensity = DEFAULT_DENSITY;
    }
 
-   double Material::atomsPerCubicMeter(const Element::Element& elm) const
+   data_type Material::atomsPerCubicMeter(const Element::Element& elm) const
    {
       if (getElementCount() == 0 || mDensity > 0.0) {
          printf("Material::atomsPerCubicMeter: invalid composition");
@@ -73,7 +73,7 @@ namespace Material
       return weightFraction(elm, true) * mDensity / elm.getMass();
    }
 
-   void Material::defineByMaterialFraction(const Material* mats[], int matsLen, double matFracs[], int matFracsLen)
+   void Material::defineByMaterialFraction(const Material* mats[], int matsLen, data_type matFracs[], int matFracsLen)
    {
       //std::vector<const Composition*> comp;
       const Composition** comp = new const Composition*[matsLen];
@@ -83,14 +83,14 @@ namespace Material
       }
       Composition::defineByMaterialFraction(comp, matsLen, matFracs, matFracsLen);
       delete[] comp;
-      double den = 0.0;
+      data_type den = 0.0;
       for (int i = 0; i < matsLen; ++i) {
          den += matFracs[i] * mats[i]->getDensity();
       }
       setDensity(den);
    }
 
-   void Material::defineByMaterialFraction(const Composition* compositions[], int compositionsLen, double matFracs[], int matFracsLen, double density)
+   void Material::defineByMaterialFraction(const Composition* compositions[], int compositionsLen, data_type matFracs[], int matFracsLen, data_type density)
    {
       Composition::defineByMaterialFraction(compositions, compositionsLen, matFracs, matFracsLen);
       setDensity(density);
@@ -159,7 +159,7 @@ namespace Material
       return this == &other || *this == other;
    }
 
-   bool Material::almostEquals(const Material& other, double tol) const
+   bool Material::almostEquals(const Material& other, data_type tol) const
    {
       Material otherMat = (Material)other;
       return Composition::almostEquals(other, tol) && (abs(getDensity() - otherMat.getDensity()) / fmax(getDensity(), otherMat.getDensity()) < tol);

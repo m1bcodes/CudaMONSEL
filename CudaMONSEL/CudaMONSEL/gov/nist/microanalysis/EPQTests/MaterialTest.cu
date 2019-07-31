@@ -28,14 +28,14 @@ namespace MaterialTest
 
    void MaterialTest::testOne()
    {
-      double eps = 1.0e-8;
+      ::Composition::data_type eps = 1.0e-8f;
       {
          Composition::Composition mat;
          // Titanium dioxide - TiO2 (Z(Ti)=22,
-         double wTi = Element::getAtomicWeight(Element::elmTi) / (Element::getAtomicWeight(Element::elmTi) + 2.0 * Element::getAtomicWeight(Element::elmO));
-         double wO = 2.0 * Element::getAtomicWeight(Element::elmO) / (Element::getAtomicWeight(Element::elmTi) + 2.0 * Element::getAtomicWeight(Element::elmO));
+         ::Composition::data_type wTi = Element::getAtomicWeight(Element::elmTi) / (Element::getAtomicWeight(Element::elmTi) + 2.0 * Element::getAtomicWeight(Element::elmO));
+         ::Composition::data_type wO = 2.0 * Element::getAtomicWeight(Element::elmO) / (Element::getAtomicWeight(Element::elmTi) + 2.0 * Element::getAtomicWeight(Element::elmO));
          assertEquals(wTi + wO, 1.0, eps);
-         double fac = 1.1;
+         ::Composition::data_type fac = 1.1f;
          mat.addElement(Element::elmTi, fac * wTi);
          mat.addElement(Element::elmO, fac * wO);
          {
@@ -44,7 +44,7 @@ namespace MaterialTest
                &Element::Ti,
                &Element::O
             };
-            double wgts[] = {
+            ::Composition::data_type wgts[] = {
                fac * wTi,
                fac * wO
             };
@@ -97,7 +97,7 @@ namespace MaterialTest
             &Element::Ti,
             &Element::Fe
          };
-         double mF[] = {
+         ::Composition::data_type mF[] = {
             0.151971599,
             0.608811816,
             0.062690151,
@@ -106,7 +106,7 @@ namespace MaterialTest
             0.005716531,
             0.057180851
          };
-         double wF[] = {
+         ::Composition::data_type wF[] = {
             0.186973968,
             0.426700667,
             0.074093109,
@@ -125,32 +125,32 @@ namespace MaterialTest
          { // Try an alternative method to define a K3189
             Material::Material mat0(1.0);
             const Element::Element* elms0[] = { &Element::Si, &Element::O };
-            double massFracs0[] = { 1.0, 2.0 };
+            ::Composition::data_type massFracs0[] = { 1.0, 2.0 };
             mat0.defineByMoleFraction(elms0, 2, massFracs0, 2);
 
             Material::Material mat1(1.0);
             const Element::Element* elms1[] = { &Element::Al, &Element::O };
-            double massFracs1[] { 2.0, 3.0 };
+            ::Composition::data_type massFracs1[] { 2.0, 3.0 };
             mat1.defineByMoleFraction(elms1, 2, massFracs1, 2);
 
             Material::Material mat2(1.0);
             const Element::Element* elms2[] { &Element::Ca, &Element::O };
-            double massFracs2[] { 1.0, 1.0 };
+            ::Composition::data_type massFracs2[] { 1.0, 1.0 };
             mat2.defineByMoleFraction(elms2, 2, massFracs2, 2);
 
             Material::Material mat3(1.0);
             const Element::Element* elm3[] = { &Element::Mg, &Element::O };
-            double massFracs3[] = { 1.0, 1.0 };
+            ::Composition::data_type massFracs3[] = { 1.0, 1.0 };
             mat3.defineByMoleFraction(elm3, 2, massFracs3, 2);
 
             Material::Material mat4(1.0);
             const Element::Element* elm4[] = { &Element::Ti, &Element::O };
-            double massFracs4[] = { 1.0, 2.0 };
+            ::Composition::data_type massFracs4[] = { 1.0, 2.0 };
             mat4.defineByMoleFraction(elm4, 2, massFracs4, 2);
 
             Material::Material mat5(1.0);
             const Element::Element* elm5[] = { &Element::Fe, &Element::O };
-            double massFracs5[] = { 2.0, 3.0 };
+            ::Composition::data_type massFracs5[] = { 2.0, 3.0 };
             mat5.defineByMoleFraction(elm5, 2, massFracs5, 2);
 
             const Material::Material* mats[6] = { &mat0, &mat1, &mat2, &mat3, &mat4, &mat5 };
@@ -162,7 +162,7 @@ namespace MaterialTest
             //printf("%d\n", mat5.GetConstituents().size());
 
             Material::Material mat(1.0);
-            double massFracs[] = {
+            ::Composition::data_type massFracs[] = {
                0.40,
                0.14,
                0.14,

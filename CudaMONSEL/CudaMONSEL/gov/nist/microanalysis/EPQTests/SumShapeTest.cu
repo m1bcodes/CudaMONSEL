@@ -17,7 +17,7 @@ namespace SumShapeTest
       &Element::O,
       &Element::Cl
    };
-   static const double mat1MassFracs[] = {
+   static const ::Composition::data_type mat1MassFracs[] = {
       0.7,
       0.28,
       0.02
@@ -34,7 +34,7 @@ namespace SumShapeTest
       &Element::P,
       &Element::Os
    };
-   static const double mat2MassFracs[] = {
+   static const ::Composition::data_type mat2MassFracs[] = {
       0.4962,
       0.2988,
       0.0784,

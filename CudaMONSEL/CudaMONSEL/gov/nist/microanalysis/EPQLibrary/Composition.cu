@@ -10,10 +10,10 @@ namespace Composition
 {
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
    __device__ static const long long serialVersionUID = 0x42;
-   __device__ static const double OUT_OF_THIS_MANY_ATOMS = 1.0;
+   __device__ static const data_type OUT_OF_THIS_MANY_ATOMS = 1.0;
 #else
    static const long long serialVersionUID = 0x42;
-   static const double OUT_OF_THIS_MANY_ATOMS = 1.0;
+   static const data_type OUT_OF_THIS_MANY_ATOMS = 1.0;
 #endif
 
    //static std::pair<const Element::Element*, UncertainValue2::UncertainValue2> make_pair(const Element::Element* first, const UncertainValue2::UncertainValue2& second)
@@ -67,7 +67,7 @@ namespace Composition
       replicate(comp);
    }
 
-   Composition::Composition(const Element::Element* elms[], int elmsLen, const double massFracs[], int massFracsLen)
+   Composition::Composition(const Element::Element* elms[], int elmsLen, const data_type massFracs[], int massFracsLen)
    {
       if (elmsLen != massFracsLen) {
          printf("Composition::Composition: elmsLen != massFracsLen, (%d, %d)", elmsLen, massFracsLen);
@@ -86,12 +86,12 @@ namespace Composition
       renormalize();
    }
 
-   __host__ __device__ Composition::Composition(const Element::Element* elms[], int elmsLen, const double massFracs[], int massFracsLen, char const* name)
+   __host__ __device__ Composition::Composition(const Element::Element* elms[], int elmsLen, const data_type massFracs[], int massFracsLen, char const* name)
    {
-      double* wf = new double[elmsLen];
+      data_type* wf = new data_type[elmsLen];
       if (!wf) printf("Composition::Composition: failed creating array.\n");
       if (elmsLen == massFracsLen - 1) {
-         double sum = 0.0;
+         data_type sum = 0.0;
          for (int i = 0; i < massFracsLen; ++i) {
             sum += massFracs[i];
             wf[i] = massFracs[i];
@@ -200,7 +200,7 @@ namespace Composition
       return mConstituents.size();
    }
 
-   void Composition::addElement(int atomicNo, double massFrac)
+   void Composition::addElement(int atomicNo, data_type massFrac)
    {
       addElement(Element::byAtomicNumber(atomicNo), massFrac);
    }
@@ -210,13 +210,13 @@ namespace Composition
       addElement(Element::byAtomicNumber(atomicNo), massFrac);
    }
 
-   void Composition::addElement(const Element::Element& elm, double massFrac)
+   void Composition::addElement(const Element::Element& elm, data_type massFrac)
    {
       auto uv = UncertainValue2::UncertainValue2(massFrac);
       addElement(elm, uv);
    }
 
-   __host__ __device__ double Composition::weightFraction(const Element::Element& elm, const bool normalized) const
+   __host__ __device__ data_type Composition::weightFraction(const Element::Element& elm, const bool normalized) const
    {
       auto itr = mConstituents.find(&elm);
       if (itr != mConstituents.end()) {
@@ -292,7 +292,7 @@ namespace Composition
       renormalize();
    }
 
-   void Composition::addElementByStoiciometry(const Element::Element& elm, double moleFrac)
+   void Composition::addElementByStoiciometry(const Element::Element& elm, data_type moleFrac)
    {
       addElementByStoiciometry(elm, UncertainValue2::UncertainValue2(moleFrac));
    }
@@ -306,7 +306,7 @@ namespace Composition
       mMoleNorm = UncertainValue2::NaN();
    }
 
-   void Composition::defineByWeightFraction(const Element::Element* elms[], int elmsLen, double wgtFracs[], int wgtFracsLen)
+   void Composition::defineByWeightFraction(const Element::Element* elms[], int elmsLen, data_type wgtFracs[], int wgtFracsLen)
    {
       clear();
       if (elmsLen != wgtFracsLen) {
@@ -332,13 +332,13 @@ namespace Composition
       renormalize();
    }
 
-   __host__ __device__ void Composition::defineByMoleFraction(const Element::Element* elms[], int elmsLen, const double moleFracs[], int moleFracsLen)
+   __host__ __device__ void Composition::defineByMoleFraction(const Element::Element* elms[], int elmsLen, const data_type moleFracs[], int moleFracsLen)
    {
       clear();
       if (elmsLen != moleFracsLen) {
          printf("Composition::defineByWeightFraction: elmsLen != moleFracsLen (%d, %d)", elmsLen, moleFracsLen);
       }
-      double mfSum = 0;
+      data_type mfSum = 0;
       for (int k = 0; k < moleFracsLen; ++k) {
          mfSum += moleFracs[k];
       }
@@ -421,7 +421,7 @@ namespace Composition
       return elms;
    }
 
-   void Composition::defineByMaterialFraction(const Composition* compositions[], int compLen, const double matFracs[], int matFracsLen)
+   void Composition::defineByMaterialFraction(const Composition* compositions[], int compLen, const data_type matFracs[], int matFracsLen)
    {
       if (compLen != matFracsLen) {
          printf("Composition::defineByMaterialFraction: lengths are different (%d, %d)", compLen, matFracsLen);
@@ -477,7 +477,7 @@ namespace Composition
       return true;
    }
 
-   double Composition::atomicPercent(const Element::Element& elm) const
+   data_type Composition::atomicPercent(const Element::Element& elm) const
    {
       return atomicPercentU(elm).doubleValue();
    }
@@ -491,12 +491,12 @@ namespace Composition
       return UncertainValue2::ZERO();
    }
 
-   double Composition::stoichiometry(const Element::Element& elm) const
+   data_type Composition::stoichiometry(const Element::Element& elm) const
    {
       return stoichiometryU(elm).doubleValue();
    }
 
-   double Composition::atomsPerKg(Element::Element& elm, bool normalized)
+   data_type Composition::atomsPerKg(Element::Element& elm, bool normalized)
    {
       return weightFraction(elm, normalized) / elm.getMass();
    }
@@ -518,14 +518,14 @@ namespace Composition
       return res;
    }
 
-   double Composition::weightAvgAtomicNumber() const
+   data_type Composition::weightAvgAtomicNumber() const
    {
       return weightAvgAtomicNumberU().doubleValue();
    }
 
-   double Composition::sumWeightFraction() const
+   data_type Composition::sumWeightFraction() const
    {
-      double sum = 0.0;
+      data_type sum = 0.0;
       for (auto itr : mConstituents) {
          const UncertainValue2::UncertainValue2& uv = itr.second;
          if (uv.doubleValue() > 0.0) {
@@ -741,7 +741,7 @@ namespace Composition
       return UncertainValue2::multiply(1.0 / allElms.size(), delta).sqrt();
    }
 
-   double Composition::difference(const Composition& comp) const
+   data_type Composition::difference(const Composition& comp) const
    {
       return differenceU(comp).doubleValue();
    }
@@ -811,7 +811,7 @@ namespace Composition
       return this == &obj || *this == obj;
    }
 
-   bool Composition::almostEquals(const Composition& other, double tol) const
+   bool Composition::almostEquals(const Composition& other, data_type tol) const
    {
       if (this == &other) {
          return true;
@@ -871,8 +871,8 @@ namespace Composition
    //   }
    //   ErrorMapT res;
    //   for (auto elm : elms) {
-   //      double u = weightFractionU(*elm, normalize).doubleValue();
-   //      double s = std.weightFractionU(*elm, normalize).doubleValue();
+   //      data_type u = weightFractionU(*elm, normalize).doubleValue();
+   //      data_type s = std.weightFractionU(*elm, normalize).doubleValue();
    //      res.insert(std::make_pair(elm, s != 0.0 ? (u - s) / s : (u == 0.0 ? 0.0 : 1.0)));
    //   }
    //   return res;
@@ -891,8 +891,8 @@ namespace Composition
    //   }
    //   ErrorMapT res;
    //   for (auto elm : elms) {
-   //      double u = weightFractionU(*elm, normalize).doubleValue();
-   //      double s = std.weightFractionU(*elm, normalize).doubleValue();
+   //      data_type u = weightFractionU(*elm, normalize).doubleValue();
+   //      data_type s = std.weightFractionU(*elm, normalize).doubleValue();
    //      res.insert(std::make_pair(elm, u - s));
    //   }
    //   return res;
@@ -934,9 +934,9 @@ namespace Composition
       return res;
    }
 
-   double Composition::meanAtomicNumber() const
+   data_type Composition::meanAtomicNumber() const
    {
-      double res = 0.0;
+      data_type res = 0.0;
       const Element::UnorderedSetT& elms = getElementSet();
       for (auto elm : elms) {
          res += elm->getAtomicNumber() * atomicPercent(*elm);
@@ -1009,7 +1009,7 @@ namespace Composition
                }
 
                Element::Element elm = Element::byName(elmName);
-               double wgtPct = std::atof(elmWgtPct);
+               data_type wgtPct = std::atof(elmWgtPct);
                result.addElement(elm, wgtPct / 100.0);
             }
          }
@@ -1032,7 +1032,7 @@ namespace Composition
                   ++r;
                }
 
-               double oWgtPct = std::atof(oWgtPctStr);
+               data_type oWgtPct = std::atof(oWgtPctStr);
                result.addElement(Element::O, oWgtPct / 100.0);
                break;
             }
@@ -1041,14 +1041,14 @@ namespace Composition
       return result;
    }
 
-   Composition Composition::randomize(double offset, double proportional) const
+   Composition Composition::randomize(data_type offset, data_type proportional) const
    {
       srand(0);
       Composition res;
       const Element::UnorderedSetT& elms = getElementSet();
       for (auto elm : elms) {
-         double w = weightFraction(*elm, false);
-         double v = w + w * Random::generateGaussianNoise(0, 1) * proportional + offset * Random::generateGaussianNoise(0, 1);
+         data_type w = weightFraction(*elm, false);
+         data_type v = w + w * Random::generateGaussianNoise(0, 1) * proportional + offset * Random::generateGaussianNoise(0, 1);
          v = v > 0.0 ? v : 0.0;
          v = v < 1.1 ? v : 1.1;
          res.addElement(*elm, v);
@@ -1073,7 +1073,7 @@ namespace Composition
             long mult = 1;
             tmp = 0;
             for (int i = 0; i < DIM; ++i, mult *= 10) {
-               double r = (double)rand() / (double)RAND_MAX;
+               data_type r = (data_type)rand() / (data_type)RAND_MAX;
                tmp += r * 2 * mult;
             }
          } while (eval.find(tmp) != eval.end());

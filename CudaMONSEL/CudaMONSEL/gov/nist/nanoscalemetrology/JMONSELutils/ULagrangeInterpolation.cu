@@ -181,8 +181,8 @@ namespace ULagrangeInterpolation
          ns = order;
       float* c = new float[order + 1];
       float* d = new float[order + 1];
-      memcpy(c, f + offset, sizeof(float) * (order + 1));
-      memcpy(d, f + offset, sizeof(float) * (order + 1));
+      memcpy(c, f + offset, sizeof(c[0]) * (order + 1));
+      memcpy(d, f + offset, sizeof(d[0]) * (order + 1));
 
       float y = c[ns--];
       float ho, hp, w, dy = 0;

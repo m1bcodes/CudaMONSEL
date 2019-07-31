@@ -67,119 +67,119 @@ namespace MaterialFactory
 
    //public static List<String> BaseMaterials = Collections.unmodifiableList(Arrays.asList(PBaseMaterials));
 
-   const double mElementalDensities[] = {
-      0.0,
-      0.0,
-      0.534,
-      1.85,
-      2.53,
-      2.25,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.97,
-      1.74,
-      2.70, // H to Ne
-      2.42,
-      1.83 /* Yellow */,
-      1.92,
-      0.0,
-      0.0,
-      0.86,
-      1.55,
-      3.02,
-      4.5,
-      5.98,
-      7.14,
-      7.41,
-      7.88,
-      8.71,
-      8.88,
-      8.96,
-      7.1,
-      5.93, // Ga
-      5.46,
-      5.73,
-      4.82,
-      0.0,
-      0.0,
-      1.53,
-      2.56,
-      3.8,
-      6.4,
-      8.57,
-      10.22,
-      11.5,
-      12.1,
-      12.44,
-      12.16,
-      10.49,
-      8.65,
-      7.28,
-      7.3, // Sn
-      6.62,
-      6.25,
-      4.94,
-      0.0,
-      1.87,
-      3.5,
-      6.15,
-      6.90,
-      6.48,
-      6.96,
-      -1.0,
-      7.75,
-      -1.0,
-      -1.0,
-      -1.0,
-      -1.0,
-      -1.0,
-      -1.0,
-      -1.0,
-      -1.0, // Cs to Dy
-      -1.0,
-      13.3,
-      16.6,
-      19.3,
-      -1.0,
-      22.5,
-      22.42,
-      21.45,
-      19.3,
-      14.19 /* solid at -39 C */,
-      11.86,
-      11.34,
-      9.78,
-      -1.0,
-      -1.0, // Ho to Pt
-      0.0,
-      -1.0,
-      -1.0,
-      -1.0,
-      11.3,
-      -1.0,
-      18.7,
-      -1.0,
-      -1.0,
-      -1.0,
-      -1.0,
-      -1.0,
-      -1.0,
-      -1.0,
-      -1.0,
-      -1.0,
-      -1.0,
-      -1.0,
-      -1.0, // Fr to Es
-      -1.0,
-      -1.0,
-      -1.0,
-      -1.0,
-      -1.0,
-      -1.0,
-      -1.0,
-      -1.0
+   const ::Material::data_type mElementalDensities[] = {
+      0.0f,
+      0.0f,
+      0.534f,
+      1.85f,
+      2.53f,
+      2.25f,
+      0.0f,
+      0.0f,
+      0.0f,
+      0.0f,
+      0.97f,
+      1.74f,
+      2.70f, // H to Ne
+      2.42f,
+      1.83f, /* Yellow */
+      1.92f,
+      0.0f,
+      0.0f,
+      0.86f,
+      1.55f,
+      3.02f,
+      4.5f,
+      5.98f,
+      7.14f,
+      7.41f,
+      7.88f,
+      8.71f,
+      8.88f,
+      8.96f,
+      7.1f,
+      5.93f, // Ga
+      5.46f,
+      5.73f,
+      4.82f,
+      0.0f,
+      0.0f,
+      1.53f,
+      2.56f,
+      3.8f,
+      6.4f,
+      8.57f,
+      10.22f,
+      11.5f,
+      12.1f,
+      12.44f,
+      12.16f,
+      10.49f,
+      8.65f,
+      7.28f,
+      7.3f, // Sn
+      6.62f,
+      6.25f,
+      4.94f,
+      0.0f,
+      1.87f,
+      3.5f,
+      6.15f,
+      6.90f,
+      6.48f,
+      6.96f,
+      -1.0f,
+      7.75f,
+      -1.0f,
+      -1.0f,
+      -1.0f,
+      -1.0f,
+      -1.0f,
+      -1.0f,
+      -1.0f,
+      -1.0f, // Cs to Dy
+      -1.0f,
+      13.3f,
+      16.6f,
+      19.3f,
+      -1.0f,
+      22.5f,
+      22.42f,
+      21.45f,
+      19.3f,
+      14.19f, /* solid at -39 C */
+      11.86f,
+      11.34f,
+      9.78f,
+      -1.0f,
+      -1.0f, // Ho to Pt
+      0.0f,
+      -1.0f,
+      -1.0f,
+      -1.0f,
+      11.3f,
+      -1.0f,
+      18.7f,
+      -1.0f,
+      -1.0f,
+      -1.0f,
+      -1.0f,
+      -1.0f,
+      -1.0f,
+      -1.0f,
+      -1.0f,
+      -1.0f,
+      -1.0f,
+      -1.0f,
+      -1.0f, // Fr to Es
+      -1.0f,
+      -1.0f,
+      -1.0f,
+      -1.0f,
+      -1.0f,
+      -1.0f,
+      -1.0f,
+      -1.0f
       // Fm to Uub
    };
 
@@ -281,7 +281,7 @@ namespace MaterialFactory
       return comp;
    }
 
-   static MaterialT createCompound(StringT str, double density)
+   static MaterialT createCompound(StringT str, ::Material::data_type density)
    {
       return MaterialT(createCompound(str), density);
    }
@@ -304,7 +304,7 @@ namespace MaterialFactory
                elms.insert(e);
             }
 
-            double* massFracs = new double[elms.size()];
+            ::Composition::data_type* massFracs = new ::Composition::data_type[elms.size()];
             std::vector<const ElementT*> elmA(elms.begin(), elms.end());
             for (int i = 0; i < elmA.size(); ++i)
                massFracs[i] = cl.weightFraction(*elmA[i], false) + cr.weightFraction(*elmA[i], false);
@@ -320,7 +320,7 @@ namespace MaterialFactory
       {
          int p = str.find("*");
          if (p != std::string::npos) {
-            double k;
+            ::Composition::data_type k;
             try {
                k = std::atof(str.substr(0, p).c_str());
             }
@@ -334,7 +334,7 @@ namespace MaterialFactory
             for (auto e : elms) {
                elmA.push_back(e);
             }
-            std::vector<double> massFracs(elms.size());
+            std::vector<::Composition::data_type> massFracs(elms.size());
             for (int i = 0; i < elmA.size(); ++i)
                massFracs[i] = k * cr.weightFraction(*elmA[i], false);
             CompositionT ret(elmA.data(), elmA.size(), massFracs.data(), massFracs.size());
@@ -395,7 +395,7 @@ namespace MaterialFactory
       try {
          if (name == K3189) {
             const CompositionT* comp[] = { &compoundSiO2, &compoundAl2O3, &compoundCaO, &compoundMgO, &compoundTiO2, &compoundFe2O3 };
-            double massFracs[] = { 0.400000, 0.140000, 0.140000, 0.100000, 0.020000, 0.200000 };
+            ::Composition::data_type massFracs[] = { 0.400000, 0.140000, 0.140000, 0.100000, 0.020000, 0.200000 };
             CompositionT tmp;
             tmp.defineByMaterialFraction(comp, 6, massFracs, 6);
             MaterialT mat(tmp, ToSI::gPerCC(3.23));
@@ -404,8 +404,8 @@ namespace MaterialFactory
          }
          else if (name == (RynasAlTiAlloy)) {
             const ElementT* elms[] = { &Element::Ti, &Element::Al, &Element::Nb, &Element::W };
-            double massFracs[] = { 0.54, 0.31, 0.11, 0.04 };
-            double density = ToSI::gPerCC(8.57);
+            ::Composition::data_type massFracs[] = { 0.54, 0.31, 0.11, 0.04 };
+            ::Material::data_type density = ToSI::gPerCC(8.57);
             StringT name = RynasAlTiAlloy;
             return MaterialT(elms, 4, massFracs, 4, density, name.c_str());;
          } 
@@ -446,8 +446,8 @@ namespace MaterialFactory
          }
          else if (name == (SS316)) {
             const ElementT* elms[] = { &Element::Fe, &Element::Ni, &Element::Cr, &Element::Mn, &Element::Si };
-            double massFracs[] = { 0.50, 0.205, 0.245, 0.02, 0.03 };
-            double density = ToSI::gPerCC(7.8);
+            ::Composition::data_type massFracs[] = { 0.50, 0.205, 0.245, 0.02, 0.03 };
+            ::Material::data_type density = ToSI::gPerCC(7.8);
             StringT name("SS316");
             MaterialT mat(elms, 5, massFracs, 5, density, name.c_str());
             return mat;
@@ -457,7 +457,7 @@ namespace MaterialFactory
          }
          else if (name == (K227)) {
             const CompositionT* cons[] = { &compoundSiO2, &compoundPbO };
-            double massFracs[] = { 0.20000, 0.80000, };
+            ::Composition::data_type massFracs[] = { 0.20000, 0.80000, };
             CompositionT comp;
             comp.defineByMaterialFraction(cons, 2, massFracs, 2);
             comp.setName(K227);
@@ -466,14 +466,14 @@ namespace MaterialFactory
          else if (name == (K309)) {
             CompositionT comp;
             const CompositionT* cons[] = { &compoundAl2O3, &compoundSiO2, &compoundCaO, &compoundFe2O3, &compoundBaO };
-            double massFracs[] = { 0.15000, 0.40000, 0.15000, 0.15000, 0.15000, };
+            ::Composition::data_type massFracs[] = { 0.15000, 0.40000, 0.15000, 0.15000, 0.15000, };
             comp.defineByMaterialFraction(cons, 5, massFracs, 5);
             comp.setName(K309);
             return comp;
          }
          else if (name == (K411)) {
             const CompositionT* cons[] = { &compoundMgO, &compoundSiO2, &compoundCaO, &compoundFeO };
-            double massFracs[] = { 0.146700, 0.543000, 0.154700, 0.144200 };
+            ::Composition::data_type massFracs[] = { 0.146700, 0.543000, 0.154700, 0.144200 };
             CompositionT comp;
             comp.defineByMaterialFraction(cons, 4, massFracs, 4);
             comp.setName(K411);
@@ -482,24 +482,24 @@ namespace MaterialFactory
          else if (name == (K412)) {
             CompositionT comp;
             const CompositionT* cons[] = { &compoundMgO, &compoundAl2O3, &compoundSiO2, &compoundCaO, &compoundFeO };
-            double massFracs[] = { 0.193300, 0.092700, 0.453500, 0.152500, 0.099600 };
+            ::Composition::data_type massFracs[] = { 0.193300, 0.092700, 0.453500, 0.152500, 0.099600 };
             comp.defineByMaterialFraction(cons, 5, massFracs, 5);
             comp.setName(K412);
             return comp;
          }
          else if (name == (K961)) {
             const ElementT* elms[] = { &Element::Na, &Element::Mg, &Element::Al, &Element::Si, &Element::P, &Element::K, &Element::Ca, &Element::Ti, &Element::Mn, &Element::Fe, &Element::O };
-            double massFracs[] = { 0.029674, 0.030154, 0.058215, 0.299178, 0.002182, 0.024904, 0.035735, 0.011990, 0.003160, 0.034972, 0.469837 };
+            ::Composition::data_type massFracs[] = { 0.029674, 0.030154, 0.058215, 0.299178, 0.002182, 0.024904, 0.035735, 0.011990, 0.003160, 0.034972, 0.469837 };
             return MaterialT(elms, 11, massFracs, 11, ToSI::gPerCC(6.0), K961);
          }
          else if (name == (K1080)) {
             const ElementT* elms[] = { &Element::Li, &Element::B, &Element::Mg, &Element::Al, &Element::Si, &Element::Ca, &Element::Ti, &Element::Sr, &Element::Zr, &Element::Lu, &Element::O };
-            double massFracs[] = { 0.027871, 0.006215, 0.008634, 0.079384, 0.186986, 0.107204, 0.011990, 0.126838, 0.007403, 0.017588, 0.416459 };
+            ::Composition::data_type massFracs[] = { 0.027871, 0.006215, 0.008634, 0.079384, 0.186986, 0.107204, 0.011990, 0.126838, 0.007403, 0.017588, 0.416459 };
             return MaterialT(elms, 11, massFracs, 11, ToSI::gPerCC(6.0), K1080);
          }
          else if (name == (K2450)) {
             const CompositionT* cons[] = { &compoundSiO2, &compoundAl2O3, &compoundCaO, &compoundTiO2 };
-            double massFracs[] = { 0.30000, 0.30000, 0.30000, 0.10000 };
+            ::Composition::data_type massFracs[] = { 0.30000, 0.30000, 0.30000, 0.10000 };
             CompositionT comp;
             comp.defineByMaterialFraction(cons, 4, massFracs, 4);
             comp.setName(name.c_str());
@@ -507,7 +507,7 @@ namespace MaterialFactory
          }
          else if (name == (K2451)) {
             const CompositionT* cons[] = { &compoundSiO2, &compoundAl2O3, &compoundCaO, &compoundV2O5 };
-            double massFracs[] = { 0.300000, 0.300000, 0.300000, 0.100000 };
+            ::Composition::data_type massFracs[] = { 0.300000, 0.300000, 0.300000, 0.100000 };
             CompositionT comp;
             comp.defineByMaterialFraction(cons, 4, massFracs, 4);
             comp.setName(name.c_str());
@@ -516,14 +516,14 @@ namespace MaterialFactory
          else if (name == (K2466)) {
             CompositionT comp;
             const CompositionT* cons[] = { &compoundSiO2, &compoundBaO, &compoundTiO2 };
-            double massFracs[] = { 0.44, 0.48, 0.08 };
+            ::Composition::data_type massFracs[] = { 0.44, 0.48, 0.08 };
             comp.defineByMaterialFraction(cons, 3, massFracs, 3);
             comp.setName(name.c_str());
             return comp;
          }
          else if (name == (K2469)) {
             const CompositionT* cons[] = { &compoundSiO2, &compoundBaO, &compoundTiO2 };
-            double massFracs[] = { 0.36, 0.48, 0.16 };
+            ::Composition::data_type massFracs[] = { 0.36, 0.48, 0.16 };
             CompositionT comp;
             comp.defineByMaterialFraction(cons, 3, massFracs, 3);
             comp.setName(name.c_str());
@@ -531,7 +531,7 @@ namespace MaterialFactory
          }
          else if (name == (K2472)) {
             const CompositionT* cons[] = { &compoundSiO2, &compoundBaO, &compoundTiO2, &compoundV2O5 };
-            double massFracs[] = { 0.36, 0.48, 0.10, 0.06 };
+            ::Composition::data_type massFracs[] = { 0.36, 0.48, 0.10, 0.06 };
             CompositionT comp;
             comp.defineByMaterialFraction(cons, 4, massFracs, 4);
             comp.setName(name.c_str());
@@ -540,7 +540,7 @@ namespace MaterialFactory
          else if (name == (K2496)) {
             CompositionT comp;
             const CompositionT* cons[] = { &compoundSiO2, &compoundBaO, &compoundTiO2 };
-            double massFracs[] = { 0.49, 0.48, 0.03 };
+            ::Composition::data_type massFracs[] = { 0.49, 0.48, 0.03 };
             comp.defineByMaterialFraction(cons, 3, massFracs, 3);
             comp.setName(name.c_str());
             return comp;
