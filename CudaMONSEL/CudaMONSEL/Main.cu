@@ -291,9 +291,9 @@ void testSim()
 
    MonteCarloSSTest::testOne();
 
-   //SumShapeTest::SumShapeTest sumShapeTest;
-   //sumShapeTest.testGetFirstIntersection();
-   //sumShapeTest.testAll();
+   SumShapeTest::SumShapeTest sumShapeTest;
+   sumShapeTest.testGetFirstIntersection();
+   sumShapeTest.testAll();
 }
 
 __global__ void printNullReference()
@@ -475,10 +475,9 @@ int main()
    testLibrary();
    initSim();
    testSim();
+
    //testGPU();
-
    //initCuda();
-
    //LinesOnLayers::transferDataToCuda();
 
    size_t a, t;
@@ -490,14 +489,6 @@ int main()
    //checkCudaErrors(cudaGetLastError());
 
    LinesOnLayers::initRange();
-
-   //LinesOnLayers::runCuda << <1, 1 >> >();
-   //checkCudaErrors(cudaDeviceSynchronize());
-   //checkCudaErrors(cudaGetLastError());
-
-   //cudaStream_t streams[2];
-   //cudaStreamCreate(&streams[0]);
-   //cudaStreamCreate(&streams[1]);
 
    float* d_result = nullptr;
    //checkCudaErrors(cudaMalloc((void**)&d_result, sizeof(d_result[0]) * H * W));
@@ -539,10 +530,6 @@ int main()
    myfile.close();
 
    printf("done\n");
-
-   //testsCPU();
-   //LinesOnLayers::initCuda();
-   //LinesOnLayers::runCuda();
 
    return 0;
 }

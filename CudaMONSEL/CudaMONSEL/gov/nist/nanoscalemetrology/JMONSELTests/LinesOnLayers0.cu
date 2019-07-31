@@ -160,26 +160,26 @@ namespace LinesOnLayers
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
    __constant__ const int nTrajectories = 100;
 
-   __constant__ const double pitchnm = 180;
+   __constant__ const float pitchnm = 180.f;
    __constant__ const int nlines = 3;
-   __constant__ const double hnm = 120;
-   __constant__ const double wnm = 80;
-   __constant__ const double linelengthnm = 1000;
-   __constant__ const double thetardeg = 3;
-   __constant__ const double thetaldeg = 3;
-   __constant__ const double radrnm = 20;
-   __constant__ const double radlnm = 20;
-   __constant__ const double layer1thicknessnm = 80;
-   __constant__ const double layer2thicknessnm = 200;
+   __constant__ const float hnm = 120.f;
+   __constant__ const float wnm = 80.f;
+   __constant__ const float linelengthnm = 1000.f;
+   __constant__ const float thetardeg = 3.f;
+   __constant__ const float thetaldeg = 3.f;
+   __constant__ const float radrnm = 20.f;
+   __constant__ const float radlnm = 20.f;
+   __constant__ const float layer1thicknessnm = 80.f;
+   __constant__ const float layer2thicknessnm = 200.f;
 
-   __constant__ const double beamEeVvals[] = { 500. };
+   __constant__ const float beamEeVvals[] = { 500.f };
    __constant__ const int beamEeVvalsLen = 1;
-   __constant__ const double beamsizenm = 0.5;
-   __constant__ const double deepnm = 15;
+   __constant__ const float beamsizenm = 0.5f;
+   __constant__ const float deepnm = 15.f;
 
    __constant__ const bool trajImg = true;
    __constant__ const int trajImgMaxTraj = 50;
-   __constant__ const double trajImgSize = 200e-9;
+   __constant__ const float trajImgSize = 200e-9f;
 
    __constant__ const bool VRML = false;
    __constant__ const int VRMLImgMaxTraj = 0;
@@ -190,12 +190,12 @@ namespace LinesOnLayers
 
    //__device__ MONSEL_MaterialScatterModelT* vacuumMSM = nullptr;
 
-   __constant__ const double PMMAbreakE = 1.60217653e-19 * 45.;
-   __constant__ const double PMMAdensity = 1190.;
-   __constant__ const double PMMAworkfun = 5.5;
-   __constant__ const double PMMAbandgap = 5.;
-   __constant__ const double PMMAEFermi = -5.;//-PMMAbandgap;
-   __constant__ const double PMMApotU = -5.5 - (-5.);
+   __constant__ const float PMMAbreakE = 1.60217653e-19 * 45.f;
+   __constant__ const float PMMAdensity = 1190.f;
+   __constant__ const float PMMAworkfun = 5.5f;
+   __constant__ const float PMMAbandgap = 5.f;
+   __constant__ const float PMMAEFermi = -5.f;//-PMMAbandgap;
+   __constant__ const float PMMApotU = -5.5f - (-5.f);
 
    //__device__ SEmaterialT* PMMA = nullptr;
 
@@ -213,11 +213,11 @@ namespace LinesOnLayers
 
    //__device__ MONSEL_MaterialScatterModelT* ARCMSM = nullptr;
 
-   __constant__ const double glCdensity = 1800.;
-   __constant__ const double glCworkfun = 5.0;
-   __constant__ const double glCbandgap = 0.;
-   __constant__ const double glCEFermi = 20.4;
-   __constant__ const double glCpotU = -5. - 20.4;
+   __constant__ const float glCdensity = 1800.f;
+   __constant__ const float glCworkfun = 5.0f;
+   __constant__ const float glCbandgap = 0.f;
+   __constant__ const float glCEFermi = 20.4f;
+   __constant__ const float glCpotU = -5.f - 20.4f;
 
    //__device__ SEmaterialT* glC = nullptr;
 
@@ -231,14 +231,14 @@ namespace LinesOnLayers
 
    //__device__ MONSEL_MaterialScatterModelT* glCMSMDeep = nullptr;
 
-   __constant__ const double phononE = 0.063;
-   __constant__ const double phononStrength = 3.;
+   __constant__ const float phononE = 0.063f;
+   __constant__ const float phononStrength = 3.f;
 
-   __constant__ const double Sidensity = 2330.;
-   __constant__ const double Siworkfun = 4.85;
-   __constant__ const double Sibandgap = 1.1;
-   __constant__ const double SiEFermi = -1.1;//-Sibandgap;
-   __constant__ const double SipotU = -44.85 - (-1.1);//-Siworkfun - SiEFermi;
+   __constant__ const float Sidensity = 2330.f;
+   __constant__ const float Siworkfun = 4.85f;
+   __constant__ const float Sibandgap = 1.1f;
+   __constant__ const float SiEFermi = -1.1f;//-Sibandgap;
+   __constant__ const float SipotU = -44.85f - (-1.1f);//-Siworkfun - SiEFermi;
 
    //__device__ SEmaterialT* Si = nullptr;
 
@@ -256,20 +256,20 @@ namespace LinesOnLayers
 
    //__device__ SphereT* sphere = nullptr;
 
-   __constant__ const double pitch = 180 * 1.e-9;
-   __constant__ const double h = 120 * 1.e-9;
-   __constant__ const double w = 80 * 1.e-9;
-   __constant__ const double linelength = 1000 * 1.e-9;
+   __constant__ const float pitch = 180.f * 1.e-9f;
+   __constant__ const float h = 120.f * 1.e-9f;
+   __constant__ const float w = 80.f * 1.e-9f;
+   __constant__ const float linelength = 1000.f * 1.e-9f;
 
-   __constant__ const double radperdeg = 3.14159265358979323846 / 180.;
-   __constant__ const double thetar = 3 * 3.14159265358979323846 / 180.;
-   __constant__ const double thetal = 3 * 3.14159265358979323846 / 180.;
-   __constant__ const double radr = 20 * 1.e-9;
-   __constant__ const double radl = 20 * 1.e-9;
-   __constant__ const double layer1thickness = 80 * 1.e-9;
-   __constant__ const double layer2thickness = 200 * 1.e-9;
-   __constant__ const double beamsize = 0.5 * 1.e-9;
-   __constant__ const double deep = 15 * 1.e-9;
+   __constant__ const float radperdeg = 3.14159265358979323846f / 180.f;
+   __constant__ const float thetar = 3.f * 3.14159265358979323846f / 180.f;
+   __constant__ const float thetal = 3.f * 3.14159265358979323846f / 180.f;
+   __constant__ const float radr = 20.f * 1.e-9f;
+   __constant__ const float radl = 20.f * 1.e-9f;
+   __constant__ const float layer1thickness = 80.f * 1.e-9f;
+   __constant__ const float layer2thickness = 200.f * 1.e-9f;
+   __constant__ const float beamsize = 0.5f * 1.e-9f;
+   __constant__ const float deep = 15.f * 1.e-9f;
 
    __constant__ const double center[] = {
       0.0,
@@ -277,9 +277,9 @@ namespace LinesOnLayers
       0.0
    };
 
-   __constant__ const double beamEeV = 500.;
-   __constant__ const double beamE = 1.60217653e-19 * 500;
-   __constant__ const double binSizeEV = 10.;
+   __constant__ const float beamEeV = 500.f;
+   __constant__ const float beamE = 1.60217653e-19f * 500.f;
+   __constant__ const float binSizeEV = 10.f;
 
    //__device__ NullMaterialScatterModelT* NULL_MSM = nullptr;
 
@@ -292,56 +292,56 @@ namespace LinesOnLayers
    //__device__ PlaneT* pl1 = nullptr;
    //__device__ RegionT* layer1Region = nullptr;
 
-   __constant__ const double layer2Pos[] = { 0., 0., 80 * 1.e-9 };
+   __constant__ const double layer2Pos[] = { 0., 0., 80. * 1.e-9 };
    //__device__ NormalMultiPlaneShapeT* layer2 = nullptr;
    //__device__ PlaneT* pl2 = nullptr;
    //__device__ RegionT* layer2Region = nullptr;
 
-   __constant__ const double layer3Pos[] = { 0., 0., 80 * 1.e-9 + 200 * 1.e-9 };
+   __constant__ const double layer3Pos[] = { 0., 0., 80. * 1.e-9 + 200. * 1.e-9 };
    //__device__ NormalMultiPlaneShapeT* layer3 = nullptr;
    //__device__ PlaneT* pl3 = nullptr;
    //__device__ RegionT* layer3Region = nullptr;
 
-   __constant__ const double layer4Pos[] = { 0., 0., 80 * 1.e-9 + 200 * 1.e-9 + 15 * 1.e-9 };
+   __constant__ const double layer4Pos[] = { 0., 0., 80. * 1.e-9 + 200. * 1.e-9 + 15. * 1.e-9 };
    //__device__ NormalMultiPlaneShapeT* layer4 = nullptr;
    //__device__ PlaneT* pl4 = nullptr;
    //__device__ RegionT* layer4Region = nullptr;
 
    //__device__ RegionT* deepRegion = nullptr;
 
-   __constant__ const double leftmostLineCenterx = -180. * 1.e-9 * (3. / 2.);
-   __constant__ const double xcenter = -180. * 1.e-9 * (3. / 2.) + 0 * 180 * 1.e-9;
+   __constant__ const float leftmostLineCenterx = -180.f * 1.e-9f * (3.f / 2.f);
+   __constant__ const float xcenter = -180.f * 1.e-9f * (3.f / 2.f) + 0.f * 180.f * 1.e-9f;
 
    //__device__ NormalIntersectionShapeT* line = nullptr;
    //__device__ RegionT* lineRegion = nullptr;
 
-   __device__ double* yvals = nullptr;
-   __device__ double* xvals = nullptr;
+   __device__ float* yvals = nullptr;
+   __device__ float* xvals = nullptr;
    __device__ unsigned int yvalsSize = 0;
    __device__ unsigned int xvalsSize = 0;
 #else
    const int nTrajectories = 100;
 
-   const double pitchnm = 180;
+   const float pitchnm = 180.f;
    const int nlines = 3;
-   const double hnm = 120;
-   const double wnm = 80;
-   const double linelengthnm = 1000;
-   const double thetardeg = 3;
-   const double thetaldeg = 3;
-   const double radrnm = 20;
-   const double radlnm = 20;
-   const double layer1thicknessnm = 80;
-   const double layer2thicknessnm = 200;
+   const float hnm = 120.f;
+   const float wnm = 80.f;
+   const float linelengthnm = 1000.f;
+   const float thetardeg = 3.f;
+   const float thetaldeg = 3.f;
+   const float radrnm = 20.f;
+   const float radlnm = 20.f;
+   const float layer1thicknessnm = 80.f;
+   const float layer2thicknessnm = 200.f;
 
-   const double beamEeVvals[] = { 500. };
+   const float beamEeVvals[] = { 500.f };
    const int beamEeVvalsLen = 1;
-   const double beamsizenm = 0.5;
-   const double deepnm = 15;
+   const float beamsizenm = 0.5f;
+   const float deepnm = 15.f;
 
    const bool trajImg = true;
    const int trajImgMaxTraj = 50;
-   const double trajImgSize = 200e-9;
+   const float trajImgSize = 200e-9f;
 
    const bool VRML = false;
    const int VRMLImgMaxTraj = 0;
@@ -352,12 +352,12 @@ namespace LinesOnLayers
 
    //MONSEL_MaterialScatterModelT* vacuumMSM = nullptr;
 
-   const double PMMAbreakE = 1.60217653e-19 * 45.;
-   const double PMMAdensity = 1190.;
-   const double PMMAworkfun = 5.5;
-   const double PMMAbandgap = 5.;
-   const double PMMAEFermi = -5.;//-PMMAbandgap;
-   const double PMMApotU = -5.5 - (-5.);
+   const float PMMAbreakE = 1.60217653e-19 * 45.f;
+   const float PMMAdensity = 1190.f;
+   const float PMMAworkfun = 5.5f;
+   const float PMMAbandgap = 5.f;
+   const float PMMAEFermi = -5.f;//-PMMAbandgap;
+   const float PMMApotU = -5.5f - (-5.f);
 
    //SEmaterialT* PMMA = nullptr;
 
@@ -375,11 +375,11 @@ namespace LinesOnLayers
 
    //MONSEL_MaterialScatterModelT* ARCMSM = nullptr;
 
-   const double glCdensity = 1800.;
-   const double glCworkfun = 5.0;
-   const double glCbandgap = 0.;
-   const double glCEFermi = 20.4;
-   const double glCpotU = -5. - 20.4;
+   const float glCdensity = 1800.f;
+   const float glCworkfun = 5.0f;
+   const float glCbandgap = 0.f;
+   const float glCEFermi = 20.4f;
+   const float glCpotU = -5.f - 20.4f;
 
    //SEmaterialT* glC = nullptr;
 
@@ -393,14 +393,14 @@ namespace LinesOnLayers
 
    //MONSEL_MaterialScatterModelT* glCMSMDeep = nullptr;
 
-   const double phononE = 0.063;
-   const double phononStrength = 3.;
+   const float phononE = 0.063f;
+   const float phononStrength = 3.f;
 
-   const double Sidensity = 2330.;
-   const double Siworkfun = 4.85;
-   const double Sibandgap = 1.1;
-   const double SiEFermi = -1.1;//-Sibandgap;
-   const double SipotU = -44.85 - (-1.1);//-Siworkfun - SiEFermi;
+   const float Sidensity = 2330.f;
+   const float Siworkfun = 4.85f;
+   const float Sibandgap = 1.1f;
+   const float SiEFermi = -1.1f;//-Sibandgap;
+   const float SipotU = -44.85f - (-1.1f);//-Siworkfun - SiEFermi;
 
    //SEmaterialT* Si = nullptr;
 
@@ -418,20 +418,20 @@ namespace LinesOnLayers
 
    //SphereT* sphere = nullptr;
 
-   const double pitch = 180 * 1.e-9;
-   const double h = 120 * 1.e-9;
-   const double w = 80 * 1.e-9;
-   const double linelength = 1000 * 1.e-9;
+   const float pitch = 180.f * 1.e-9f;
+   const float h = 120.f * 1.e-9f;
+   const float w = 80.f * 1.e-9f;
+   const float linelength = 1000.f * 1.e-9f;
 
-   const double radperdeg = 3.14159265358979323846 / 180.;
-   const double thetar = 3 * 3.14159265358979323846 / 180.;
-   const double thetal = 3 * 3.14159265358979323846 / 180.;
-   const double radr = 20 * 1.e-9;
-   const double radl = 20 * 1.e-9;
-   const double layer1thickness = 80 * 1.e-9;
-   const double layer2thickness = 200 * 1.e-9;
-   const double beamsize = 0.5 * 1.e-9;
-   const double deep = 15 * 1.e-9;
+   const float radperdeg = 3.14159265358979323846f / 180.f;
+   const float thetar = 3.f * 3.14159265358979323846f / 180.f;
+   const float thetal = 3.f * 3.14159265358979323846f / 180.f;
+   const float radr = 20.f * 1.e-9f;
+   const float radl = 20.f * 1.e-9f;
+   const float layer1thickness = 80.f * 1.e-9f;
+   const float layer2thickness = 200.f * 1.e-9f;
+   const float beamsize = 0.5f * 1.e-9f;
+   const float deep = 15.f * 1.e-9f;
 
    const double center[] = {
       0.0,
@@ -439,9 +439,9 @@ namespace LinesOnLayers
       0.0
    };
 
-   const double beamEeV = 500.;
-   const double beamE = 1.60217653e-19 * 500;
-   const double binSizeEV = 10.;
+   const float beamEeV = 500.f;
+   const float beamE = 1.60217653e-19f * 500.f;
+   const float binSizeEV = 10.f;
 
    //NullMaterialScatterModelT* NULL_MSM = nullptr;
 
@@ -454,80 +454,84 @@ namespace LinesOnLayers
    //PlaneT* pl1 = nullptr;
    //RegionT* layer1Region = nullptr;
 
-   const double layer2Pos[] = { 0., 0., 80 * 1.e-9 };
+   const double layer2Pos[] = { 0., 0., 80. * 1.e-9 };
    //NormalMultiPlaneShapeT* layer2 = nullptr;
    //PlaneT* pl2 = nullptr;
    //RegionT* layer2Region = nullptr;
 
-   const double layer3Pos[] = { 0., 0., 80 * 1.e-9 + 200 * 1.e-9 };
+   const double layer3Pos[] = { 0., 0., 80. * 1.e-9 + 200. * 1.e-9 };
    //NormalMultiPlaneShapeT* layer3 = nullptr;
    //PlaneT* pl3 = nullptr;
    //RegionT* layer3Region = nullptr;
 
-   const double layer4Pos[] = { 0., 0., 80 * 1.e-9 + 200 * 1.e-9 + 15 * 1.e-9 };
+   const double layer4Pos[] = { 0., 0., 80. * 1.e-9 + 200. * 1.e-9 + 15. * 1.e-9 };
    //NormalMultiPlaneShapeT* layer4 = nullptr;
    //PlaneT* pl4 = nullptr;
    //RegionT* layer4Region = nullptr;
 
    //RegionT* deepRegion = nullptr;
 
-   const double leftmostLineCenterx = -180. * 1.e-9 * (3. / 2.);
-   const double xcenter = -180. * 1.e-9 * (3. / 2.) + 0 * 180 * 1.e-9;
+   const float leftmostLineCenterx = -180.f * 1.e-9f * (3.f / 2.f);
+   const float xcenter = -180.f * 1.e-9f * (3.f / 2.f) + 0.f * 180.f * 1.e-9f;
 
    //NormalIntersectionShapeT* line = nullptr;
    //RegionT* lineRegion = nullptr;
 
-   double* yvals = nullptr;
-   double* xvals = nullptr;
+   float* yvals = nullptr;
+   float* xvals = nullptr;
    unsigned int yvalsSize = 0;
    unsigned int xvalsSize = 0;
 #endif
 
    __host__ __device__ void initRange()
    {
-      VectorXd yvalstmp(128);
+      VectorXf yvalstmp(128);
       for (int i = -64; i < 64; i += 1) {
          yvalstmp.push_back(i);
       }
+      //VectorXf yvalstmp(1, -64);
 
-      const double xbottom = wnm / 2.;
-      const double xtop = wnm / 2. - hnm * ::tan(thetar);
-      const double xstart = xbottom - 100.5;
-      const double xstop = xbottom + 100.5;
-      const double xfinestart = xtop - 20.5;
-      double xfinestop;
-      if (thetar < 0.) xfinestop = xtop + 20.5;
-      else xfinestop = wnm / 2. + 20.5;
+      const float xbottom = wnm / 2.f;
+      const float xtop = wnm / 2.f - hnm * ::tanf(thetar);
+      const float xstart = xbottom - 100.5f;
+      const float xstop = xbottom + 100.5f;
+      const float xfinestart = xtop - 20.5f;
+      float xfinestop;
+      if (thetar < 0.f) xfinestop = xtop + 20.5f;
+      else xfinestop = wnm / 2.f + 20.5f;
 
-      VectorXd xvalstmp(128);
-      double deltax = 5.;
-      double x = xstart;
+      VectorXf xvalstmp(128);
+      float deltax = 5.f;
+      float x = xstart;
       while (x < xfinestart) {
          xvalstmp.push_back(x);
          x += deltax;
       }
       x = xfinestart;
-      deltax = 1;
+      deltax = 1.f;
       while (x < xfinestop) {
          xvalstmp.push_back(x);
          x += deltax;
       }
       x = xfinestop;
-      deltax = 5.;
+      deltax = 5.f;
       while (x < xstop) {
          xvalstmp.push_back(x);
          x += deltax;
       }
       xvalstmp.push_back(xstop);
+      //VectorXf xvalstmp(2);
+      //xvalstmp.push_back(xstart);
+      //xvalstmp.push_back(xstart + 5.f);
 
       yvalsSize = yvalstmp.size();
       xvalsSize = xvalstmp.size();
 
-      yvals = new double[yvalsSize];
-      xvals = new double[xvalsSize];
+      yvals = new float[yvalsSize];
+      xvals = new float[xvalsSize];
 
-      memcpy(yvals, yvalstmp.data(), yvalsSize * sizeof(double));
-      memcpy(xvals, xvalstmp.data(), xvalsSize * sizeof(double));
+      memcpy(yvals, yvalstmp.data(), yvalsSize * sizeof(yvals[0]));
+      memcpy(xvals, xvalstmp.data(), xvalsSize * sizeof(xvals[0]));
    }
 
    __global__ void initCuda()
@@ -727,10 +731,10 @@ namespace LinesOnLayers
 
    __host__ __device__ void runSinglePixel(const unsigned int r, const unsigned int c, float* result)
    {
-      const double ynm = yvals[r];
-      const double y = ynm * 1.e-9;
-      const double xnm = xvals[c];
-      const double x = xnm * 1.e-9;
+      const float ynm = yvals[r];
+      const float y = ynm * 1.e-9;
+      const float xnm = xvals[c];
+      const float x = xnm * 1.e-9;
 
       SEmaterialT vacuum;
       vacuum.setName("SE vacuum");
@@ -746,7 +750,7 @@ namespace LinesOnLayers
 #endif
 
       CompositionT PMMAcomp;
-      const double compositionCOH[] = { 5., 2., 8. };
+      const double compositionCOH[] = { 5.f, 2.f, 8.f };
       PMMAcomp.defineByMoleFraction(componentsCOH, 3, compositionCOH, 3);
       SEmaterialT PMMA(PMMAcomp, PMMAdensity);
       PMMA.setName("PMMA");
@@ -929,8 +933,8 @@ namespace LinesOnLayers
          totalSE = totalSE + hist.counts(j);
       }
 
-      const double SEf = (double)totalSE / nTrajectories;
-      const double bsf = back.backscatterFraction() - SEf;
+      const float SEf = (float)totalSE / nTrajectories;
+      const float bsf = back.backscatterFraction() - SEf;
       printf("%lf %lf %lf %lf %lf\n", beamEeV, xnm, ynm, bsf, SEf);
       monte.removeActionListener(back);
 
@@ -943,7 +947,6 @@ namespace LinesOnLayers
    {
       const unsigned int r = blockIdx.y*blockDim.y + threadIdx.y;
       const unsigned int c = blockIdx.x*blockDim.x + threadIdx.x;
-
       if (r >= yvalsSize || c >= xvalsSize) return;
 
       const unsigned int blockId = blockIdx.x + blockIdx.y * gridDim.x;

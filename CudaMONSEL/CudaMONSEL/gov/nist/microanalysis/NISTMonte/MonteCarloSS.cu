@@ -32,8 +32,8 @@ namespace MonteCarloSS
    __constant__ static const int XAxis = 0;
    __constant__ static const int YAxis = 1;
    __constant__ static const int ZAxis = 2;
-   __constant__ const float ChamberRadius = 0.1;
-   __constant__ const float SMALL_DISP = 1.0e-15;
+   __constant__ const float ChamberRadius = 0.1f;
+   __constant__ const float SMALL_DISP = 1.0e-15f;
 #else
    const int ScatterEvent = 1;
    const int NonScatterEvent = ScatterEvent + 1;
@@ -52,8 +52,8 @@ namespace MonteCarloSS
    static const int XAxis = 0;
    static const int YAxis = 1;
    static const int ZAxis = 2;
-   const float ChamberRadius = 0.1;
-   const float SMALL_DISP = 1.0e-15;
+   const float ChamberRadius = 0.1f;
+   const float SMALL_DISP = 1.0e-15f;
 #endif
 
    __host__ __device__ MonteCarloSS::MonteCarloSS(ElectronGunT const * gun, RegionT* chamber, ElectronT* electron) : mGun(gun), mChamber(chamber), mElectron(electron)
