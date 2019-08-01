@@ -5,7 +5,8 @@
 
 namespace LinesOnLayers
 {
-   extern void transferDataToCuda();
+   extern void loadNUTable();
+   extern void transferNUTableToCuda();
 
    //extern void initCuda();
    //extern void runCuda();

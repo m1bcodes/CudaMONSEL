@@ -70,7 +70,30 @@ namespace LinesOnLayers
       printf("\n");
    }
 
-   void transferDataToCuda()
+   void loadNUTable()
+   {
+       StringT tablePath = "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\glassyCTables\\";
+       const StringT IIMFPPennInterpglassy = tablePath + "IIMFPPennInterpglassyCSI.csv";
+       const StringT SimReducedDeltaEglassy = tablePath + "interpNUSimReducedDeltaEglassyCSI.csv";
+       const StringT simTableThetaNUglassy = tablePath + "interpsimTableThetaNUglassyCSI.csv";
+       const StringT SimESE0NUglassy = tablePath + "interpSimESE0NUglassyCSI.csv";
+       NUTableInterpolation::getInstance(IIMFPPennInterpglassy.c_str());
+       NUTableInterpolation::getInstance(SimReducedDeltaEglassy.c_str());
+       NUTableInterpolation::getInstance(simTableThetaNUglassy.c_str());
+       NUTableInterpolation::getInstance(SimESE0NUglassy.c_str());
+
+       tablePath = "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\SiTables\\";
+       const StringT IIMFPFullPennInterpSiSI = tablePath + "IIMFPFullPennInterpSiSI.csv";
+       const StringT interpNUSimReducedDeltaEFullPennSiSI = tablePath + "interpNUSimReducedDeltaEFullPennSiSI.csv";
+       const StringT interpNUThetaFullPennSiBGSI = tablePath + "interpNUThetaFullPennSiBGSI.csv";
+       const StringT interpSimESE0NUSiBGSI = tablePath + "interpSimESE0NUSiBGSI.csv";
+       NUTableInterpolation::getInstance(IIMFPFullPennInterpSiSI.c_str());
+       NUTableInterpolation::getInstance(interpNUSimReducedDeltaEFullPennSiSI.c_str());
+       NUTableInterpolation::getInstance(interpNUThetaFullPennSiBGSI.c_str());
+       NUTableInterpolation::getInstance(interpSimESE0NUSiBGSI.c_str());
+   }
+
+   void transferNUTableToCuda()
    {
       NUTableInterpolation::initFactory << <1, 1 >> >();
       checkCudaErrors(cudaDeviceSynchronize());
@@ -549,9 +572,9 @@ namespace LinesOnLayers
    __host__ __device__ void runSinglePixel(const unsigned int r, const unsigned int c, float* result)
    {
       const float ynm = yvals[r];
-      const float y = ynm * 1.e-9;
+      const float y = ynm * 1.e-9f;
       const float xnm = xvals[c];
-      const float x = xnm * 1.e-9;
+      const float x = xnm * 1.e-9f;
 
       SEmaterialT vacuum;
       vacuum.setName("SE vacuum");
@@ -583,7 +606,7 @@ namespace LinesOnLayers
 
       JoyLuoNieminenCSDT PMMACSD(PMMA, PMMAbreakE);
       FittedInelSMT PMMAfittedInel(PMMA, ToSI::eV(65.4), PMMACSD);
-      GanachaudMokraniPolaronTrapSMT PMMApolaron(2.e7, 1. / ToSI::eV(4.));
+      GanachaudMokraniPolaronTrapSMT PMMApolaron(2.e7f, 1.f / ToSI::eV(4.f));
 
       ExpQMBarrierSMT pmmaeqmbsm(&PMMA);
 
@@ -600,7 +623,7 @@ namespace LinesOnLayers
       PMMAMSMDeep.addScatterMechanism(&PMMApolaron);
 
       PMMAMSMDeep.setCSD(&PMMACSD);
-      PMMAMSMDeep.setMinEforTracking(ToSI::eV(50.));
+      PMMAMSMDeep.setMinEforTracking(ToSI::eV(50.f));
 
       MONSEL_MaterialScatterModelT& ARCMSM = PMMAMSM;
 
@@ -610,12 +633,12 @@ namespace LinesOnLayers
       const ElementT* glCComponents[] = { &Element::C };
 #endif
 
-      const ::Composition::data_type glCComposition[] = { 1. };
+      const ::Composition::data_type glCComposition[] = { 1.f };
       SEmaterialT glC(glCComponents, 1, glCComposition, 1, glCdensity, "glassy Carbon");
       glC.setWorkfunction(ToSI::eV(glCworkfun));
       glC.setEnergyCBbottom(ToSI::eV(glCpotU));
       glC.setBandgap(ToSI::eV(glCbandgap));
-      const ::Composition::data_type glCCoreEnergy[] = { ToSI::eV(284.2) };
+      const ::Composition::data_type glCCoreEnergy[] = { ToSI::eV(284.2f) };
       glC.setCoreEnergy(glCCoreEnergy, 1);
 
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
@@ -647,7 +670,7 @@ namespace LinesOnLayers
       glCMSMDeep.addScatterMechanism(&glCNISTMott);
       glCMSMDeep.addScatterMechanism(&glCDS);
 
-      glCMSMDeep.setMinEforTracking(ToSI::eV(50.));
+      glCMSMDeep.setMinEforTracking(ToSI::eV(50.f));
 
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
       const ElementT* SiComponent[] = { Element::dSi };
@@ -660,7 +683,7 @@ namespace LinesOnLayers
       Si.setWorkfunction(ToSI::eV(Siworkfun));
       Si.setEnergyCBbottom(ToSI::eV(SipotU));
       Si.setBandgap(ToSI::eV(Sibandgap));
-      const ::Material::data_type SiCoreEnergy[] = { ToSI::eV(99.2), ToSI::eV(99.8), ToSI::eV(149.7), ToSI::eV(1839.) };
+      const ::Material::data_type SiCoreEnergy[] = { ToSI::eV(99.2f), ToSI::eV(99.8f), ToSI::eV(149.7f), ToSI::eV(1839.f) };
       Si.setCoreEnergy(SiCoreEnergy, 4);
 
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
@@ -681,9 +704,9 @@ namespace LinesOnLayers
          interpSimESE0NUSiBGSI.c_str()
       };
 
-      TabulatedInelasticSMT SiDS(Si, 3, SiTables, ToSI::eV(13.54));
+      TabulatedInelasticSMT SiDS(Si, 3, SiTables, ToSI::eV(13.54f));
 
-      GanachaudMokraniPhononInelasticSMT Siphonon(phononStrength, ToSI::eV(phononE), 300., 11.7, 1.);
+      GanachaudMokraniPhononInelasticSMT Siphonon(phononStrength, ToSI::eV(phononE), 300.f, 11.7f, 1.f);
 
       ExpQMBarrierSMT sieqmbsm(&Si);
 
@@ -697,7 +720,7 @@ namespace LinesOnLayers
       SiMSMDeep.addScatterMechanism(&SiDS);
       SiMSMDeep.addScatterMechanism(&Siphonon);
 
-      SiMSMDeep.setMinEforTracking(ToSI::eV(50.));
+      SiMSMDeep.setMinEforTracking(ToSI::eV(50.f));
 
       SphereT sphere(center, MonteCarloSS::ChamberRadius);
 
@@ -731,7 +754,7 @@ namespace LinesOnLayers
       RegionT lineRegion(&chamber, &PMMAMSM, line);
 
       GaussianBeamT eg(beamsize, beamE, center);
-      const double egCenter[] = { x, y, -h - 20. * 1.e-9 };
+      const double egCenter[] = { x, y, -h - 20.f * 1.e-9f };
       eg.setCenter(egCenter);
       MonteCarloSST monte(&eg, &chamber, nullptr);
 
@@ -744,7 +767,7 @@ namespace LinesOnLayers
       const HistogramT& hist = back.backscatterEnergyHistogram(); //printf("49\n");
 
       const float energyperbineV = beamEeV / hist.binCount();
-      const float maxSEbin = 50. / energyperbineV;
+      const float maxSEbin = 50.f / energyperbineV;
       int totalSE = 0;
       for (int j = 0; j < (int)maxSEbin; ++j) {
          totalSE = totalSE + hist.counts(j);

@@ -54,6 +54,7 @@
 #include "gov\nist\nanoscalemetrology\JMONSELTests\LinesOnLayers0.cuh"
 
 #include <chrono>
+#include <thread>
 
 //__device__ __host__ float function(float x)
 //{
@@ -479,10 +480,11 @@ int main()
    //testGPU();
    //initCuda();
    //LinesOnLayers::transferDataToCuda();
+   LinesOnLayers::loadNUTable();
 
-   size_t a, t;
-   checkCudaErrors(cudaMemGetInfo(&a, &t));
-   printf("free/total: %lu/%lu\n", a, t);
+   //size_t a, t;
+   //checkCudaErrors(cudaMemGetInfo(&a, &t));
+   //printf("free/total: %lu/%lu\n", a, t);
 
    //LinesOnLayers::initCuda << <1, 1 >> >();
    //checkCudaErrors(cudaDeviceSynchronize());
@@ -500,11 +502,23 @@ int main()
    //checkCudaErrors(cudaDeviceSynchronize());
    //checkCudaErrors(cudaGetLastError());
 
+   std::thread threads[H * W];
    for (int i = 0; i < H; ++i) {
-      for (int j = 0; j < W; ++j) {
-         LinesOnLayers::runSinglePixel(i, j, d_result);
-      }
+       for (int j = 0; j < W; ++j) {
+           threads[i*W + j] = std::thread(LinesOnLayers::runSinglePixel, i, j, d_result);
+       }
    }
+   for (int i = 0; i < H; ++i) {
+       for (int j = 0; j < W; ++j) {
+           threads[i*W + j].join();
+       }
+   }
+
+   //for (int i = 0; i < H; ++i) {
+   //   for (int j = 0; j < W; ++j) {
+   //      LinesOnLayers::runSinglePixel(i, j, d_result);
+   //   }
+   //}
 
    auto end = std::chrono::system_clock::now();
    std::chrono::duration<double> elapsed_seconds = end - start;
