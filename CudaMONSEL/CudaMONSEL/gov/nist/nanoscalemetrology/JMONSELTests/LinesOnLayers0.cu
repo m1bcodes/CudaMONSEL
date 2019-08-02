@@ -32,6 +32,7 @@
 #include <fstream>
 
 #include <chrono>
+#include <time.h>
 
 #include "CudaUtil.h"
 
@@ -571,6 +572,9 @@ namespace LinesOnLayers
 
    __host__ __device__ void runSinglePixel(const unsigned int r, const unsigned int c, float* result)
    {
+#if (!(defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0)))
+      //srand(time(NULL));
+#endif
       const float ynm = yvals[r];
       const float y = ynm * 1.e-9f;
       const float xnm = xvals[c];
@@ -605,7 +609,7 @@ namespace LinesOnLayers
 #endif
 
       JoyLuoNieminenCSDT PMMACSD(PMMA, PMMAbreakE);
-      FittedInelSMT PMMAfittedInel(PMMA, ToSI::eV(65.4), PMMACSD);
+      FittedInelSMT PMMAfittedInel(PMMA, ToSI::eV(65.4f), PMMACSD);
       GanachaudMokraniPolaronTrapSMT PMMApolaron(2.e7f, 1.f / ToSI::eV(4.f));
 
       ExpQMBarrierSMT pmmaeqmbsm(&PMMA);

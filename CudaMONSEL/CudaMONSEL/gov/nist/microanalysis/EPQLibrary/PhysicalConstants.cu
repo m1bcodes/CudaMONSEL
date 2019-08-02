@@ -23,7 +23,7 @@ namespace PhysicalConstants
    __constant__ const float PlanckLength = 1.61624e-35f; // m
    __constant__ const float PlanckMass = 2.17645e-8f; // kg
    __constant__ const float PlanckTemperature = 1.41679e32f; // dimensionless
-   __constant__ const float PlanckTime = 5.39121e-44f; // s
+   __constant__ const double PlanckTime = 5.39121e-44f; // s
 
    __constant__ const float RydbergEnergy = 2.17987209e-18f; // joules
 
@@ -58,7 +58,7 @@ namespace PhysicalConstants
    const float PlanckLength = 1.61624e-35f; // m
    const float PlanckMass = 2.17645e-8f; // kg
    const float PlanckTemperature = 1.41679e32f; // dimensionless
-   const float PlanckTime = 5.39121e-44f; // s
+   const double PlanckTime = 5.39121e-44f; // s
 
    const float RydbergEnergy = 2.17987209e-18f; // joules
 

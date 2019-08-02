@@ -26,7 +26,7 @@ namespace PhysicalConstants
    __constant__ extern const float PlanckLength; // m
    __constant__ extern const float PlanckMass; // kg
    __constant__ extern const float PlanckTemperature; // dimensionless
-   __constant__ extern const float PlanckTime; // s
+   __constant__ extern const double PlanckTime; // s
 
    __constant__ extern const float RydbergEnergy; // joules
 
@@ -61,7 +61,7 @@ namespace PhysicalConstants
    extern const float PlanckLength; // m
    extern const float PlanckMass; // kg
    extern const float PlanckTemperature; // dimensionless
-   extern const float PlanckTime; // s
+   extern const double PlanckTime; // s
 
    extern const float RydbergEnergy; // joules
 

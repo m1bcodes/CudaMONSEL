@@ -2,6 +2,15 @@
 
 #include <curand.h>
 #include <curand_kernel.h>
+#include <thread>
+#include <random>
+#include <time.h>
+
+#if defined (_MSC_VER)  // Visual studio
+#define thread_local __declspec(thread)
+#elif defined (__GCC__) // GCC
+#define thread_local __thread
+#endif
 
 namespace Random
 {
@@ -26,6 +35,18 @@ namespace Random
       delete[] states;
    }
 
+   // https://stackoverflow.com/questions/21237905/how-do-i-generate-thread-safe-uniform-random-numbers
+   //Thread-safe function that returns a random number between min and max (inclusive).
+   //This function takes ~142% the time that calling rand() would take. For this extra
+   //cost you get a better uniform distribution and thread-safety.
+   static int intRand(const int & min, const int & max)
+   {
+      static thread_local std::mt19937* generator = nullptr;
+      if (!generator) generator = new std::mt19937(clock() + std::this_thread::get_id().hash());
+      std::uniform_int_distribution<int> distribution(min, max);
+      return distribution(*generator);
+   }
+
    __host__ __device__ float random()
    {
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
@@ -37,7 +58,8 @@ namespace Random
       //return (double)rand() / RAND_MAX;
       // http://c-faq.com/lib/randrange.html
       // like Java, does not include 1
-      return (float)rand() / (RAND_MAX + 1);
+      //return (float)rand() / (RAND_MAX + 1);
+      return (float)intRand(0, RAND_MAX) / (RAND_MAX + 1);
 #endif
    }
 
@@ -48,7 +70,8 @@ namespace Random
       int threadId = blockId * (blockDim.x * blockDim.y) + (threadIdx.y * blockDim.x) + threadIdx.x;
       return (int)truncf((1 - curand_uniform(&states[threadId])) * mod);
 #else
-      return rand() % mod;
+      //return rand() % mod;
+      return intRand(0, mod-1);
 #endif
    }
 
@@ -61,9 +84,10 @@ namespace Random
       if (r >= 1) r = 1 - r;
       return -::log(r);
 #else
-      float r = (float)rand() / RAND_MAX;
-      while (r <= 0 || r >= 1) r = (float)rand() / RAND_MAX;
-      return -::log(r);
+      //float r = (float)rand() / RAND_MAX;
+      //while (r <= 0 || r >= 1) r = (float)rand() / RAND_MAX;
+      float r = intRand(1, RAND_MAX - 1);
+      return -::logf(r);
 #endif
    }
 
@@ -85,11 +109,11 @@ namespace Random
       hasSpare = true;
       static float u, v, s;
       do {
-         u = (rand() / ((float)RAND_MAX)) * 2.0 - 1.0;
-         v = (rand() / ((float)RAND_MAX)) * 2.0 - 1.0;
+         u = (intRand(0, RAND_MAX) / ((float)RAND_MAX)) * 2.0f - 1.0f;
+         v = (intRand(0, RAND_MAX) / ((float)RAND_MAX)) * 2.0f - 1.0f;
          s = u * u + v * v;
-      } while ((s >= 1.0) || (s == 0.0));
-      s = ::sqrt(-2.0 * ::log(s) / s);
+      } while ((s >= 1.0f) || (s == 0.0f));
+      s = ::sqrtf(-2.0f * ::logf(s) / s);
       spare = v * s;
       return mean + stdDev * u * s;
 #endif

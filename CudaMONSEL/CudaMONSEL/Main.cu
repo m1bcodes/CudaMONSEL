@@ -476,11 +476,11 @@ int main()
    testLibrary();
    initSim();
    testSim();
+   LinesOnLayers::loadNUTable();
 
    //testGPU();
    //initCuda();
    //LinesOnLayers::transferDataToCuda();
-   LinesOnLayers::loadNUTable();
 
    //size_t a, t;
    //checkCudaErrors(cudaMemGetInfo(&a, &t));
