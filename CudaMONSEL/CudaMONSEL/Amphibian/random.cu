@@ -15,9 +15,9 @@
 namespace Random
 {
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-   __constant__ const double PI = 3.14159265358979323846;
+   __constant__ const float PI = 3.14159265358979323846f;
 #else
-   const double PI = 3.14159265358979323846;
+   const float PI = 3.14159265358979323846f;
 #endif
 
    __device__ curandState *states;

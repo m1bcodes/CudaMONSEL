@@ -73,25 +73,25 @@ namespace LinesOnLayers
 
    void loadNUTable()
    {
-       StringT tablePath = "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\glassyCTables\\";
-       const StringT IIMFPPennInterpglassy = tablePath + "IIMFPPennInterpglassyCSI.csv";
-       const StringT SimReducedDeltaEglassy = tablePath + "interpNUSimReducedDeltaEglassyCSI.csv";
-       const StringT simTableThetaNUglassy = tablePath + "interpsimTableThetaNUglassyCSI.csv";
-       const StringT SimESE0NUglassy = tablePath + "interpSimESE0NUglassyCSI.csv";
-       NUTableInterpolation::getInstance(IIMFPPennInterpglassy.c_str());
-       NUTableInterpolation::getInstance(SimReducedDeltaEglassy.c_str());
-       NUTableInterpolation::getInstance(simTableThetaNUglassy.c_str());
-       NUTableInterpolation::getInstance(SimESE0NUglassy.c_str());
+      StringT tablePath = "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\glassyCTables\\";
+      const StringT IIMFPPennInterpglassy = tablePath + "IIMFPPennInterpglassyCSI.csv";
+      const StringT SimReducedDeltaEglassy = tablePath + "interpNUSimReducedDeltaEglassyCSI.csv";
+      const StringT simTableThetaNUglassy = tablePath + "interpsimTableThetaNUglassyCSI.csv";
+      const StringT SimESE0NUglassy = tablePath + "interpSimESE0NUglassyCSI.csv";
+      NUTableInterpolation::getInstance(IIMFPPennInterpglassy.c_str());
+      NUTableInterpolation::getInstance(SimReducedDeltaEglassy.c_str());
+      NUTableInterpolation::getInstance(simTableThetaNUglassy.c_str());
+      NUTableInterpolation::getInstance(SimESE0NUglassy.c_str());
 
-       tablePath = "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\SiTables\\";
-       const StringT IIMFPFullPennInterpSiSI = tablePath + "IIMFPFullPennInterpSiSI.csv";
-       const StringT interpNUSimReducedDeltaEFullPennSiSI = tablePath + "interpNUSimReducedDeltaEFullPennSiSI.csv";
-       const StringT interpNUThetaFullPennSiBGSI = tablePath + "interpNUThetaFullPennSiBGSI.csv";
-       const StringT interpSimESE0NUSiBGSI = tablePath + "interpSimESE0NUSiBGSI.csv";
-       NUTableInterpolation::getInstance(IIMFPFullPennInterpSiSI.c_str());
-       NUTableInterpolation::getInstance(interpNUSimReducedDeltaEFullPennSiSI.c_str());
-       NUTableInterpolation::getInstance(interpNUThetaFullPennSiBGSI.c_str());
-       NUTableInterpolation::getInstance(interpSimESE0NUSiBGSI.c_str());
+      tablePath = "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\SiTables\\";
+      const StringT IIMFPFullPennInterpSiSI = tablePath + "IIMFPFullPennInterpSiSI.csv";
+      const StringT interpNUSimReducedDeltaEFullPennSiSI = tablePath + "interpNUSimReducedDeltaEFullPennSiSI.csv";
+      const StringT interpNUThetaFullPennSiBGSI = tablePath + "interpNUThetaFullPennSiBGSI.csv";
+      const StringT interpSimESE0NUSiBGSI = tablePath + "interpSimESE0NUSiBGSI.csv";
+      NUTableInterpolation::getInstance(IIMFPFullPennInterpSiSI.c_str());
+      NUTableInterpolation::getInstance(interpNUSimReducedDeltaEFullPennSiSI.c_str());
+      NUTableInterpolation::getInstance(interpNUThetaFullPennSiBGSI.c_str());
+      NUTableInterpolation::getInstance(interpSimESE0NUSiBGSI.c_str());
    }
 
    void transferNUTableToCuda()
@@ -509,44 +509,53 @@ namespace LinesOnLayers
 
    __host__ __device__ void initRange()
    {
-      VectorXf yvalstmp(128);
-      for (int i = -64; i < 64; i += 1) {
-         yvalstmp.push_back(i);
-      }
-      //VectorXf yvalstmp(1, -64);
+      //VectorXf yvalstmp(128);
+      //for (int i = -64; i < 64; i += 1) {
+      //   yvalstmp.push_back(i);
+      //}
+      ////VectorXf yvalstmp(1, -64);
 
       const float xbottom = wnm / 2.f;
       const float xtop = wnm / 2.f - hnm * ::tanf(thetar);
       const float xstart = xbottom - 100.5f;
       const float xstop = xbottom + 100.5f;
       const float xfinestart = xtop - 20.5f;
-      float xfinestop;
-      if (thetar < 0.f) xfinestop = xtop + 20.5f;
-      else xfinestop = wnm / 2.f + 20.5f;
+      const float xfinestop = (thetar < 0.f) ? xtop + 20.5f : wnm / 2.f + 20.5f;
 
-      VectorXf xvalstmp(128);
-      float deltax = 5.f;
-      float x = xstart;
-      while (x < xfinestart) {
-         xvalstmp.push_back(x);
-         x += deltax;
+      //VectorXf xvalstmp(80);
+      //float deltax = 5.f;
+      //float x = xstart;
+      //while (x < xfinestart) {
+      //   xvalstmp.push_back(x);
+      //   x += deltax;
+      //}
+      //x = xfinestart;
+      //deltax = 1.f;
+      //while (x < xfinestop) {
+      //   xvalstmp.push_back(x);
+      //   x += deltax;
+      //}
+      //x = xfinestop;
+      //deltax = 5.f;
+      //while (x < xstop) {
+      //   xvalstmp.push_back(x);
+      //   x += deltax;
+      //}
+      //xvalstmp.push_back(xstop);
+      ////VectorXf xvalstmp(2);
+      ////xvalstmp.push_back(xstart);
+      ////xvalstmp.push_back(xstart + 5.f);
+      const unsigned int ysize = 512;
+      VectorXf yvalstmp(ysize);
+      for (int i = 0; i < ysize; ++i) {
+         yvalstmp.push_back(-64.f + i * 128.f / ysize);
       }
-      x = xfinestart;
-      deltax = 1.f;
-      while (x < xfinestop) {
-         xvalstmp.push_back(x);
-         x += deltax;
+
+      const unsigned int xsize = 512;
+      VectorXf xvalstmp(xsize);
+      for (int i = 0; i < xsize; ++i) {
+         xvalstmp.push_back(xstart + i * (xstop - xstart) / xsize);
       }
-      x = xfinestop;
-      deltax = 5.f;
-      while (x < xstop) {
-         xvalstmp.push_back(x);
-         x += deltax;
-      }
-      xvalstmp.push_back(xstop);
-      //VectorXf xvalstmp(2);
-      //xvalstmp.push_back(xstart);
-      //xvalstmp.push_back(xstart + 5.f);
 
       yvalsSize = yvalstmp.size();
       xvalsSize = xvalstmp.size();
@@ -572,20 +581,17 @@ namespace LinesOnLayers
 
    __host__ __device__ void runSinglePixel(const unsigned int r, const unsigned int c, float* result)
    {
-#if (!(defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0)))
-      //srand(time(NULL));
-#endif
       const float ynm = yvals[r];
       const float y = ynm * 1.e-9f;
       const float xnm = xvals[c];
       const float x = xnm * 1.e-9f;
 
-      SEmaterialT vacuum;
+      SEmaterialT vacuum; // TODO: move this to global
       vacuum.setName("SE vacuum");
-      ExpQMBarrierSMT vacuumBarrier(&vacuum);
-      ZeroCSDT sZeroCSD;
+      ExpQMBarrierSMT vacuumBarrier(&vacuum); // TODO: move this to global
+      ZeroCSDT sZeroCSD; // TODO: move this to global
 
-      MONSEL_MaterialScatterModelT vacuumMSM(&vacuum, &vacuumBarrier, &sZeroCSD);
+      MONSEL_MaterialScatterModelT vacuumMSM(&vacuum, &vacuumBarrier, &sZeroCSD); // TODO: move this to global
 
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
       const ElementT* componentsCOH[] = { Element::dC, Element::dO, Element::dH };
@@ -594,9 +600,9 @@ namespace LinesOnLayers
 #endif
 
       CompositionT PMMAcomp;
-      const ::Composition::data_type compositionCOH[] = { 5.f, 2.f, 8.f };
+      const Composition::data_type compositionCOH[] = { 5.f, 2.f, 8.f };
       PMMAcomp.defineByMoleFraction(componentsCOH, 3, compositionCOH, 3);
-      SEmaterialT PMMA(PMMAcomp, PMMAdensity);
+      SEmaterialT PMMA(PMMAcomp, PMMAdensity); // TODO: move this to global
       PMMA.setName("PMMA");
       PMMA.setWorkfunction(ToSI::eV(PMMAworkfun));
       PMMA.setBandgap(ToSI::eV(PMMAbandgap));
@@ -609,10 +615,10 @@ namespace LinesOnLayers
 #endif
 
       JoyLuoNieminenCSDT PMMACSD(PMMA, PMMAbreakE);
-      FittedInelSMT PMMAfittedInel(PMMA, ToSI::eV(65.4f), PMMACSD);
-      GanachaudMokraniPolaronTrapSMT PMMApolaron(2.e7f, 1.f / ToSI::eV(4.f));
+      FittedInelSMT PMMAfittedInel(PMMA, ToSI::eV(65.4f), PMMACSD); // TODO: move this to global
+      GanachaudMokraniPolaronTrapSMT PMMApolaron(2.e7f, 1.f / ToSI::eV(4.f)); // TODO: move this to global
 
-      ExpQMBarrierSMT pmmaeqmbsm(&PMMA);
+      ExpQMBarrierSMT pmmaeqmbsm(&PMMA); // TODO: move this to global
 
       MONSEL_MaterialScatterModelT PMMAMSM(&PMMA, &pmmaeqmbsm, &sZeroCSD);
       PMMAMSM.addScatterMechanism(&PMMANISTMott);
@@ -637,12 +643,12 @@ namespace LinesOnLayers
       const ElementT* glCComponents[] = { &Element::C };
 #endif
 
-      const ::Composition::data_type glCComposition[] = { 1.f };
+      const Composition::data_type glCComposition[] = { 1.f };
       SEmaterialT glC(glCComponents, 1, glCComposition, 1, glCdensity, "glassy Carbon");
       glC.setWorkfunction(ToSI::eV(glCworkfun));
       glC.setEnergyCBbottom(ToSI::eV(glCpotU));
       glC.setBandgap(ToSI::eV(glCbandgap));
-      const ::Composition::data_type glCCoreEnergy[] = { ToSI::eV(284.2f) };
+      const Composition::data_type glCCoreEnergy[] = { ToSI::eV(284.2f) };
       glC.setCoreEnergy(glCCoreEnergy, 1);
 
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
@@ -682,12 +688,12 @@ namespace LinesOnLayers
       const ElementT* SiComponent[] = { &Element::Si };
 #endif
 
-      const ::Composition::data_type SiComposition[] = { 1. };
+      const Composition::data_type SiComposition[] = { 1. };
       SEmaterialT Si(SiComponent, 1, SiComposition, 1, Sidensity, "Silicon");
       Si.setWorkfunction(ToSI::eV(Siworkfun));
       Si.setEnergyCBbottom(ToSI::eV(SipotU));
       Si.setBandgap(ToSI::eV(Sibandgap));
-      const ::Material::data_type SiCoreEnergy[] = { ToSI::eV(99.2f), ToSI::eV(99.8f), ToSI::eV(149.7f), ToSI::eV(1839.f) };
+      const Material::data_type SiCoreEnergy[] = { ToSI::eV(99.2f), ToSI::eV(99.8f), ToSI::eV(149.7f), ToSI::eV(1839.f) };
       Si.setCoreEnergy(SiCoreEnergy, 4);
 
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
@@ -766,8 +772,16 @@ namespace LinesOnLayers
       BackscatterStatsT back(monte, nbins); //printf("48\n");
       monte.addActionListener(back);
 
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
       monte.runMultipleTrajectories(nTrajectories);
-
+#else
+      try {
+         monte.runMultipleTrajectories(nTrajectories);
+      }
+      catch (std::exception ex) {
+         printf("runSinglePixel: %s\n", ex.what());
+      }
+#endif
       const HistogramT& hist = back.backscatterEnergyHistogram(); //printf("49\n");
 
       const float energyperbineV = beamEeV / hist.binCount();
@@ -786,8 +800,8 @@ namespace LinesOnLayers
    }
 
    __global__ void
-   //__launch_bounds__(256, 3)
-   runCuda(float* result)
+      //__launch_bounds__(256, 3)
+      runCuda(float* result)
    {
       const unsigned int r = blockIdx.y*blockDim.y + threadIdx.y;
       const unsigned int c = blockIdx.x*blockDim.x + threadIdx.x;

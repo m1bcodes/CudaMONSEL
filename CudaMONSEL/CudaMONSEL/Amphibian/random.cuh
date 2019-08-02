@@ -14,9 +14,9 @@ namespace Random
    extern __global__ void destroyCudaState();
 
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-   extern __constant__ const double PI;
+   extern __constant__ const float PI;
 #else
-   extern const double PI;
+   extern const float PI;
 #endif
 }
 

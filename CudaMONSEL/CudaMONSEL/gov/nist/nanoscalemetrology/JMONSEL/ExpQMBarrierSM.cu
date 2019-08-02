@@ -89,7 +89,7 @@ namespace ExpQMBarrierSM
             struckRegion = struckRegion->getParent();
          const ShapeT* intersectedshape = struckRegion->getShape();
          if (intersectedshape->isNormalShape()) {
-            memcpy(nb, ((NormalShapeT*)intersectedshape)->getPreviousNormal(), sizeof(double) * 4);
+            memcpy(nb, ((NormalShapeT*)intersectedshape)->getPreviousNormal(), sizeof(nb[0]) * 4);
             for (int i = 0; i < 3; i++)
                nb[i] *= -1;
          }
@@ -97,7 +97,7 @@ namespace ExpQMBarrierSM
       else {
          const ShapeT* intersectedshape = currentRegion->getShape();
          if (intersectedshape->isNormalShape())
-            memcpy(nb, ((NormalShapeT*)intersectedshape)->getPreviousNormal(), sizeof(double) * 4);
+            memcpy(nb, ((NormalShapeT*)intersectedshape)->getPreviousNormal(), sizeof(nb[0]) * 4);
       }
 
       // GET THE VECTOR IN THE ELECTRON'S DIRECTION OF MOTION
@@ -116,7 +116,7 @@ namespace ExpQMBarrierSM
       //if (!nb.empty())
          //nb.assign(n0, n0 + 3);
       if (nb[0] == INFINITY && nb[1] == INFINITY && nb[2] == INFINITY && nb[3] == INFINITY)
-         memcpy(nb, n0, sizeof(double) * 4);
+         memcpy(nb, n0, sizeof(nb[0]) * 4);
 
       /*
       * Let the angle of incidence be called alpha. Cos(alpha) is given by the

@@ -409,6 +409,7 @@ namespace SEmaterial
    __host__ __device__ void SEmaterial::setWorkfunction(data_type workfunction)
    {
       this->workfunction = workfunction;
+      this->energyCBbottom = energyCBbottom > -workfunction ? -workfunction : energyCBbottom;
       if (energyCBbottom > -workfunction) {
          energyCBbottom = -workfunction;
       }

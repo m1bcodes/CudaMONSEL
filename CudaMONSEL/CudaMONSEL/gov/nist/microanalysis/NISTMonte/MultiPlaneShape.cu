@@ -7,14 +7,14 @@ namespace MultiPlaneShape
    // construct a Plane object with the specified normal containing the specified point
    __host__ __device__ Plane::Plane(const double normal[], const double point[])
    {
-      memcpy(mNormal, normal, sizeof(double) * 3);
-      memcpy(mPoint, point, sizeof(double) * 3);
+      memcpy(mNormal, normal, sizeof(mNormal[0]) * 3);
+      memcpy(mPoint, point, sizeof(mPoint[0]) * 3);
    }
 
    Plane::Plane(const Plane& other)
    {
-      memcpy(mNormal, other.mNormal, sizeof(double) * 3);
-      memcpy(mPoint, other.mPoint, sizeof(double) * 3);
+      memcpy(mNormal, other.mNormal, sizeof(mNormal[0]) * 3);
+      memcpy(mPoint, other.mPoint, sizeof(mPoint[0]) * 3);
    }
 
    // contains - Is the point p on the inside side of the plane? (Side opposite to the direction of the normal)

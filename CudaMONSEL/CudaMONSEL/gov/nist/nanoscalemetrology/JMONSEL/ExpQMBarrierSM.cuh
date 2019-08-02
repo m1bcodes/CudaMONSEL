@@ -18,10 +18,10 @@ namespace ExpQMBarrierSM
    private:
       __host__ __device__ double generalBarrierT(double rootPerpE, double rootDiff) const;
 
-      double u0; // Barrier height of this material to vacuum.
-      double lambda; // Barrier width
-      bool classical;
-      double lambdaFactor;
+      const double u0; // Barrier height of this material to vacuum.
+      const double lambda; // Barrier width
+      const bool classical;
+      const double lambdaFactor;
       const MaterialT* mat;
    };
 }

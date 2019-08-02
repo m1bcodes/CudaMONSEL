@@ -139,7 +139,7 @@ __global__ void testLibraryCuda()
    StackTest::testOne();
 }
 
-const unsigned int W = 80, H = 64;
+const unsigned int W = 512, H = 512;
 const unsigned int TX = 16, TY = 16;
 dim3 blockSize(TX, TY); // Equivalent to dim3 blockSize(TX, TY, 1);
 unsigned int bx = (W + blockSize.x - 1) / blockSize.x;
@@ -493,8 +493,9 @@ int main()
    LinesOnLayers::initRange();
 
    float* d_result = nullptr;
+
    //checkCudaErrors(cudaMalloc((void**)&d_result, sizeof(d_result[0]) * H * W));
-   d_result = new float[sizeof(d_result[0]) * H * W];
+   d_result = new float[H * W];
    auto start = std::chrono::system_clock::now();
    printf("start timing\n");
 
@@ -502,7 +503,7 @@ int main()
    //checkCudaErrors(cudaDeviceSynchronize());
    //checkCudaErrors(cudaGetLastError());
 
-   std::thread threads[H * W];
+   std::thread* threads = new std::thread[H * W];
    for (int i = 0; i < H; ++i) {
        for (int j = 0; j < W; ++j) {
            threads[i*W + j] = std::thread(LinesOnLayers::runSinglePixel, i, j, d_result);
@@ -513,6 +514,7 @@ int main()
            threads[i*W + j].join();
        }
    }
+   delete[] threads;
 
    //for (int i = 0; i < H; ++i) {
    //   for (int j = 0; j < W; ++j) {
@@ -525,7 +527,7 @@ int main()
    std::time_t end_time = std::chrono::system_clock::to_time_t(end);
    std::cout << std::endl << "finished computation at " << std::ctime(&end_time) << "elapsed time: " << elapsed_seconds.count() << "s" << std::endl;
 
-   float* h_result = new float[H * W * sizeof(h_result[0])];
+   float* h_result = new float[H * W];
    //checkCudaErrors(cudaMemcpy(h_result, d_result, sizeof(h_result[0]) * H * W, cudaMemcpyDeviceToHost));
    memcpy(h_result, d_result, sizeof(h_result[0]) * H * W);
 

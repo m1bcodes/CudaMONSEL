@@ -18,7 +18,8 @@ namespace MONSEL_MaterialScatterModel
 //   static ZeroCSDT sZeroCSD;
 //#endif
 
-   __host__ __device__ MONSEL_MaterialScatterModel::MONSEL_MaterialScatterModel(const SEmaterialT* mat, const BarrierScatterMechanismT* bsm, SlowingDownAlgT* sda) : mat(mat), barrierSM(bsm), csd(sda)
+   __host__ __device__ MONSEL_MaterialScatterModel::MONSEL_MaterialScatterModel(const SEmaterialT* mat, const BarrierScatterMechanismT* bsm, SlowingDownAlgT* sda) :
+      mat(mat), barrierSM(bsm), csd(sda), minEforTracking(mat->getElementCount() == 0 ? -INFINITY : (-mat->getEnergyCBbottom() < 0.f ? 0.f : -mat->getEnergyCBbottom()))
    {
       // TODO: take note of difference wrt original JMONSEL code
       //this->mat = mat.clone();
@@ -30,18 +31,18 @@ namespace MONSEL_MaterialScatterModel
       * we never drop an electron from the simulation when it is in vacuum, but
       * rather wait for it to either enter a material or be detected.
       */
-      if (mat->getElementCount() == 0)
-         minEforTracking = -INFINITY;
-      else {
+      //if (mat->getElementCount() == 0)
+      //   minEforTracking = -INFINITY;
+      //else {
          /*
          * Default to barrier height or 0. whichever is larger. (Barrier can be
          * negative in some negative electronic affinity materials, but in this
          * case we assume a negative kinetic energy, which means energy less
          * than the conduction band bottom, refers to a trapped state.
          */
-         minEforTracking = -mat->getEnergyCBbottom();
-         if (minEforTracking < 0.) minEforTracking = 0.;
-      }
+      //   minEforTracking = -mat->getEnergyCBbottom();
+      //   if (minEforTracking < 0.f) minEforTracking = 0.f;
+      //}
    }
 
    __host__ __device__ const MaterialT& MONSEL_MaterialScatterModel::getMaterial() const

@@ -9,14 +9,14 @@ namespace JoyLuoNieminenCSD
 {
    __host__ __device__ JoyLuoNieminenCSD::JoyLuoNieminenCSD(SEmaterialT& mat, float breakE) : mat(mat), breakE(breakE)
    {
-      if (!(breakE > (mat.getWorkfunction() + ToSI::eV(1.))))
+      if (!(breakE > (mat.getWorkfunction() + ToSI::eV(1.f))))
          printf("JoyLuoNieminenCSD::JoyLuoNieminenCSD: Supplied breakpoint energy is too small.");
       setMaterial(&mat);
    }
 
    JoyLuoNieminenCSD::JoyLuoNieminenCSD(MaterialT& mat, float bh, float breakE) : mat(mat)
    {
-      if (breakE > (bh + ToSI::eV(1.)))
+      if (breakE > (bh + ToSI::eV(1.f)))
          this->breakE = breakE;
       else
          printf("JoyLuoNieminenCSD::JoyLuoNieminenCSD: Supplied breakpoint energy is too small.");
@@ -45,7 +45,7 @@ namespace JoyLuoNieminenCSD
       recipJ.resize(nce);
       coef.resize(nce);
       beta.resize(nce);
-      bhplus1eV = bh + ToSI::eV(1.);
+      bhplus1eV = bh + ToSI::eV(1.f);
       if (breakE < bhplus1eV)
          breakE = bhplus1eV;
 
@@ -76,12 +76,12 @@ namespace JoyLuoNieminenCSD
    static float MaxLossFraction = 0.1;
 #endif
 
-   __host__ __device__::SlowingDownAlg::data_type JoyLuoNieminenCSD::compute(::SlowingDownAlg::data_type len, const ElectronT *pe) const
+   __host__ __device__ SlowingDownAlg::data_type JoyLuoNieminenCSD::compute(::SlowingDownAlg::data_type len, const ElectronT *pe) const
    {
       return compute(len, pe->getEnergy());
    }
 
-   __host__ __device__::SlowingDownAlg::data_type JoyLuoNieminenCSD::compute(const ::SlowingDownAlg::data_type len, const ::SlowingDownAlg::data_type kE) const
+   __host__ __device__ SlowingDownAlg::data_type JoyLuoNieminenCSD::compute(const ::SlowingDownAlg::data_type len, const ::SlowingDownAlg::data_type kE) const
    {
       if ((nce == 0) || (kE < minEforTracking) || (kE <= 0.f))
          return 0.f;
