@@ -567,6 +567,12 @@ namespace LinesOnLayers
       memcpy(xvals, xvalstmp.data(), xvalsSize * sizeof(xvals[0]));
    }
 
+   __host__ __device__ void destroyRange()
+   {
+      delete[] yvals;
+      delete[] xvals;
+   }
+
    __global__ void initCuda()
    {
       printf("LinesOnLayers: initCuda\n");
@@ -750,7 +756,7 @@ namespace LinesOnLayers
       RegionT layer2Region(&layer1Region, &glCMSM, (NormalShapeT*)&layer2);
 
       NormalMultiPlaneShapeT layer3;
-      PlaneT pl3(normalvector, layer2Pos);
+      PlaneT pl3(normalvector, layer3Pos);
       layer3.addPlane(&pl3);
       RegionT layer3Region(&layer2Region, &SiMSM, (NormalShapeT*)&layer3);
 
@@ -760,29 +766,33 @@ namespace LinesOnLayers
 
       RegionT deepRegion(&layer3Region, &SiMSMDeep, (NormalShapeT*)&layer4);
 
-      NormalIntersectionShapeT* line = (NormalIntersectionShapeT*)NShapes::createLine(-h, w, linelength, thetal, thetar, radl, radr);
+      NShapes::Line l;
+      NormalIntersectionShapeT* line = (NormalIntersectionShapeT*)NShapes::createLine(l, -h, w, linelength, thetal, thetar, radl, radr);
       RegionT lineRegion(&chamber, &PMMAMSM, line);
 
-      GaussianBeamT eg(beamsize, beamE, center);
       const double egCenter[] = { x, y, -h - 20.f * 1.e-9f };
-      eg.setCenter(egCenter);
+      //eg.setCenter(egCenter);
+      GaussianBeamT eg(beamsize, beamE, egCenter);
       MonteCarloSST monte(&eg, &chamber, nullptr);
 
       const int nbins = (int)(beamEeV / binSizeEV);
-      BackscatterStatsT back(monte, nbins); //printf("48\n");
+      BackscatterStatsT back(monte, nbins);
       monte.addActionListener(back);
 
-#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+//#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+//      monte.runMultipleTrajectories(nTrajectories);
+//#else
+//      try {
+//         monte.runMultipleTrajectories(nTrajectories);
+//      }
+//      catch (std::exception ex) {
+//         printf("runSinglePixel: %s\n", ex.what());
+//      }
+//#endif
       monte.runMultipleTrajectories(nTrajectories);
-#else
-      try {
-         monte.runMultipleTrajectories(nTrajectories);
-      }
-      catch (std::exception ex) {
-         printf("runSinglePixel: %s\n", ex.what());
-      }
-#endif
-      const HistogramT& hist = back.backscatterEnergyHistogram(); //printf("49\n");
+
+      NShapes::destroyLine(l);
+      const HistogramT& hist = back.backscatterEnergyHistogram();
 
       const float energyperbineV = beamEeV / hist.binCount();
       const float maxSEbin = 50.f / energyperbineV;
@@ -814,5 +824,201 @@ namespace LinesOnLayers
       runSinglePixel(r, c, result);
 
       printf("%d, %d (%d) ended\n", r, c, threadId);
+   }
+
+   void runSinglePixelThread(int id, const unsigned int r, const unsigned int c, float* result)
+   {
+      runSinglePixel(r, c, result);
+      //const float ynm = yvals[r];
+      //const float y = ynm * 1.e-9f;
+      //const float xnm = xvals[c];
+      //const float x = xnm * 1.e-9f;
+
+      //SEmaterialT vacuum; // TODO: move this to global
+      //vacuum.setName("SE vacuum");
+      //ExpQMBarrierSMT vacuumBarrier(&vacuum); // TODO: move this to global
+      //ZeroCSDT sZeroCSD; // TODO: move this to global
+
+      //MONSEL_MaterialScatterModelT vacuumMSM(&vacuum, &vacuumBarrier, &sZeroCSD); // TODO: move this to global
+
+      //const ElementT* componentsCOH[] = { &Element::C, &Element::O, &Element::H };
+
+      //CompositionT PMMAcomp;
+      //const Composition::data_type compositionCOH[] = { 5.f, 2.f, 8.f };
+      //PMMAcomp.defineByMoleFraction(componentsCOH, 3, compositionCOH, 3);
+      //SEmaterialT PMMA(PMMAcomp, PMMAdensity); // TODO: move this to global
+      //PMMA.setName("PMMA");
+      //PMMA.setWorkfunction(ToSI::eV(PMMAworkfun));
+      //PMMA.setBandgap(ToSI::eV(PMMAbandgap));
+      //PMMA.setEnergyCBbottom(ToSI::eV(PMMApotU));
+
+      //SelectableElasticSMT PMMANISTMott(PMMA, NISTMottRS::Factory);
+
+      //JoyLuoNieminenCSDT PMMACSD(PMMA, PMMAbreakE);
+      //FittedInelSMT PMMAfittedInel(PMMA, ToSI::eV(65.4f), PMMACSD); // TODO: move this to global
+      //GanachaudMokraniPolaronTrapSMT PMMApolaron(2.e7f, 1.f / ToSI::eV(4.f)); // TODO: move this to global
+
+      //ExpQMBarrierSMT pmmaeqmbsm(&PMMA); // TODO: move this to global
+
+      //MONSEL_MaterialScatterModelT PMMAMSM(&PMMA, &pmmaeqmbsm, &sZeroCSD);
+      //PMMAMSM.addScatterMechanism(&PMMANISTMott);
+      //PMMAMSM.addScatterMechanism(&PMMAfittedInel);
+      //PMMAMSM.addScatterMechanism(&PMMApolaron);
+
+      //PMMAMSM.setCSD(&PMMACSD);
+
+      //MONSEL_MaterialScatterModelT PMMAMSMDeep(&PMMA, &pmmaeqmbsm, &sZeroCSD);
+      //PMMAMSMDeep.addScatterMechanism(&PMMANISTMott);
+      //PMMAMSMDeep.addScatterMechanism(&PMMAfittedInel);
+      //PMMAMSMDeep.addScatterMechanism(&PMMApolaron);
+
+      //PMMAMSMDeep.setCSD(&PMMACSD);
+      //PMMAMSMDeep.setMinEforTracking(ToSI::eV(50.f));
+
+      //MONSEL_MaterialScatterModelT& ARCMSM = PMMAMSM;
+
+      //const ElementT* glCComponents[] = { &Element::C };
+
+      //const Composition::data_type glCComposition[] = { 1.f };
+      //SEmaterialT glC(glCComponents, 1, glCComposition, 1, glCdensity, "glassy Carbon");
+      //glC.setWorkfunction(ToSI::eV(glCworkfun));
+      //glC.setEnergyCBbottom(ToSI::eV(glCpotU));
+      //glC.setBandgap(ToSI::eV(glCbandgap));
+      //const Composition::data_type glCCoreEnergy[] = { ToSI::eV(284.2f) };
+      //glC.setCoreEnergy(glCCoreEnergy, 1);
+
+      //SelectableElasticSMT glCNISTMott(glC, NISTMottRS::Factory);
+
+      //StringT tablePath = "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\glassyCTables\\";
+      //const StringT IIMFPPennInterpglassy = tablePath + "IIMFPPennInterpglassyCSI.csv";
+      //const StringT SimReducedDeltaEglassy = tablePath + "interpNUSimReducedDeltaEglassyCSI.csv";
+      //const StringT simTableThetaNUglassy = tablePath + "interpsimTableThetaNUglassyCSI.csv";
+      //const StringT SimESE0NUglassy = tablePath + "interpSimESE0NUglassyCSI.csv";
+      //const char* glCTables[] = {
+      //   IIMFPPennInterpglassy.c_str(),
+      //   SimReducedDeltaEglassy.c_str(),
+      //   simTableThetaNUglassy.c_str(),
+      //   SimESE0NUglassy.c_str()
+      //};
+      //TabulatedInelasticSMT glCDS(glC, 3, glCTables);
+
+      //ExpQMBarrierSMT glceqmbsm(&glC);
+
+      //MONSEL_MaterialScatterModelT glCMSM(&glC, &glceqmbsm, &sZeroCSD);
+      //glCMSM.addScatterMechanism(&glCNISTMott);
+      //glCMSM.addScatterMechanism(&glCDS);
+
+      //MONSEL_MaterialScatterModelT glCMSMDeep(&glC, &glceqmbsm, &sZeroCSD);
+      //glCMSMDeep.addScatterMechanism(&glCNISTMott);
+      //glCMSMDeep.addScatterMechanism(&glCDS);
+
+      //glCMSMDeep.setMinEforTracking(ToSI::eV(50.f));
+
+      //const ElementT* SiComponent[] = { &Element::Si };
+
+      //const Composition::data_type SiComposition[] = { 1. };
+      //SEmaterialT Si(SiComponent, 1, SiComposition, 1, Sidensity, "Silicon");
+      //Si.setWorkfunction(ToSI::eV(Siworkfun));
+      //Si.setEnergyCBbottom(ToSI::eV(SipotU));
+      //Si.setBandgap(ToSI::eV(Sibandgap));
+      //const Material::data_type SiCoreEnergy[] = { ToSI::eV(99.2f), ToSI::eV(99.8f), ToSI::eV(149.7f), ToSI::eV(1839.f) };
+      //Si.setCoreEnergy(SiCoreEnergy, 4);
+
+      //SelectableElasticSMT SiNISTMott(Si, NISTMottRS::Factory);
+
+      //tablePath = "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\SiTables\\";
+      //const StringT IIMFPFullPennInterpSiSI = tablePath + "IIMFPFullPennInterpSiSI.csv";
+      //const StringT interpNUSimReducedDeltaEFullPennSiSI = tablePath + "interpNUSimReducedDeltaEFullPennSiSI.csv";
+      //const StringT interpNUThetaFullPennSiBGSI = tablePath + "interpNUThetaFullPennSiBGSI.csv";
+      //const StringT interpSimESE0NUSiBGSI = tablePath + "interpSimESE0NUSiBGSI.csv";
+      //const char* SiTables[] = {
+      //   IIMFPFullPennInterpSiSI.c_str(),
+      //   interpNUSimReducedDeltaEFullPennSiSI.c_str(),
+      //   interpNUThetaFullPennSiBGSI.c_str(),
+      //   interpSimESE0NUSiBGSI.c_str()
+      //};
+
+      //TabulatedInelasticSMT SiDS(Si, 3, SiTables, ToSI::eV(13.54f));
+
+      //GanachaudMokraniPhononInelasticSMT Siphonon(phononStrength, ToSI::eV(phononE), 300.f, 11.7f, 1.f);
+
+      //ExpQMBarrierSMT sieqmbsm(&Si);
+
+      //MONSEL_MaterialScatterModelT SiMSM(&Si, &sieqmbsm, &sZeroCSD);
+      //SiMSM.addScatterMechanism(&SiNISTMott);
+      //SiMSM.addScatterMechanism(&SiDS);
+      //SiMSM.addScatterMechanism(&Siphonon);
+
+      //MONSEL_MaterialScatterModelT SiMSMDeep(&Si, &sieqmbsm, &sZeroCSD);
+      //SiMSMDeep.addScatterMechanism(&SiNISTMott);
+      //SiMSMDeep.addScatterMechanism(&SiDS);
+      //SiMSMDeep.addScatterMechanism(&Siphonon);
+
+      //SiMSMDeep.setMinEforTracking(ToSI::eV(50.f));
+
+      //SphereT sphere(center, MonteCarloSS::ChamberRadius);
+
+      //NullMaterialScatterModelT NULL_MSM;
+
+      //RegionT chamber(nullptr, &NULL_MSM, &sphere);
+      //chamber.updateMaterial(*(chamber.getScatterModel()), vacuumMSM);
+
+      //NormalMultiPlaneShapeT layer1;
+      //PlaneT pl1(normalvector, layer1Pos);
+      //layer1.addPlane(&pl1);
+      //RegionT layer1Region(&chamber, &ARCMSM, (NormalShapeT*)&layer1);
+
+      //NormalMultiPlaneShapeT layer2;
+      //PlaneT pl2(normalvector, layer2Pos);
+      //layer2.addPlane(&pl2);
+      //RegionT layer2Region(&layer1Region, &glCMSM, (NormalShapeT*)&layer2);
+
+      //NormalMultiPlaneShapeT layer3;
+      //PlaneT pl3(normalvector, layer2Pos);
+      //layer3.addPlane(&pl3);
+      //RegionT layer3Region(&layer2Region, &SiMSM, (NormalShapeT*)&layer3);
+
+      //NormalMultiPlaneShapeT layer4;
+      //PlaneT pl4(normalvector, layer4Pos);
+      //RegionT layer4Region(&layer3Region, &SiMSM, (NormalShapeT*)&layer4);
+
+      //RegionT deepRegion(&layer3Region, &SiMSMDeep, (NormalShapeT*)&layer4);
+
+      //NShapes::Line l;
+      //NormalIntersectionShapeT* line = (NormalIntersectionShapeT*)NShapes::createLine(l, -h, w, linelength, thetal, thetar, radl, radr);
+      //RegionT lineRegion(&chamber, &PMMAMSM, line);
+
+      //GaussianBeamT eg(beamsize, beamE, center);
+      //const double egCenter[] = { x, y, -h - 20.f * 1.e-9f };
+      //eg.setCenter(egCenter);
+      //MonteCarloSST monte(&eg, &chamber, nullptr);
+
+      //const int nbins = (int)(beamEeV / binSizeEV);
+      //BackscatterStatsT back(monte, nbins);
+      //monte.addActionListener(back);
+
+      //try {
+      //   monte.runMultipleTrajectories(nTrajectories);
+      //}
+      //catch (std::exception ex) {
+      //   printf("runMultipleTrajectories: %s\n", ex.what());
+      //}
+
+      //NShapes::destroyLine(l);
+      //const HistogramT& hist = back.backscatterEnergyHistogram();
+
+      //const float energyperbineV = beamEeV / hist.binCount();
+      //const float maxSEbin = 50.f / energyperbineV;
+      //int totalSE = 0;
+      //for (int j = 0; j < (int)maxSEbin; ++j) {
+      //   totalSE = totalSE + hist.counts(j);
+      //}
+
+      //const float SEf = (float)totalSE / nTrajectories;
+      //const float bsf = back.backscatterFraction() - SEf;
+      //printf("%lf %lf %lf %lf %lf\n", beamEeV, xnm, ynm, bsf, SEf);
+      //monte.removeActionListener(back);
+
+      //result[r * xvalsSize + c] = SEf;
    }
 }

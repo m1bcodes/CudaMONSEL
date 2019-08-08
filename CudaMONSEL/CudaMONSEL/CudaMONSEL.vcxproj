@@ -109,6 +109,7 @@
     <CudaCompile Include="SimRunner.cu" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Amphibian\ctpl_stl.h" />
     <ClInclude Include="Amphibian\Hasher.cuh" />
     <ClInclude Include="Amphibian\LinkedList.cuh" />
     <ClInclude Include="Amphibian\random.cuh" />

@@ -16,6 +16,9 @@ namespace LinesOnLayers
 
    extern __host__ __device__ void runSinglePixel(const unsigned int r, const unsigned int c, float* result);
    extern __host__ __device__ void initRange();
+   extern __host__ __device__ void destroyRange();
+
+   extern void runSinglePixelThread(int id, const unsigned int r, const unsigned int c, float* result);
 }
 
 #endif

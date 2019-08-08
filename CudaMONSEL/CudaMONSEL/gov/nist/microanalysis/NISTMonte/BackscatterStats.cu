@@ -44,7 +44,7 @@ namespace BackscatterStats
       mTheta(theta),
       mPhi(phi)
    {
-      memcpy(mPosition, pos, sizeof(double) * 3);
+      memcpy(mPosition, pos, sizeof(mPosition[0]) * 3);
    }
 
    __host__ __device__ Datum::Datum() :
@@ -66,7 +66,7 @@ namespace BackscatterStats
       mTheta(other.mTheta),
       mPhi(other.mPhi)
    {
-      memcpy(mPosition, other.mPosition, sizeof(double) * 3);
+      memcpy(mPosition, other.mPosition, sizeof(mPosition[0]) * 3);
    }
 
    __host__ __device__ Datum& Datum::operator=(const Datum& other)
@@ -76,7 +76,7 @@ namespace BackscatterStats
       mkEeV = (other.mkEeV);
       mTheta = (other.mTheta);
       mPhi = (other.mPhi);
-      memcpy(mPosition, other.mPosition, sizeof(double) * 3);
+      memcpy(mPosition, other.mPosition, sizeof(mPosition[0]) * 3);
 
       return *this;
    }

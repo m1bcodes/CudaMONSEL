@@ -45,7 +45,7 @@ namespace GaussianBeam
 
    __host__ __device__ void GaussianBeam::setCenter(const double center[])
    {
-      memcpy(mCenter, center, sizeof(double) * 3);
+      memcpy(mCenter, center, sizeof(mCenter[0]) * 3);
    }
 
    const double* GaussianBeam::getCenter() const

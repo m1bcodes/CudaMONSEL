@@ -87,7 +87,7 @@ namespace Random
       //float r = (float)rand() / RAND_MAX;
       //while (r <= 0 || r >= 1) r = (float)rand() / RAND_MAX;
       float r = intRand(1, RAND_MAX - 1);
-      return -::logf(r);
+      return -::logf(r/(float)RAND_MAX);
 #endif
    }
 

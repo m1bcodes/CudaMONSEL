@@ -229,6 +229,7 @@ namespace MonteCarloSS
 
          tc = mElectron->isTrajectoryComplete();
       }
+      if (tc && mElectronStack.empty() && mElectron) delete mElectron; // deleting the last electron
       return tc;
    }
 

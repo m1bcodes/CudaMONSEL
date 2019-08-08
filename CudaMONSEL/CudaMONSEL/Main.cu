@@ -1,7 +1,6 @@
 /*
 * - without length, the array parameter (eg const double a[]) is always 3 dimensional
 */
-
 #include <stdio.h>
 
 #include <cuda_runtime.h>
@@ -55,6 +54,8 @@
 
 #include <chrono>
 #include <thread>
+
+#include "Amphibian\ctpl_stl.h"
 
 //__device__ __host__ float function(float x)
 //{
@@ -141,10 +142,10 @@ __global__ void testLibraryCuda()
 
 const unsigned int W = 512, H = 512;
 const unsigned int TX = 16, TY = 16;
-dim3 blockSize(TX, TY); // Equivalent to dim3 blockSize(TX, TY, 1);
-unsigned int bx = (W + blockSize.x - 1) / blockSize.x;
-unsigned int by = (H + blockSize.y - 1) / blockSize.y;
-dim3 gridSize = dim3(bx, by);
+const dim3 blockSize(TX, TY); // Equivalent to dim3 blockSize(TX, TY, 1);
+const unsigned int bx = (W + blockSize.x - 1) / blockSize.x;
+const unsigned int by = (H + blockSize.y - 1) / blockSize.y;
+const dim3 gridSize = dim3(bx, by);
 
 __global__ void printRand()
 {
@@ -503,18 +504,31 @@ int main()
    //checkCudaErrors(cudaDeviceSynchronize());
    //checkCudaErrors(cudaGetLastError());
 
-   std::thread* threads = new std::thread[H * W];
+   //std::thread* threads = new std::thread[H * W];
+   //for (int i = 0; i < H; ++i) {
+   //    for (int j = 0; j < W; ++j) {
+   //        threads[i*W + j] = std::thread(LinesOnLayers::runSinglePixel, i, j, d_result);
+   //    }
+   //}
+   //for (int i = 0; i < H; ++i) {
+   //    for (int j = 0; j < W; ++j) {
+   //        threads[i*W + j].join();
+   //    }
+   //}
+   //delete[] threads;
+
+   ctpl::thread_pool tasks(10);
+   std::vector<std::future<void>> results(H * W);
    for (int i = 0; i < H; ++i) {
-       for (int j = 0; j < W; ++j) {
-           threads[i*W + j] = std::thread(LinesOnLayers::runSinglePixel, i, j, d_result);
-       }
+      for (int j = 0; j < W; ++j) {
+         results[i*W + j] = tasks.push(LinesOnLayers::runSinglePixelThread, i, j, d_result);
+      }
    }
    for (int i = 0; i < H; ++i) {
-       for (int j = 0; j < W; ++j) {
-           threads[i*W + j].join();
-       }
+      for (int j = 0; j < W; ++j) {
+         results[i*W + j].get();
+      }
    }
-   delete[] threads;
 
    //for (int i = 0; i < H; ++i) {
    //   for (int j = 0; j < W; ++j) {
@@ -546,6 +560,5 @@ int main()
    myfile.close();
 
    printf("done\n");
-
    return 0;
 }

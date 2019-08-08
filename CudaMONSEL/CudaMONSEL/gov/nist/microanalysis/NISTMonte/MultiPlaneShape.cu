@@ -21,15 +21,14 @@ namespace MultiPlaneShape
    __host__ __device__ bool Plane::contains(const double p[]) const
    {
       //if (!(len == 3)) printf("Plane::contains: len != 3 (%d)", len);
-      return (((p[0] - mPoint[0]) * mNormal[0] + (p[1] - mPoint[1]) * mNormal[1] + (p[2] - mPoint[2]) * mNormal[2]) <= 0.0);
+      return ((p[0] - mPoint[0]) * mNormal[0] + (p[1] - mPoint[1]) * mNormal[1] + (p[2] - mPoint[2]) * mNormal[2]) <= 0.0;
    }
 
    // Is the point close to being contained by this plane?
    bool Plane::almostContains(const double p[])
    {
       //assert(p.length == 3);
-      double tmp = ((p[0] - mPoint[0]) * mNormal[0] + (p[1] - mPoint[1]) * mNormal[1] + (p[2] - mPoint[2]) * mNormal[2]);
-      return tmp <= 0.0;
+      return ((p[0] - mPoint[0]) * mNormal[0] + (p[1] - mPoint[1]) * mNormal[1] + (p[2] - mPoint[2]) * mNormal[2]) <= 0.0;
    }
 
    // intersection - Where does a line through p1 and p2 intersect the plane?
@@ -234,7 +233,6 @@ namespace MultiPlaneShape
       if (mPlanes.size() == 1)
          return (mPlanes.at(0))->getFirstIntersection(pos0, pos1);
       else {
-
          double minU = INFINITY;
          if (IsSamePosition(pos0, mInsidePos) || contains(pos0)) { // Easy part...
             // If we start inside then any plane we strike will take us outside

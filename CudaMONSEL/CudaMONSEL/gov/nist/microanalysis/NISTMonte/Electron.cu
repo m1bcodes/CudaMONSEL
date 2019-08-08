@@ -19,8 +19,10 @@ namespace Electron
 
    __host__ __device__ void Electron::init(const double initialPos[], float theta, float phi, float kE)
    {
-      mPosition[0] = initialPos[0]; mPosition[1] = initialPos[1]; mPosition[2] = initialPos[2];
-      mPrevPosition[0] = initialPos[0]; mPrevPosition[1] = initialPos[1]; mPrevPosition[2] = initialPos[2];
+      memcpy(mPosition, initialPos, sizeof(mPosition[0]) * 3);
+      memcpy(mPrevPosition, initialPos, sizeof(mPrevPosition[0]) * 3);
+      //mPosition[0] = initialPos[0]; mPosition[1] = initialPos[1]; mPosition[2] = initialPos[2];
+      //mPrevPosition[0] = initialPos[0]; mPrevPosition[1] = initialPos[1]; mPrevPosition[2] = initialPos[2];
 
       mScatteringElement = (nullptr);
       mCurrentRegion = (nullptr);
@@ -140,8 +142,10 @@ namespace Electron
    __host__ __device__ void Electron::move(const double newPoint[], float dE)
    {
       // Update mPrevPosition and then mPosition
-      mPrevPosition[0] = mPosition[0]; mPrevPosition[1] = mPosition[1]; mPrevPosition[2] = mPosition[2];
-      mPosition[0] = newPoint[0]; mPosition[1] = newPoint[1]; mPosition[2] = newPoint[2];
+      //mPrevPosition[0] = mPosition[0]; mPrevPosition[1] = mPosition[1]; mPrevPosition[2] = mPosition[2];
+      //mPosition[0] = newPoint[0]; mPosition[1] = newPoint[1]; mPosition[2] = newPoint[2];
+      memcpy(mPrevPosition, mPosition, sizeof(mPrevPosition[0]) * 3);
+      memcpy(mPosition, newPoint, sizeof(mPosition[0]) * 3);
 
       // Update the energy
       previousEnergy = mEnergy;
