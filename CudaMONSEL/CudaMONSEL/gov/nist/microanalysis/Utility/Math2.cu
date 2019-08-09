@@ -459,6 +459,13 @@ namespace Math2
       res[1] = a[1] + b[1];
       res[2] = a[2] + b[2];
    }
+
+   __host__ __device__ void plus3d(const float a[], const float b[], float res[])
+   {
+      res[0] = a[0] + b[0];
+      res[1] = a[1] + b[1];
+      res[2] = a[2] + b[2];
+   }
    //
    //   /**
    //   * plus - Returns the vector sum a + b

@@ -62,6 +62,15 @@ namespace MultiPlaneShape
    //extern MultiPlaneShape createSubstrate(const double normal[], const double pt[]);
    //extern MultiPlaneShape createBlock(const double dims[], const double point[], double phi, double theta, double psi);
    //extern MultiPlaneShape createNamid(double center[], int n, double height, double base);
+
+   struct LineShape
+   {
+      double P0[3];
+      double P1[3];
+   };
+
+   extern __host__ __device__ int intersect3D_SegmentPlane(const LineShape& S, const Plane& Pn, double* I);
+   extern __host__ __device__ int intersect3D_2Planes(const Plane& Pn1, const Plane& Pn2, LineShape& L);
 }
 
 #endif

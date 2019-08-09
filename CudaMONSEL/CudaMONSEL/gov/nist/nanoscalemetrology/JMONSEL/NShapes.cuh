@@ -5,8 +5,33 @@
 
 namespace NShapes
 {
-   struct Line
+   class Line
    {
+   public:
+      __host__ __device__ Line(
+         double topz,
+         double width,
+         double length,
+         double thetal,
+         double thetar,
+         double radl,
+         double radr
+         );
+      __host__ __device__ ~Line();
+
+      __host__ __device__ void create();
+      __host__ __device__ void createProjection();
+      __host__ __device__ NormalIntersectionShapeT* get();
+
+   private:
+      double topz; // z of the top face
+      double width; // line width
+      double length; // length of line
+      double thetal; // angle of right sidewall
+      double thetar; // angle of left sidewall
+      double radl; // radius of top right corner
+      double radr; // radius of top left corner
+
       NormalMultiPlaneShapeT* enclosure;
       PlaneT* pl0;
       PlaneT* pl1;
@@ -27,20 +52,12 @@ namespace NShapes
 
       NormalIntersectionShapeT* nts;
       NormalIntersectionShapeT* nis;
+
+      LineShapeT* segment1;
+      LineShapeT* segment2;
+      LineShapeT* segment3;
+      LineShapeT* segment4;
    };
-
-   __host__ __device__ extern NormalShapeT* createLine(
-      Line&,
-      double topz, // z of the top face
-      double width, // line width
-      double length, // length of line
-      double thetal, // angle of right sidewall
-      double thetar, // angle of left sidewall
-      double radl, // radius of top right corner
-      double radr // radius of top left corner
-      );
-
-   __host__ __device__ extern void destroyLine(Line&);
 }
 
 #endif

@@ -23,6 +23,7 @@ namespace Math2
    extern __host__ __device__ void pointBetween3d(const double a[], const double b[], double f, double res[]);
    extern __host__ __device__ double toRadians(const double deg);
 
+   extern __host__ __device__ void plus3d(const float a[], const float b[], float res[]);
    extern __host__ __device__ float distance3d(const float p1[], const float p2[]);
    extern __host__ __device__ float sqr(float x);
 

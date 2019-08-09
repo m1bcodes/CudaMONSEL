@@ -428,4 +428,117 @@ namespace MultiPlaneShape
    {
       return "MultiPlaneShape";
    }
+
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+   __constant__ const double SMALL_NUM = 0.00000001f; // anything that avoids division overflow
+#else
+   const double SMALL_NUM = 0.00000001; // anything that avoids division overflow
+#endif
+
+   // intersect3D_SegmentPlane(): find the 3D intersection of a segment and a plane
+   //    Input:  S = a segment, and Pn = a plane = {Point V0;  Vector n;}
+   //    Output: *I0 = the intersect point (when it exists)
+   //    Return: 0 = disjoint (no intersection)
+   //            1 = intersection in the unique point *I0
+   //            2 = the segment lies in the plane
+   __host__ __device__ int intersect3D_SegmentPlane(const LineShape& S, const Plane& Pn, double* I)
+   {
+      double u[3];
+      Math2::minus3d(S.P1, S.P0, u);
+      double w[3];
+      Math2::minus3d(S.P0, Pn.getPoint(), w);
+
+      const double D = Math2::dot3d(Pn.getNormal(), u);
+      const double N = -Math2::dot3d(Pn.getNormal(), w);
+
+      if (fabs(D) < SMALL_NUM) { // segment is parallel to plane
+         if (N == 0) // segment lies in plane
+            return 2;
+         else
+            return 0; // no intersection
+      }
+      // they are not parallel
+      // compute intersect param
+      const double sI = N / D;
+      if (sI < 0 || sI > 1)
+         return 0; // no intersection
+      Math2::multiply3d(sI, u, I);
+      Math2::plus3d(S.P0, I, I); // compute segment intersect point
+
+      return 1;
+   }
+
+   // http://geomalgorithms.com/a05-_intersect-1.html
+   // intersect3D_2Planes(): find the 3D intersection of two planes
+   //    Input: two planes Pn1 and Pn2
+   //    Output: L = the intersection line (when it exists)
+   //    Return: 0 = disjoint (no intersection)
+   //            1 = the two planes coincide
+   //            2 = intersection in the unique line L
+   __host__ __device__ int intersect3D_2Planes(const Plane& Pn1, const Plane& Pn2, LineShape& L)
+   {
+      double u[3];
+      Math2::cross3d(Pn1.getNormal(), Pn2.getNormal(), u); // cross product
+
+      double ax = (u[0] >= 0 ? u[0] : -u[0]);
+      double ay = (u[1] >= 0 ? u[1] : -u[1]);
+      double az = (u[2] >= 0 ? u[2] : -u[2]);
+
+      // test if the two planes are parallel
+      if ((ax + ay + az) < SMALL_NUM) { // Pn1 and Pn2 are near parallel
+         // test if disjoint or coincide
+         double v[3];
+         Math2::minus3d(Pn2.getPoint(), Pn1.getPoint(), v);
+         
+         if (Math2::dot3d(Pn1.getNormal(), v) == 0) // Pn2.V0 lies in Pn1
+            return 1; // Pn1 and Pn2 coincide
+         else
+            return 0; // Pn1 and Pn2 are disjoint
+      }
+
+      // Pn1 and Pn2 intersect in a line
+      // first determine max abs coordinate of cross product
+      int maxc; // max coordinate
+      if (ax > ay) {
+         if (ax > az)
+            maxc = 1;
+         else
+            maxc = 3;
+      }
+      else {
+         if (ay > az)
+            maxc = 2;
+         else maxc = 3;
+      }
+
+      // next, to get a point on the intersect line
+      // zero the max coord, and solve for the other two
+      double iP[3]; // intersect point
+      double d1, d2; // the constants in the 2 plane equations
+      d1 = -Math2::dot3d(Pn1.getNormal(), Pn1.getPoint()); // note: could be pre-stored  with plane
+      d2 = -Math2::dot3d(Pn2.getNormal(), Pn2.getPoint()); // ditto
+
+      switch (maxc)
+      { // select max coordinate
+      case 1: // intersect with x=0
+         iP[0] = 0;
+         iP[1] = (d2*Pn1.getNormal()[2] - d1*Pn2.getNormal()[2]) / u[0];
+         iP[2] = (d1*Pn2.getNormal()[1] - d2*Pn1.getNormal()[1]) / u[0];
+         break;
+      case 2: // intersect with y=0
+         iP[0] = (d1*Pn2.getNormal()[2] - d2*Pn1.getNormal()[2]) / u[1];
+         iP[1] = 0;
+         iP[2] = (d2*Pn1.getNormal()[0] - d1*Pn2.getNormal()[0]) / u[1];
+         break;
+      case 3: // intersect with z=0
+         iP[0] = (d2*Pn1.getNormal()[1] - d1*Pn2.getNormal()[1]) / u[2];
+         iP[1] = (d1*Pn2.getNormal()[0] - d2*Pn1.getNormal()[0]) / u[2];
+         iP[2] = 0;
+      }
+      memcpy(L.P0, iP, sizeof(L.P0[0]) * 3);
+      Math2::plus3d(iP, u, iP);
+      memcpy(L.P1, iP, sizeof(L.P1[0]) * 3);
+
+      return 2;
+   }
 }

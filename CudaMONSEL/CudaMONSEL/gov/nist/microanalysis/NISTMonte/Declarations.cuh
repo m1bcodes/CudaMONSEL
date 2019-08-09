@@ -9,7 +9,6 @@
 
 #include "Amphibian\String.cuh"
 #include "Amphibian\vector.cuh"
-//#include "Amphibian\String.cuh"
 
 typedef amp::string StringT;
 typedef amp::vector<float> VectorXf;
@@ -430,5 +429,12 @@ namespace NormalIntersectionShape
 }
 
 typedef NormalIntersectionShape::NormalIntersectionShape NormalIntersectionShapeT;
+
+namespace MultiPlaneShape
+{
+   class LineShape;
+}
+
+typedef MultiPlaneShape::LineShape LineShapeT;
 
 #endif

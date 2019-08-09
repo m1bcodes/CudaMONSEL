@@ -19,6 +19,8 @@ namespace LinesOnLayers
    extern __host__ __device__ void destroyRange();
 
    extern void runSinglePixelThread(int id, const unsigned int r, const unsigned int c, float* result);
+
+   extern void testLineProjection();
 }
 
 #endif

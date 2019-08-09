@@ -462,8 +462,27 @@ void deviceQuery()
    }
 }
 
+void intersect3D_2PlanesTest()
+{
+   const double n0[3] = { 0.f, 0.f, 1.f };
+   const double s0[3] = { 0.f, 0.f, 1.f };
+
+   const double n1[3] = { 0.f, 1.f, 0.f };
+   const double s1[3] = { 0.f, 1.f, 0.f };
+
+   PlaneT p0(n0, s0);
+   PlaneT p1(n1, s1);
+   MultiPlaneShape::LineShape l;
+   printf("%d\n", MultiPlaneShape::intersect3D_2Planes(p0, p1, l));
+   printf("%lf, %lf, %lf\n", l.P0[0], l.P0[1], l.P0[2]);
+   printf("%lf, %lf, %lf\n", l.P1[0], l.P1[1], l.P1[2]);
+}
+
 int main()
 {
+   //intersect3D_2PlanesTest();
+   //LinesOnLayers::testLineProjection();
+
    deviceQuery();
 
    cudaDeviceSetLimit(cudaLimitMallocHeapSize, 1e9);
@@ -517,7 +536,7 @@ int main()
    //}
    //delete[] threads;
 
-   ctpl::thread_pool tasks(10);
+   ctpl::thread_pool tasks(11);
    std::vector<std::future<void>> results(H * W);
    for (int i = 0; i < H; ++i) {
       for (int j = 0; j < W; ++j) {
@@ -553,6 +572,7 @@ int main()
       }
       printf("\n");
    }
+   output += "\n" + std::to_string(elapsed_seconds.count());
 
    std::ofstream myfile;
    myfile.open("output.txt");
@@ -560,5 +580,6 @@ int main()
    myfile.close();
 
    printf("done\n");
+
    return 0;
 }
