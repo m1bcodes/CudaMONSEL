@@ -69,9 +69,10 @@ namespace NShapes
    __host__ __device__ Line::Line(double topz, double width, double length, double thetal, double thetar, double radl, double radr) :
       topz(topz), width(width), length(length), thetal(thetal), thetar(thetar), radl(radl), radr(radr),
       enclosure(nullptr), pl0(nullptr), pl1(nullptr), pl2(nullptr), pl3(nullptr),
-      rightNMPS(nullptr), rightSide(nullptr), pl4(nullptr), plr(nullptr), rcylinder(nullptr), 
+      rightNMPS(nullptr), rightSide(nullptr), pl4(nullptr), plr(nullptr), rcylinder(nullptr),
       leftNMPS(nullptr), leftSide(nullptr), pl5(nullptr), pll(nullptr), lcylinder(nullptr),
-      nts(nullptr), nis(nullptr)
+      nts(nullptr), nis(nullptr),
+      segment1(nullptr), segment2(nullptr), segment3(nullptr), segment4(nullptr)
    {
       create();
       //project();
@@ -124,10 +125,10 @@ namespace NShapes
       delete this->nts; this->nts = nullptr;
       delete this->nis; this->nis = nullptr;
 
-      delete segment1;
-      delete segment2;
-      delete segment3;
-      delete segment4;
+      if (segment1) delete segment1;
+      if (segment2) delete segment2;
+      if (segment3) delete segment3;
+      if (segment4) delete segment4;
    }
 
    __host__ __device__ void Line::create()
