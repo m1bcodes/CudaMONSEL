@@ -341,8 +341,8 @@ namespace LinesOnLayers
 
    __device__ float* yvals = nullptr;
    __device__ float* xvals = nullptr;
-   __device__ unsigned int yvalsSize = 0;
-   __device__ unsigned int xvalsSize = 0;
+   __device__ unsigned int yvalsSize = 512;
+   __device__ unsigned int xvalsSize = 512;
 #else
    const int nTrajectories = 100;
 
@@ -503,8 +503,8 @@ namespace LinesOnLayers
 
    float* yvals = nullptr;
    float* xvals = nullptr;
-   unsigned int yvalsSize = 0;
-   unsigned int xvalsSize = 0;
+   unsigned int yvalsSize = 512;
+   unsigned int xvalsSize = 512;
 #endif
 
    __host__ __device__ void initRange()
@@ -973,7 +973,7 @@ namespace LinesOnLayers
       RegionT layer2Region(&layer1Region, &glCMSM, (NormalShapeT*)&layer2);
 
       NormalMultiPlaneShapeT layer3;
-      PlaneT pl3(normalvector, layer2Pos);
+      PlaneT pl3(normalvector, layer3Pos);
       layer3.addPlane(&pl3);
       RegionT layer3Region(&layer2Region, &SiMSM, (NormalShapeT*)&layer3);
 

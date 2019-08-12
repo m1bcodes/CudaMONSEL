@@ -62,6 +62,7 @@ namespace TabulatedInelasticSM
       tableReducedDeltaE(NUTableInterpolation::getInstance(tables[1])),
       tableTheta(NUTableInterpolation::getInstance(tables[2])),
       tableSEE0((methodSE == 2) || (methodSE == 3) ? NUTableInterpolation::getInstance(tables[3]) : nullptr),
+      energyRangeSE0((methodSE == 2) || (methodSE == 3) ? tableSEE0->getrange() : VectorXf()),
       rateMult(1.),
       E0fromDispersion(false),
       kEa(VectorXf(1, 0)),
