@@ -21,18 +21,18 @@ namespace NShapes
 
       __host__ __device__ void create();
       __host__ __device__ void calcGroundtruth();
-      __host__ __device__ void calcRasterization(const PlaneT&, const double*, const double*, const float, const float);
+      __host__ __device__ void calcRasterization(const PlaneT&, const double*, const double*, const float, const float, char*, const unsigned int, const unsigned int);
 
       __host__ __device__ NormalIntersectionShapeT* get();
 
    private:
-      double topz; // z of the top face
-      double width; // line width
-      double length; // length of line
-      double thetal; // angle of right sidewall
-      double thetar; // angle of left sidewall
-      double radl; // radius of top right corner
-      double radr; // radius of top left corner
+      const double topz; // z of the top face
+      const double width; // line width
+      const double length; // length of line
+      const double thetal; // angle of right sidewall
+      const double thetar; // angle of left sidewall
+      const double radl; // radius of top right corner
+      const double radr; // radius of top left corner
 
       NormalMultiPlaneShapeT* enclosure;
       PlaneT* pl0;

@@ -461,25 +461,8 @@ void deviceQuery()
    }
 }
 
-void intersect3D_2PlanesTest()
-{
-   const double n0[3] = { 0.f, 0.f, 1.f };
-   const double s0[3] = { 0.f, 0.f, 1.f };
-
-   const double n1[3] = { 0.f, 1.f, 0.f };
-   const double s1[3] = { 0.f, 1.f, 0.f };
-
-   PlaneT p0(n0, s0);
-   PlaneT p1(n1, s1);
-   MultiPlaneShape::LineShape l;
-   printf("%d\n", MultiPlaneShape::intersect3D_2Planes(p0, p1, l));
-   printf("%lf, %lf, %lf\n", l.P0[0], l.P0[1], l.P0[2]);
-   printf("%lf, %lf, %lf\n", l.P1[0], l.P1[1], l.P1[2]);
-}
-
 int main()
 {
-   //intersect3D_2PlanesTest();
    LinesOnLayers::initRange();
    LinesOnLayers::testLineProjection();
 
@@ -563,15 +546,18 @@ int main()
    float* h_result = new float[H * W];
    //checkCudaErrors(cudaMemcpy(h_result, d_result, sizeof(h_result[0]) * H * W, cudaMemcpyDeviceToHost));
    memcpy(h_result, d_result, sizeof(h_result[0]) * H * W);
+   delete[] d_result;
+   //ImageUtil::saveResults("img.bmp", h_result, W, H);
 
    std::string output;
    for (int i = 0; i < H; ++i) {
       for (int j = 0; j < W; ++j) {
-         printf("%.5e ", h_result[i * W + j]);
+         //printf("%.5e ", h_result[i * W + j]);
          output += std::to_string(h_result[i * W + j]) + " ";
       }
-      printf("\n");
+      //printf("\n");
    }
+   delete[] h_result;
    output += "\n" + std::to_string(elapsed_seconds.count());
 
    std::ofstream myfile;

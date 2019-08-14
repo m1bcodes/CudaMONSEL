@@ -67,7 +67,7 @@ namespace NShapes
    }
 
    __host__ __device__ Line::Line(double topz, double width, double length, double thetal, double thetar, double radl, double radr) :
-      topz(topz), width(width), length(length), thetal(thetal), thetar(thetar), radl(radl), radr(radr),
+      topz(topz), width(width), length(length), thetal(thetal), thetar(thetar), radl(radl < 0 ? 0 : radl), radr(radr < 0 ? 0 : radr),
       enclosure(nullptr), pl0(nullptr), pl1(nullptr), pl2(nullptr), pl3(nullptr),
       rightNMPS(nullptr), rightSide(nullptr), pl4(nullptr), plr(nullptr), rcylinder(nullptr),
       leftNMPS(nullptr), leftSide(nullptr), pl5(nullptr), pll(nullptr), lcylinder(nullptr),
@@ -125,20 +125,14 @@ namespace NShapes
       delete this->nts; this->nts = nullptr;
       delete this->nis; this->nis = nullptr;
 
-      if (segment0) delete segment0;
-      if (segment1) delete segment1;
-      if (segment2) delete segment2;
-      if (segment3) delete segment3;
+      if (segment0) { delete segment0; segment0 = nullptr; }
+      if (segment1) { delete segment1; segment1 = nullptr; }
+      if (segment2) { delete segment2; segment2 = nullptr; }
+      if (segment3) { delete segment3; segment3 = nullptr; }
    }
 
    __host__ __device__ void Line::create()
    {
-      // Parameter checks
-      if (radr < 0.)
-         radr = 0.;
-      if (radl < 0.)
-         radl = 0.;
-
       /* First, construct the enclosure */
       enclosure = new NormalMultiPlaneShapeT();
       double signz = !topz ? 0 : (topz > 0 ? 1 : -1);
@@ -244,7 +238,7 @@ namespace NShapes
       const double* n0 = plane.getNormal();
       const double* p0 = plane.getPoint();
       const float len = ::sqrtf(Math2::dot3d(n0, n0));
-      if (len - 1.f > .000001f) printf("Line::calcProjection: not unity %.5e\n", len);
+      if (len - 1.f > .000001f) printf("Line::calcProjection: plane normal length not unity %.5e\n", len);
 
       // calc
       double v[3];
@@ -282,18 +276,20 @@ namespace NShapes
       double* res
       )
    {
+      const float len = Math2::dot3d(plane.getNormal(), plane.getNormal());
+      if (::fabsf(1 - len) > 0.00001f) printf("getRelativeCoord: plane normal not unity: %.5e\n", len);
       if (::fabsf(Math2::dot3d(plane.getNormal(), axis0)) > 0.000001f) printf("getRelativeCoord: axis0 not coplanar with plane\n");
       if (::fabsf(Math2::dot3d(plane.getNormal(), axis1)) > 0.000001f) printf("getRelativeCoord: axis1 not coplanar with plane\n");
       double checkNormal[3];
       Math2::cross3d(axis0, axis1, checkNormal);
       const float t = ::fabsf(Math2::dot3d(checkNormal, plane.getNormal()));
-      if (::fabsf(1 - t) > 0.000001f) printf("testLineProjection(): t = %.5e\n", t);
+      if (::fabsf(1 - t) > 0.000001f) printf("getRelativeCoord(): t = %.5e\n", t);
 
       Math2::minus3d(p, plane.getPoint(), res);
       const double tmp[3] = { Math2::dot3d(res, axis0), Math2::dot3d(res, axis1), Math2::dot3d(res, plane.getNormal()) };
       memcpy(res, tmp, sizeof(res[0]) * 3);
 
-      if (::fabsf(res[2]) > 0.00001f) printf("calcLineProjection: res.P0 has out of plane component: %.5e\n", res[2]);
+      if (::fabsf(res[2]) > 0.00001f) printf("getRelativeCoord: res.P0 has out of plane component: %.5e\n", res[2]);
    }
 
    __host__ __device__ static void getRelativeProjection(
@@ -321,13 +317,61 @@ namespace NShapes
       getRelativeProjection(plane, axis0, axis1, tmp, res);
    }
 
+   struct Point
+   {
+      __host__ __device__ Point(int x, int y) : X(x), Y(y) {}
+
+      int X, Y;
+   };
+
+   // Bresenham's algorithm
+   __host__ __device__ void DrawLine(const Point& p0, const Point& p1, const char color, char* res, const unsigned int h, const unsigned int w)
+   {
+      int x = p0.X;
+      int y = p0.Y;
+      int dx = ::fabsf(p1.X - x);
+      int dy = ::fabsf(p1.Y - y);
+      const int s1 = (p1.X - x) < 0 ? -1 : ((p1.X - x) > 0 ? 1 : 0); // get the sign
+      const int s2 = (p1.Y - y) < 0 ? -1 : ((p1.Y - y) > 0 ? 1 : 0); // get the sign
+      bool interchange = dy > dx;
+      if (interchange) {
+         auto t = dy;
+         dy = dx;
+         dx = t;
+      }
+      int e = 2 * dy - dx;
+      for (int i = 0; i < dx; i++) {
+         if (y >= 0 && y < h && x >= 0 && x < w) res[y * w + x] = color;
+         while (e >= 0) {
+            if (interchange) {
+               x += s1;
+            }
+            else {
+               y += s2;
+            }
+            e += -2. * dx;
+         }
+         if (interchange) {
+            y += s2;
+         }
+         else {
+            x += s1;
+         }
+         e += 2. * dy;
+      }
+      if (p1.Y >= 0 && p1.Y < h && p1.X >= 0 && p1.X < w) res[p1.Y * w + p1.X] = color;
+   }
+
    // axis2 would be the normal of the plane, which creates no projection
    __host__ __device__ void Line::calcRasterization(
       const PlaneT& plane,
       const double* axis0, // vector from the plane origin
       const double* axis1, // vector from the plane origin
       const float xlenperpix,
-      const float ylenperpix
+      const float ylenperpix,
+      char* res,
+      const unsigned int h,
+      const unsigned int w
       )
    {
       MultiPlaneShape::LineShape res0, res1, res2, res3; // with respect to origin of plane, along axis0 and axis1
@@ -344,6 +388,20 @@ namespace NShapes
       int end2[3] = { res2.P1[0] / xlenperpix, res2.P1[1] / ylenperpix, res2.P1[2] };
       int start3[3] = { res3.P0[0] / xlenperpix, res3.P0[1] / ylenperpix, res3.P0[2] };
       int end3[3] = { res3.P1[0] / xlenperpix, res3.P1[1] / ylenperpix, res3.P1[2] };
+
+      Point s0(start0[0], start0[1]);
+      Point s1(start1[0], start1[1]);
+      Point s2(start2[0], start2[1]);
+      Point s3(start3[0], start3[1]);
+      Point e0(end0[0], end0[1]);
+      Point e1(end1[0], end1[1]);
+      Point e2(end2[0], end2[1]);
+      Point e3(end3[0], end3[1]);
+
+      DrawLine(s0, e0, 255, res, h, w);
+      DrawLine(s1, e1, 255, res, h, w);
+      DrawLine(s2, e2, 255, res, h, w);
+      DrawLine(s3, e3, 255, res, h, w);
 
       printf("(%.5e, %.5e, %.5e), (%.5e, %.5e, %.5e) \n", plane.getNormal()[0], plane.getNormal()[1], plane.getNormal()[2], plane.getPoint()[0], plane.getPoint()[1], plane.getPoint()[2]);
       printf("(%.5e, %.5e, %.5e) -> (%.5e, %.5e, %.5e)\n", res0.P0[0], res0.P0[1], res0.P0[2], res0.P1[0], res0.P1[1], res0.P1[2]);
@@ -369,29 +427,29 @@ namespace NShapes
          -8., 
          -9. 
       };
-      const double n[3] = { 
+      const double n[3] = {
          3. / ::sqrtf(50.f), 
          4. / ::sqrtf(50.f), 
          5. / ::sqrtf(50.f) 
       };
-      PlaneT plane(n, p); // projection plane
-      const double axis0[3] = { 
+      const PlaneT plane(n, p); // projection plane
+      const double axis0[3] = {
          -3. / ::sqrtf(50.f), 
          -4. / ::sqrtf(50.f), 
          5. / ::sqrtf(50.f) 
       }; // projection vector from projection plane origin
-      const double axis1[3] = { 
+      const double axis1[3] = {
          4. / 5., 
          -3. / 5., 
          0. 
       }; // projection vector from projection plane origin
 
-      const double p0[3] = { 
+      const double p0[3] = {
          p[0] + axis0[0] * ::sqrtf(50.f) + n[0] * ::sqrtf(50.f), 
          p[1] + axis0[1] * ::sqrtf(50.f) + n[1] * ::sqrtf(50.f), 
          p[2] + axis0[2] * ::sqrtf(50.f) + n[2] * ::sqrtf(50.f) 
       };
-      const double p1[3] = { 
+      const double p1[3] = {
          p[0] + axis1[0] * 5. - n[0] * ::sqrtf(50.f), 
          p[1] + axis1[1] * 5. - n[1] * ::sqrtf(50.f), 
          p[2] + axis1[2] * 5. - n[2] * ::sqrtf(50.f) 
@@ -400,7 +458,7 @@ namespace NShapes
       MultiPlaneShape::LineShape res;
       calcLineProjection(plane, axis0, axis1, seg, res);
 
-      float tol = 0.00001f;
+      static const float tol = 0.00001f;
       if (::fabsf(::sqrtf(50.f) - res.P0[0]) > tol) printf("res.P0[0] wrong: %.5e\n", res.P0[0]);
       if (::fabsf(res.P0[1]) > tol) printf("res.P0[1] wrong: %.5e\n", res.P0[1]);
       if (::fabsf(res.P0[2]) > tol) printf("res.P0[2] wrong: %.5e\n", res.P0[2]);

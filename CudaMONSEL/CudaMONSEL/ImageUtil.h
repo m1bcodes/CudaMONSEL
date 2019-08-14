@@ -1,98 +1,14 @@
-#include <windows.h>
-#include <vector>
-#include <fstream>
+#ifndef _IMAGE_UTIL_H_
+#define _IMAGE_UTIL_H_
+
 #include <iostream>
+#include <vector>
 
-#include <gdiplus.h>
-
-bool saveImage(const std::string& szPathName, std::vector<char> lpBits, int w, int h)
+namespace ImageUtil
 {
-   HDC hDC = GetDC(NULL);
-   HDC memHDC = CreateCompatibleDC(hDC);
-   BITMAPINFO* pbmi = (BITMAPINFO*) new BYTE[sizeof(BITMAPINFOHEADER) + sizeof(RGBQUAD) * 256];
-   memset(pbmi, 0, sizeof(BITMAPINFO) + sizeof(RGBQUAD) * 256);
-   BITMAPINFO& bmi = *pbmi;
-   bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-   bmi.bmiHeader.biWidth = w;
-   bmi.bmiHeader.biHeight = -h; // top-down
-   bmi.bmiHeader.biPlanes = 1;
-   bmi.bmiHeader.biBitCount = 8;
-   bmi.bmiHeader.biCompression = BI_RGB;
-   bmi.bmiHeader.biSizeImage = (((w * bmi.bmiHeader.biBitCount + 31) & ~31) >> 3) * h;
-   bmi.bmiHeader.biClrUsed = 256; // size of palette, 256 for grayscale
-
-   for (int i = 0; i < 256; i++) {
-      bmi.bmiColors[i].rgbRed = i;
-      bmi.bmiColors[i].rgbGreen = i;
-      bmi.bmiColors[i].rgbBlue = i;
-      bmi.bmiColors[i].rgbReserved = 0;
-   }
-   HBITMAP bitmap = CreateDIBSection(hDC, &bmi, DIB_RGB_COLORS, (void**)&lpBits[0], NULL, NULL);
-   ReleaseDC(NULL, hDC);
-   DeleteDC(hDC);
-
-   SelectObject(memHDC, bitmap);
-
-   BITMAPFILEHEADER bf;
-   memset(&bf, 0, sizeof(BITMAPFILEHEADER));
-   bf.bfType = MAKEWORD('B', 'M');
-   bf.bfOffBits = sizeof(BITMAPFILEHEADER) + bmi.bmiHeader.biSize + sizeof(RGBQUAD) * 256;
-   //bf.bfOffBits = sizeof(BITMAPFILEHEADER) + bmi.bmiHeader.biSize;
-   bf.bfSize = bf.bfOffBits + bmi.bmiHeader.biSizeImage;
-
-   std::vector<char> bitmapDataV;
-   bitmapDataV.insert(bitmapDataV.end(), (char*)&bf, ((char*)&bf) + sizeof(BITMAPFILEHEADER));
-   bitmapDataV.insert(bitmapDataV.end(), (char*)&bmi.bmiHeader, ((char*)&bmi.bmiHeader) + sizeof(BITMAPINFOHEADER) + sizeof(RGBQUAD) * 256);
-   bitmapDataV.insert(bitmapDataV.end(), &lpBits[0], &lpBits[0] + bmi.bmiHeader.biSizeImage);
-
-   DeleteObject(SelectObject(memHDC, bitmap));
-   DeleteObject(bitmap);
-   ReleaseDC(NULL, memHDC);
-   DeleteDC(memHDC);
-
-   std::ofstream pFile(szPathName, std::ios_base::binary);
-   if (!pFile.is_open()) {
-      return false;
-   }
-
-   pFile.write(&bitmapDataV[0], bitmapDataV.size());
-   pFile.close();
-   delete[] pbmi;
-
-   return true;
+   bool saveImage(const char* szPathName, const char* lpBits, int w, int h);
+   void saveResults(const std::string path, const unsigned int* data, int w, int h);
+   void drawGradient();
 }
 
-void saveResults(const std::string path, unsigned int* data, int w, int h)
-{
-   std::vector<char> bitmapData(w * h, 0);
-   for (int k = 0; k < h; ++k) {
-      for (int l = 0; l < w; ++l) {
-         bitmapData[k * w + l] = data[k * w + l];
-      }
-   }
-
-   saveImage(path, bitmapData, w, h);
-}
-
-void drawGradient()
-{
-   int img_x = 256;
-   int img_y = 256;
-   std::vector<char> bitmapData(img_x * img_y, 0);
-   for (int k = 0; k < img_y; ++k) {
-      for (int l = 0; l < img_x; ++l) {
-         bitmapData[k * img_x + l] = k * img_x + l;
-         std::cout << (int)bitmapData[k * img_x + l] << " ";
-      }
-      std::cout << std::endl;
-   }
-
-   saveImage("f.bmp", bitmapData, img_x, img_y);
-}
-
-// Tests
-//int main()
-//{
-//   drawGradient();
-//   return 0;
-//}
+#endif

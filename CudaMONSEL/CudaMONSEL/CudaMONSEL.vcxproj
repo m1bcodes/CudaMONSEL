@@ -218,6 +218,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="gov\nist\microanalysis\Utility\CSVReader.cpp" />
+    <ClCompile Include="ImageUtil.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{B6F1D1AF-8BE5-4ADD-AFF0-9D8E723B303B}</ProjectGuid>

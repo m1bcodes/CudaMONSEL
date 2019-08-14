@@ -35,6 +35,7 @@
 #include <time.h>
 
 #include "CudaUtil.h"
+#include "ImageUtil.h"
 
 namespace LinesOnLayers
 {
@@ -341,8 +342,7 @@ namespace LinesOnLayers
 
    __device__ float* yvals = nullptr;
    __device__ float* xvals = nullptr;
-   __device__ unsigned int ysize;
-   __device__ unsigned int xsize;
+   __device__ unsigned int ysize, xsize;
    __device__ float xstartnm, xstopnm, ystartnm, ystopnm;
 #else
    const int nTrajectories = 100;
@@ -504,8 +504,7 @@ namespace LinesOnLayers
 
    float* yvals = nullptr;
    float* xvals = nullptr;
-   unsigned int ysize;
-   unsigned int xsize;
+   unsigned int ysize, xsize;
    float xstartnm, xstopnm, ystartnm, ystopnm;
 #endif
 
@@ -1041,6 +1040,8 @@ namespace LinesOnLayers
    void testLineProjection()
    {
       NShapes::Line line(-h, w, linelength, thetal, thetar, radl, radr);
+      const double dist[3] = { 30. * 10e-9, 0., 0. };
+      line.get()->translate(dist);
       line.calcGroundtruth(); // get points/line segments that need to be projected
 
       const double p[3] = { xstartnm * 1e-9, ystartnm * 1e-9, 0. };
@@ -1052,7 +1053,13 @@ namespace LinesOnLayers
       const float xlenperpix = (xstopnm - xstartnm) / xsize * 1e-9;
       const float ylenperpix = (ystopnm - ystartnm) / ysize * 1e-9;
 
-      line.calcRasterization(plane, axis0, axis1, xlenperpix, ylenperpix);
+      char* gt = new char[ysize * xsize];
+      memset(gt, 0, sizeof(gt[0]) * ysize * xsize);
+
+      line.calcRasterization(plane, axis0, axis1, xlenperpix, ylenperpix, gt, ysize, xsize);
+
+      ImageUtil::saveImage("gt.bmp", gt, ysize, xsize);
+      delete[] gt;
 
       //NShapes::TestProjection();
    }
