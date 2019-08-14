@@ -435,6 +435,18 @@ namespace MultiPlaneShape
    const double SMALL_NUM = 0.00000001; // anything that avoids division overflow
 #endif
 
+   __host__ __device__ LineShape::LineShape()
+   {
+      memset(P0, 0, sizeof(P0[0]) * 3);
+      memset(P1, 0, sizeof(P1[0]) * 3);
+   }
+
+   __host__ __device__ LineShape::LineShape(const double* p0, const double* p1)
+   {
+      memcpy(P0, p0, sizeof(P0[0]) * 3);
+      memcpy(P1, p1, sizeof(P1[0]) * 3);
+   }
+
    // intersect3D_SegmentPlane(): find the 3D intersection of a segment and a plane
    //    Input:  S = a segment, and Pn = a plane = {Point V0;  Vector n;}
    //    Output: *I0 = the intersect point (when it exists)

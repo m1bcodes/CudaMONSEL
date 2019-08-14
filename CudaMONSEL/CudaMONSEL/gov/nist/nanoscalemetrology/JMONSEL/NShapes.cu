@@ -72,7 +72,7 @@ namespace NShapes
       rightNMPS(nullptr), rightSide(nullptr), pl4(nullptr), plr(nullptr), rcylinder(nullptr),
       leftNMPS(nullptr), leftSide(nullptr), pl5(nullptr), pll(nullptr), lcylinder(nullptr),
       nts(nullptr), nis(nullptr),
-      segment1(nullptr), segment2(nullptr), segment3(nullptr), segment4(nullptr)
+      segment0(nullptr), segment1(nullptr), segment2(nullptr), segment3(nullptr)
    {
       create();
       //project();
@@ -125,10 +125,10 @@ namespace NShapes
       delete this->nts; this->nts = nullptr;
       delete this->nis; this->nis = nullptr;
 
+      if (segment0) delete segment0;
       if (segment1) delete segment1;
       if (segment2) delete segment2;
       if (segment3) delete segment3;
-      if (segment4) delete segment4;
    }
 
    __host__ __device__ void Line::create()
@@ -216,26 +216,198 @@ namespace NShapes
    /*
    * Can only rotate along z-axis
    */
-   __host__ __device__ void Line::createProjection()
+   __host__ __device__ void Line::calcGroundtruth()
    {
-      segment1 = new LineShapeT();
-      segment2 = new LineShapeT();
-      segment3 = new LineShapeT();
-      segment4 = new LineShapeT();
+      if (!segment0) segment0 = new LineShapeT();
+      if (!segment1) segment1 = new LineShapeT();
+      if (!segment2) segment2 = new LineShapeT();
+      if (!segment3) segment3 = new LineShapeT();
 
-      getLineSegment(*pl1, *pl2, *pl4, *pl5, *segment1); // right cap
-      getLineSegment(*pl1, *pl3, *pl4, *pl5, *segment2); // left cap
-      getLineSegment(*pl1, *pl4, *pl2, *pl3, *segment3); // right length
-      getLineSegment(*pl1, *pl5, *pl2, *pl3, *segment4); // left length
+      getLineSegment(*pl1, *pl2, *pl4, *pl5, *segment0); // right cap
+      getLineSegment(*pl1, *pl3, *pl4, *pl5, *segment1); // left cap
+      getLineSegment(*pl1, *pl4, *pl2, *pl3, *segment2); // right length
+      getLineSegment(*pl1, *pl5, *pl2, *pl3, *segment3); // left length
 
+      printf("(%.5e, %.5e, %.5e) -> (%.5e, %.5e, %.5e)\n", segment0->P0[0], segment0->P0[1], segment0->P0[2], segment0->P1[0], segment0->P1[1], segment0->P1[2]);
       printf("(%.5e, %.5e, %.5e) -> (%.5e, %.5e, %.5e)\n", segment1->P0[0], segment1->P0[1], segment1->P0[2], segment1->P1[0], segment1->P1[1], segment1->P1[2]);
       printf("(%.5e, %.5e, %.5e) -> (%.5e, %.5e, %.5e)\n", segment2->P0[0], segment2->P0[1], segment2->P0[2], segment2->P1[0], segment2->P1[1], segment2->P1[2]);
       printf("(%.5e, %.5e, %.5e) -> (%.5e, %.5e, %.5e)\n", segment3->P0[0], segment3->P0[1], segment3->P0[2], segment3->P1[0], segment3->P1[1], segment3->P1[2]);
-      printf("(%.5e, %.5e, %.5e) -> (%.5e, %.5e, %.5e)\n", segment4->P0[0], segment4->P0[1], segment4->P0[2], segment4->P1[0], segment4->P1[1], segment4->P1[2]);
+   }
+
+   __host__ __device__ static void getPerpendicularIntersection(
+      const PlaneT& plane, // the projection plane
+      const double* p, // absolute coordinate
+      double* res // the absolute coordinate of the perpendicular intersection between p and plane
+      )
+   {
+      // checks
+      const double* n0 = plane.getNormal();
+      const double* p0 = plane.getPoint();
+      const float len = ::sqrtf(Math2::dot3d(n0, n0));
+      if (len - 1.f > .000001f) printf("Line::calcProjection: not unity %.5e\n", len);
+
+      // calc
+      double v[3];
+      Math2::minus3d(p, p0, v);
+      double s = Math2::dot3d(v, n0); // perpendicular distance between p and plane
+      s = s == 0. ? 1. : s;
+      MultiPlaneShape::LineShape l;
+      static const float extensionFactor = 10.f;
+      l.P0[0] = p[0] + extensionFactor * s * n0[0]; l.P0[1] = p[1] + extensionFactor * s * n0[1]; l.P0[2] = p[2] + extensionFactor * s * n0[2];
+      l.P1[0] = p[0] - extensionFactor * s * n0[0]; l.P1[1] = p[1] - extensionFactor * s * n0[1]; l.P1[2] = p[2] - extensionFactor * s * n0[2];
+      int ind = MultiPlaneShape::intersect3D_SegmentPlane(l, plane, res);
+
+      // checks
+      if (ind == 0) printf("getPerpendicularIntersection: no intersect\n");
+      else if (ind == 1) printf("getPerpendicularIntersection: intersect\n");
+      else if (ind == 2) printf("getPerpendicularIntersection: on plane\n");
+   }
+
+   __host__ __device__ static void getLineProjection(
+      const PlaneT& plane, // the projection plane
+      const MultiPlaneShape::LineShape& line, // the absolute coordinate of the line to be projected
+      MultiPlaneShape::LineShape& res // the absolute coordinate of the perpendicular intersection between line and plane
+      )
+   {
+      getPerpendicularIntersection(plane, line.P0, res.P0);
+      getPerpendicularIntersection(plane, line.P1, res.P1);
+   }
+
+   // get vectors relative to plane origin
+   __host__ __device__ static void getRelativeCoord(
+      const PlaneT& plane, // the axis-containing plane
+      const double* axis0, // coordinate relative to plane origin (lies on plane)
+      const double* axis1, // coordinate relative to plane origin orthogonal to axis0 and plane normal (lies on plane)
+      const double* p, // absolute coordinate of a point on the plane
+      double* res
+      )
+   {
+      if (::fabsf(Math2::dot3d(plane.getNormal(), axis0)) > 0.000001f) printf("getRelativeCoord: axis0 not coplanar with plane\n");
+      if (::fabsf(Math2::dot3d(plane.getNormal(), axis1)) > 0.000001f) printf("getRelativeCoord: axis1 not coplanar with plane\n");
+      double checkNormal[3];
+      Math2::cross3d(axis0, axis1, checkNormal);
+      const float t = ::fabsf(Math2::dot3d(checkNormal, plane.getNormal()));
+      if (::fabsf(1 - t) > 0.000001f) printf("testLineProjection(): t = %.5e\n", t);
+
+      Math2::minus3d(p, plane.getPoint(), res);
+      const double tmp[3] = { Math2::dot3d(res, axis0), Math2::dot3d(res, axis1), Math2::dot3d(res, plane.getNormal()) };
+      memcpy(res, tmp, sizeof(res[0]) * 3);
+
+      if (::fabsf(res[2]) > 0.00001f) printf("calcLineProjection: res.P0 has out of plane component: %.5e\n", res[2]);
+   }
+
+   __host__ __device__ static void getRelativeProjection(
+      const PlaneT& plane,
+      const double* axis0, // vector from the plane origin
+      const double* axis1, // vector from the plane origin
+      const MultiPlaneShape::LineShape& line, // line in absolute coordinates to be projected onto plane
+      MultiPlaneShape::LineShape& res // line with respect to origin of plane (ie. res + plane.origin = line)
+      )
+   {
+      getRelativeCoord(plane, axis0, axis1, line.P0, res.P0);
+      getRelativeCoord(plane, axis0, axis1, line.P1, res.P1);
+   }
+
+   __host__ __device__ static void calcLineProjection(
+      const PlaneT& plane,
+      const double* axis0, // vector from the plane origin
+      const double* axis1, // vector from the plane origin
+      const MultiPlaneShape::LineShape& line, // line in absolute coordinates to be projected onto plane
+      MultiPlaneShape::LineShape& res // line with respect to origin of plane (ie. res + plane.origin = line)
+      )
+   {
+      MultiPlaneShape::LineShape tmp;
+      getLineProjection(plane, line, tmp);
+      getRelativeProjection(plane, axis0, axis1, tmp, res);
+   }
+
+   // axis2 would be the normal of the plane, which creates no projection
+   __host__ __device__ void Line::calcRasterization(
+      const PlaneT& plane,
+      const double* axis0, // vector from the plane origin
+      const double* axis1, // vector from the plane origin
+      const float xlenperpix,
+      const float ylenperpix
+      )
+   {
+      MultiPlaneShape::LineShape res0, res1, res2, res3; // with respect to origin of plane, along axis0 and axis1
+      calcLineProjection(plane, axis0, axis1, *segment0, res0);
+      calcLineProjection(plane, axis0, axis1, *segment1, res1);
+      calcLineProjection(plane, axis0, axis1, *segment2, res2);
+      calcLineProjection(plane, axis0, axis1, *segment3, res3);
+
+      int start0[3] = { res0.P0[0] / xlenperpix, res0.P0[1] / ylenperpix, res0.P0[2] };
+      int end0[3] = { res0.P1[0] / xlenperpix, res0.P1[1] / ylenperpix, res0.P1[2] };
+      int start1[3] = { res1.P0[0] / xlenperpix, res1.P0[1] / ylenperpix, res1.P0[2] };
+      int end1[3] = { res1.P1[0] / xlenperpix, res1.P1[1] / ylenperpix, res1.P1[2] };
+      int start2[3] = { res2.P0[0] / xlenperpix, res2.P0[1] / ylenperpix, res2.P0[2] };
+      int end2[3] = { res2.P1[0] / xlenperpix, res2.P1[1] / ylenperpix, res2.P1[2] };
+      int start3[3] = { res3.P0[0] / xlenperpix, res3.P0[1] / ylenperpix, res3.P0[2] };
+      int end3[3] = { res3.P1[0] / xlenperpix, res3.P1[1] / ylenperpix, res3.P1[2] };
+
+      printf("(%.5e, %.5e, %.5e), (%.5e, %.5e, %.5e) \n", plane.getNormal()[0], plane.getNormal()[1], plane.getNormal()[2], plane.getPoint()[0], plane.getPoint()[1], plane.getPoint()[2]);
+      printf("(%.5e, %.5e, %.5e) -> (%.5e, %.5e, %.5e)\n", res0.P0[0], res0.P0[1], res0.P0[2], res0.P1[0], res0.P1[1], res0.P1[2]);
+      printf("(%.5e, %.5e, %.5e) -> (%.5e, %.5e, %.5e)\n", res1.P0[0], res1.P0[1], res1.P0[2], res1.P1[0], res1.P1[1], res1.P1[2]);
+      printf("(%.5e, %.5e, %.5e) -> (%.5e, %.5e, %.5e)\n", res2.P0[0], res2.P0[1], res2.P0[2], res2.P1[0], res2.P1[1], res2.P1[2]);
+      printf("(%.5e, %.5e, %.5e) -> (%.5e, %.5e, %.5e)\n", res3.P0[0], res3.P0[1], res3.P0[2], res3.P1[0], res3.P1[1], res3.P1[2]);
+
+      printf("(%d, %d, %d) -> (%d, %d, %d)\n", start0[0], start0[1], start0[2], end0[0], end0[1], end0[2]);
+      printf("(%d, %d, %d) -> (%d, %d, %d)\n", start1[0], start1[1], start1[2], end1[0], end1[1], end1[2]);
+      printf("(%d, %d, %d) -> (%d, %d, %d)\n", start2[0], start2[1], start2[2], end2[0], end2[1], end2[2]);
+      printf("(%d, %d, %d) -> (%d, %d, %d)\n", start3[0], start3[1], start3[2], end3[0], end3[1], end3[2]);
    }
 
    __host__ __device__ NormalIntersectionShapeT* Line::get()
    {
       return nis;
+   }
+
+   __host__ __device__ void TestProjection()
+   {
+      const double p[3] = { 
+         -7., 
+         -8., 
+         -9. 
+      };
+      const double n[3] = { 
+         3. / ::sqrtf(50.f), 
+         4. / ::sqrtf(50.f), 
+         5. / ::sqrtf(50.f) 
+      };
+      PlaneT plane(n, p); // projection plane
+      const double axis0[3] = { 
+         -3. / ::sqrtf(50.f), 
+         -4. / ::sqrtf(50.f), 
+         5. / ::sqrtf(50.f) 
+      }; // projection vector from projection plane origin
+      const double axis1[3] = { 
+         4. / 5., 
+         -3. / 5., 
+         0. 
+      }; // projection vector from projection plane origin
+
+      const double p0[3] = { 
+         p[0] + axis0[0] * ::sqrtf(50.f) + n[0] * ::sqrtf(50.f), 
+         p[1] + axis0[1] * ::sqrtf(50.f) + n[1] * ::sqrtf(50.f), 
+         p[2] + axis0[2] * ::sqrtf(50.f) + n[2] * ::sqrtf(50.f) 
+      };
+      const double p1[3] = { 
+         p[0] + axis1[0] * 5. - n[0] * ::sqrtf(50.f), 
+         p[1] + axis1[1] * 5. - n[1] * ::sqrtf(50.f), 
+         p[2] + axis1[2] * 5. - n[2] * ::sqrtf(50.f) 
+      };
+      MultiPlaneShape::LineShape seg(p0, p1);
+      MultiPlaneShape::LineShape res;
+      calcLineProjection(plane, axis0, axis1, seg, res);
+
+      float tol = 0.00001f;
+      if (::fabsf(::sqrtf(50.f) - res.P0[0]) > tol) printf("res.P0[0] wrong: %.5e\n", res.P0[0]);
+      if (::fabsf(res.P0[1]) > tol) printf("res.P0[1] wrong: %.5e\n", res.P0[1]);
+      if (::fabsf(res.P0[2]) > tol) printf("res.P0[2] wrong: %.5e\n", res.P0[2]);
+      if (::fabsf(res.P1[0]) > tol) printf("res.P1[0] wrong: %.5e\n", res.P1[0]);
+      if (::fabsf(5.f - res.P1[1]) > tol) printf("res.P1[1] wrong: %.5e\n", res.P1[1]);
+      if (::fabsf(res.P1[2]) > tol) printf("res.P1[2] wrong: %.5e\n", res.P1[2]);
+
+      printf("(%.5e, %.5e, %.5e), (%.5e, %.5e, %.5e)", res.P0[0], res.P0[1], res.P0[2], res.P1[0], res.P1[1], res.P1[2]);
    }
 }

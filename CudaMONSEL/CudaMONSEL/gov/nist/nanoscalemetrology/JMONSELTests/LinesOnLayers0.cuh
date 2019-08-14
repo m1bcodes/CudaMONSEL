@@ -5,11 +5,15 @@
 
 namespace LinesOnLayers
 {
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+   extern __device__ unsigned int ysize;
+   extern __device__ unsigned int xsize;
+#else
+   extern unsigned int ysize;
+   extern unsigned int xsize;
+#endif
    extern void loadNUTable();
    extern void transferNUTableToCuda();
-
-   //extern void initCuda();
-   //extern void runCuda();
 
    extern __global__ void initCuda();
    extern __global__ void runCuda(float* result);

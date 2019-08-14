@@ -432,7 +432,7 @@ typedef NormalIntersectionShape::NormalIntersectionShape NormalIntersectionShape
 
 namespace MultiPlaneShape
 {
-   class LineShape;
+   struct LineShape;
 }
 
 typedef MultiPlaneShape::LineShape LineShapeT;

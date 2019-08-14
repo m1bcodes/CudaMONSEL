@@ -140,13 +140,6 @@ __global__ void testLibraryCuda()
    StackTest::testOne();
 }
 
-const unsigned int W = 512, H = 512;
-const unsigned int TX = 16, TY = 16;
-const dim3 blockSize(TX, TY); // Equivalent to dim3 blockSize(TX, TY, 1);
-const unsigned int bx = (W + blockSize.x - 1) / blockSize.x;
-const unsigned int by = (H + blockSize.y - 1) / blockSize.y;
-const dim3 gridSize = dim3(bx, by);
-
 __global__ void printRand()
 {
    const unsigned int c = threadIdx.x + blockDim.x * blockIdx.x;
@@ -157,12 +150,18 @@ __global__ void printRand()
    printf("%d, %d (%d): %.5e | ", r, c, threadId, Random::random());
 }
 
-void testGPU()
+void testGPU(const unsigned int H, const unsigned int W)
 {
    printf("-----------------GPU-----------------------------\n");
    Random::initCudaStates << <1, 1 >> >(H * W);
    checkCudaErrors(cudaDeviceSynchronize());
    checkCudaErrors(cudaGetLastError());
+
+   const unsigned int TX = 16, TY = 16;
+   const dim3 blockSize(TX, TY); // Equivalent to dim3 blockSize(TX, TY, 1);
+   const unsigned int bx = (W + blockSize.x - 1) / blockSize.x;
+   const unsigned int by = (H + blockSize.y - 1) / blockSize.y;
+   const dim3 gridSize = dim3(bx, by);
 
    printRand << <gridSize, blockSize >> >();
    checkCudaErrors(cudaDeviceSynchronize());
@@ -481,7 +480,8 @@ void intersect3D_2PlanesTest()
 int main()
 {
    //intersect3D_2PlanesTest();
-   //LinesOnLayers::testLineProjection();
+   LinesOnLayers::initRange();
+   LinesOnLayers::testLineProjection();
 
    deviceQuery();
 
@@ -497,8 +497,10 @@ int main()
    initSim();
    testSim();
    LinesOnLayers::loadNUTable();
+   LinesOnLayers::initRange();
 
-   //testGPU();
+   const unsigned int H = LinesOnLayers::ysize, W = LinesOnLayers::xsize;
+   //testGPU(H, W);
    //initCuda();
    //LinesOnLayers::transferDataToCuda();
 
@@ -509,8 +511,6 @@ int main()
    //LinesOnLayers::initCuda << <1, 1 >> >();
    //checkCudaErrors(cudaDeviceSynchronize());
    //checkCudaErrors(cudaGetLastError());
-
-   LinesOnLayers::initRange();
 
    float* d_result = nullptr;
 

@@ -65,6 +65,9 @@ namespace MultiPlaneShape
 
    struct LineShape
    {
+      __host__ __device__ LineShape();
+      __host__ __device__ LineShape(const double*, const double*);
+
       double P0[3];
       double P1[3];
    };
