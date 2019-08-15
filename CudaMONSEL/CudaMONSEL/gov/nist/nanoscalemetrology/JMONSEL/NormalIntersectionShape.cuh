@@ -28,6 +28,8 @@ namespace NormalIntersectionShape
       NormalShapeT& shapeB;
       double result[4];
    };
+
+   extern __host__ __device__ void translateNormalShape(const double distance[], NormalShapeT& shape);
 }
 
 #endif

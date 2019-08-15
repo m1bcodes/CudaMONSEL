@@ -32,6 +32,8 @@ namespace SumShape
    private:
       amp::vector<ShapeT*> mShapes;
    };
+
+   extern __host__ __device__ void translateShape(const double distance[], ShapeT* shape);
 }
 
 #endif

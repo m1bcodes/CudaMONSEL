@@ -9,7 +9,7 @@ data = np.loadtxt("CudaMONSEL\output.txt")
 SE = data
 
 print(SE)
-c = 512
+c = 256
 r = (int)(SE.shape[0]/c)
 
 plt.plot(SE[1:c])

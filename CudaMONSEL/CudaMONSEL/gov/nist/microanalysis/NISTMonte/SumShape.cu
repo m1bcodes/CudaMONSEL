@@ -3,6 +3,11 @@
 //#include "gov.nist.microanalysis.EPQLibrary.EPQFatalException.cuh"
 #include "gov\nist\microanalysis\EPQLibrary\ITransform.cuh"
 #include "gov\nist\microanalysis\Utility\Math2.cuh"
+#include "gov\nist\microanalysis\NISTMonte\CylindricalShape.cuh"
+#include "gov\nist\microanalysis\NISTMonte\MultiPlaneShape.cuh"
+#include "gov\nist\microanalysis\NISTMonte\Sphere.cuh"
+
+#include "gov\nist\nanoscalemetrology\JMONSEL\NormalIntersectionShape.cuh"
 
 namespace SumShape
 {
@@ -93,12 +98,38 @@ namespace SumShape
       }
    }
 
+   __host__ __device__ void translateShape(const double distance[], ShapeT* shape)
+   {
+      StringT& name = shape->toString();
+      if (name.starts_with("Normal")) {
+         NormalIntersectionShape::translateNormalShape(distance, (NormalShapeT&)(*shape));
+      }
+      else if (name.starts_with("SumShape")) {
+         ((SumShapeT*)shape)->translate(distance);
+      }
+      else if (name.starts_with("CylindricalShape")) {
+         ((CylindricalShapeT*)shape)->translate(distance);
+      }
+      else if (name.starts_with("MultiPlaneShape")) {
+         ((MultiPlaneShapeT*)shape)->translate(distance);
+      }
+      else if (name.starts_with("Plane")) {
+         ((PlaneT*)shape)->translate(distance);
+      }
+      else if (name.starts_with("Sphere")) {
+         ((SphereT*)shape)->translate(distance);
+      }
+      else {
+         printf("translateShape: shape not supported %s\n", name.c_str());
+      }
+   }
+
    __host__ __device__ void SumShape::translate(const double distance[])
    {
       for (auto shape : mShapes) {
          //if (!(shape instanceof ITransform))
          //   throw new EPQFatalException(shape.toString() + " does not support transformation.");
-         ((ITransformT*)shape)->translate(distance);
+         translateShape(distance, shape);
       }
    }
 

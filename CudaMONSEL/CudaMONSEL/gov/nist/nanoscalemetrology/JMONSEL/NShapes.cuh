@@ -9,13 +9,13 @@ namespace NShapes
    {
    public:
       __host__ __device__ Line(
-         double topz,
-         double width,
-         double length,
-         double thetal,
-         double thetar,
-         double radl,
-         double radr
+         const double topz,
+         const double width,
+         const double length,
+         const double thetal,
+         const double thetar,
+         const double radl,
+         const double radr
          );
       __host__ __device__ ~Line();
 

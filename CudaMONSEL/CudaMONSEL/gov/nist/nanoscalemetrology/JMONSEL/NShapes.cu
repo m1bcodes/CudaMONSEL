@@ -66,7 +66,7 @@ namespace NShapes
       memcpy(segment.P1, leftIntersect, sizeof(segment.P1[0]) * 3);
    }
 
-   __host__ __device__ Line::Line(double topz, double width, double length, double thetal, double thetar, double radl, double radr) :
+   __host__ __device__ Line::Line(const double topz, const double width, const double length, const double thetal, const double thetar, const double radl, const double radr) :
       topz(topz), width(width), length(length), thetal(thetal), thetar(thetar), radl(radl < 0 ? 0 : radl), radr(radr < 0 ? 0 : radr),
       enclosure(nullptr), pl0(nullptr), pl1(nullptr), pl2(nullptr), pl3(nullptr),
       rightNMPS(nullptr), rightSide(nullptr), pl4(nullptr), plr(nullptr), rcylinder(nullptr),
@@ -157,14 +157,14 @@ namespace NShapes
       // Add right sidewall
       const double costhetar = ::cos(thetar);
       const double sinthetar = ::sin(thetar);
-      const double n4[] = { costhetar, 0., signz * sinthetar }, p4[] = { width / 2, 0., 0. };
+      const double n4[] = { costhetar, 0., signz * sinthetar }, p4[] = { width / 2., 0., 0. };
       pl4 = new PlaneT(n4, p4);
       rightNMPS->addPlane(pl4);
       // If radr>0 add a clipping plane and the cylinder
       const double root2 = ::sqrt(2.);
       const double absz = signz * topz;
       if (radr > 0) {
-         const double rad = ::sqrt(1 - sinthetar);
+         const double rad = ::sqrt(1. - sinthetar);
          const double nr[] = { rad / root2, 0., (signz * costhetar) / root2 / rad }, pr[] = { ((width / 2.) - (radr / costhetar)) + (((radr - absz) * sinthetar) / costhetar), 0., topz };
          plr = new PlaneT(nr, pr);
          rightNMPS->addPlane(plr);
@@ -184,12 +184,12 @@ namespace NShapes
       // Add left sidewall
       const double costhetal = ::cos(thetal);
       const double sinthetal = ::sin(thetal);
-      const double n5[] = { -costhetal, 0., signz * sinthetal }, p5[] = { -width / 2, 0., 0. };
+      const double n5[] = { -costhetal, 0., signz * sinthetal }, p5[] = { -width / 2., 0., 0. };
       pl5 = new PlaneT(n5, p5);
       leftNMPS->addPlane(pl5);
       // If radl>0 add a clipping plane and the cylinder
       if (radl > 0.) {
-         const double rad = ::sqrt(1 - sinthetal);
+         const double rad = ::sqrt(1. - sinthetal);
          const double nl[] = { -rad / root2, 0., (signz * costhetal) / root2 / rad }, pl[] = { ((-width / 2.) + (radl / costhetal)) - (((radl - absz) * sinthetal) / costhetal), 0., topz };
          pll = new PlaneT(nl, pl);
          leftNMPS->addPlane(pll);
@@ -325,7 +325,7 @@ namespace NShapes
    };
 
    // Bresenham's algorithm
-   __host__ __device__ void DrawLine(const Point& p0, const Point& p1, const char color, char* res, const unsigned int h, const unsigned int w)
+   __host__ __device__ void DrawLine(const Point& p0, const Point& p1, const char color, char* res, const unsigned int w, const unsigned int h)
    {
       int x = p0.X;
       int y = p0.Y;
@@ -370,8 +370,8 @@ namespace NShapes
       const float xlenperpix,
       const float ylenperpix,
       char* res,
-      const unsigned int h,
-      const unsigned int w
+      const unsigned int w,
+      const unsigned int h
       )
    {
       MultiPlaneShape::LineShape res0, res1, res2, res3; // with respect to origin of plane, along axis0 and axis1
@@ -398,10 +398,10 @@ namespace NShapes
       Point e2(end2[0], end2[1]);
       Point e3(end3[0], end3[1]);
 
-      DrawLine(s0, e0, 255, res, h, w);
-      DrawLine(s1, e1, 255, res, h, w);
-      DrawLine(s2, e2, 255, res, h, w);
-      DrawLine(s3, e3, 255, res, h, w);
+      DrawLine(s0, e0, 255, res, w, h);
+      DrawLine(s1, e1, 255, res, w, h);
+      DrawLine(s2, e2, 255, res, w, h);
+      DrawLine(s3, e3, 255, res, w, h);
 
       printf("(%.5e, %.5e, %.5e), (%.5e, %.5e, %.5e) \n", plane.getNormal()[0], plane.getNormal()[1], plane.getNormal()[2], plane.getPoint()[0], plane.getPoint()[1], plane.getPoint()[2]);
       printf("(%.5e, %.5e, %.5e) -> (%.5e, %.5e, %.5e)\n", res0.P0[0], res0.P0[1], res0.P0[2], res0.P1[0], res0.P1[1], res0.P1[2]);

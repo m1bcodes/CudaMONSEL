@@ -526,8 +526,8 @@ namespace LinesOnLayers
       ystartnm = -64.f;
       ystopnm = 64.f;
 
-      xsize = 512;
-      ysize = 512;
+      xsize = 256;
+      ysize = 256;
 
       //VectorXf xvalstmp(80);
       //float deltax = 5.f;
@@ -1040,8 +1040,9 @@ namespace LinesOnLayers
    void testLineProjection()
    {
       NShapes::Line line(-h, w, linelength, thetal, thetar, radl, radr);
-      const double dist[3] = { 30. * 10e-9, 0., 0. };
+      const double dist[3] = { 0., 0., 0. };
       line.get()->translate(dist);
+
       line.calcGroundtruth(); // get points/line segments that need to be projected
 
       const double p[3] = { xstartnm * 1e-9, ystartnm * 1e-9, 0. };
@@ -1056,9 +1057,9 @@ namespace LinesOnLayers
       char* gt = new char[ysize * xsize];
       memset(gt, 0, sizeof(gt[0]) * ysize * xsize);
 
-      line.calcRasterization(plane, axis0, axis1, xlenperpix, ylenperpix, gt, ysize, xsize);
+      line.calcRasterization(plane, axis0, axis1, xlenperpix, ylenperpix, gt, xsize, ysize);
 
-      ImageUtil::saveImage("gt.bmp", gt, ysize, xsize);
+      ImageUtil::saveImage("gt.bmp", gt, xsize, ysize);
       delete[] gt;
 
       //NShapes::TestProjection();

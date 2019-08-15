@@ -50,6 +50,7 @@ namespace amp
       // string op
       __host__ __device__ const char* c_str() const;
       __host__ __device__ int find(const char *) const;
+      __host__ __device__ bool starts_with(const char *) const;
       __host__ __device__ string substr(size_t pos = 0, size_t len = npos) const;
 
       __host__ __device__ unsigned int hashCode() const;

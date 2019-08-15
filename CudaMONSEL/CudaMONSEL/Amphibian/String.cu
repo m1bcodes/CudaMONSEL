@@ -107,6 +107,17 @@ namespace amp
       return npos;
    }
 
+   __host__ __device__ bool string::starts_with(const char * target) const
+   {
+      unsigned int len = 0;
+      while (target[len]) ++len;
+
+      for (int i = 0; i < len; ++i) {
+         if (str[i] != target[i] || i == MAX_LEN) return false;
+      }
+      return true;
+   }
+
    __host__ __device__ string string::substr(size_t pos, size_t len) const
    {
       string newstr;

@@ -1,4 +1,7 @@
 #include "gov\nist\nanoscalemetrology\JMONSEL\NormalIntersectionShape.cuh"
+#include "gov\nist\nanoscalemetrology\JMONSEL\NormalCylindricalShape.cuh"
+#include "gov\nist\nanoscalemetrology\JMONSEL\NormalMultiPlaneShape.cuh"
+#include "gov\nist\nanoscalemetrology\JMONSEL\NormalUnionShape.cuh"
 
 namespace NormalIntersectionShape
 {
@@ -262,12 +265,35 @@ namespace NormalIntersectionShape
       //((ITransform)shapeB).rotate(pivot, phi, theta, psi);
    }
 
+   __host__ __device__ void translateNormalShape(const double distance[], NormalShapeT& shape)
+   {
+      const StringT& name = shape.toString();
+      if (name.starts_with("NormalIntersectionShape")) {
+         ((NormalIntersectionShapeT&)shape).translate(distance);
+      }
+      else if (name.starts_with("NormalCylindricalShape")) {
+         ((NormalCylindricalShapeT&)shape).translate(distance);
+      }
+      else if (name.starts_with("NormalMultiPlaneShape")) {
+         ((NormalMultiPlaneShapeT&)shape).translate(distance);
+      }
+      else if (name.starts_with("NormalUnionShape")) {
+         ((NormalUnionShapeT&)shape).translate(distance);
+      }
+      else {
+         printf("translateNormal: shape not supported: %s\n", shape.toString().c_str());
+      }
+   }
+
    __host__ __device__ void NormalIntersectionShape::translate(const double distance[])
    {
-      //if (!(shapeA instanceof ITransform)) printf(shapeA.toString() + " does not support transformation.");
-      ((ITransform&)shapeA).translate(distance);
-      //if (!(shapeB instanceof ITransform)) throw new EPQFatalException(shapeB.toString() + " does not support transformation.");
-      ((ITransform&)shapeB).translate(distance);
+      ////if (!(shapeA instanceof ITransform)) printf(shapeA.toString() + " does not support transformation.");
+      //((ITransform&)shapeA).translate(distance);
+      ////if (!(shapeB instanceof ITransform)) throw new EPQFatalException(shapeB.toString() + " does not support transformation.");
+      //((ITransform&)shapeB).translate(distance);
+
+      translateNormalShape(distance, shapeA);
+      translateNormalShape(distance, shapeB);
    }
 
    __host__ __device__ const double* NormalIntersectionShape::getPreviousNormal() const
