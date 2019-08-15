@@ -320,7 +320,7 @@ namespace NormalCylindricalShape
       return nv; // None of the above. There was no intersection.
    }
 
-   void NormalCylindricalShape::rotate(const double pivot[], double phi, double theta, double psi)
+   __host__ __device__ void NormalCylindricalShape::rotate(const double pivot[], double phi, double theta, double psi)
    {
       Transform3D::rotate3d(end0, pivot, phi, theta, psi, end0);
       Transform3D::rotate3d(axis, phi, theta, psi, axis);

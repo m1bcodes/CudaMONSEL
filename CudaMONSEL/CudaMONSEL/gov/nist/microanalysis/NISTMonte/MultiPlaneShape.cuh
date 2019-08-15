@@ -21,7 +21,7 @@ namespace MultiPlaneShape
 
       bool almostContains(const double p[]);
 
-      void rotate(const double pivot[], double phi, double theta, double psi) override;
+      __host__ __device__ void rotate(const double pivot[], double phi, double theta, double psi) override;
       __host__ __device__ void translate(const double distance[]) override;
 
       __host__ __device__ const double* getNormal() const;
@@ -44,7 +44,7 @@ namespace MultiPlaneShape
       __host__ __device__ double getFirstIntersection(const double pos0[], const double pos1[]) override;
       __host__ __device__ StringT toString() const override;
 
-      void rotate(const double pivot[], double phi, double theta, double psi) override;
+      __host__ __device__ void rotate(const double pivot[], double phi, double theta, double psi) override;
       __host__ __device__ void translate(const double distance[]) override;
 
       //void addOffsetPlane(const double normal[], const double pt[], double dist);

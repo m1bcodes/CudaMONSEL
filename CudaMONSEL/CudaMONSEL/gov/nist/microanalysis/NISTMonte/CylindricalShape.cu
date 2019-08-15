@@ -179,7 +179,7 @@ namespace CylindricalShape
       }
    }
 
-   void CylindricalShape::rotate(const double pivot[], double phi, double theta, double psi)
+   __host__ __device__ void CylindricalShape::rotate(const double pivot[], double phi, double theta, double psi)
    {
       Transform3D::rotate3d(mEnd0, pivot, phi, theta, psi, mEnd0);
       Transform3D::rotate3d(mDelta, phi, theta, psi, mDelta);

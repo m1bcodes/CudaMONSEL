@@ -89,12 +89,36 @@ namespace SumShape
       return u;
    }
 
-   void SumShape::rotate(const double pivot[], double phi, double theta, double psi)
+   __host__ __device__ void rotateShape(const double pivot[], double phi, double theta, double psi, ShapeT* shape)
+   {
+      StringT& name = shape->toString();
+      if (name.starts_with("Normal")) {
+         NormalIntersectionShape::rotateNormalShape(pivot, phi, theta, psi, (NormalShapeT&)(*shape));
+      }
+      else if (name.starts_with("SumShape")) {
+         ((SumShapeT*)shape)->rotate(pivot, phi, theta, psi);
+      }
+      else if (name.starts_with("CylindricalShape")) {
+         ((CylindricalShapeT*)shape)->rotate(pivot, phi, theta, psi);
+      }
+      else if (name.starts_with("MultiPlaneShape")) {
+         ((MultiPlaneShapeT*)shape)->rotate(pivot, phi, theta, psi);
+      }
+      else if (name.starts_with("Plane")) {
+         ((PlaneT*)shape)->rotate(pivot, phi, theta, psi);
+      }
+      else if (name.starts_with("Sphere")) {
+         ((SphereT*)shape)->rotate(pivot, phi, theta, psi);
+      }
+      else {
+         printf("rotateShape: shape not supported %s\n", name.c_str());
+      }
+   }
+
+   __host__ __device__ void SumShape::rotate(const double pivot[], double phi, double theta, double psi)
    {
       for (auto shape : mShapes) {
-         //if (!(shape instanceof ITransform))
-         //   throw new EPQFatalException(shape.toString() + " does not support transformation.");
-         ((ITransformT*)shape)->rotate(pivot, phi, theta, psi);
+         rotateShape(pivot, phi, theta, psi, shape);
       }
    }
 
@@ -127,8 +151,6 @@ namespace SumShape
    __host__ __device__ void SumShape::translate(const double distance[])
    {
       for (auto shape : mShapes) {
-         //if (!(shape instanceof ITransform))
-         //   throw new EPQFatalException(shape.toString() + " does not support transformation.");
          translateShape(distance, shape);
       }
    }

@@ -285,7 +285,7 @@ namespace NormalUnionShape
       return "NormalUnionShape";
    }
 
-   void NormalUnionShape::rotate(const double pivot[], double phi, double theta, double psi)
+   __host__ __device__ void NormalUnionShape::rotate(const double pivot[], double phi, double theta, double psi)
    {
       SumShapeT::rotate(pivot, phi, theta, psi);
    }

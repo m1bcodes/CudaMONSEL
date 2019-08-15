@@ -253,7 +253,7 @@ namespace NormalMultiPlaneShape
       return Math2::dot3d(narray[index].data(), carray[index].data());
    }
 
-   void NormalMultiPlaneShape::rotate(const double pivot[], double phi, double theta, double psi)
+   __host__ __device__ void NormalMultiPlaneShape::rotate(const double pivot[], double phi, double theta, double psi)
    {
       MultiPlaneShapeT::rotate(pivot, phi, theta, psi);
       updateCach();

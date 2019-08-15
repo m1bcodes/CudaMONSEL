@@ -159,8 +159,9 @@ namespace RegionBase
       return mShape->toString() + " of " + getMaterial().toString();
    }
 
-   void TransformableRegion::rotate(const double pivot[], double phi, double theta, double psi)
+   __host__ __device__ void TransformableRegion::rotate(const double pivot[], double phi, double theta, double psi)
    {
+      printf("TransformableRegion::rotate: not supported\n");
       //// check whether we can....
       //if (mShape instanceof ITransform)
       //   for (final Object obj : mSubRegions) {
@@ -181,6 +182,7 @@ namespace RegionBase
    // documented in ITransform
    __host__ __device__ void TransformableRegion::translate(const double distance[])
    {
+      printf("TransformableRegion::translate: not supported\n");
       //// check whether we can....
       //if (mShape instanceof ITransform)
       //   for (final Object obj : mSubRegions) {

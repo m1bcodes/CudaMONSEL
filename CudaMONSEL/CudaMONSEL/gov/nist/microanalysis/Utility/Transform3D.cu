@@ -2,7 +2,7 @@
 
 namespace Transform3D
 {
-   static MatrixXd rotation(double phi, double th, double psi)
+   __host__ __device__ static MatrixXd rotation(double phi, double th, double psi)
    {
       MatrixXd r(3, VectorXd(3, 0));
       if (phi != 0.0) {
@@ -41,7 +41,7 @@ namespace Transform3D
       return r;
    }
 
-   static MatrixXd times(const MatrixXd& a, const MatrixXd& b)
+   __host__ __device__ static MatrixXd times(const MatrixXd& a, const MatrixXd& b)
    {
       if (a[0].size() != b.size()) {
          printf("matrix multiplicatino failed: %d, %d\n", a[0].size(), b.size());
@@ -55,12 +55,12 @@ namespace Transform3D
       return mult;
    }
 
-   MatrixXd rot(double ph, double th, double ps)
+   __host__ __device__ MatrixXd rot(double ph, double th, double ps)
    {
       return rotation(ph, th, ps);
    }
 
-   void rotate3d(const double v[], double phi, double th, double psi, double res[])
+   __host__ __device__ void rotate3d(const double v[], double phi, double th, double psi, double res[])
    {
       MatrixXd m(3, VectorXd(v, v + 3));
       m[0][0] = v[0];
@@ -78,7 +78,7 @@ namespace Transform3D
       res[2] = prod[2][0];
    }
 
-   VectorXd rotate(const double v[], double phi, double th, double psi)
+   __host__ __device__ VectorXd rotate(const double v[], double phi, double th, double psi)
    {
       MatrixXd m(3, VectorXd(v, v + 3));
       m[0][0] = v[0];
@@ -99,7 +99,7 @@ namespace Transform3D
       return ret;
    }
 
-   VectorXd translate(const double point[], const double distance[], bool negate)
+   __host__ __device__ VectorXd translate(const double point[], const double distance[], bool negate)
    {
       VectorXd res(3, 0);
       if (negate) {
@@ -115,12 +115,12 @@ namespace Transform3D
       return res;
    }
 
-   VectorXd rotate(const double point[], const double pivot[], double phi, double theta, double psi)
+   __host__ __device__ VectorXd rotate(const double point[], const double pivot[], double phi, double theta, double psi)
    {
       return translate(rotate(translate(point, pivot, true).data(), phi, theta, psi).data(), pivot, false);
    }
 
-   void translate3d(const double point[], const double distance[], bool negate, double res[])
+   __host__ __device__ void translate3d(const double point[], const double distance[], bool negate, double res[])
    {
       if (negate) {
          res[0] = point[0] - distance[0];
@@ -134,7 +134,7 @@ namespace Transform3D
       }
    }
 
-   void rotate3d(const double point[], const double pivot[], double phi, double theta, double psi, double res[])
+   __host__ __device__ void rotate3d(const double point[], const double pivot[], double phi, double theta, double psi, double res[])
    {
       double translated1[3];
       translate3d(point, pivot, true, translated1);

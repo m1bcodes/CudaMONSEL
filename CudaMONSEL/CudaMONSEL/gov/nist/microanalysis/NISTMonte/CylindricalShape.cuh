@@ -17,7 +17,7 @@ namespace CylindricalShape
       __host__ __device__ double getFirstIntersection(const double pos0[], const double pos1[]) override;
       __host__ __device__ StringT toString() const override;
 
-      void rotate(const double pivot[], double phi, double theta, double psi) override;
+      __host__ __device__ void rotate(const double pivot[], double phi, double theta, double psi) override;
       __host__ __device__ void translate(const double distance[]) override;
 
       const double* getEnd0() const;

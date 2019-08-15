@@ -61,7 +61,7 @@ namespace RegionBase
    class TransformableRegion : public RegionBase, public ITransformT
    {
    public:
-      void rotate(const double pivot[], double phi, double theta, double psi) override;
+      __host__ __device__ void rotate(const double pivot[], double phi, double theta, double psi) override;
       __host__ __device__ void translate(const double distance[]) override;
    };
 

@@ -1,6 +1,6 @@
 #include "gov\nist\microanalysis\NISTMonte\Sphere.cuh"
 #include "gov\nist\microanalysis\Utility\Math2.cuh"
-//import gov.nist.microanalysis.Utility.Transform3D;
+#include "gov\nist\microanalysis\Utility\Transform3D.cuh"
 
 namespace Sphere
 {
@@ -66,9 +66,9 @@ namespace Sphere
    }
 
    // JavaDoc in ITransform
-   void Sphere::rotate(const double pivot[], double phi, double theta, double psi)
+   __host__ __device__ void Sphere::rotate(const double pivot[], double phi, double theta, double psi)
    {
-      //mCenter = Transform3D.rotate(mCenter, pivot, phi, theta, psi);
+      Transform3D::rotate3d(mCenter, pivot, phi, theta, psi, mCenter);
    }
 
    // JavaDoc in ITransform

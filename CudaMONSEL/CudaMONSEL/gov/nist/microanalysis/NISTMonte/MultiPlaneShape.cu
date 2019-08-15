@@ -46,7 +46,7 @@ namespace MultiPlaneShape
          return INFINITY;
    }
 
-   void Plane::rotate(const double pivot[], double phi, double theta, double psi)
+   __host__ __device__ void Plane::rotate(const double pivot[], double phi, double theta, double psi)
    {
       Transform3D::rotate3d(mNormal, phi, theta, psi, mNormal);
       Transform3D::rotate3d(mPoint, pivot, phi, theta, psi, mPoint);
@@ -286,7 +286,7 @@ namespace MultiPlaneShape
       }
    }
 
-   void MultiPlaneShape::rotate(const double pivot[], double phi, double theta, double psi)
+   __host__ __device__ void MultiPlaneShape::rotate(const double pivot[], double phi, double theta, double psi)
    {
       for (auto t : mPlanes)
          t->rotate(pivot, phi, theta, psi);

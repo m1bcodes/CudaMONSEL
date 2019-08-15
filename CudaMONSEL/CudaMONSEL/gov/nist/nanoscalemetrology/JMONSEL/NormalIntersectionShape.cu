@@ -255,14 +255,30 @@ namespace NormalIntersectionShape
       return getFirstNormal(pos0, pos1)[3];
    }
 
-   void NormalIntersectionShape::rotate(const double pivot[], double phi, double theta, double psi)
+   __host__ __device__ void rotateNormalShape(const double pivot[], const double phi, const double theta, const double psi, NormalShapeT& shape)
    {
-      //if (!(shapeA instanceof ITransform))
-      //   throw new EPQFatalException(shapeA.toString() + " does not support transformation.");
-      //((ITransform)shapeA).rotate(pivot, phi, theta, psi);
-      //if (!(shapeB instanceof ITransform))
-      //   throw new EPQFatalException(shapeB.toString() + " does not support transformation.");
-      //((ITransform)shapeB).rotate(pivot, phi, theta, psi);
+      const StringT& name = shape.toString();
+      if (name.starts_with("NormalIntersectionShape")) {
+         ((NormalIntersectionShapeT&)shape).rotate(pivot, phi, theta, psi);
+      }
+      else if (name.starts_with("NormalCylindricalShape")) {
+         ((NormalCylindricalShapeT&)shape).rotate(pivot, phi, theta, psi);
+      }
+      else if (name.starts_with("NormalMultiPlaneShape")) {
+         ((NormalMultiPlaneShapeT&)shape).rotate(pivot, phi, theta, psi);
+      }
+      else if (name.starts_with("NormalUnionShape")) {
+         ((NormalUnionShapeT&)shape).rotate(pivot, phi, theta, psi);
+      }
+      else {
+         printf("rotateNormalShape: shape not supported: %s\n", shape.toString().c_str());
+      }
+   }
+
+   __host__ __device__ void NormalIntersectionShape::rotate(const double pivot[], double phi, double theta, double psi)
+   {
+      rotateNormalShape(pivot, phi, theta, psi, shapeA);
+      rotateNormalShape(pivot, phi, theta, psi, shapeB);
    }
 
    __host__ __device__ void translateNormalShape(const double distance[], NormalShapeT& shape)

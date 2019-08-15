@@ -8,7 +8,7 @@ namespace ITransform
    class ITransform
    {
    public:
-      virtual void rotate(const double pivot[], double phi, double theta, double psi) = 0;
+      virtual __host__ __device__ void rotate(const double pivot[], double phi, double theta, double psi) = 0;
       virtual __host__ __device__ void translate(const double distance[]) = 0;
    };
 }
