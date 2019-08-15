@@ -179,7 +179,7 @@ namespace RegionBase
    }
 
    // documented in ITransform
-   void TransformableRegion::translate(const double distance[])
+   __host__ __device__ void TransformableRegion::translate(const double distance[])
    {
       //// check whether we can....
       //if (mShape instanceof ITransform)

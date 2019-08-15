@@ -20,7 +20,7 @@ namespace Sphere
       void getPointAt(double phi, double theta, double frac, double res[]) const;
 
       void rotate(const double pivot[], double phi, double theta, double psi) override;
-      void translate(const double distance[]) override;
+      __host__ __device__ void translate(const double distance[]) override;
 
       const double* getCenter() const;
       __host__ __device__ StringT toString() const override;

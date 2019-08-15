@@ -18,7 +18,7 @@ namespace CylindricalShape
       __host__ __device__ StringT toString() const override;
 
       void rotate(const double pivot[], double phi, double theta, double psi) override;
-      void translate(const double distance[]) override;
+      __host__ __device__ void translate(const double distance[]) override;
 
       const double* getEnd0() const;
       const double* getEnd1() const;

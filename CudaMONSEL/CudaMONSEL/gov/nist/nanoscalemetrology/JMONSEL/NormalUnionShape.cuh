@@ -23,7 +23,7 @@ namespace NormalUnionShape
       __host__ __device__ const double* getPreviousNormal() const override;
 
       void rotate(const double pivot[], double phi, double theta, double psi) override;
-      void translate(const double distance[]) override;
+      __host__ __device__ void translate(const double distance[]) override;
       
    private:
       double result[4];

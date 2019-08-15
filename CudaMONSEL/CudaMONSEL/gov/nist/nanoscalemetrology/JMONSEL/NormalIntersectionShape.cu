@@ -262,12 +262,12 @@ namespace NormalIntersectionShape
       //((ITransform)shapeB).rotate(pivot, phi, theta, psi);
    }
 
-   void NormalIntersectionShape::translate(const double distance[])
+   __host__ __device__ void NormalIntersectionShape::translate(const double distance[])
    {
       //if (!(shapeA instanceof ITransform)) printf(shapeA.toString() + " does not support transformation.");
-      ((ITransform*)&shapeA)->translate(distance);
+      ((ITransform&)shapeA).translate(distance);
       //if (!(shapeB instanceof ITransform)) throw new EPQFatalException(shapeB.toString() + " does not support transformation.");
-      ((ITransform*)&shapeB)->translate(distance);
+      ((ITransform&)shapeB).translate(distance);
    }
 
    __host__ __device__ const double* NormalIntersectionShape::getPreviousNormal() const

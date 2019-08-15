@@ -259,7 +259,7 @@ namespace NormalMultiPlaneShape
       updateCach();
    }
 
-   void NormalMultiPlaneShape::translate(const double distance[])
+   __host__ __device__ void NormalMultiPlaneShape::translate(const double distance[])
    {
       MultiPlaneShapeT::translate(distance);
       updateCach();

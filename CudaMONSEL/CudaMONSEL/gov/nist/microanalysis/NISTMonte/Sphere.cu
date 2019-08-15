@@ -72,7 +72,7 @@ namespace Sphere
    }
 
    // JavaDoc in ITransform
-   void Sphere::translate(const double distance[])
+   __host__ __device__ void Sphere::translate(const double distance[])
    {
       mCenter[0] += distance[0];
       mCenter[1] += distance[1];

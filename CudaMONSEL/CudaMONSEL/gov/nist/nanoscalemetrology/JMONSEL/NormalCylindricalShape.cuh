@@ -23,7 +23,7 @@ namespace NormalCylindricalShape
       __host__ __device__ const double* getPreviousNormal() const override;
 
       void rotate(const double pivot[], double phi, double theta, double psi) override;
-      void translate(const double distance[]) override;
+      __host__ __device__ void translate(const double distance[]) override;
 
    private:
       double end0[3]; // Vector position of the 1st end cap center

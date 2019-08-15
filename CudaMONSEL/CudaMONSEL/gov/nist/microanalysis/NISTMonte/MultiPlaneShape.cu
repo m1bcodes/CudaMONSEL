@@ -52,7 +52,7 @@ namespace MultiPlaneShape
       Transform3D::rotate3d(mPoint, pivot, phi, theta, psi, mPoint);
    }
 
-   void Plane::translate(const double distance[])
+   __host__ __device__ void Plane::translate(const double distance[])
    {
       mPoint[0] += distance[0];
       mPoint[1] += distance[1];
@@ -292,7 +292,7 @@ namespace MultiPlaneShape
          t->rotate(pivot, phi, theta, psi);
    }
 
-   void MultiPlaneShape::translate(const double distance[])
+   __host__ __device__ void MultiPlaneShape::translate(const double distance[])
    {
       for (auto t : mPlanes)
          t->translate(distance);

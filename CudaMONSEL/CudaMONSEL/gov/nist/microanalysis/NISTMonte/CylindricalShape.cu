@@ -185,7 +185,7 @@ namespace CylindricalShape
       Transform3D::rotate3d(mDelta, phi, theta, psi, mDelta);
    }
 
-   void CylindricalShape::translate(const double distance[])
+   __host__ __device__ void CylindricalShape::translate(const double distance[])
    {
       mEnd0[0] += distance[0];
       mEnd0[1] += distance[1];

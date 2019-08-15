@@ -23,7 +23,7 @@ namespace SumShape
       __host__ __device__ StringT toString() const override;
 
       void rotate(const double pivot[], double phi, double theta, double psi) override;
-      void translate(const double distance[]) override;
+      __host__ __device__ void translate(const double distance[]) override;
 
       __host__ __device__ const amp::vector<ShapeT*>& getShapes() const;
 

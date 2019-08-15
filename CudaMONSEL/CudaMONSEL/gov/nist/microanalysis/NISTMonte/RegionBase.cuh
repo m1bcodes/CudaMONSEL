@@ -62,7 +62,7 @@ namespace RegionBase
    {
    public:
       void rotate(const double pivot[], double phi, double theta, double psi) override;
-      void translate(const double distance[]) override;
+      __host__ __device__ void translate(const double distance[]) override;
    };
 
    class Region : public TransformableRegion

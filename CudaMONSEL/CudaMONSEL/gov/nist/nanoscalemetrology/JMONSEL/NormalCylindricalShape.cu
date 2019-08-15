@@ -328,7 +328,7 @@ namespace NormalCylindricalShape
       CylindricalShapeT::rotate(pivot, phi, theta, psi);
    }
 
-   void NormalCylindricalShape::translate(const double distance[])
+   __host__ __device__ void NormalCylindricalShape::translate(const double distance[])
    {
       end0[0] += distance[0];
       end0[1] += distance[1];

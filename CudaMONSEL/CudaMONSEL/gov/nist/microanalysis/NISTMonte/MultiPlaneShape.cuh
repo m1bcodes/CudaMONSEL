@@ -22,7 +22,7 @@ namespace MultiPlaneShape
       bool almostContains(const double p[]);
 
       void rotate(const double pivot[], double phi, double theta, double psi) override;
-      void translate(const double distance[]) override;
+      __host__ __device__ void translate(const double distance[]) override;
 
       __host__ __device__ const double* getNormal() const;
       __host__ __device__ const double* getPoint() const;
@@ -45,7 +45,7 @@ namespace MultiPlaneShape
       __host__ __device__ StringT toString() const override;
 
       void rotate(const double pivot[], double phi, double theta, double psi) override;
-      void translate(const double distance[]) override;
+      __host__ __device__ void translate(const double distance[]) override;
 
       //void addOffsetPlane(const double normal[], const double pt[], double dist);
       //void addPlane(const double normal[], const double point[]);

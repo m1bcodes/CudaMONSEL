@@ -93,7 +93,7 @@ namespace SumShape
       }
    }
 
-   void SumShape::translate(const double distance[])
+   __host__ __device__ void SumShape::translate(const double distance[])
    {
       for (auto shape : mShapes) {
          //if (!(shape instanceof ITransform))

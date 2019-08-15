@@ -290,7 +290,7 @@ namespace NormalUnionShape
       SumShapeT::rotate(pivot, phi, theta, psi);
    }
 
-   void NormalUnionShape::translate(const double distance[])
+   __host__ __device__ void NormalUnionShape::translate(const double distance[])
    {
       SumShapeT::translate(distance);
    }
