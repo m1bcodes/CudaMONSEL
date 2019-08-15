@@ -17,6 +17,6 @@ namespace ZeroCSD
 
    __host__ __device__ StringT ZeroCSD::toString() const
    {
-      return "ZeroCSD()";
+      return "ZeroCSD";
    }
 }

@@ -8,7 +8,7 @@ namespace NormalIntersectionShape
 
    __host__ __device__ bool NormalIntersectionShape::contains(const double pos[]) const
    {
-      return ((ShapeT*)&shapeA)->contains(pos) && ((ShapeT*)&shapeB)->contains(pos);
+      return ((ShapeT&)shapeA).contains(pos) && ((ShapeT&)shapeB).contains(pos);
    }
 
    __host__ __device__ bool NormalIntersectionShape::contains(const double pos0[], const double pos1[]) const

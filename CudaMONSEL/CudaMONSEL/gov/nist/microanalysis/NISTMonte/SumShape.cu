@@ -116,7 +116,7 @@ namespace SumShape
 
    __host__ __device__ StringT SumShape::toString() const
    {
-      StringT res = "Sum[";
+      StringT res = "SumShape[";
       bool first = true;
       for (auto &shape : mShapes) {
          if (!first)

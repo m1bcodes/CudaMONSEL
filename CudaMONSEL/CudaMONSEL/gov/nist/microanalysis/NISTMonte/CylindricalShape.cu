@@ -204,7 +204,7 @@ namespace CylindricalShape
 
    __host__ __device__ StringT CylindricalShape::toString() const
    {
-      StringT res = "Cylinder([";
+      StringT res = "CylindricalShape([";
       res += amp::to_string(mEnd0[0]) + "," + amp::to_string(mEnd0[1]) + "," + amp::to_string(mEnd0[2]) + "],[";
       res += amp::to_string(mEnd1[0]) + "," + amp::to_string(mEnd1[1]) + "," + amp::to_string(mEnd1[2]) + "],";
       res += amp::to_string(getRadius()) + ")";

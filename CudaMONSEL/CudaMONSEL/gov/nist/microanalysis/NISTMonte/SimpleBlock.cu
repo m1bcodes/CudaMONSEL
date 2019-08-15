@@ -97,7 +97,7 @@ namespace SimpleBlock
    
    __host__ __device__ StringT SimpleBlock::toString() const
    {
-      return "Block(" + amp::to_string(mCorner1[0]) + " " + amp::to_string(mCorner1[1]) + " " + amp::to_string(mCorner1[2]) + "," +
+      return "SimpleBlock(" + amp::to_string(mCorner1[0]) + " " + amp::to_string(mCorner1[1]) + " " + amp::to_string(mCorner1[2]) + "," +
          amp::to_string(mCorner1[0]) + " " + amp::to_string(mCorner1[1]) + " " + amp::to_string(mCorner1[2]) + ")";
    }
 }
