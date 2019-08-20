@@ -10,7 +10,7 @@ namespace NShapes
 {
    static void normalize(double vec[], double res[])
    {
-      double norm = ::sqrt((vec[0] * vec[0]) + (vec[1] * vec[1]) + (vec[2] * vec[2]));
+      const double norm = ::sqrt((vec[0] * vec[0]) + (vec[1] * vec[1]) + (vec[2] * vec[2]));
       res[0] = vec[0] / norm;
       res[1] = vec[1] / norm;
       res[2] = vec[2] / norm;
@@ -207,9 +207,6 @@ namespace NShapes
       nis = new NormalIntersectionShapeT(*nts, *enclosure);
    }
 
-   /*
-   * Can only rotate along z-axis
-   */
    __host__ __device__ void Line::calcGroundtruth()
    {
       if (!segment0) segment0 = new LineShapeT();
@@ -217,10 +214,15 @@ namespace NShapes
       if (!segment2) segment2 = new LineShapeT();
       if (!segment3) segment3 = new LineShapeT();
 
-      getLineSegment(*pl1, *pl2, *pl4, *pl5, *segment0); // right cap
-      getLineSegment(*pl1, *pl3, *pl4, *pl5, *segment1); // left cap
-      getLineSegment(*pl1, *pl4, *pl2, *pl3, *segment2); // right length
-      getLineSegment(*pl1, *pl5, *pl2, *pl3, *segment3); // left length
+      getLineSegment(*pl0, *pl2, *pl4, *pl5, *segment0); // right cap
+      getLineSegment(*pl0, *pl3, *pl4, *pl5, *segment1); // left cap
+      getLineSegment(*pl0, *pl4, *pl2, *pl3, *segment2); // right length
+      getLineSegment(*pl0, *pl5, *pl2, *pl3, *segment3); // left length
+
+      //getLineSegment(*pl1, *pl2, *pl4, *pl5, *segment0); // right cap
+      //getLineSegment(*pl1, *pl3, *pl4, *pl5, *segment1); // left cap
+      //getLineSegment(*pl1, *pl4, *pl2, *pl3, *segment2); // right length
+      //getLineSegment(*pl1, *pl5, *pl2, *pl3, *segment3); // left length
 
       printf("(%.5e, %.5e, %.5e) -> (%.5e, %.5e, %.5e)\n", segment0->P0[0], segment0->P0[1], segment0->P0[2], segment0->P1[0], segment0->P1[1], segment0->P1[2]);
       printf("(%.5e, %.5e, %.5e) -> (%.5e, %.5e, %.5e)\n", segment1->P0[0], segment1->P0[1], segment1->P0[2], segment1->P1[0], segment1->P1[1], segment1->P1[2]);
@@ -249,7 +251,7 @@ namespace NShapes
       static const float extensionFactor = 10.f;
       l.P0[0] = p[0] + extensionFactor * s * n0[0]; l.P0[1] = p[1] + extensionFactor * s * n0[1]; l.P0[2] = p[2] + extensionFactor * s * n0[2];
       l.P1[0] = p[0] - extensionFactor * s * n0[0]; l.P1[1] = p[1] - extensionFactor * s * n0[1]; l.P1[2] = p[2] - extensionFactor * s * n0[2];
-      int ind = MultiPlaneShape::intersect3D_SegmentPlane(l, plane, res);
+      const int ind = MultiPlaneShape::intersect3D_SegmentPlane(l, plane, res);
 
       // checks
       if (ind == 0) printf("getPerpendicularIntersection: no intersect\n");
@@ -276,6 +278,7 @@ namespace NShapes
       double* res
       )
    {
+      // check
       const float len = Math2::dot3d(plane.getNormal(), plane.getNormal());
       if (::fabsf(1 - len) > 0.00001f) printf("getRelativeCoord: plane normal not unity: %.5e\n", len);
       if (::fabsf(Math2::dot3d(plane.getNormal(), axis0)) > 0.000001f) printf("getRelativeCoord: axis0 not coplanar with plane\n");
@@ -285,10 +288,12 @@ namespace NShapes
       const float t = ::fabsf(Math2::dot3d(checkNormal, plane.getNormal()));
       if (::fabsf(1 - t) > 0.000001f) printf("getRelativeCoord(): t = %.5e\n", t);
 
+      // check
       Math2::minus3d(p, plane.getPoint(), res);
       const double tmp[3] = { Math2::dot3d(res, axis0), Math2::dot3d(res, axis1), Math2::dot3d(res, plane.getNormal()) };
       memcpy(res, tmp, sizeof(res[0]) * 3);
 
+      // check
       if (::fabsf(res[2]) > 0.00001f) printf("getRelativeCoord: res.P0 has out of plane component: %.5e\n", res[2]);
    }
 
@@ -362,6 +367,9 @@ namespace NShapes
       if (p1.Y >= 0 && p1.Y < h && p1.X >= 0 && p1.X < w) res[p1.Y * w + p1.X] = color;
    }
 
+   /*
+   * Can only rotate along z-axis
+   */
    // axis2 would be the normal of the plane, which creates no projection
    __host__ __device__ void Line::calcRasterization(
       const PlaneT& plane,
@@ -467,5 +475,37 @@ namespace NShapes
       if (::fabsf(res.P1[2]) > tol) printf("res.P1[2] wrong: %.5e\n", res.P1[2]);
 
       printf("(%.5e, %.5e, %.5e), (%.5e, %.5e, %.5e)", res.P0[0], res.P0[1], res.P0[2], res.P1[0], res.P1[1], res.P1[2]);
+   }
+
+   __host__ __device__ CrossSection::CrossSection(const double width)
+   {
+      enclosure = new NormalMultiPlaneShapeT();
+
+      const double n0[] = { 0., 0., -1 }, p0[] = { 0., 0., 0 }; // Add top plane
+      pl0 = new PlaneT(n0, p0);
+      enclosure->addPlane(pl0);
+
+      const double n1[] = { 0., 1., 0. }, p1[] = { 0., width / 2., 0. }; // Right end
+      pl1 = new PlaneT(n1, p1);
+      enclosure->addPlane(pl1);
+
+      const double n2[] = { 0., - 2., 1. }, p2[] = { 0., -width / 2., 0. }; // Left end
+      double n2norm[3];
+      Math2::normalize3d(n2, n2norm);
+      pl2 = new PlaneT(n2norm, p2);
+      enclosure->addPlane(pl2);
+   }
+
+   __host__ __device__ CrossSection::~CrossSection()
+   {
+      delete enclosure;
+      delete pl0;
+      delete pl1;
+      delete pl2;
+   }
+
+   __host__ __device__ NormalMultiPlaneShapeT* CrossSection::get()
+   {
+      return enclosure;
    }
 }

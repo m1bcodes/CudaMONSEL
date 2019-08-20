@@ -61,6 +61,22 @@ namespace NShapes
       LineShapeT* segment3;
    };
 
+   class CrossSection
+   {
+   public:
+      __host__ __device__ CrossSection(
+         const double width
+         );
+      __host__ __device__ ~CrossSection();
+      __host__ __device__ NormalMultiPlaneShapeT* get();
+
+   private:
+      NormalMultiPlaneShapeT* enclosure;
+      PlaneT* pl0;
+      PlaneT* pl1;
+      PlaneT* pl2;
+   };
+
    extern __host__ __device__ void TestProjection();
 }
 
