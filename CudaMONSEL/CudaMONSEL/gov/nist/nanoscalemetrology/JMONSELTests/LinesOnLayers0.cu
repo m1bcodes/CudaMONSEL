@@ -446,7 +446,7 @@ namespace LinesOnLayers
    const float pitch = 180.f * 1.e-9f;
    const float h = 120.f * 1.e-9f;
    const float w = 80.f * 1.e-9f;
-   const float linelength = 1000.f * 1.e-9f;
+   const float linelength = 120.f * 1.e-9f;
 
    const float radperdeg = 3.14159265358979323846f / 180.f;
    const float thetar = 3.f * 3.14159265358979323846f / 180.f;
@@ -525,11 +525,11 @@ namespace LinesOnLayers
       //const float xfinestart = xtop - 20.5f;
       //const float xfinestop = (thetar < 0.f) ? xtop + 20.5f : wnm / 2.f + 20.5f;
 
-      ystartnm = -64.f;
-      ystopnm = 64.f;
+      ystartnm = -128.f;
+      ystopnm = 128.f;
 
       xsize = 256;
-      ysize = 256;
+      ysize = 512;
 
       //VectorXf xvalstmp(80);
       //float deltax = 5.f;
@@ -625,7 +625,7 @@ namespace LinesOnLayers
       PMMA.setEnergyCBbottom(ToSI::eV(PMMApotU));
 
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-      SelectableElasticSMT PMMANISTMott(PMMA, *NISTMottRS::d_Factory);
+      SelectableElasticSMT PMMANISTMott(PMMA, *NISTMottRS::dFactory);
 #else
       SelectableElasticSMT PMMANISTMott(PMMA, NISTMottRS::Factory);
 #endif
@@ -668,16 +668,16 @@ namespace LinesOnLayers
       glC.setCoreEnergy(glCCoreEnergy, 1);
 
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-      SelectableElasticSMT glCNISTMott(glC, *NISTMottRS::d_Factory);
+      SelectableElasticSMT glCNISTMott(glC, *NISTMottRS::dFactory);
 #else
       SelectableElasticSMT glCNISTMott(glC, NISTMottRS::Factory);
 #endif
 
-      StringT tablePath = "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\glassyCTables\\";
-      const StringT IIMFPPennInterpglassy = tablePath + "IIMFPPennInterpglassyCSI.csv";
-      const StringT SimReducedDeltaEglassy = tablePath + "interpNUSimReducedDeltaEglassyCSI.csv";
-      const StringT simTableThetaNUglassy = tablePath + "interpsimTableThetaNUglassyCSI.csv";
-      const StringT SimESE0NUglassy = tablePath + "interpSimESE0NUglassyCSI.csv";
+      const StringT tablePathglassyC = "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\glassyCTables\\";
+      const StringT IIMFPPennInterpglassy = tablePathglassyC + "IIMFPPennInterpglassyCSI.csv";
+      const StringT SimReducedDeltaEglassy = tablePathglassyC + "interpNUSimReducedDeltaEglassyCSI.csv";
+      const StringT simTableThetaNUglassy = tablePathglassyC + "interpsimTableThetaNUglassyCSI.csv";
+      const StringT SimESE0NUglassy = tablePathglassyC + "interpSimESE0NUglassyCSI.csv";
       const char* glCTables[] = {
          IIMFPPennInterpglassy.c_str(),
          SimReducedDeltaEglassy.c_str(),
@@ -713,16 +713,16 @@ namespace LinesOnLayers
       Si.setCoreEnergy(SiCoreEnergy, 4);
 
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-      SelectableElasticSMT SiNISTMott(Si, *NISTMottRS::d_Factory);
+      SelectableElasticSMT SiNISTMott(Si, *NISTMottRS::dFactory);
 #else
       SelectableElasticSMT SiNISTMott(Si, NISTMottRS::Factory);
 #endif
 
-      tablePath = "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\SiTables\\";
-      const StringT IIMFPFullPennInterpSiSI = tablePath + "IIMFPFullPennInterpSiSI.csv";
-      const StringT interpNUSimReducedDeltaEFullPennSiSI = tablePath + "interpNUSimReducedDeltaEFullPennSiSI.csv";
-      const StringT interpNUThetaFullPennSiBGSI = tablePath + "interpNUThetaFullPennSiBGSI.csv";
-      const StringT interpSimESE0NUSiBGSI = tablePath + "interpSimESE0NUSiBGSI.csv";
+      const StringT tablePathSi = "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\SiTables\\";
+      const StringT IIMFPFullPennInterpSiSI = tablePathSi + "IIMFPFullPennInterpSiSI.csv";
+      const StringT interpNUSimReducedDeltaEFullPennSiSI = tablePathSi + "interpNUSimReducedDeltaEFullPennSiSI.csv";
+      const StringT interpNUThetaFullPennSiBGSI = tablePathSi + "interpNUThetaFullPennSiBGSI.csv";
+      const StringT interpSimESE0NUSiBGSI = tablePathSi + "interpSimESE0NUSiBGSI.csv";
       const char* SiTables[] = {
          IIMFPFullPennInterpSiSI.c_str(),
          interpNUSimReducedDeltaEFullPennSiSI.c_str(),
@@ -748,6 +748,80 @@ namespace LinesOnLayers
 
       SiMSMDeep.setMinEforTracking(ToSI::eV(50.f));
 
+      const float density = 2200.f;
+      const float workfun = 10.f;
+      const float phononStrength = 2.f; // Number of phonon modes
+      const float phononE = 0.145f; // Phonon mode energy in eV
+      const float bandgap = 8.9f; // width of band gap in eV
+      const float EFermi = -bandgap; // This puts the Fermi level at the top of the valence band.
+      const float potU = -workfun - EFermi;
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+      const float SiWeight = Element::dSi->getAtomicWeight();
+      const float OxWeight = 2.f * Element::dO->getAtomicWeight();
+#else
+      const float SiWeight = Element::Si.getAtomicWeight();
+      const float OxWeight = 2.f * Element::O.getAtomicWeight();
+#endif
+      const float totalWeight = SiWeight + OxWeight;
+
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+      const ElementT* SiO2Components[] = { Element::dSi, Element::dO };
+#else
+      const ElementT* SiO2Components[] = { &Element::Si, &Element::O };
+#endif
+
+      const float massFracSiO2[] = { SiWeight / totalWeight, OxWeight / totalWeight };
+      SEmaterialT SiO2(SiO2Components, 2, massFracSiO2, 2, density, "Silicon Dioxide");
+
+      const float SiO2Workfunction = ToSI::eV(workfun);
+      SiO2.setWorkfunction(SiO2Workfunction);
+      SiO2.setBandgap(ToSI::eV(bandgap));
+      SiO2.setEnergyCBbottom(ToSI::eV(potU));
+      const float ceSiO2[] = { ToSI::eV(41.6), ToSI::eV(99.2), ToSI::eV(99.8), ToSI::eV(149.7), ToSI::eV(543.1), ToSI::eV(1839.) };
+      SiO2.setCoreEnergy(ceSiO2, 6);
+      const StringT tablePathSiO2 = "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\SiO2Tables\\";
+      const StringT IIMFPPennInterpSiO2SI = tablePathSiO2 + "IIMFPPennInterpSiO2SI.csv";
+      const StringT interpNUSimReducedDeltaESiO2SI = tablePathSiO2 + "interpNUSimReducedDeltaESiO2SI.csv";
+      const StringT interpsimTableThetaNUSiO2SI = tablePathSiO2 + "interpsimTableThetaNUSiO2SI.csv";
+      const StringT interpSimESE0NUSiO2SI = tablePathSiO2 + "interpSimESE0NUSiO2SI.csv";
+      const char* SiO2Tables[] = {
+         IIMFPPennInterpSiO2SI.c_str(),
+         interpNUSimReducedDeltaESiO2SI.c_str(),
+         interpsimTableThetaNUSiO2SI.c_str(),
+         interpSimESE0NUSiO2SI.c_str()
+      };
+
+      // Create scatter mechanisms
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+      SelectableElasticSMT SiO2NISTMott((MaterialT&)SiO2, *NISTMottRS::dFactory);
+#else
+      SelectableElasticSMT SiO2NISTMott((MaterialT&)SiO2, NISTMottRS::Factory);
+#endif
+
+      TabulatedInelasticSMT SiO2DS(SiO2, 3, SiO2Tables, ToSI::eV(20. + bandgap));
+      GanachaudMokraniPhononInelasticSMT SiO2phonon(phononStrength, ToSI::eV(phononE), 300., 3.82, 1.);
+      GanachaudMokraniPolaronTrapSMT SiO2polaron(1.0e9, 1. / ToSI::eV(1.));
+      ExpQMBarrierSMT SiO2ClassicalBarrier(&SiO2); // The default.No need to actually execute this line.
+      //SiO2CSD = mon.ZeroCSD(); // The default.No need to actually execute this line.
+      // Make a material scatter model
+      // MSM to be used in thin layer(includes SE generation)
+      MONSEL_MaterialScatterModelT SiO2MSM(&SiO2, &SiO2ClassicalBarrier, &sZeroCSD);
+      SiO2MSM.addScatterMechanism(&SiO2NISTMott);
+      SiO2MSM.addScatterMechanism(&SiO2DS);
+      SiO2MSM.addScatterMechanism(&SiO2phonon);
+      // SiO2MSM.addScatterMechanism(SiO2polaron);
+      //SiO2MSM.setCSD(SiO2CSD);
+      //SiO2MSM.setBarrierSM(SiO2ClassicalBarrier);
+
+      // MSM to be used deep inside(drops electrons with E < 50 eV);
+      //MONSEL_MaterialScatterModelT SiO2MSMDeep(&SiO2, &SiO2ClassicalBarrier, &sZeroCSD);
+      //SiO2MSMDeep.addScatterMechanism(&SiO2NISTMott);
+      //SiO2MSMDeep.addScatterMechanism(&SiO2DS);
+      //SiO2MSMDeep.addScatterMechanism(&SiO2phonon);
+      ////SiO2MSMDeep.setCSD(SiO2CSD);
+      ////SiO2MSMDeep.setBarrierSM(SiO2ClassicalBarrier);
+      //SiO2MSMDeep.setMinEforTracking(ToSI::eV(50.));
+
       SphereT sphere(center, MonteCarloSS::ChamberRadius);
 
       NullMaterialScatterModelT NULL_MSM;
@@ -755,9 +829,25 @@ namespace LinesOnLayers
       RegionT chamber(nullptr, &NULL_MSM, &sphere);
       chamber.updateMaterial(*(chamber.getScatterModel()), vacuumMSM);
 
-      NShapes::CrossSection cs(30.f * 1e-9f);
-      const NormalMultiPlaneShapeT* layer1 = cs.get();
-      RegionT layer1Region(&chamber, &ARCMSM, (NormalShapeT*)layer1);
+      const double width = 30.f * 1e-9f;
+
+      NShapes::CrossSection cs0(width);
+      NormalMultiPlaneShapeT* layer0 = cs0.get();
+      double dist0[3] = { 0., width / 2, 0. };
+      layer0->translate(dist0);
+      RegionT layer0Region(&chamber, &ARCMSM, (NormalShapeT*)layer0);
+
+      NShapes::CrossSection cs1(width);
+      NormalMultiPlaneShapeT* layer1 = cs1.get();
+      dist0[1] += width;
+      layer1->translate(dist0);
+      RegionT layer1Region(&chamber, &SiO2MSM, (NormalShapeT*)layer1);
+
+      NShapes::CrossSection cs2(width);
+      NormalMultiPlaneShapeT* layer2 = cs2.get();
+      dist0[1] += width;
+      layer2->translate(dist0);
+      RegionT layer2Region(&chamber, &ARCMSM, (NormalShapeT*)layer2);
 
       //NormalMultiPlaneShapeT layer1;
       //PlaneT pl1(normalvector, layer1Pos);
@@ -781,10 +871,10 @@ namespace LinesOnLayers
       //RegionT deepRegion(&layer3Region, &SiMSMDeep, (NormalShapeT*)&layer4);
 
       NShapes::Line line(-h, w, linelength, thetal, thetar, radl, radr);
-      const double dist[3] = { 40.f * 1.e-9f, 0.f, 0.f };
-      line.get()->translate(dist);
+      const double dist1[3] = { 40.f * 1.e-9f, 0.f, 0.f };
+      line.get()->translate(dist1);
       const double pivot[3] = { 0.f, 0.f, 0.f };
-      line.get()->rotate(pivot, Math2::PI / 4.f, 0.f, 0.f);
+      line.get()->rotate(pivot, -Math2::PI / 2.f, Math2::PI / 2.f, Math2::PI / 2.f);
 
       RegionT lineRegion(&chamber, &PMMAMSM, (NormalIntersectionShapeT*)line.get());
 

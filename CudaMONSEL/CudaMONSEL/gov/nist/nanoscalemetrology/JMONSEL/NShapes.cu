@@ -482,26 +482,26 @@ namespace NShapes
       enclosure = new NormalMultiPlaneShapeT();
 
       const double n0[] = { 0., 0., -1 }, p0[] = { 0., 0., 0 }; // Add top plane
-      pl0 = new PlaneT(n0, p0);
-      enclosure->addPlane(pl0);
+      bnd = new PlaneT(n0, p0);
+      enclosure->addPlane(bnd);
 
       const double n1[] = { 0., 1., 0. }, p1[] = { 0., width / 2., 0. }; // Right end
-      pl1 = new PlaneT(n1, p1);
-      enclosure->addPlane(pl1);
+      pos = new PlaneT(n1, p1);
+      enclosure->addPlane(pos);
 
-      const double n2[] = { 0., - 2., 1. }, p2[] = { 0., -width / 2., 0. }; // Left end
+      const double n2[] = { 0., -1., 0. }, p2[] = { 0., -width / 2., 0. }; // Left end
       double n2norm[3];
       Math2::normalize3d(n2, n2norm);
-      pl2 = new PlaneT(n2norm, p2);
-      enclosure->addPlane(pl2);
+      neg = new PlaneT(n2norm, p2);
+      enclosure->addPlane(neg);
    }
 
    __host__ __device__ CrossSection::~CrossSection()
    {
       delete enclosure;
-      delete pl0;
-      delete pl1;
-      delete pl2;
+      delete bnd;
+      delete pos;
+      delete neg;
    }
 
    __host__ __device__ NormalMultiPlaneShapeT* CrossSection::get()

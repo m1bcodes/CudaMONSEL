@@ -256,15 +256,15 @@ namespace NISTMottRS
    const RandomizedScatterFactoryT& Factory100 = Factory100Ref;
    const RandomizedScatterFactoryT& Factory100Lin = Factory100LinRef;
 
-   __device__ const RandomizedScatterFactoryT* d_Factory = nullptr;
-   __device__ const RandomizedScatterFactoryT* d_Factory100 = nullptr;
-   __device__ const RandomizedScatterFactoryT* d_Factory100Lin = nullptr;
+   __device__ const RandomizedScatterFactoryT* dFactory = nullptr;
+   __device__ const RandomizedScatterFactoryT* dFactory100 = nullptr;
+   __device__ const RandomizedScatterFactoryT* dFactory100Lin = nullptr;
 
    __global__ void initFactory()
    {
-      d_Factory = new NISTMottRSFactory(1);
-      d_Factory100 = new NISTMottRSFactory(2);
-      d_Factory100Lin = new NISTMottRSFactory(3);
+      dFactory = new NISTMottRSFactory(1);
+      dFactory100 = new NISTMottRSFactory(2);
+      dFactory100Lin = new NISTMottRSFactory(3);
    }
 
    void init()

@@ -57,9 +57,9 @@ namespace NISTMottRS
    extern const RandomizedScatterFactoryT& Factory100;
    extern const RandomizedScatterFactoryT& Factory100Lin;
 
-   __device__ extern const RandomizedScatterFactoryT* d_Factory;
-   __device__ extern const RandomizedScatterFactoryT* d_Factory100;
-   __device__ extern const RandomizedScatterFactoryT* d_Factory100Lin;
+   __device__ extern const RandomizedScatterFactoryT* dFactory;
+   __device__ extern const RandomizedScatterFactoryT* dFactory100;
+   __device__ extern const RandomizedScatterFactoryT* dFactory100Lin;
 
    extern void init();
    extern __global__ void initCuda();
