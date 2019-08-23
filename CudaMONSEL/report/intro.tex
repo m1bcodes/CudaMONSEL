@@ -1,0 +1,27 @@
+\chapter{Introduction}
+\pagestyle{fancy}
+\fancyhead{}
+\fancyhead[R]{\thepage}
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+Since its discovery, wireless communication has been successfully deployed in many ways to improve the speed and quality of communication on a large scale. As well, in recent years, regions such as China and Europe have begun to expand their High-Speed Rail (HSR) network to nation wide scales. As a result, a significant application of wireless communication presents itself: sending signals to control and direct the trains.
+
+Several problems are presented when transmitting any wireless signal. When a signal is transmitted, it is attenuated and takes multiple paths along the transmission channel, as shown in Figure \ref{fig:hsr_scene}. This phenomenon is due to the presence of reflectors (or \emph{scatterers}) in the environment. When a signal hits the scatterer, it will be deflected and the reflection may reach the receiver. On the way to the receiver, each instance of the signal experiences different levels of attenuation, delay, phase shift and interference with other waves. Also, due to the multiple paths the signal takes, time of arrival of signal components also tend to differ in an effect known as delay spread.
+
+
+Despite these downfalls, the diversity of signal paths presents opportunities for signal multiplexing upon which modern multiple-input multiple-output (MIMO) systems are based. In such systems, different information is sent along each path the wireless signal takes. For instance, in Figure \ref{fig:hsr_scene}, there is an opportunity to send two different signals carrying different information along the two paths, effectively doubling the information bandwidth. Designers have increasingly turned to MIMO-based architectures based upon multi-element antenna arrays to increase the capacity, reliability and immunity to interference of both wide and local area wireless communication systems. When designing a complex MIMO-based wireless system, one requires the knowledge of how the transmission medium (the \emph{channel}) behaves, with details about path loss, fading statistics, and delay spread of to find the distribution of individual multipath components.
+
+These channel characteristics are encapsulated in what is known as a Spatial Channel Model. This channel model gives  a method to emulate the transmission path of a wireless signal by mapping out the spatial distribution scatters that change the transmission of signals \cite{doppler_focussing}.
+
+When the transmitter and receiver are both stationary, most conventional methods characterizing channels based on measured channel response data require either mechanically steerable directional antennas or multiple antenna systems at both the transmitter and receiver to resolve the directions of arrival and departure from each scatterer.
+
+The resolution of these systems rely on the physical span of antenna(e) and have lots of sophisticated radio equipment, so as a result they tend to be very large and expensive (into the \$100,000 range), and unsuitable for the small spaces in or on vehicles and trains. In addition, they do not directly measure the location of scatterers in the environment.
+
+However, when either the receiving or transmitting platform is moving, as in the case of high speed rail or vehicular environments, the channel measurement system can be simplified considerably by exploiting the manner that the measured signal changes as train moves. Using techniques from synthetic aperture radar (SAR) technology, in particular, bistatic SAR (BiSAR), the locations of scatterers can be constructed directly in the form of an image of the surrounding area.
+
+This report details the concept, construction and verification of a prototype device and software that is able to map out the scatterers' locations using BiSAR algorithms and techniques. It consists of a receiver and transmitter containing a USRP (a programmable radio transceiver), mini-computer, atomic clock, and GPS time synchronization, and positioning hardware. The transmitter also contains an amplifier. The total cost of the prototype is around \$12000, and is much smaller and more portable than usual channel sounders.

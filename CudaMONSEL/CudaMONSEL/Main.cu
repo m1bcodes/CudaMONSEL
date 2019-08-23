@@ -519,7 +519,7 @@ int main()
    //}
    //delete[] threads;
 
-   ctpl::thread_pool tasks(11);
+   ctpl::thread_pool tasks(7);
    std::vector<std::future<void>> results(H * W);
    for (int i = 0; i < H; ++i) {
       for (int j = 0; j < W; ++j) {

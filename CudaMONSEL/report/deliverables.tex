@@ -1,0 +1,73 @@
+\chapter{Deliverables}
+The main deliverable is a working spatial channel sounding prototype, already in the Radio Science Lab. It consists of the following components.
+\section{Hardware}
+\subsection{Transmitter}
+   \begin{itemize}
+   \itemsep-1em 
+      \item Mini-PC
+      \item USRP
+      \item Rubidium Frequency Standard
+      \item GPS Receiver
+      \item UPS
+      \item Antenna
+      \item Antenna Mast
+      \item Amplifier
+   \end{itemize}
+\subsection{Receiver}
+   \begin{itemize}
+   \itemsep-1em 
+      \item Mini-PC
+      \item USRP
+      \item Rubidium Frequency Standard
+      \item GPS Receiver
+      \item UPS
+      \item Antenna
+      \item Antenna Mount for Dr. Michelson's car
+   \end{itemize}
+\section{Software}
+   \subsection{Transmitter}
+      \begin{itemize}
+      \itemsep-1em 
+         \item \texttt{transmitter\_matlab.m}, Transmitter signal senerator (MATLAB)
+         \item \texttt{transmitter.sln}, USRP transmitter software (C++)
+      \end{itemize}
+   \subsection{Receiver}
+      \begin{itemize}
+      \itemsep-1em 
+         \item \texttt{verifySignal.m}, for verifying signal validity (MATLAB)
+         \item \texttt{receiver.sln}, USRP receiver (C++)
+      \end{itemize}
+   \subsection{Post-Processing and Image Reconstruction}
+      \begin{itemize}
+      \itemsep-1em 
+         \item \texttt{prepSignalForSim.m}, for range-compressing received signals (MATLAB)
+         \item \texttt{jeppler\_hsrsar\_backproj.m}, Simulation and image reconstruction algorithm received from MDA.
+         \item \texttt{backscatter.sln}, Fast image reconstruction algorithm re-written in C++ using DirectX and GPU.
+      \end{itemize}
+\section{Documentation}
+   \begin{itemize}
+   \itemsep-1em
+      \item GPU programming concepts and documentation of our reconstruction algorithm.
+      \item Proposal
+      \item Final Report
+   \end{itemize}
+\section{Estimated Raw Cost}
+Since all of these components were already available in the RSL at the time of project commencement, there are no current project costs. Table \ref{tab:total_cost} shows the estimated total cost of all parts for both the transmitter and receiver.
+
+\begin{table}[h!]
+\begin{center}
+\begin{tabular}{l|l}
+Item & Cost \\ \hline
+2x Lenovo M93p & 2x \$800 \\
+2x USRP N210 & 2x \$1700 \\
+2x Rubidium Frequency Standard & 2x \$1500 \\
+2x UPS & 2x \$100 \\
+2x Timing GPS & 2x \$200\\
+2x Panel Antenna & 2x \$200 \\
+30W Amplifier & \$3000 \\
+DRGPS & \$400 \\\hline
+Total Cost & \$12400
+\end{tabular}
+\end{center}
+\caption{\label{tab:total_cost} Estimated total cost of prototype system}
+\end{table}

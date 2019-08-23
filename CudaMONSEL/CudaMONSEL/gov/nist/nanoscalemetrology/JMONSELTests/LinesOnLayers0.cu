@@ -340,8 +340,27 @@ namespace LinesOnLayers
    //__device__ NormalIntersectionShapeT* line = nullptr;
    //__device__ RegionT* lineRegion = nullptr;
 
-   __device__ float* yvals = nullptr;
-   __device__ float* xvals = nullptr;
+   __constant__ const char* glCTables[] = {
+      "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\glassyCTables\\IIMFPPennInterpglassyCSI.csv",
+      "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\glassyCTables\\interpNUSimReducedDeltaEglassyCSI.csv",
+      "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\glassyCTables\\interpsimTableThetaNUglassyCSI.csv",
+      "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\glassyCTables\\interpSimESE0NUglassyCSI.csv",
+      };
+
+   __constant__ const char* SiTables[] = {
+      "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\SiTables\\IIMFPFullPennInterpSiSI.csv",
+      "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\SiTables\\interpNUSimReducedDeltaEFullPennSiSI.csv",
+      "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\SiTables\\interpNUThetaFullPennSiBGSI.csv",
+      "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\SiTables\\interpSimESE0NUSiBGSI.csv"
+   };
+
+   __constant__ const char* SiO2Tables[] = {
+      "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\SiO2Tables\\IIMFPPennInterpSiO2SI.csv",
+      "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\SiO2Tables\\interpNUSimReducedDeltaESiO2SI.csv",
+      "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\SiO2Tables\\interpsimTableThetaNUSiO2SI.csv",
+      "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\SiO2Tables\\interpSimESE0NUSiO2SI.csv"
+      };
+
    __device__ unsigned int ysize, xsize;
    __device__ float xstartnm, xstopnm, ystartnm, ystopnm;
 #else
@@ -351,7 +370,7 @@ namespace LinesOnLayers
    const int nlines = 3;
    const float hnm = 120.f;
    const float wnm = 80.f;
-   const float linelengthnm = 1000.f;
+   const float linelengthnm = 120.f;
    const float thetardeg = 3.f;
    const float thetaldeg = 3.f;
    const float radrnm = 20.f;
@@ -377,12 +396,12 @@ namespace LinesOnLayers
 
    //MONSEL_MaterialScatterModelT* vacuumMSM = nullptr;
 
-   const float PMMAbreakE = 1.60217653e-19 * 45.f;
+   const float PMMAbreakE = ToSI::eV(45.f);
    const float PMMAdensity = 1190.f;
    const float PMMAworkfun = 5.5f;
    const float PMMAbandgap = 5.f;
-   const float PMMAEFermi = -5.f;//-PMMAbandgap;
-   const float PMMApotU = -5.5f - (-5.f);
+   const float PMMAEFermi = -PMMAbandgap;
+   const float PMMApotU = -PMMAworkfun - PMMAEFermi;
 
    //SEmaterialT* PMMA = nullptr;
 
@@ -404,7 +423,7 @@ namespace LinesOnLayers
    const float glCworkfun = 5.0f;
    const float glCbandgap = 0.f;
    const float glCEFermi = 20.4f;
-   const float glCpotU = -5.f - 20.4f;
+   const float glCpotU = -glCworkfun - glCEFermi;
 
    //SEmaterialT* glC = nullptr;
 
@@ -424,8 +443,8 @@ namespace LinesOnLayers
    const float Sidensity = 2330.f;
    const float Siworkfun = 4.85f;
    const float Sibandgap = 1.1f;
-   const float SiEFermi = -1.1f;//-Sibandgap;
-   const float SipotU = -44.85f - (-1.1f);//-Siworkfun - SiEFermi;
+   const float SiEFermi = -Sibandgap;
+   const float SipotU = -Siworkfun - SiEFermi;//-Siworkfun - SiEFermi;
 
    //SEmaterialT* Si = nullptr;
 
@@ -443,20 +462,20 @@ namespace LinesOnLayers
 
    //SphereT* sphere = nullptr;
 
-   const float pitch = 180.f * 1.e-9f;
-   const float h = 120.f * 1.e-9f;
-   const float w = 80.f * 1.e-9f;
-   const float linelength = 120.f * 1.e-9f;
+   const float pitch = pitchnm * 1.e-9f;
+   const float h = hnm * 1.e-9f;
+   const float w = wnm * 1.e-9f;
+   const float linelength = linelengthnm * 1.e-9f;
 
-   const float radperdeg = 3.14159265358979323846f / 180.f;
-   const float thetar = 3.f * 3.14159265358979323846f / 180.f;
-   const float thetal = 3.f * 3.14159265358979323846f / 180.f;
-   const float radr = 20.f * 1.e-9f;
-   const float radl = 20.f * 1.e-9f;
-   const float layer1thickness = 80.f * 1.e-9f;
-   const float layer2thickness = 200.f * 1.e-9f;
-   const float beamsize = 0.5f * 1.e-9f;
-   const float deep = 15.f * 1.e-9f;
+   const float radperdeg = Math2::PI / 180.f;
+   const float thetar = thetardeg * Math2::PI / 180.f;
+   const float thetal = thetaldeg* Math2::PI / 180.f;
+   const float radr = radrnm * 1.e-9f;
+   const float radl = radlnm * 1.e-9f;
+   const float layer1thickness = layer1thicknessnm * 1.e-9f;
+   const float layer2thickness = layer2thicknessnm * 1.e-9f;
+   const float beamsize = beamsizenm * 1.e-9f;
+   const float deep = deepnm * 1.e-9f;
 
    const double center[] = {
       0.0,
@@ -465,7 +484,7 @@ namespace LinesOnLayers
    };
 
    const float beamEeV = 500.f;
-   const float beamE = 1.60217653e-19f * 500.f;
+   const float beamE = ToSI::eV(500.f);
    const float binSizeEV = 10.f;
 
    //NullMaterialScatterModelT* NULL_MSM = nullptr;
@@ -502,8 +521,27 @@ namespace LinesOnLayers
    //NormalIntersectionShapeT* line = nullptr;
    //RegionT* lineRegion = nullptr;
 
-   float* yvals = nullptr;
-   float* xvals = nullptr;
+   const char* glCTables[] = {
+      "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\glassyCTables\\IIMFPPennInterpglassyCSI.csv",
+      "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\glassyCTables\\interpNUSimReducedDeltaEglassyCSI.csv",
+      "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\glassyCTables\\interpsimTableThetaNUglassyCSI.csv",
+      "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\glassyCTables\\interpSimESE0NUglassyCSI.csv",
+   };
+
+   const char* SiTables[] = {
+      "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\SiTables\\IIMFPFullPennInterpSiSI.csv",
+      "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\SiTables\\interpNUSimReducedDeltaEFullPennSiSI.csv",
+      "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\SiTables\\interpNUThetaFullPennSiBGSI.csv",
+      "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\SiTables\\interpSimESE0NUSiBGSI.csv"
+   };
+
+   const char* SiO2Tables[] = {
+      "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\SiO2Tables\\IIMFPPennInterpSiO2SI.csv",
+      "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\SiO2Tables\\interpNUSimReducedDeltaESiO2SI.csv",
+      "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\SiO2Tables\\interpsimTableThetaNUSiO2SI.csv",
+      "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\SiO2Tables\\interpSimESE0NUSiO2SI.csv"
+   };
+
    unsigned int ysize, xsize;
    float xstartnm, xstopnm, ystartnm, ystopnm;
 #endif
@@ -525,11 +563,11 @@ namespace LinesOnLayers
       //const float xfinestart = xtop - 20.5f;
       //const float xfinestop = (thetar < 0.f) ? xtop + 20.5f : wnm / 2.f + 20.5f;
 
-      ystartnm = -128.f;
-      ystopnm = 128.f;
+      ystartnm = -64.f;
+      ystopnm = 64.f;
 
       xsize = 256;
-      ysize = 512;
+      ysize = 256;
 
       //VectorXf xvalstmp(80);
       //float deltax = 5.f;
@@ -557,30 +595,6 @@ namespace LinesOnLayers
 
       if (ystopnm - ystartnm < 0) printf("initRange(): ystopnm - ystartnm < 0\n");
       if (xstopnm - xstartnm < 0) printf("initRange(): xstopnm - xstartnm < 0\n");
-
-      const float deltay = (ystopnm - ystartnm) / ysize;
-      VectorXf yvalstmp(ysize);
-      for (int i = 0; i < ysize; ++i) {
-         yvalstmp.push_back(ystartnm + i * deltay);
-      }
-
-      const float deltax = (xstopnm - xstartnm) / xsize;
-      VectorXf xvalstmp(xsize);
-      for (int i = 0; i < xsize; ++i) {
-         xvalstmp.push_back(xstartnm + i * deltax);
-      }
-
-      yvals = new float[yvalstmp.size()];
-      xvals = new float[xvalstmp.size()];
-
-      memcpy(yvals, yvalstmp.data(), yvalstmp.size() * sizeof(yvals[0]));
-      memcpy(xvals, xvalstmp.data(), xvalstmp.size() * sizeof(xvals[0]));
-   }
-
-   __host__ __device__ void destroyRange()
-   {
-      delete[] yvals;
-      delete[] xvals;
    }
 
    __global__ void initCuda()
@@ -597,9 +611,12 @@ namespace LinesOnLayers
 
    __host__ __device__ void runSinglePixel(const unsigned int r, const unsigned int c, float* result)
    {
-      const float ynm = yvals[r];
+      const float deltay = (ystopnm - ystartnm) / ysize;
+      const float deltax = (xstopnm - xstartnm) / xsize;
+
+      const float ynm = (ystartnm + r * deltay); 
       const float y = ynm * 1.e-9f;
-      const float xnm = xvals[c];
+      const float xnm = (xstartnm + c * deltax);
       const float x = xnm * 1.e-9f;
 
       SEmaterialT vacuum; // TODO: move this to global
@@ -672,18 +689,6 @@ namespace LinesOnLayers
 #else
       SelectableElasticSMT glCNISTMott(glC, NISTMottRS::Factory);
 #endif
-
-      const StringT tablePathglassyC = "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\glassyCTables\\";
-      const StringT IIMFPPennInterpglassy = tablePathglassyC + "IIMFPPennInterpglassyCSI.csv";
-      const StringT SimReducedDeltaEglassy = tablePathglassyC + "interpNUSimReducedDeltaEglassyCSI.csv";
-      const StringT simTableThetaNUglassy = tablePathglassyC + "interpsimTableThetaNUglassyCSI.csv";
-      const StringT SimESE0NUglassy = tablePathglassyC + "interpSimESE0NUglassyCSI.csv";
-      const char* glCTables[] = {
-         IIMFPPennInterpglassy.c_str(),
-         SimReducedDeltaEglassy.c_str(),
-         simTableThetaNUglassy.c_str(),
-         SimESE0NUglassy.c_str()
-      };
       TabulatedInelasticSMT glCDS(glC, 3, glCTables);
 
       ExpQMBarrierSMT glceqmbsm(&glC);
@@ -717,19 +722,6 @@ namespace LinesOnLayers
 #else
       SelectableElasticSMT SiNISTMott(Si, NISTMottRS::Factory);
 #endif
-
-      const StringT tablePathSi = "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\SiTables\\";
-      const StringT IIMFPFullPennInterpSiSI = tablePathSi + "IIMFPFullPennInterpSiSI.csv";
-      const StringT interpNUSimReducedDeltaEFullPennSiSI = tablePathSi + "interpNUSimReducedDeltaEFullPennSiSI.csv";
-      const StringT interpNUThetaFullPennSiBGSI = tablePathSi + "interpNUThetaFullPennSiBGSI.csv";
-      const StringT interpSimESE0NUSiBGSI = tablePathSi + "interpSimESE0NUSiBGSI.csv";
-      const char* SiTables[] = {
-         IIMFPFullPennInterpSiSI.c_str(),
-         interpNUSimReducedDeltaEFullPennSiSI.c_str(),
-         interpNUThetaFullPennSiBGSI.c_str(),
-         interpSimESE0NUSiBGSI.c_str()
-      };
-
       TabulatedInelasticSMT SiDS(Si, 3, SiTables, ToSI::eV(13.54f));
 
       GanachaudMokraniPhononInelasticSMT Siphonon(phononStrength, ToSI::eV(phononE), 300.f, 11.7f, 1.f);
@@ -770,8 +762,8 @@ namespace LinesOnLayers
       const ElementT* SiO2Components[] = { &Element::Si, &Element::O };
 #endif
 
-      const float massFracSiO2[] = { SiWeight / totalWeight, OxWeight / totalWeight };
-      SEmaterialT SiO2(SiO2Components, 2, massFracSiO2, 2, density, "Silicon Dioxide");
+      const float SiO2massFrac[] = { SiWeight / totalWeight, OxWeight / totalWeight };
+      SEmaterialT SiO2(SiO2Components, 2, SiO2massFrac, 2, density, "Silicon Dioxide");
 
       const float SiO2Workfunction = ToSI::eV(workfun);
       SiO2.setWorkfunction(SiO2Workfunction);
@@ -779,17 +771,6 @@ namespace LinesOnLayers
       SiO2.setEnergyCBbottom(ToSI::eV(potU));
       const float ceSiO2[] = { ToSI::eV(41.6), ToSI::eV(99.2), ToSI::eV(99.8), ToSI::eV(149.7), ToSI::eV(543.1), ToSI::eV(1839.) };
       SiO2.setCoreEnergy(ceSiO2, 6);
-      const StringT tablePathSiO2 = "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\SiO2Tables\\";
-      const StringT IIMFPPennInterpSiO2SI = tablePathSiO2 + "IIMFPPennInterpSiO2SI.csv";
-      const StringT interpNUSimReducedDeltaESiO2SI = tablePathSiO2 + "interpNUSimReducedDeltaESiO2SI.csv";
-      const StringT interpsimTableThetaNUSiO2SI = tablePathSiO2 + "interpsimTableThetaNUSiO2SI.csv";
-      const StringT interpSimESE0NUSiO2SI = tablePathSiO2 + "interpSimESE0NUSiO2SI.csv";
-      const char* SiO2Tables[] = {
-         IIMFPPennInterpSiO2SI.c_str(),
-         interpNUSimReducedDeltaESiO2SI.c_str(),
-         interpsimTableThetaNUSiO2SI.c_str(),
-         interpSimESE0NUSiO2SI.c_str()
-      };
 
       // Create scatter mechanisms
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))

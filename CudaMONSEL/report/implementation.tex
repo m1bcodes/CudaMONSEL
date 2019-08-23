@@ -1,0 +1,17 @@
+\chapter{Implementation}
+\section{Simulation}
+
+\section{Material}\label{sec:impl_mat}
+\subsection{Material}
+\subsection{Secondary Eleectron Material}
+%\subsubsection{Antenna}
+
+\section{Barrier Scattering Mechanism}\label{sec:impl_barrierSM}
+
+\begin{lstlisting}
+class BarrierScatterMechanism
+{
+public:
+   virtual ElectronT* barrierScatter(ElectronT* pe, const RegionBaseT* nextRegion) const = 0;
+};
+\end{lstlisting}

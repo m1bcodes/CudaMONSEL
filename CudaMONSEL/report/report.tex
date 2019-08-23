@@ -1,0 +1,121 @@
+\documentclass[11pt,oneside]{report}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage[letterpaper]{geometry}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{mathrsfs}
+\usepackage{titlesec}
+\usepackage{fullpage}
+\usepackage{setspace}
+\usepackage{bold-extra}
+\usepackage{tocloft}
+\usepackage{url}
+%\usepackage{apacite}
+\usepackage{fancyhdr}
+\usepackage[free-standing-units]{siunitx}
+\usepackage{multirow}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{listings}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{subfig}
+\usepackage{placeins}
+
+\newcommand{\chapterStyle}{\LARGE\bfseries\scshape\centering}
+
+\titleformat{\chapter}[hang]{\chapterStyle}{\thechapter.0}{1em}{}
+\titlespacing{\chapter}{0em}{-5em}{0em}
+
+\titleformat{\section}[hang]{\Large\scshape\bfseries}{\thesection}{1em}{}
+
+%\titleformat{\section}[hang]{\large\bfseries}{\thechapter.0}{1em}{}
+
+% prevents TOC from resetting page numberings
+\let\oldsetcounter=\setcounter
+\renewcommand\setcounter[2]{%
+    \def\arg{#1}\def\pg{page}%
+    \ifx\arg\pg\else\oldsetcounter{#1}{#2}\fi}
+        
+\renewcommand{\cfttoctitlefont}{\hfill\chapterStyle}
+\renewcommand{\cftaftertoctitle}{\hfill}
+\renewcommand{\cftloftitlefont}{\hfill\chapterStyle}
+\renewcommand{\cftafterloftitle}{\hfill}
+\renewcommand{\cftlottitlefont}{\hfill\chapterStyle}
+\renewcommand{\cftafterlottitle}{\hfill}
+
+\renewcommand\listfigurename{\centering List Of Figures}
+\renewcommand\listtablename{\centering List Of Tables}
+\renewcommand{\contentsname}{\centering Contents}
+\renewcommand\bibname{References}
+\renewcommand{\abstractname}{\vspace{-1.2cm}Executive Summary} 
+
+\newcommand{\docSpacing}{1.6}
+
+%file, caption, label, scaling
+\newcommand{\picfigure}[4]{\begin{figure}\begin{center}\includegraphics[scale = #4]{#1}\caption{#2}\label{#3}\end{center}\end{figure}}
+
+%partial derivative
+\newcommand{\partiald}[2]{\frac{\partial #1}{\partial #2}}
+
+\makeatletter
+\newcommand*{\compress}{\@minipagetrue}
+\makeatother
+
+\setlength{\headheight}{15pt}
+
+\begin{document}
+
+\newpage
+\pagestyle{plain}
+\pagenumbering{roman}
+\setcounter{page}{0}
+
+\input{./title_page.tex}
+
+\setstretch{\docSpacing}
+\input{./executive_summary.tex}
+
+\setstretch{1}
+\quad\\[-6em]
+\tableofcontents
+\newpage
+\quad\\[-6em]
+\listoffigures
+\listoftables
+\addcontentsline{toc}{chapter}{List of Figures}
+\addcontentsline{toc}{chapter}{List of Tables}
+
+\newpage
+\setstretch{\docSpacing}
+\input{./glossary.tex}
+
+\renewcommand{\arraystretch}{1}
+\setstretch{\docSpacing}
+
+%reduces excessive whitespace around equations
+\setlength{\abovedisplayskip}{1pt}
+\setlength{\belowdisplayskip}{1pt}
+\setlength{\abovedisplayshortskip}{1pt}
+\setlength{\belowdisplayshortskip}{1pt}
+
+\input{./intro.tex}
+
+\input{./concepts.tex}
+
+\input{./implementation.tex}
+
+\input{./verification.tex}
+
+\input{./working_details.tex}
+
+\input{./conclusion.tex}
+
+\input{./deliverables.tex}
+
+\input{./recommendations.tex}
+
+\end{document}

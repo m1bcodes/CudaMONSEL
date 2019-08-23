@@ -1,0 +1,13 @@
+\begin{abstract}
+\thispagestyle{plain}
+\addcontentsline{toc}{chapter}{Executive Summary}
+In order to design effective modern wireless systems, knowledge of the medium where signals propagate (the channel) is required. In particular, the statistical locations of radio wave reflectors (scatterers) in the environment is essential to evaluate and design systems. The acquisition of this data is done through devices known as channel sounders. Currently, channel sounders are large, laborious, and expensive (hundred thousand dollar range) devices.
+
+The main goal of our project is to build and test a small and inexpensive (thousand dollar range) channel sounder that creates an image showing the exact locations of radio scatterers in the ISM band (903 -- 928 MHz), so that accurate channel models may be constructed.
+
+The sounder consists of a stationary transmitter and a vehicular receiver. The receiver, whose positions are known at all times, captures and logs the signal. In post-processing, received data is first transformed into a ranged-compressed history. Then, a synthetic aperture radar imaging algorithm known as Back Projection is employed to recover the scatterer locations from this range-compressed history. The receiver and transmitter consist of USRPs (programmable radio transceivers), Rb clocks (for synchronization), GPS receivers (for position and time synchronization), and mini-computers for control and data storage. The channel sounder's center frequency is 915 MHz, bandwidth is 25 MHz, theoretical spatial resolution is 12 m, and costs around \$12000.
+
+Several lab tests, including direct connection and antenna transmissions, were conducted to verify transmission and reception of signals. During static testing using antenna, the system was able to detect a 2 square-meters metal plate target at 150 m total range. However, tests also revealed drifting offset in GPS time synchronization and a bottleneck in receiver data storage. Finally, fields tests were done along a 200 m section of $16^{\text{th}}$ avenue on the west of Pacific Spirit Park in Vancouver. The received data was processed to yield an image of the target environment that corresponded reasonably well to a map of the area.
+
+Overall, we recommend that work continue on this project, with some modifications. Current directions of improvement are investigating better position tracking using vehicle speed sensors, finding a reliable way to synchronize the transmitter and receiver, and acquiring a faster data storage medium.
+\end{abstract}
