@@ -165,7 +165,7 @@ namespace NShapes
       const double absz = signz * topz;
       if (radr > 0) {
          const double rad = ::sqrt(1. - sinthetar);
-         const double nr[] = { rad / root2, 0., (signz * costhetar) / root2 / rad }, pr[] = { ((width / 2.) - (radr / costhetar)) + (((radr - absz) * sinthetar) / costhetar), 0., topz };
+         const double nr[] = { rad / root2, 0., signz * costhetar / root2 / rad }, pr[] = { width / 2. - radr / costhetar + (radr - absz) * sinthetar / costhetar, 0., topz };
          plr = new PlaneT(nr, pr);
          rightNMPS->addPlane(plr);
          // Construct cylinder for right corner
@@ -190,7 +190,7 @@ namespace NShapes
       // If radl>0 add a clipping plane and the cylinder
       if (radl > 0.) {
          const double rad = ::sqrt(1. - sinthetal);
-         const double nl[] = { -rad / root2, 0., (signz * costhetal) / root2 / rad }, pl[] = { ((-width / 2.) + (radl / costhetal)) - (((radl - absz) * sinthetal) / costhetal), 0., topz };
+         const double nl[] = { -rad / root2, 0., signz * costhetal / root2 / rad }, pl[] = { -width / 2. + radl / costhetal - (radl - absz) * sinthetal / costhetal, 0., topz };
          pll = new PlaneT(nl, pl);
          leftNMPS->addPlane(pll);
          const double xc = ((width / 2.) - (radl / ::cos(thetal))) + ((radl - absz) * ::tan(thetal));
