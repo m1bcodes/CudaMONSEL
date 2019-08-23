@@ -39,149 +39,6 @@
 
 namespace LinesOnLayers
 {
-   __global__ void verifyNUTable1d(const char* fn)
-   {
-      const NUTableInterpolationT* table = NUTableInterpolation::getInstance(fn);
-      const VectorXf& data = table->gettable1d();
-      printf("GPU %s\n", fn);
-      for (auto v : data) {
-         printf("%.5e ", v);
-      }
-      printf("\n");
-   }
-
-   __global__ void verifyNUTable2d(const char* fn, const int r)
-   {
-      const NUTableInterpolationT* table = NUTableInterpolation::getInstance(fn);
-      const MatrixXf& data = table->gettable2d();
-      printf("GPU %s: row %d\n", fn, r);
-      for (auto v : data[r]) {
-         printf("%.5e ", v);
-      }
-      printf("\n");
-   }
-
-   __global__ void verifyNUTable3d(const char* fn, const int r, const int c)
-   {
-      const NUTableInterpolationT* table = NUTableInterpolation::getInstance(fn);
-      const Matrix3DXf& data = table->gettable3d();
-      printf("GPU %s: row %d, col %d\n", fn, r, c);
-      for (auto v : data[r][c]) {
-         printf("%.5e ", v);
-      }
-      printf("\n");
-   }
-
-   void loadNUTable()
-   {
-      StringT tablePath = "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\glassyCTables\\";
-      const StringT IIMFPPennInterpglassy = tablePath + "IIMFPPennInterpglassyCSI.csv";
-      const StringT SimReducedDeltaEglassy = tablePath + "interpNUSimReducedDeltaEglassyCSI.csv";
-      const StringT simTableThetaNUglassy = tablePath + "interpsimTableThetaNUglassyCSI.csv";
-      const StringT SimESE0NUglassy = tablePath + "interpSimESE0NUglassyCSI.csv";
-      NUTableInterpolation::getInstance(IIMFPPennInterpglassy.c_str());
-      NUTableInterpolation::getInstance(SimReducedDeltaEglassy.c_str());
-      NUTableInterpolation::getInstance(simTableThetaNUglassy.c_str());
-      NUTableInterpolation::getInstance(SimESE0NUglassy.c_str());
-
-      tablePath = "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\SiTables\\";
-      const StringT IIMFPFullPennInterpSiSI = tablePath + "IIMFPFullPennInterpSiSI.csv";
-      const StringT interpNUSimReducedDeltaEFullPennSiSI = tablePath + "interpNUSimReducedDeltaEFullPennSiSI.csv";
-      const StringT interpNUThetaFullPennSiBGSI = tablePath + "interpNUThetaFullPennSiBGSI.csv";
-      const StringT interpSimESE0NUSiBGSI = tablePath + "interpSimESE0NUSiBGSI.csv";
-      NUTableInterpolation::getInstance(IIMFPFullPennInterpSiSI.c_str());
-      NUTableInterpolation::getInstance(interpNUSimReducedDeltaEFullPennSiSI.c_str());
-      NUTableInterpolation::getInstance(interpNUThetaFullPennSiBGSI.c_str());
-      NUTableInterpolation::getInstance(interpSimESE0NUSiBGSI.c_str());
-   }
-
-   void transferNUTableToCuda()
-   {
-      NUTableInterpolation::initFactory << <1, 1 >> >();
-      checkCudaErrors(cudaDeviceSynchronize());
-      checkCudaErrors(cudaGetLastError());
-
-      StringT tablePath = "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\glassyCTables\\";
-      const StringT IIMFPPennInterpglassy = tablePath + "IIMFPPennInterpglassyCSI.csv";
-      const StringT SimReducedDeltaEglassy = tablePath + "interpNUSimReducedDeltaEglassyCSI.csv";
-      const StringT simTableThetaNUglassy = tablePath + "interpsimTableThetaNUglassyCSI.csv";
-      const StringT SimESE0NUglassy = tablePath + "interpSimESE0NUglassyCSI.csv";
-      NUTableInterpolation::transferDataToCuda(IIMFPPennInterpglassy.c_str());
-      NUTableInterpolation::transferDataToCuda(SimReducedDeltaEglassy.c_str());
-      NUTableInterpolation::transferDataToCuda(simTableThetaNUglassy.c_str());
-      NUTableInterpolation::transferDataToCuda(SimESE0NUglassy.c_str());
-
-      //tablePath = "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\SiTables\\";
-      //const StringT IIMFPFullPennInterpSiSI = tablePath + "IIMFPFullPennInterpSiSI.csv";
-      //const StringT interpNUSimReducedDeltaEFullPennSiSI = tablePath + "interpNUSimReducedDeltaEFullPennSiSI.csv";
-      //const StringT interpNUThetaFullPennSiBGSI = tablePath + "interpNUThetaFullPennSiBGSI.csv";
-      //const StringT interpSimESE0NUSiBGSI = tablePath + "interpSimESE0NUSiBGSI.csv";
-      //NUTableInterpolation::copyDataToCuda(IIMFPFullPennInterpSiSI.c_str());
-      //NUTableInterpolation::copyDataToCuda(interpNUSimReducedDeltaEFullPennSiSI.c_str());
-      //NUTableInterpolation::copyDataToCuda(interpNUThetaFullPennSiBGSI.c_str());
-      //NUTableInterpolation::copyDataToCuda(interpSimESE0NUSiBGSI.c_str());
-
-      const char* fn = IIMFPPennInterpglassy.c_str();
-      char* d_fn = nullptr;
-
-      checkCudaErrors(cudaMalloc((void **)&d_fn, (IIMFPPennInterpglassy.size() + 1) * sizeof(char)));
-      checkCudaErrors(cudaMemset(d_fn, 0, (IIMFPPennInterpglassy.size() + 1) * sizeof(char)));
-      checkCudaErrors(cudaMemcpy(d_fn, fn, (IIMFPPennInterpglassy.size() + 1) * sizeof(char), cudaMemcpyHostToDevice));
-      verifyNUTable1d << <1, 1 >> >(d_fn);
-      checkCudaErrors(cudaDeviceSynchronize());
-      checkCudaErrors(cudaGetLastError());
-      checkCudaErrors(cudaFree(d_fn));
-      const NUTableInterpolationT* table0 = NUTableInterpolation::getInstance(fn);
-      const VectorXf& data0 = table0->gettable1d();
-      printf("CPU %s\n", fn);
-      for (auto v : data0) {
-         printf("%.5e ", v);
-      }
-      printf("\n");
-
-      fn = SimReducedDeltaEglassy.c_str();
-      checkCudaErrors(cudaMalloc((void **)&d_fn, (SimReducedDeltaEglassy.size() + 1) * sizeof(char)));
-      checkCudaErrors(cudaMemset(d_fn, 0, (SimReducedDeltaEglassy.size() + 1) * sizeof(char)));
-      checkCudaErrors(cudaMemcpy(d_fn, fn, (SimReducedDeltaEglassy.size() + 1) * sizeof(char), cudaMemcpyHostToDevice));
-      verifyNUTable2d << <1, 1 >> >(d_fn, 0);
-      checkCudaErrors(cudaDeviceSynchronize());
-      checkCudaErrors(cudaGetLastError());
-      checkCudaErrors(cudaFree(d_fn));
-      const NUTableInterpolationT* table1 = NUTableInterpolation::getInstance(fn);
-      const MatrixXf& data1 = table1->gettable2d();
-      printf("CPU %s: row %d\n", fn, 0);
-      for (auto v : data1[0]) {
-         printf("%.5e ", v);
-      }
-      printf("\n");
-
-      fn = simTableThetaNUglassy.c_str();
-      checkCudaErrors(cudaMalloc((void **)&d_fn, (simTableThetaNUglassy.size() + 1) * sizeof(char)));
-      checkCudaErrors(cudaMemset(d_fn, 0, (simTableThetaNUglassy.size() + 1) * sizeof(char)));
-      checkCudaErrors(cudaMemcpy(d_fn, fn, (simTableThetaNUglassy.size() + 1) * sizeof(char), cudaMemcpyHostToDevice));
-      verifyNUTable3d << <1, 1 >> >(d_fn, 50, 50);
-      checkCudaErrors(cudaDeviceSynchronize());
-      checkCudaErrors(cudaGetLastError());
-      checkCudaErrors(cudaFree(d_fn));
-      const NUTableInterpolationT* table2 = NUTableInterpolation::getInstance(fn);
-      const Matrix3DXf& data2 = table2->gettable3d();
-      printf("CPU %s: row %d, col %d\n", fn, 50, 50);
-      for (auto v : data2[50][50]) {
-         printf("%.5e ", v);
-      }
-      printf("\n");
-
-      tablePath = "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\SiTables\\";
-      const StringT IIMFPFullPennInterpSiSI = tablePath + "IIMFPFullPennInterpSiSI.csv";
-      const StringT interpNUSimReducedDeltaEFullPennSiSI = tablePath + "interpNUSimReducedDeltaEFullPennSiSI.csv";
-      const StringT interpNUThetaFullPennSiBGSI = tablePath + "interpNUThetaFullPennSiBGSI.csv";
-      const StringT interpSimESE0NUSiBGSI = tablePath + "interpSimESE0NUSiBGSI.csv";
-      NUTableInterpolation::transferDataToCuda(IIMFPFullPennInterpSiSI.c_str());
-      NUTableInterpolation::transferDataToCuda(interpNUSimReducedDeltaEFullPennSiSI.c_str());
-      NUTableInterpolation::transferDataToCuda(interpNUThetaFullPennSiBGSI.c_str());
-      NUTableInterpolation::transferDataToCuda(interpSimESE0NUSiBGSI.c_str());
-   }
-
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
    __constant__ const int nTrajectories = 100;
 
@@ -263,7 +120,7 @@ namespace LinesOnLayers
    __constant__ const float Siworkfun = 4.85f;
    __constant__ const float Sibandgap = 1.1f;
    __constant__ const float SiEFermi = -1.1f;//-Sibandgap;
-   __constant__ const float SipotU = -44.85f - (-1.1f);//-Siworkfun - SiEFermi;
+   __constant__ const float SipotU = -4.85f - (-1.1f);//-Siworkfun - SiEFermi;
 
    //__device__ SEmaterialT* Si = nullptr;
 
@@ -344,7 +201,7 @@ namespace LinesOnLayers
       "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\glassyCTables\\IIMFPPennInterpglassyCSI.csv",
       "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\glassyCTables\\interpNUSimReducedDeltaEglassyCSI.csv",
       "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\glassyCTables\\interpsimTableThetaNUglassyCSI.csv",
-      "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\glassyCTables\\interpSimESE0NUglassyCSI.csv",
+      "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\glassyCTables\\interpSimESE0NUglassyCSI.csv"
       };
 
    __constant__ const char* SiTables[] = {
@@ -360,6 +217,17 @@ namespace LinesOnLayers
       "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\SiO2Tables\\interpsimTableThetaNUSiO2SI.csv",
       "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\SiO2Tables\\interpSimESE0NUSiO2SI.csv"
       };
+
+   __device__ const ElementT* COHcomponents[3];
+   __constant__ const Composition::data_type COHcompositions[] = { 5.f, 2.f, 8.f };
+
+   __device__ const ElementT* glCComponents[1];
+   __constant__ const Composition::data_type glCComposition[] = { 1.f };
+
+   __device__ const ElementT* SiComponent[1];
+   __constant__ const Composition::data_type SiComposition[] = { 1. };
+
+   __device__ const ElementT* SiO2Components[2];
 
    __device__ unsigned int ysize, xsize;
    __device__ float xstartnm, xstopnm, ystartnm, ystopnm;
@@ -525,7 +393,7 @@ namespace LinesOnLayers
       "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\glassyCTables\\IIMFPPennInterpglassyCSI.csv",
       "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\glassyCTables\\interpNUSimReducedDeltaEglassyCSI.csv",
       "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\glassyCTables\\interpsimTableThetaNUglassyCSI.csv",
-      "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\glassyCTables\\interpSimESE0NUglassyCSI.csv",
+      "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\glassyCTables\\interpSimESE0NUglassyCSI.csv"
    };
 
    const char* SiTables[] = {
@@ -542,9 +410,153 @@ namespace LinesOnLayers
       "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\SiO2Tables\\interpSimESE0NUSiO2SI.csv"
    };
 
+   const ElementT* COHcomponents[] = { &Element::C, &Element::O, &Element::H };
+   const Composition::data_type COHcompositions[] = { 5.f, 2.f, 8.f };
+
+   const ElementT* glCComponents[] = { &Element::C };
+   const Composition::data_type glCComposition[] = { 1.f };
+
+   const ElementT* SiComponent[] = { &Element::Si };
+   const Composition::data_type SiComposition[] = { 1. };
+
+   const ElementT* SiO2Components[] = { &Element::Si, &Element::O };
+
    unsigned int ysize, xsize;
    float xstartnm, xstopnm, ystartnm, ystopnm;
 #endif
+
+   __global__ void verifyNUTable1d(const char* fn)
+   {
+      const NUTableInterpolationT* table = NUTableInterpolation::getInstance(fn);
+      const VectorXf& data = table->gettable1d();
+      printf("GPU %s\n", fn);
+      for (auto v : data) {
+         printf("%.5e ", v);
+      }
+      printf("\n");
+   }
+
+   __global__ void verifyNUTable2d(const char* fn, const int r)
+   {
+      const NUTableInterpolationT* table = NUTableInterpolation::getInstance(fn);
+      const MatrixXf& data = table->gettable2d();
+      printf("GPU %s: row %d\n", fn, r);
+      for (auto v : data[r]) {
+         printf("%.5e ", v);
+      }
+      printf("\n");
+   }
+
+   __global__ void verifyNUTable3d(const char* fn, const int r, const int c)
+   {
+      const NUTableInterpolationT* table = NUTableInterpolation::getInstance(fn);
+      const Matrix3DXf& data = table->gettable3d();
+      printf("GPU %s: row %d, col %d\n", fn, r, c);
+      for (auto v : data[r][c]) {
+         printf("%.5e ", v);
+      }
+      printf("\n");
+   }
+
+   void loadNUTable()
+   {
+      NUTableInterpolation::getInstance(glCTables[0]);
+      NUTableInterpolation::getInstance(glCTables[1]);
+      NUTableInterpolation::getInstance(glCTables[2]);
+      NUTableInterpolation::getInstance(glCTables[3]);
+
+      NUTableInterpolation::getInstance(SiTables[0]);
+      NUTableInterpolation::getInstance(SiTables[1]);
+      NUTableInterpolation::getInstance(SiTables[2]);
+      NUTableInterpolation::getInstance(SiTables[3]);
+
+      NUTableInterpolation::getInstance(SiO2Tables[0]);
+      NUTableInterpolation::getInstance(SiO2Tables[1]);
+      NUTableInterpolation::getInstance(SiO2Tables[2]);
+      NUTableInterpolation::getInstance(SiO2Tables[3]);
+   }
+
+   void transferNUTableToCuda()
+   {
+      NUTableInterpolation::initFactory << <1, 1 >> >();
+      checkCudaErrors(cudaDeviceSynchronize());
+      checkCudaErrors(cudaGetLastError());
+
+      const StringT IIMFPPennInterpglassy(glCTables[0]);
+      const StringT SimReducedDeltaEglassy(glCTables[1]);
+      const StringT simTableThetaNUglassy(glCTables[2]);
+      const StringT SimESE0NUglassy(glCTables[3]);
+
+      NUTableInterpolation::transferDataToCuda(IIMFPPennInterpglassy.c_str());
+      NUTableInterpolation::transferDataToCuda(SimReducedDeltaEglassy.c_str());
+      NUTableInterpolation::transferDataToCuda(simTableThetaNUglassy.c_str());
+      NUTableInterpolation::transferDataToCuda(SimESE0NUglassy.c_str());
+
+      //tablePath = "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\SiTables\\";
+      //const StringT IIMFPFullPennInterpSiSI = tablePath + "IIMFPFullPennInterpSiSI.csv";
+      //const StringT interpNUSimReducedDeltaEFullPennSiSI = tablePath + "interpNUSimReducedDeltaEFullPennSiSI.csv";
+      //const StringT interpNUThetaFullPennSiBGSI = tablePath + "interpNUThetaFullPennSiBGSI.csv";
+      //const StringT interpSimESE0NUSiBGSI = tablePath + "interpSimESE0NUSiBGSI.csv";
+      //NUTableInterpolation::copyDataToCuda(IIMFPFullPennInterpSiSI.c_str());
+      //NUTableInterpolation::copyDataToCuda(interpNUSimReducedDeltaEFullPennSiSI.c_str());
+      //NUTableInterpolation::copyDataToCuda(interpNUThetaFullPennSiBGSI.c_str());
+      //NUTableInterpolation::copyDataToCuda(interpSimESE0NUSiBGSI.c_str());
+
+      const char* fn = IIMFPPennInterpglassy.c_str();
+      char* d_fn = nullptr;
+
+      checkCudaErrors(cudaMalloc((void **)&d_fn, (IIMFPPennInterpglassy.size() + 1) * sizeof(char)));
+      checkCudaErrors(cudaMemset(d_fn, 0, (IIMFPPennInterpglassy.size() + 1) * sizeof(char)));
+      checkCudaErrors(cudaMemcpy(d_fn, fn, (IIMFPPennInterpglassy.size() + 1) * sizeof(char), cudaMemcpyHostToDevice));
+      verifyNUTable1d << <1, 1 >> >(d_fn);
+      checkCudaErrors(cudaDeviceSynchronize());
+      checkCudaErrors(cudaGetLastError());
+      checkCudaErrors(cudaFree(d_fn));
+      const NUTableInterpolationT* table0 = NUTableInterpolation::getInstance(fn);
+      const VectorXf& data0 = table0->gettable1d();
+      printf("CPU %s\n", fn);
+      for (auto v : data0) {
+         printf("%.5e ", v);
+      }
+      printf("\n");
+
+      fn = SimReducedDeltaEglassy.c_str();
+      checkCudaErrors(cudaMalloc((void **)&d_fn, (SimReducedDeltaEglassy.size() + 1) * sizeof(char)));
+      checkCudaErrors(cudaMemset(d_fn, 0, (SimReducedDeltaEglassy.size() + 1) * sizeof(char)));
+      checkCudaErrors(cudaMemcpy(d_fn, fn, (SimReducedDeltaEglassy.size() + 1) * sizeof(char), cudaMemcpyHostToDevice));
+      verifyNUTable2d << <1, 1 >> >(d_fn, 0);
+      checkCudaErrors(cudaDeviceSynchronize());
+      checkCudaErrors(cudaGetLastError());
+      checkCudaErrors(cudaFree(d_fn));
+      const NUTableInterpolationT* table1 = NUTableInterpolation::getInstance(fn);
+      const MatrixXf& data1 = table1->gettable2d();
+      printf("CPU %s: row %d\n", fn, 0);
+      for (auto v : data1[0]) {
+         printf("%.5e ", v);
+      }
+      printf("\n");
+
+      fn = simTableThetaNUglassy.c_str();
+      checkCudaErrors(cudaMalloc((void **)&d_fn, (simTableThetaNUglassy.size() + 1) * sizeof(char)));
+      checkCudaErrors(cudaMemset(d_fn, 0, (simTableThetaNUglassy.size() + 1) * sizeof(char)));
+      checkCudaErrors(cudaMemcpy(d_fn, fn, (simTableThetaNUglassy.size() + 1) * sizeof(char), cudaMemcpyHostToDevice));
+      verifyNUTable3d << <1, 1 >> >(d_fn, 50, 50);
+      checkCudaErrors(cudaDeviceSynchronize());
+      checkCudaErrors(cudaGetLastError());
+      checkCudaErrors(cudaFree(d_fn));
+      const NUTableInterpolationT* table2 = NUTableInterpolation::getInstance(fn);
+      const Matrix3DXf& data2 = table2->gettable3d();
+      printf("CPU %s: row %d, col %d\n", fn, 50, 50);
+      for (auto v : data2[50][50]) {
+         printf("%.5e ", v);
+      }
+      printf("\n");
+
+      NUTableInterpolation::transferDataToCuda(SiTables[0]);
+      NUTableInterpolation::transferDataToCuda(SiTables[1]);
+      NUTableInterpolation::transferDataToCuda(SiTables[2]);
+      NUTableInterpolation::transferDataToCuda(SiTables[3]);
+   }
 
    __host__ __device__ void initRange()
    {
@@ -627,14 +639,13 @@ namespace LinesOnLayers
       MONSEL_MaterialScatterModelT vacuumMSM(&vacuum, &vacuumBarrier, &sZeroCSD); // TODO: move this to global
 
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-      const ElementT* componentsCOH[] = { Element::dC, Element::dO, Element::dH };
-#else
-      const ElementT* componentsCOH[] = { &Element::C, &Element::O, &Element::H };
+      COHcomponents[0] = Element::dC;
+      COHcomponents[1] = Element::dO;
+      COHcomponents[2] = Element::dH;
 #endif
 
       CompositionT PMMAcomp;
-      const Composition::data_type compositionCOH[] = { 5.f, 2.f, 8.f };
-      PMMAcomp.defineByMoleFraction(componentsCOH, 3, compositionCOH, 3);
+      PMMAcomp.defineByMoleFraction(COHcomponents, 3, COHcompositions, 3);
       SEmaterialT PMMA(PMMAcomp, PMMAdensity); // TODO: move this to global
       PMMA.setName("PMMA");
       PMMA.setWorkfunction(ToSI::eV(PMMAworkfun));
@@ -671,12 +682,9 @@ namespace LinesOnLayers
       MONSEL_MaterialScatterModelT& ARCMSM = PMMAMSM;
 
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-      const ElementT* glCComponents[] = { Element::dC };
-#else
-      const ElementT* glCComponents[] = { &Element::C };
+      glCComponents[0] = Element::dC;
 #endif
 
-      const Composition::data_type glCComposition[] = { 1.f };
       SEmaterialT glC(glCComponents, 1, glCComposition, 1, glCdensity, "glassy Carbon");
       glC.setWorkfunction(ToSI::eV(glCworkfun));
       glC.setEnergyCBbottom(ToSI::eV(glCpotU));
@@ -704,12 +712,9 @@ namespace LinesOnLayers
       glCMSMDeep.setMinEforTracking(ToSI::eV(50.f));
 
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-      const ElementT* SiComponent[] = { Element::dSi };
-#else
-      const ElementT* SiComponent[] = { &Element::Si };
+      SiComponent[0] = Element::dSi;
 #endif
 
-      const Composition::data_type SiComposition[] = { 1. };
       SEmaterialT Si(SiComponent, 1, SiComposition, 1, Sidensity, "Silicon");
       Si.setWorkfunction(ToSI::eV(Siworkfun));
       Si.setEnergyCBbottom(ToSI::eV(SipotU));
@@ -757,9 +762,8 @@ namespace LinesOnLayers
       const float totalWeight = SiWeight + OxWeight;
 
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-      const ElementT* SiO2Components[] = { Element::dSi, Element::dO };
-#else
-      const ElementT* SiO2Components[] = { &Element::Si, &Element::O };
+      SiO2Components[0] = Element::dSi;
+      SiO2Components[1] = Element::dO;
 #endif
 
       const float SiO2massFrac[] = { SiWeight / totalWeight, OxWeight / totalWeight };
@@ -852,10 +856,10 @@ namespace LinesOnLayers
       //RegionT deepRegion(&layer3Region, &SiMSMDeep, (NormalShapeT*)&layer4);
 
       NShapes::Line line(-h, w, linelength, thetal, thetar, radl, radr);
-      const double dist1[3] = { 40.f * 1.e-9f, 0.f, 0.f };
-      line.get()->translate(dist1);
       const double pivot[3] = { 0.f, 0.f, 0.f };
       line.get()->rotate(pivot, -Math2::PI / 2.f, Math2::PI / 2.f, Math2::PI / 2.f);
+      const double dist1[3] = { 0.f, 0.f, linelength / 2. };
+      line.get()->translate(dist1);
 
       RegionT lineRegion(&chamber, &PMMAMSM, (NormalIntersectionShapeT*)line.get());
 
@@ -916,7 +920,12 @@ namespace LinesOnLayers
 
    void runSinglePixelThread(int id, const unsigned int r, const unsigned int c, float* result)
    {
-      runSinglePixel(r, c, result);
+      try {
+         runSinglePixel(r, c, result);
+      }
+      catch (std::exception ex) {
+         printf("%s\n", ex.what());
+      }
    }
 
    void testLineProjection()

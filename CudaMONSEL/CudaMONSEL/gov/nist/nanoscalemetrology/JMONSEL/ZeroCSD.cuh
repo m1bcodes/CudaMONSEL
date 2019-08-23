@@ -1,5 +1,8 @@
 // file: gov\nist\nanoscalemetrology\JMONSEL\ZeroCSD.cuh
 
+#ifndef _ZERO_CSD_CUH_
+#define _ZERO_CSD_CUH_
+
 #include "gov\nist\nanoscalemetrology\JMONSEL\SlowingDownAlg.cuh"
 #include "gov\nist\microanalysis\NISTMonte\Electron.cuh"
 
@@ -18,3 +21,5 @@ namespace ZeroCSD
       __host__ __device__ StringT toString() const override;
    };
 }
+
+#endif
