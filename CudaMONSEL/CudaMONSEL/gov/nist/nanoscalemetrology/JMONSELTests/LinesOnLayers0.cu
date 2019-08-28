@@ -502,51 +502,48 @@ namespace LinesOnLayers
       //NUTableInterpolation::copyDataToCuda(interpNUThetaFullPennSiBGSI.c_str());
       //NUTableInterpolation::copyDataToCuda(interpSimESE0NUSiBGSI.c_str());
 
-      const char* fn = IIMFPPennInterpglassy.c_str();
       char* d_fn = nullptr;
 
-      checkCudaErrors(cudaMalloc((void **)&d_fn, (IIMFPPennInterpglassy.size() + 1) * sizeof(char)));
-      checkCudaErrors(cudaMemset(d_fn, 0, (IIMFPPennInterpglassy.size() + 1) * sizeof(char)));
-      checkCudaErrors(cudaMemcpy(d_fn, fn, (IIMFPPennInterpglassy.size() + 1) * sizeof(char), cudaMemcpyHostToDevice));
+      checkCudaErrors(cudaMalloc((void **)&d_fn, strnlen_s(glCTables[0], 256) * sizeof(char)));
+      checkCudaErrors(cudaMemset(d_fn, 0, strnlen_s(glCTables[0], 256) * sizeof(char)));
+      checkCudaErrors(cudaMemcpy(d_fn, glCTables[0], strnlen_s(glCTables[0], 256) * sizeof(char), cudaMemcpyHostToDevice));
       verifyNUTable1d << <1, 1 >> >(d_fn);
       checkCudaErrors(cudaDeviceSynchronize());
       checkCudaErrors(cudaGetLastError());
       checkCudaErrors(cudaFree(d_fn));
-      const NUTableInterpolationT* table0 = NUTableInterpolation::getInstance(fn);
+      const NUTableInterpolationT* table0 = NUTableInterpolation::getInstance(glCTables[0]);
       const VectorXf& data0 = table0->gettable1d();
-      printf("CPU %s\n", fn);
+      printf("CPU %s\n", glCTables[0]);
       for (auto v : data0) {
          printf("%.5e ", v);
       }
       printf("\n");
 
-      fn = SimReducedDeltaEglassy.c_str();
-      checkCudaErrors(cudaMalloc((void **)&d_fn, (SimReducedDeltaEglassy.size() + 1) * sizeof(char)));
-      checkCudaErrors(cudaMemset(d_fn, 0, (SimReducedDeltaEglassy.size() + 1) * sizeof(char)));
-      checkCudaErrors(cudaMemcpy(d_fn, fn, (SimReducedDeltaEglassy.size() + 1) * sizeof(char), cudaMemcpyHostToDevice));
+      checkCudaErrors(cudaMalloc((void **)&d_fn, strnlen_s(glCTables[1], 256) * sizeof(char)));
+      checkCudaErrors(cudaMemset(d_fn, 0, strnlen_s(glCTables[1], 256) * sizeof(char)));
+      checkCudaErrors(cudaMemcpy(d_fn, glCTables[1], strnlen_s(glCTables[1], 256) * sizeof(char), cudaMemcpyHostToDevice));
       verifyNUTable2d << <1, 1 >> >(d_fn, 0);
       checkCudaErrors(cudaDeviceSynchronize());
       checkCudaErrors(cudaGetLastError());
       checkCudaErrors(cudaFree(d_fn));
-      const NUTableInterpolationT* table1 = NUTableInterpolation::getInstance(fn);
+      const NUTableInterpolationT* table1 = NUTableInterpolation::getInstance(glCTables[1]);
       const MatrixXf& data1 = table1->gettable2d();
-      printf("CPU %s: row %d\n", fn, 0);
+      printf("CPU %s: row %d\n", glCTables[1], 0);
       for (auto v : data1[0]) {
          printf("%.5e ", v);
       }
       printf("\n");
 
-      fn = simTableThetaNUglassy.c_str();
-      checkCudaErrors(cudaMalloc((void **)&d_fn, (simTableThetaNUglassy.size() + 1) * sizeof(char)));
-      checkCudaErrors(cudaMemset(d_fn, 0, (simTableThetaNUglassy.size() + 1) * sizeof(char)));
-      checkCudaErrors(cudaMemcpy(d_fn, fn, (simTableThetaNUglassy.size() + 1) * sizeof(char), cudaMemcpyHostToDevice));
+      checkCudaErrors(cudaMalloc((void **)&d_fn, strnlen_s(glCTables[2], 256) * sizeof(char)));
+      checkCudaErrors(cudaMemset(d_fn, 0, strnlen_s(glCTables[2], 256) * sizeof(char)));
+      checkCudaErrors(cudaMemcpy(d_fn, glCTables[2], strnlen_s(glCTables[2], 256) * sizeof(char), cudaMemcpyHostToDevice));
       verifyNUTable3d << <1, 1 >> >(d_fn, 50, 50);
       checkCudaErrors(cudaDeviceSynchronize());
       checkCudaErrors(cudaGetLastError());
       checkCudaErrors(cudaFree(d_fn));
-      const NUTableInterpolationT* table2 = NUTableInterpolation::getInstance(fn);
+      const NUTableInterpolationT* table2 = NUTableInterpolation::getInstance(glCTables[2]);
       const Matrix3DXf& data2 = table2->gettable3d();
-      printf("CPU %s: row %d, col %d\n", fn, 50, 50);
+      printf("CPU %s: row %d, col %d\n", glCTables[2], 50, 50);
       for (auto v : data2[50][50]) {
          printf("%.5e ", v);
       }
@@ -575,8 +572,8 @@ namespace LinesOnLayers
       //const float xfinestart = xtop - 20.5f;
       //const float xfinestop = (thetar < 0.f) ? xtop + 20.5f : wnm / 2.f + 20.5f;
 
-      ystartnm = -64.f;
-      ystopnm = 64.f;
+      ystartnm = -128.f;
+      ystopnm = 64;
 
       xsize = 256;
       ysize = 256;
@@ -816,19 +813,19 @@ namespace LinesOnLayers
 
       const double width = 30.f * 1e-9f;
 
-      NShapes::CrossSection cs0(width);
+      NShapes::HorizontalStrip cs0(width);
       NormalMultiPlaneShapeT* layer0 = cs0.get();
       double dist0[3] = { 0., width / 2, 0. };
       layer0->translate(dist0);
       RegionT layer0Region(&chamber, &ARCMSM, (NormalShapeT*)layer0);
 
-      NShapes::CrossSection cs1(width);
+      NShapes::HorizontalStrip cs1(width);
       NormalMultiPlaneShapeT* layer1 = cs1.get();
       dist0[1] += width;
       layer1->translate(dist0);
       RegionT layer1Region(&chamber, &SiO2MSM, (NormalShapeT*)layer1);
 
-      NShapes::CrossSection cs2(width);
+      NShapes::HorizontalStrip cs2(width);
       NormalMultiPlaneShapeT* layer2 = cs2.get();
       dist0[1] += width;
       layer2->translate(dist0);
@@ -930,13 +927,33 @@ namespace LinesOnLayers
 
    void testLineProjection()
    {
+      const double width = 30.f * 1e-9f;
+
+      NShapes::HorizontalStrip hs0(width);
+      NormalMultiPlaneShapeT* layer0 = hs0.get();
+      double dist0[3] = { 0., width / 2, 0. };
+      layer0->translate(dist0);
+
+      NShapes::HorizontalStrip hs1(width);
+      NormalMultiPlaneShapeT* layer1 = hs1.get();
+      dist0[1] += width;
+      layer1->translate(dist0);
+
+      NShapes::HorizontalStrip hs2(width);
+      NormalMultiPlaneShapeT* layer2 = hs2.get();
+      dist0[1] += width;
+      layer2->translate(dist0);
+
       NShapes::Line line(-h, w, linelength, thetal, thetar, radl, radr);
-      const double dist[3] = { 40.f * 1e-9f, 0.f, 0.f };
-      line.get()->translate(dist);
       const double pivot[3] = { 0.f, 0.f, 0.f };
-      line.get()->rotate(pivot, Math2::PI / 4.f, 0.f, 0.f);
+      line.get()->rotate(pivot, -Math2::PI / 2.f, Math2::PI / 2.f, Math2::PI / 2.f);
+      const double dist1[3] = { 0.f, 0.f, linelength / 2. };
+      line.get()->translate(dist1);
 
       line.calcGroundtruth(); // get points/line segments that need to be projected
+      hs0.calcGroundtruth();
+      hs1.calcGroundtruth();
+      hs2.calcGroundtruth();
 
       const double p[3] = { xstartnm * 1.e-9, ystartnm * 1.e-9, 0. };
       const double n[3] = { 0., 0., -1. };
@@ -950,7 +967,10 @@ namespace LinesOnLayers
       char* gt = new char[ysize * xsize];
       memset(gt, 0, sizeof(gt[0]) * ysize * xsize);
 
-      line.calcRasterization(projectionPlane, axis0, axis1, xlenperpix, ylenperpix, gt, xsize, ysize);
+      hs0.calcRasterization(projectionPlane, axis0, axis1, xlenperpix, ylenperpix, gt, xsize, ysize);
+      hs1.calcRasterization(projectionPlane, axis0, axis1, xlenperpix, ylenperpix, gt, xsize, ysize);
+      hs2.calcRasterization(projectionPlane, axis0, axis1, xlenperpix, ylenperpix, gt, xsize, ysize);
+      line.calcRasterization(projectionPlane, axis0, axis1, xlenperpix, ylenperpix, gt, xsize, ysize); // needs to be last since bottom needs to be removed due to same material
 
       ImageUtil::saveImage("gt.bmp", gt, xsize, ysize);
       delete[] gt;

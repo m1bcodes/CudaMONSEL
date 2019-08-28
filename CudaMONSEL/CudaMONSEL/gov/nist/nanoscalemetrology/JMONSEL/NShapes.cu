@@ -54,6 +54,9 @@ namespace NShapes
 
       double extensionVec[3];
       Math2::minus3d(segment.P1, segment.P0, extensionVec);
+      extensionVec[0] *= 10.;
+      extensionVec[1] *= 10.;
+      extensionVec[2] *= 10.;
       Math2::minus3d(segment.P0, extensionVec, segment.P0);
       Math2::plus3d(segment.P1, extensionVec, segment.P1);
 
@@ -72,7 +75,7 @@ namespace NShapes
       rightNMPS(nullptr), rightSide(nullptr), pl4(nullptr), plr(nullptr), rcylinder(nullptr),
       leftNMPS(nullptr), leftSide(nullptr), pl5(nullptr), pll(nullptr), lcylinder(nullptr),
       nts(nullptr), nis(nullptr),
-      segment0(nullptr), segment1(nullptr), segment2(nullptr), segment3(nullptr)
+      gt0(nullptr), gt1(nullptr), gt2(nullptr), gt3(nullptr)
    {
       create();
       //project();
@@ -125,10 +128,10 @@ namespace NShapes
       delete this->nts; this->nts = nullptr;
       delete this->nis; this->nis = nullptr;
 
-      if (segment0) { delete segment0; segment0 = nullptr; }
-      if (segment1) { delete segment1; segment1 = nullptr; }
-      if (segment2) { delete segment2; segment2 = nullptr; }
-      if (segment3) { delete segment3; segment3 = nullptr; }
+      if (gt0) { delete gt0; gt0 = nullptr; }
+      if (gt1) { delete gt1; gt1 = nullptr; }
+      if (gt2) { delete gt2; gt2 = nullptr; }
+      if (gt3) { delete gt3; gt3 = nullptr; }
    }
 
    __host__ __device__ void Line::create()
@@ -209,27 +212,32 @@ namespace NShapes
 
    __host__ __device__ void Line::calcGroundtruth()
    {
-      if (!segment0) segment0 = new LineShapeT();
-      if (!segment1) segment1 = new LineShapeT();
-      if (!segment2) segment2 = new LineShapeT();
-      if (!segment3) segment3 = new LineShapeT();
+      if (!gt0) gt0 = new LineShapeT();
+      if (!gt1) gt1 = new LineShapeT();
+      if (!gt2) gt2 = new LineShapeT();
+      if (!gt3) gt3 = new LineShapeT();
 
-      getLineSegment(*pl0, *pl2, *pl4, *pl5, *segment0); // right cap
-      getLineSegment(*pl0, *pl3, *pl4, *pl5, *segment1); // left cap
-      getLineSegment(*pl0, *pl4, *pl2, *pl3, *segment2); // right length
-      getLineSegment(*pl0, *pl5, *pl2, *pl3, *segment3); // left length
+      // top view
+      //getLineSegment(*pl0, *pl2, *pl4, *pl5, *segment0); // right cap
+      //getLineSegment(*pl0, *pl3, *pl4, *pl5, *gt1); // left cap
+      //getLineSegment(*pl0, *pl4, *pl2, *pl3, *gt2); // right length
+      //getLineSegment(*pl0, *pl5, *pl2, *pl3, *gt3); // left length
 
-      //getLineSegment(*pl1, *pl2, *pl4, *pl5, *segment0); // right cap
-      //getLineSegment(*pl1, *pl3, *pl4, *pl5, *segment1); // left cap
-      //getLineSegment(*pl1, *pl4, *pl2, *pl3, *segment2); // right length
-      //getLineSegment(*pl1, *pl5, *pl2, *pl3, *segment3); // left length
+      // side view
+      getLineSegment(*pl3, *pl4, *pl0, *pl1, *gt0); // right cap
+      getLineSegment(*pl3, *pl5, *pl0, *pl1, *gt1); // left cap
+      getLineSegment(*pl3, *pl1, *pl4, *pl5, *gt2); // right length
+      getLineSegment(*pl3, *pl0, *pl4, *pl5, *gt3); // left length
 
-      printf("(%.5e, %.5e, %.5e) -> (%.5e, %.5e, %.5e)\n", segment0->P0[0], segment0->P0[1], segment0->P0[2], segment0->P1[0], segment0->P1[1], segment0->P1[2]);
-      printf("(%.5e, %.5e, %.5e) -> (%.5e, %.5e, %.5e)\n", segment1->P0[0], segment1->P0[1], segment1->P0[2], segment1->P1[0], segment1->P1[1], segment1->P1[2]);
-      printf("(%.5e, %.5e, %.5e) -> (%.5e, %.5e, %.5e)\n", segment2->P0[0], segment2->P0[1], segment2->P0[2], segment2->P1[0], segment2->P1[1], segment2->P1[2]);
-      printf("(%.5e, %.5e, %.5e) -> (%.5e, %.5e, %.5e)\n", segment3->P0[0], segment3->P0[1], segment3->P0[2], segment3->P1[0], segment3->P1[1], segment3->P1[2]);
+      printf("(%.5e, %.5e, %.5e) -> (%.5e, %.5e, %.5e)\n", gt0->P0[0], gt0->P0[1], gt0->P0[2], gt0->P1[0], gt0->P1[1], gt0->P1[2]);
+      printf("(%.5e, %.5e, %.5e) -> (%.5e, %.5e, %.5e)\n", gt1->P0[0], gt1->P0[1], gt1->P0[2], gt1->P1[0], gt1->P1[1], gt1->P1[2]);
+      printf("(%.5e, %.5e, %.5e) -> (%.5e, %.5e, %.5e)\n", gt2->P0[0], gt2->P0[1], gt2->P0[2], gt2->P1[0], gt2->P1[1], gt2->P1[2]);
+      printf("(%.5e, %.5e, %.5e) -> (%.5e, %.5e, %.5e)\n", gt3->P0[0], gt3->P0[1], gt3->P0[2], gt3->P1[0], gt3->P1[1], gt3->P1[2]);
    }
 
+   /*
+   * assumes perpendicular projection onto the plane
+   */
    __host__ __device__ static void getPerpendicularIntersection(
       const PlaneT& plane, // the projection plane
       const double* p, // absolute coordinate
@@ -367,9 +375,29 @@ namespace NShapes
       if (p1.Y >= 0 && p1.Y < h && p1.X >= 0 && p1.X < w) res[p1.Y * w + p1.X] = color;
    }
 
-   /*
-   * Can only rotate along z-axis
-   */
+   __host__ __device__ void drawRaster(
+      double start[3],
+      double end[3],
+      const PlaneT& plane,
+      const double* axis0, // vector from the plane origin
+      const double* axis1, // vector from the plane origin
+      const float xlenperpix,
+      const float ylenperpix,
+      char* res,
+      const unsigned int w,
+      const unsigned int h
+      )
+   {
+      LineShapeT l(start, end);
+      MultiPlaneShape::LineShape lr;
+      calcLineProjection(plane, axis0, axis1, l, lr);
+      const int s4[3] = { lr.P0[0] / xlenperpix, lr.P0[1] / ylenperpix, lr.P0[2] };
+      const int e4[3] = { lr.P1[0] / xlenperpix, lr.P1[1] / ylenperpix, lr.P1[2] };
+      const Point c0(s4[0], s4[1]);
+      const Point c1(e4[0], e4[1]);
+      DrawLine(c0, c1, 255, res, w, h);
+   }
+
    // axis2 would be the normal of the plane, which creates no projection
    __host__ __device__ void Line::calcRasterization(
       const PlaneT& plane,
@@ -383,33 +411,37 @@ namespace NShapes
       )
    {
       MultiPlaneShape::LineShape res0, res1, res2, res3; // with respect to origin of plane, along axis0 and axis1
-      calcLineProjection(plane, axis0, axis1, *segment0, res0);
-      calcLineProjection(plane, axis0, axis1, *segment1, res1);
-      calcLineProjection(plane, axis0, axis1, *segment2, res2);
-      calcLineProjection(plane, axis0, axis1, *segment3, res3);
+      calcLineProjection(plane, axis0, axis1, *gt0, res0);
+      calcLineProjection(plane, axis0, axis1, *gt1, res1);
+      calcLineProjection(plane, axis0, axis1, *gt2, res2);
+      calcLineProjection(plane, axis0, axis1, *gt3, res3);
 
-      int start0[3] = { res0.P0[0] / xlenperpix, res0.P0[1] / ylenperpix, res0.P0[2] };
-      int end0[3] = { res0.P1[0] / xlenperpix, res0.P1[1] / ylenperpix, res0.P1[2] };
-      int start1[3] = { res1.P0[0] / xlenperpix, res1.P0[1] / ylenperpix, res1.P0[2] };
-      int end1[3] = { res1.P1[0] / xlenperpix, res1.P1[1] / ylenperpix, res1.P1[2] };
-      int start2[3] = { res2.P0[0] / xlenperpix, res2.P0[1] / ylenperpix, res2.P0[2] };
-      int end2[3] = { res2.P1[0] / xlenperpix, res2.P1[1] / ylenperpix, res2.P1[2] };
-      int start3[3] = { res3.P0[0] / xlenperpix, res3.P0[1] / ylenperpix, res3.P0[2] };
-      int end3[3] = { res3.P1[0] / xlenperpix, res3.P1[1] / ylenperpix, res3.P1[2] };
+      const int start0[3] = { res0.P0[0] / xlenperpix, res0.P0[1] / ylenperpix, res0.P0[2] };
+      const int end0[3] = { res0.P1[0] / xlenperpix, res0.P1[1] / ylenperpix, res0.P1[2] };
+      const int start1[3] = { res1.P0[0] / xlenperpix, res1.P0[1] / ylenperpix, res1.P0[2] };
+      const int end1[3] = { res1.P1[0] / xlenperpix, res1.P1[1] / ylenperpix, res1.P1[2] };
+      const int start2[3] = { res2.P0[0] / xlenperpix, res2.P0[1] / ylenperpix, res2.P0[2] };
+      const int end2[3] = { res2.P1[0] / xlenperpix, res2.P1[1] / ylenperpix, res2.P1[2] };
+      const int start3[3] = { res3.P0[0] / xlenperpix, res3.P0[1] / ylenperpix, res3.P0[2] };
+      const int end3[3] = { res3.P1[0] / xlenperpix, res3.P1[1] / ylenperpix, res3.P1[2] };
 
-      Point s0(start0[0], start0[1]);
-      Point s1(start1[0], start1[1]);
-      Point s2(start2[0], start2[1]);
-      Point s3(start3[0], start3[1]);
-      Point e0(end0[0], end0[1]);
-      Point e1(end1[0], end1[1]);
-      Point e2(end2[0], end2[1]);
-      Point e3(end3[0], end3[1]);
+      const Point s0(start0[0], start0[1]);
+      const Point s1(start1[0], start1[1]);
+      const Point s2(start2[0], start2[1]);
+      const Point s3(start3[0], start3[1]);
+      const Point e0(end0[0], end0[1]);
+      const Point e1(end1[0], end1[1]);
+      const Point e2(end2[0], end2[1]);
+      const Point e3(end3[0], end3[1]);
 
       DrawLine(s0, e0, 255, res, w, h);
       DrawLine(s1, e1, 255, res, w, h);
-      DrawLine(s2, e2, 255, res, w, h);
+      DrawLine(s2, e2, 0, res, w, h); // assuming same material as top layer
       DrawLine(s3, e3, 255, res, w, h);
+
+      double cstart[3] = { lcylinder->getEnd0()[0], lcylinder->getEnd0()[1], lcylinder->getEnd0()[2] };
+      double cend[3] = { lcylinder->getEnd0()[0] + lcylinder->getRadius(), lcylinder->getEnd0()[1], lcylinder->getEnd0()[2] };
+      drawRaster(cstart, cend, plane, axis0, axis1, xlenperpix, ylenperpix, res, w, h);
 
       printf("(%.5e, %.5e, %.5e), (%.5e, %.5e, %.5e) \n", plane.getNormal()[0], plane.getNormal()[1], plane.getNormal()[2], plane.getPoint()[0], plane.getPoint()[1], plane.getPoint()[2]);
       printf("(%.5e, %.5e, %.5e) -> (%.5e, %.5e, %.5e)\n", res0.P0[0], res0.P0[1], res0.P0[2], res0.P1[0], res0.P1[1], res0.P1[2]);
@@ -477,7 +509,9 @@ namespace NShapes
       printf("(%.5e, %.5e, %.5e), (%.5e, %.5e, %.5e)", res.P0[0], res.P0[1], res.P0[2], res.P1[0], res.P1[1], res.P1[2]);
    }
 
-   __host__ __device__ CrossSection::CrossSection(const double width)
+   __host__ __device__ HorizontalStrip::HorizontalStrip(const double width) :
+      enclosure(nullptr), bnd(nullptr), pos(nullptr), neg(nullptr),
+      gt0(nullptr), gt1(nullptr)
    {
       enclosure = new NormalMultiPlaneShapeT();
 
@@ -496,16 +530,74 @@ namespace NShapes
       enclosure->addPlane(neg);
    }
 
-   __host__ __device__ CrossSection::~CrossSection()
+   __host__ __device__ HorizontalStrip::~HorizontalStrip()
    {
       delete enclosure;
       delete bnd;
       delete pos;
       delete neg;
+
+      delete gt0;
+      delete gt1;
    }
 
-   __host__ __device__ NormalMultiPlaneShapeT* CrossSection::get()
+   __host__ __device__ NormalMultiPlaneShapeT* HorizontalStrip::get()
    {
       return enclosure;
+   }
+
+   __host__ __device__ void HorizontalStrip::calcGroundtruth()
+   {
+      if (!gt0) gt0 = new LineShapeT();
+      if (!gt1) gt1 = new LineShapeT();
+
+      const double rightNormal[] = { 1., 0., 0. };
+      const double rightPoint[] = { 1.e-5, 0., 0. };
+      PlaneT rightBound(rightNormal, rightPoint);
+      const double leftNormal[] = { -1., 0., 0. };
+      const double leftPoint[] = { -1.e-5, 0., 0. };
+      PlaneT leftBound(leftNormal, leftPoint);
+
+      getLineSegment(*bnd, *pos, leftBound, rightBound, *gt0); // right cap
+      getLineSegment(*bnd, *neg, leftBound, rightBound, *gt1); // left cap
+
+      printf("(%.5e, %.5e, %.5e) -> (%.5e, %.5e, %.5e)\n", gt0->P0[0], gt0->P0[1], gt0->P0[2], gt0->P1[0], gt0->P1[1], gt0->P1[2]);
+      printf("(%.5e, %.5e, %.5e) -> (%.5e, %.5e, %.5e)\n", gt1->P0[0], gt1->P0[1], gt1->P0[2], gt1->P1[0], gt1->P1[1], gt1->P1[2]);
+   }
+
+   __host__ __device__ void HorizontalStrip::calcRasterization(
+      const PlaneT& plane,
+      const double* axis0, // vector from the plane origin
+      const double* axis1, // vector from the plane origin
+      const float xlenperpix,
+      const float ylenperpix,
+      char* res,
+      const unsigned int w,
+      const unsigned int h
+      )
+   {
+      MultiPlaneShape::LineShape res0, res1; // with respect to origin of plane, along axis0 and axis1
+      calcLineProjection(plane, axis0, axis1, *gt0, res0);
+      calcLineProjection(plane, axis0, axis1, *gt1, res1);
+
+      int start0[3] = { res0.P0[0] / xlenperpix, res0.P0[1] / ylenperpix, res0.P0[2] };
+      int end0[3] = { res0.P1[0] / xlenperpix, res0.P1[1] / ylenperpix, res0.P1[2] };
+      int start1[3] = { res1.P0[0] / xlenperpix, res1.P0[1] / ylenperpix, res1.P0[2] };
+      int end1[3] = { res1.P1[0] / xlenperpix, res1.P1[1] / ylenperpix, res1.P1[2] };
+
+      Point s0(start0[0], start0[1]);
+      Point s1(start1[0], start1[1]);
+      Point e0(end0[0], end0[1]);
+      Point e1(end1[0], end1[1]);
+
+      DrawLine(s0, e0, 255, res, w, h);
+      DrawLine(s1, e1, 255, res, w, h);
+
+      printf("(%.5e, %.5e, %.5e), (%.5e, %.5e, %.5e) \n", plane.getNormal()[0], plane.getNormal()[1], plane.getNormal()[2], plane.getPoint()[0], plane.getPoint()[1], plane.getPoint()[2]);
+      printf("(%.5e, %.5e, %.5e) -> (%.5e, %.5e, %.5e)\n", res0.P0[0], res0.P0[1], res0.P0[2], res0.P1[0], res0.P1[1], res0.P1[2]);
+      printf("(%.5e, %.5e, %.5e) -> (%.5e, %.5e, %.5e)\n", res1.P0[0], res1.P0[1], res1.P0[2], res1.P1[0], res1.P1[1], res1.P1[2]);
+
+      printf("(%d, %d, %d) -> (%d, %d, %d)\n", start0[0], start0[1], start0[2], end0[0], end0[1], end0[2]);
+      printf("(%d, %d, %d) -> (%d, %d, %d)\n", start1[0], start1[1], start1[2], end1[0], end1[1], end1[2]);
    }
 }

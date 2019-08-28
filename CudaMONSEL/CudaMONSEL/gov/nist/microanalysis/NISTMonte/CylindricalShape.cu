@@ -56,7 +56,7 @@ namespace CylindricalShape
       return (u >= 0) && (u <= 1.0) && (distanceSqr(pos, u) <= mRadius2);
    }
 
-   const double* CylindricalShape::getEnd0() const
+   __host__ __device__ const double* CylindricalShape::getEnd0() const
    {
       return mEnd0;
    }

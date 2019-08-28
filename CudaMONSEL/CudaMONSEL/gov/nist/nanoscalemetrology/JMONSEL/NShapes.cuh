@@ -55,17 +55,20 @@ namespace NShapes
       NormalIntersectionShapeT* nts;
       NormalIntersectionShapeT* nis; // the entire shape
 
-      LineShapeT* segment0;
-      LineShapeT* segment1;
-      LineShapeT* segment2;
-      LineShapeT* segment3;
+      LineShapeT* gt0;
+      LineShapeT* gt1;
+      LineShapeT* gt2;
+      LineShapeT* gt3;
    };
 
-   class CrossSection
+   class HorizontalStrip
    {
    public:
-      __host__ __device__ CrossSection(const double width);
-      __host__ __device__ ~CrossSection();
+      __host__ __device__ HorizontalStrip(const double width);
+      __host__ __device__ ~HorizontalStrip();
+
+      __host__ __device__ void calcGroundtruth();
+      __host__ __device__ void calcRasterization(const PlaneT&, const double*, const double*, const float, const float, char*, const unsigned int, const unsigned int);
       __host__ __device__ NormalMultiPlaneShapeT* get();
 
    private:
@@ -73,6 +76,9 @@ namespace NShapes
       PlaneT* bnd;
       PlaneT* pos;
       PlaneT* neg;
+
+      LineShapeT* gt0;
+      LineShapeT* gt1;
    };
 
    extern __host__ __device__ void TestProjection();

@@ -336,6 +336,13 @@ namespace BackscatterStats
 
 typedef BackscatterStats::BackscatterStats BackscatterStatsT;
 
+namespace MultiPlaneShape
+{
+   struct LineShape;
+}
+
+typedef MultiPlaneShape::LineShape LineShapeT;
+
 // nano
 
 namespace SEmaterial
@@ -429,12 +436,5 @@ namespace NormalIntersectionShape
 }
 
 typedef NormalIntersectionShape::NormalIntersectionShape NormalIntersectionShapeT;
-
-namespace MultiPlaneShape
-{
-   struct LineShape;
-}
-
-typedef MultiPlaneShape::LineShape LineShapeT;
 
 #endif

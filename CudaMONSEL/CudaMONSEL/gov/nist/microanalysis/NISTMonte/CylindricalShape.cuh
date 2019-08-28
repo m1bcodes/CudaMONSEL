@@ -20,7 +20,7 @@ namespace CylindricalShape
       __host__ __device__ void rotate(const double pivot[], double phi, double theta, double psi) override;
       __host__ __device__ void translate(const double distance[]) override;
 
-      const double* getEnd0() const;
+      __host__ __device__ const double* getEnd0() const;
       const double* getEnd1() const;
 
       __host__ __device__ double getRadius() const;
