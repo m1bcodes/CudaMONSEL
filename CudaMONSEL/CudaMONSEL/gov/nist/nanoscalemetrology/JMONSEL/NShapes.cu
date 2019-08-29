@@ -224,7 +224,7 @@ namespace NShapes
       //getLineSegment(*pl0, *pl5, *pl2, *pl3, *gt3); // left length
 
       // side view
-      if (pll && plr) {
+      if (!pll || !plr) {
          getLineSegment(*pl3, *pl4, *pl0, *pl1, *gt0); // right cap
          getLineSegment(*pl3, *pl5, *pl0, *pl1, *gt1); // left cap
          getLineSegment(*pl3, *pl1, *pl4, *pl5, *gt2); // bottom length
