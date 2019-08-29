@@ -210,16 +210,20 @@ namespace amp
    template<typename T>
    __host__ __device__ T& vector<T>::operator[] (const int i)
    {
-      if (!(i >= 0 && i < size()))
-         printf("T& vector<T>::operator[%d]: out of range\n", i);
+      if (!(i >= 0 && i < size())) {
+         printf("T& vector<T>::operator[%d]: out of range (%d)\n", i, sz);
+         return i < 0 ? vec[0] : vec[sz - 1];
+      }
       return vec[i];
    }
 
    template<typename T>
    __host__ __device__ const T& vector<T>::operator[] (const int i) const
    {
-      if (!(i >= 0 && i < size()))
-         printf("const T& vector<T>::operator[%d]: out of range\n", i);
+      if (!(i >= 0 && i < size())) {
+         printf("const T& vector<T>::operator[%d]: out of range (%d)\n", i, sz);
+         return i < 0 ? vec[0] : vec[sz - 1];
+      }
       return vec[i];
    }
 

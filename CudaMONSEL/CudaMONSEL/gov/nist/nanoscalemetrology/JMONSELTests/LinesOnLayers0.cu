@@ -567,16 +567,16 @@ namespace LinesOnLayers
       //const float xtop = wnm / 2.f - hnm * ::tanf(thetar);
       const float xbottom = 80.f / 2.f;
       const float xtop = 80.f / 2.f - hnm * ::tanf(thetar);
-      xstartnm = xbottom - 100.5f;
-      xstopnm = xbottom + 100.5f;
+      xstartnm = xbottom - 200.f;
+      xstopnm = xbottom + 200.f;
       //const float xfinestart = xtop - 20.5f;
       //const float xfinestop = (thetar < 0.f) ? xtop + 20.5f : wnm / 2.f + 20.5f;
 
       ystartnm = -128.f;
-      ystopnm = 64;
+      ystopnm = 128;
 
-      xsize = 256;
-      ysize = 256;
+      xsize = 512;
+      ysize = 512;
 
       //VectorXf xvalstmp(80);
       //float deltax = 5.f;

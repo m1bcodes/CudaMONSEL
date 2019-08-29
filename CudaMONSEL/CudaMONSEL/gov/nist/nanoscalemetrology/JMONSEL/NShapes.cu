@@ -224,10 +224,18 @@ namespace NShapes
       //getLineSegment(*pl0, *pl5, *pl2, *pl3, *gt3); // left length
 
       // side view
-      getLineSegment(*pl3, *pl4, *pl0, *pl1, *gt0); // right cap
-      getLineSegment(*pl3, *pl5, *pl0, *pl1, *gt1); // left cap
-      getLineSegment(*pl3, *pl1, *pl4, *pl5, *gt2); // right length
-      getLineSegment(*pl3, *pl0, *pl4, *pl5, *gt3); // left length
+      if (pll && plr) {
+         getLineSegment(*pl3, *pl4, *pl0, *pl1, *gt0); // right cap
+         getLineSegment(*pl3, *pl5, *pl0, *pl1, *gt1); // left cap
+         getLineSegment(*pl3, *pl1, *pl4, *pl5, *gt2); // bottom length
+         getLineSegment(*pl3, *pl0, *pl4, *pl5, *gt3); // top length
+      }
+      else {
+         getLineSegment(*pl3, *pl4, *plr, *pl1, *gt0); // right cap
+         getLineSegment(*pl3, *pl5, *pll, *pl1, *gt1); // left cap
+         getLineSegment(*pl3, *pl1, *pl4, *pl5, *gt2); // bottom length
+         getLineSegment(*pl3, *pl0, *plr, *pll, *gt3); // top length
+      }
 
       printf("(%.5e, %.5e, %.5e) -> (%.5e, %.5e, %.5e)\n", gt0->P0[0], gt0->P0[1], gt0->P0[2], gt0->P1[0], gt0->P1[1], gt0->P1[2]);
       printf("(%.5e, %.5e, %.5e) -> (%.5e, %.5e, %.5e)\n", gt1->P0[0], gt1->P0[1], gt1->P0[2], gt1->P1[0], gt1->P1[1], gt1->P1[2]);
@@ -267,16 +275,6 @@ namespace NShapes
       else if (ind == 2) printf("getPerpendicularIntersection: on plane\n");
    }
 
-   __host__ __device__ static void getLineProjection(
-      const PlaneT& plane, // the projection plane
-      const MultiPlaneShape::LineShape& line, // the absolute coordinate of the line to be projected
-      MultiPlaneShape::LineShape& res // the absolute coordinate of the perpendicular intersection between line and plane
-      )
-   {
-      getPerpendicularIntersection(plane, line.P0, res.P0);
-      getPerpendicularIntersection(plane, line.P1, res.P1);
-   }
-
    // get vectors relative to plane origin
    __host__ __device__ static void getRelativeCoord(
       const PlaneT& plane, // the axis-containing plane
@@ -305,16 +303,17 @@ namespace NShapes
       if (::fabsf(res[2]) > 0.00001f) printf("getRelativeCoord: res.P0 has out of plane component: %.5e\n", res[2]);
    }
 
-   __host__ __device__ static void getRelativeProjection(
+   __host__ __device__ static void calcPointProjection(
       const PlaneT& plane,
       const double* axis0, // vector from the plane origin
       const double* axis1, // vector from the plane origin
-      const MultiPlaneShape::LineShape& line, // line in absolute coordinates to be projected onto plane
-      MultiPlaneShape::LineShape& res // line with respect to origin of plane (ie. res + plane.origin = line)
+      const double line[], // line in absolute coordinates to be projected onto plane
+      double res[] // line with respect to origin of plane (ie. res + plane.origin = line)
       )
    {
-      getRelativeCoord(plane, axis0, axis1, line.P0, res.P0);
-      getRelativeCoord(plane, axis0, axis1, line.P1, res.P1);
+      double tmp[3]; // required
+      getPerpendicularIntersection(plane, line, tmp);
+      getRelativeCoord(plane, axis0, axis1, tmp, res);
    }
 
    __host__ __device__ static void calcLineProjection(
@@ -325,9 +324,8 @@ namespace NShapes
       MultiPlaneShape::LineShape& res // line with respect to origin of plane (ie. res + plane.origin = line)
       )
    {
-      MultiPlaneShape::LineShape tmp;
-      getLineProjection(plane, line, tmp);
-      getRelativeProjection(plane, axis0, axis1, tmp, res);
+      calcPointProjection(plane, axis0, axis1, line.P0, res.P0);
+      calcPointProjection(plane, axis0, axis1, line.P1, res.P1);
    }
 
    struct Point
@@ -439,9 +437,80 @@ namespace NShapes
       DrawLine(s2, e2, 0, res, w, h); // assuming same material as top layer
       DrawLine(s3, e3, 255, res, w, h);
 
-      double cstart[3] = { lcylinder->getEnd0()[0], lcylinder->getEnd0()[1], lcylinder->getEnd0()[2] };
-      double cend[3] = { lcylinder->getEnd0()[0] + lcylinder->getRadius(), lcylinder->getEnd0()[1], lcylinder->getEnd0()[2] };
-      drawRaster(cstart, cend, plane, axis0, axis1, xlenperpix, ylenperpix, res, w, h);
+      {
+         // crosshair
+         //double cstart0[3] = { lcylinder->getEnd0()[0], lcylinder->getEnd0()[1], lcylinder->getEnd0()[2] };
+         //double cend0[3] = { lcylinder->getEnd0()[0] + lcylinder->getRadius(), lcylinder->getEnd0()[1], lcylinder->getEnd0()[2] };
+         //drawRaster(cstart0, cend0, plane, axis0, axis1, xlenperpix, ylenperpix, res, w, h);
+
+         //double cstart1[3] = { lcylinder->getEnd0()[0], lcylinder->getEnd0()[1], lcylinder->getEnd0()[2] };
+         //double cend1[3] = { lcylinder->getEnd0()[0], lcylinder->getEnd0()[1] + lcylinder->getRadius(), lcylinder->getEnd0()[2] };
+         //drawRaster(cstart1, cend1, plane, axis0, axis1, xlenperpix, ylenperpix, res, w, h);
+
+         //double cstart2[3] = { lcylinder->getEnd0()[0], lcylinder->getEnd0()[1], lcylinder->getEnd0()[2] };
+         //double cend2[3] = { lcylinder->getEnd0()[0] - lcylinder->getRadius(), lcylinder->getEnd0()[1], lcylinder->getEnd0()[2] };
+         //drawRaster(cstart2, cend2, plane, axis0, axis1, xlenperpix, ylenperpix, res, w, h);
+
+         //double cstart3[3] = { lcylinder->getEnd0()[0], lcylinder->getEnd0()[1], lcylinder->getEnd0()[2] };
+         //double cend3[3] = { lcylinder->getEnd0()[0], lcylinder->getEnd0()[1] - lcylinder->getRadius(), lcylinder->getEnd0()[2] };
+         //drawRaster(cstart3, cend3, plane, axis0, axis1, xlenperpix, ylenperpix, res, w, h);
+
+         //LineShapeT clipper0, clipper0Proj;
+         //getLineSegment(*pl3, *pll, *pl0, *pl5, clipper0);
+         //calcLineProjection(plane, axis0, axis1, clipper0, clipper0Proj);
+         //const int clstart0[3] = { clipper0Proj.P0[0] / xlenperpix, clipper0Proj.P0[1] / ylenperpix, clipper0Proj.P0[2] };
+         //const int clend0[3] = { clipper0Proj.P1[0] / xlenperpix, clipper0Proj.P1[1] / ylenperpix, clipper0Proj.P1[2] };
+         //const Point cls0(clstart0[0], clstart0[1]);
+         //const Point cle0(clend0[0], clend0[1]);
+         //DrawLine(cls0, cle0, 255, res, w, h);
+
+         // points on the quarter circle, uncomment the code above to see why this is valid
+         for (int i = 180; i < 270; ++i) {
+            const double theta = i / 180. * Math2::PI;
+            double orig[3] = { lcylinder->getEnd0()[0] + lcylinder->getRadius() * ::cosf(theta), lcylinder->getEnd0()[1] + lcylinder->getRadius() * ::sinf(theta), lcylinder->getEnd0()[2] }; // eg. point on the circle
+            double proj[3];
+            calcPointProjection(plane, axis0, axis1, orig, proj);
+            const int s[3] = { proj[0] / xlenperpix, proj[1] / ylenperpix, proj[2] };
+            res[s[1] * w + s[0]] = 255;
+         }
+      }
+      {
+         // crosshair
+         //double cstart0[3] = { rcylinder->getEnd0()[0], rcylinder->getEnd0()[1], rcylinder->getEnd0()[2] };
+         //double cend0[3] = { rcylinder->getEnd0()[0] + rcylinder->getRadius(), rcylinder->getEnd0()[1], rcylinder->getEnd0()[2] };
+         //drawRaster(cstart0, cend0, plane, axis0, axis1, xlenperpix, ylenperpix, res, w, h);
+
+         //double cstart1[3] = { rcylinder->getEnd0()[0], rcylinder->getEnd0()[1], rcylinder->getEnd0()[2] };
+         //double cend1[3] = { rcylinder->getEnd0()[0], rcylinder->getEnd0()[1] + rcylinder->getRadius(), rcylinder->getEnd0()[2] };
+         //drawRaster(cstart1, cend1, plane, axis0, axis1, xlenperpix, ylenperpix, res, w, h);
+
+         //double cstart2[3] = { rcylinder->getEnd0()[0], rcylinder->getEnd0()[1], rcylinder->getEnd0()[2] };
+         //double cend2[3] = { rcylinder->getEnd0()[0] - rcylinder->getRadius(), rcylinder->getEnd0()[1], rcylinder->getEnd0()[2] };
+         //drawRaster(cstart2, cend2, plane, axis0, axis1, xlenperpix, ylenperpix, res, w, h);
+
+         //double cstart3[3] = { rcylinder->getEnd0()[0], rcylinder->getEnd0()[1], rcylinder->getEnd0()[2] };
+         //double cend3[3] = { rcylinder->getEnd0()[0], rcylinder->getEnd0()[1] - rcylinder->getRadius(), rcylinder->getEnd0()[2] };
+         //drawRaster(cstart3, cend3, plane, axis0, axis1, xlenperpix, ylenperpix, res, w, h);
+
+         //LineShapeT clipper0, clipper0Proj;
+         //getLineSegment(*pl3, *plr, *pl0, *pl4, clipper0);
+         //calcLineProjection(plane, axis0, axis1, clipper0, clipper0Proj);
+         //const int clstart0[3] = { clipper0Proj.P0[0] / xlenperpix, clipper0Proj.P0[1] / ylenperpix, clipper0Proj.P0[2] };
+         //const int clend0[3] = { clipper0Proj.P1[0] / xlenperpix, clipper0Proj.P1[1] / ylenperpix, clipper0Proj.P1[2] };
+         //const Point cls0(clstart0[0], clstart0[1]);
+         //const Point cle1(clend0[0], clend0[1]);
+         //DrawLine(cls0, cle1, 255, res, w, h);
+
+         // points on the quarter circle, uncomment the code above to see why this is valid
+         for (int i = 270; i < 360; ++i) {
+            const double theta = i / 180. * Math2::PI;
+            double orig[3] = { rcylinder->getEnd0()[0] + rcylinder->getRadius() * ::cosf(theta), rcylinder->getEnd0()[1] + rcylinder->getRadius() * ::sinf(theta), lcylinder->getEnd0()[2] }; // eg. point on the circle
+            double proj[3];
+            calcPointProjection(plane, axis0, axis1, orig, proj);
+            const int s[3] = { proj[0] / xlenperpix, proj[1] / ylenperpix, proj[2] };
+            res[s[1] * w + s[0]] = 255;
+         }
+      }
 
       printf("(%.5e, %.5e, %.5e), (%.5e, %.5e, %.5e) \n", plane.getNormal()[0], plane.getNormal()[1], plane.getNormal()[2], plane.getPoint()[0], plane.getPoint()[1], plane.getPoint()[2]);
       printf("(%.5e, %.5e, %.5e) -> (%.5e, %.5e, %.5e)\n", res0.P0[0], res0.P0[1], res0.P0[2], res0.P1[0], res0.P1[1], res0.P1[2]);
