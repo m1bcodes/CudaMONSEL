@@ -237,6 +237,7 @@ namespace LinesOnLayers
 
    __device__ unsigned int ysize, xsize;
    __device__ float xstartnm, xstopnm, ystartnm, ystopnm;
+   __device__ const NShapes::LineParams* lineParams[3];
 #else
    const int nTrajectories = 100;
 
@@ -350,7 +351,7 @@ namespace LinesOnLayers
 
    const float radperdeg = Math2::PI / 180.f;
    const float thetar = thetardeg * Math2::PI / 180.f;
-   const float thetal = thetaldeg* Math2::PI / 180.f;
+   const float thetal = thetaldeg * Math2::PI / 180.f;
    const float radr = radrnm * 1.e-9f;
    const float radl = radlnm * 1.e-9f;
    const float layer1thickness = layer1thicknessnm * 1.e-9f;
@@ -436,6 +437,7 @@ namespace LinesOnLayers
 
    unsigned int ysize, xsize;
    float xstartnm, xstopnm, ystartnm, ystopnm;
+   const NShapes::LineParams* lineParams[3];
 #endif
 
    __global__ void verifyNUTable1d(const char* fn)
@@ -858,13 +860,54 @@ namespace LinesOnLayers
 
       //RegionT deepRegion(&layer3Region, &SiMSMDeep, (NormalShapeT*)&layer4);
 
-      NShapes::Line line(-h, w, linelength, thetal, thetar, radl, radr);
-      const double pivot[3] = { 0.f, 0.f, 0.f };
-      line.get()->rotate(pivot, -Math2::PI / 2.f, Math2::PI / 2.f, Math2::PI / 2.f);
-      const double dist1[3] = { 0.f, 0.f, linelength / 2. };
-      line.get()->translate(dist1);
+      //NShapes::Line line(-h, w, linelength, thetal, thetar, radl, radr);
+      //const double pivot[3] = { 0.f, 0.f, 0.f };
+      //line.get()->rotate(pivot, -Math2::PI / 2.f, Math2::PI / 2.f, Math2::PI / 2.f);
+      //const double dist1[3] = { 0.f, 0.f, linelength / 2. };
+      //line.get()->translate(dist1);
 
-      RegionT lineRegion(&chamber, &PMMAMSM, (NormalIntersectionShapeT*)line.get());
+      //RegionT lineRegion(&chamber, &PMMAMSM, (NormalIntersectionShapeT*)line.get());
+
+      NShapes::Line* lines[3];
+      RegionT* regions[3];
+      for (int i = 0; i < nlines; ++i) {
+         //NShapes::Line line(-h, w, linelength, thetal, thetar, radl, radr);
+         lines[i] = new NShapes::Line(-lineParams[i]->h, lineParams[i]->w, lineParams[i]->linelength, lineParams[i]->thetal, lineParams[i]->thetar, lineParams[i]->radl, lineParams[i]->radr);
+         const double pivot[3] = { 0.f, 0.f, 0.f };
+         lines[i]->get()->rotate(pivot, -Math2::PI / 2.f, Math2::PI / 2.f, Math2::PI / 2.f);
+         //const double dist1[3] = { 0.f, 0.f, linelength / 2. };
+         const double dist1[3] = { lineParams[i]->x, 0.f, linelength / 2. };
+         lines[i]->get()->translate(dist1);
+         regions[i] = new RegionT(&chamber, &PMMAMSM, (NormalIntersectionShapeT*)lines[i]->get());
+      }
+
+      //float curx = -w / 2.f;
+      //float curh, curw, curlinelength, curthetal, curthetar, curradl, curradr;
+
+      //NShapes::Line* lines[2];
+      //RegionT* regions[2];
+
+      //for (int i = 0; i < nlines; ++i) {
+      //   curh = getAdjustedValPlusMinus(h, 0.4);
+      //   curw = getAdjustedValPlusMinus(w, 0.4);
+      //   curlinelength = getAdjustedValPlusMinus(linelength, 0.4);
+      //   curthetal = getAdjustedValPlusMinus(thetal, 0.4);
+      //   curthetar = getAdjustedValPlusMinus(thetar, 0.4);
+      //   curradl = getAdjustedValPlusMinus(radl, 0.4);
+      //   curradr = getAdjustedValPlusMinus(radr, 0.4);
+
+      //   //NShapes::Line line(-h, w, linelength, thetal, thetar, radl, radr);
+      //   lines[i] = new NShapes::Line(-curh, curw, curlinelength, curthetal, curthetar, curradl, curradr);
+      //   const double pivot[3] = { 0.f, 0.f, 0.f };
+      //   lines[i]->get()->rotate(pivot, -Math2::PI / 2.f, Math2::PI / 2.f, Math2::PI / 2.f);
+      //   //const double dist1[3] = { 0.f, 0.f, linelength / 2. };
+      //   const double dist1[3] = { curx, 0.f, linelength / 2. };
+      //   lines[i]->get()->translate(dist1);
+      //   regions[i] = new RegionT(&chamber, &PMMAMSM, (NormalIntersectionShapeT*)lines[i]->get());
+
+      //   //curx += w * (1. + Random::random());
+      //   curx += w * 2.;
+      //}
 
       const double egCenter[] = { x, y, -h - 20.f * 1.e-9f };
       GaussianBeamT eg(beamsize, beamE, egCenter);
@@ -902,6 +945,11 @@ namespace LinesOnLayers
       monte.removeActionListener(back);
 
       result[r * xsize + c] = SEf;
+
+      for (int i = 0; i < nlines; ++i) {
+         delete lines[i];
+         delete regions[i];
+      }
    }
 
    __global__ void
@@ -931,6 +979,11 @@ namespace LinesOnLayers
       }
    }
 
+   inline float getAdjustedValPlusMinus(float val, float fraction)
+   {
+      return val * (1.f + (1.f - Random::random() * 2.f) * fraction); // val +/- val*fraction
+   }
+
    void testLineProjection()
    {
       const double width = 30.f * 1e-9f;
@@ -950,16 +1003,9 @@ namespace LinesOnLayers
       dist0[1] += width;
       layer2->translate(dist0);
 
-      NShapes::Line line(-h, w, linelength, thetal, thetar, radl, radr);
-      const double pivot[3] = { 0.f, 0.f, 0.f };
-      line.get()->rotate(pivot, -Math2::PI / 2.f, Math2::PI / 2.f, Math2::PI / 2.f);
-      const double dist1[3] = { 0.f, 0.f, linelength / 2. };
-      line.get()->translate(dist1);
-
       hs0.calcGroundtruth();
       hs1.calcGroundtruth();
       hs2.calcGroundtruth();
-      line.calcGroundtruth(); // get points/line segments that need to be projected
 
       const double p[3] = { xstartnm * 1.e-9, ystartnm * 1.e-9, 0. };
       const double n[3] = { 0., 0., -1. };
@@ -976,7 +1022,35 @@ namespace LinesOnLayers
       hs0.calcRasterization(projectionPlane, axis0, axis1, xlenperpix, ylenperpix, gt, xsize, ysize);
       hs1.calcRasterization(projectionPlane, axis0, axis1, xlenperpix, ylenperpix, gt, xsize, ysize);
       hs2.calcRasterization(projectionPlane, axis0, axis1, xlenperpix, ylenperpix, gt, xsize, ysize);
-      line.calcRasterization(projectionPlane, axis0, axis1, xlenperpix, ylenperpix, gt, xsize, ysize); // needs to be last since bottom needs to be removed due to same material
+
+      float curx = -w;
+
+      for (int i = 0; i < nlines; ++i) {
+         lineParams[i] = new NShapes::LineParams(
+         //NShapes::LineParams lp(
+            getAdjustedValPlusMinus(h, 0.f),
+            w,
+            getAdjustedValPlusMinus(linelength, 0.f),
+            getAdjustedValPlusMinus(thetal, 0.f),
+            getAdjustedValPlusMinus(thetar, 0.f),
+            getAdjustedValPlusMinus(radl, 0.f),
+            getAdjustedValPlusMinus(radr, 0.f),
+            curx
+            );
+         //NShapes::Line line(-h, w, linelength, thetal, thetar, radl, radr);
+         NShapes::Line line(-lineParams[i]->h, lineParams[i]->w, lineParams[i]->linelength, lineParams[i]->thetal, lineParams[i]->thetar, lineParams[i]->radl, lineParams[i]->radr);
+         //NShapes::Line line(-lp.h, lp.w, lp.linelength, lp.thetal, lp.thetar, lp.radl, lp.radr);
+         const double pivot[3] = { 0.f, 0.f, 0.f };
+         line.get()->rotate(pivot, -Math2::PI / 2.f, Math2::PI / 2.f, Math2::PI / 2.f);
+         //const double dist1[3] = { 0.f, 0.f, linelength / 2. };
+         //const double dist1[3] = { lp.x, 0.f, linelength / 2. };
+         const double dist1[3] = { lineParams[i]->x, 0.f, linelength / 2. };
+         line.get()->translate(dist1);
+         line.calcGroundtruth(); // get points/line segments that need to be projected
+         line.calcRasterization(projectionPlane, axis0, axis1, xlenperpix, ylenperpix, gt, xsize, ysize); // needs to be last since bottom needs to be removed due to same material
+
+         curx += w * 1.5;
+      }
 
       ImageUtil::saveImage("gt.bmp", gt, xsize, ysize);
       delete[] gt;

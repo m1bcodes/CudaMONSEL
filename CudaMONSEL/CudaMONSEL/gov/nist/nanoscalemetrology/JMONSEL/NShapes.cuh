@@ -11,6 +11,22 @@ namespace NShapes
    //   __host__ __device__ virtual void calcGroundtruth() = 0;
    //};
 
+   struct LineParams
+   {
+      __host__ __device__ LineParams(const float h, const float w, const float linelength, const float thetal, const float thetar, const float radl, const float radr, const float x) :
+         h(h), 
+         w(w), 
+         linelength(linelength), 
+         thetal(thetal), 
+         thetar(thetar), 
+         radl(radl), 
+         radr(radr), 
+         x(x)
+      {};
+      const float h, w, linelength, thetal, thetar, radl, radr; // constructor params
+      const float x; // translate
+   };
+
    class Line
    {
    public:

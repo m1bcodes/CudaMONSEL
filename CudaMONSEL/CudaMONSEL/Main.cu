@@ -37,6 +37,7 @@
 
 #include "gov\nist\nanoscalemetrology\JMONSEL\NISTMottRS.cuh"
 #include "gov\nist\nanoscalemetrology\JMONSEL\NUTableInterpolation.cuh"
+#include "gov\nist\nanoscalemetrology\JMONSEL\NShapes.cuh"
 
 #include "gov\nist\microanalysis\EPQTests\UncertainValue2Test.cuh"
 #include "gov\nist\microanalysis\EPQTests\ElementTest.cuh"
