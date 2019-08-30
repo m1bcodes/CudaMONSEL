@@ -224,23 +224,29 @@ namespace NShapes
       //getLineSegment(*pl0, *pl5, *pl2, *pl3, *gt3); // left length
 
       // side view
-      if (!pll || !plr) {
-         getLineSegment(*pl3, *pl4, *pl0, *pl1, *gt0); // right cap
-         getLineSegment(*pl3, *pl5, *pl0, *pl1, *gt1); // left cap
-         getLineSegment(*pl3, *pl1, *pl4, *pl5, *gt2); // bottom length
-         getLineSegment(*pl3, *pl0, *pl4, *pl5, *gt3); // top length
-      }
-      else {
-         getLineSegment(*pl3, *pl4, *plr, *pl1, *gt0); // right cap
-         getLineSegment(*pl3, *pl5, *pll, *pl1, *gt1); // left cap
-         getLineSegment(*pl3, *pl1, *pl4, *pl5, *gt2); // bottom length
-         getLineSegment(*pl3, *pl0, *plr, *pll, *gt3); // top length
+      {
+         if (!pll) {
+            getLineSegment(*pl3, *pl5, *pl0, *pl1, *gt1); // left cap
+            getLineSegment(*pl3, *pl0, *pl4, *pl5, *gt3); // top length
+         }
+         else {
+            getLineSegment(*pl3, *pl5, *pll, *pl1, *gt1); // left cap
+            getLineSegment(*pl3, *pl0, *plr, *pll, *gt3); // top length
+         }
+         if (!plr) {
+            getLineSegment(*pl3, *pl4, *pl0, *pl1, *gt0); // right cap
+            getLineSegment(*pl3, *pl1, *pl4, *pl5, *gt2); // bottom length
+         }
+         else {
+            getLineSegment(*pl3, *pl4, *plr, *pl1, *gt0); // right cap
+            getLineSegment(*pl3, *pl1, *pl4, *pl5, *gt2); // bottom length
+         }
       }
 
-      printf("(%.5e, %.5e, %.5e) -> (%.5e, %.5e, %.5e)\n", gt0->P0[0], gt0->P0[1], gt0->P0[2], gt0->P1[0], gt0->P1[1], gt0->P1[2]);
-      printf("(%.5e, %.5e, %.5e) -> (%.5e, %.5e, %.5e)\n", gt1->P0[0], gt1->P0[1], gt1->P0[2], gt1->P1[0], gt1->P1[1], gt1->P1[2]);
-      printf("(%.5e, %.5e, %.5e) -> (%.5e, %.5e, %.5e)\n", gt2->P0[0], gt2->P0[1], gt2->P0[2], gt2->P1[0], gt2->P1[1], gt2->P1[2]);
-      printf("(%.5e, %.5e, %.5e) -> (%.5e, %.5e, %.5e)\n", gt3->P0[0], gt3->P0[1], gt3->P0[2], gt3->P1[0], gt3->P1[1], gt3->P1[2]);
+      //printf("(%.5e, %.5e, %.5e) -> (%.5e, %.5e, %.5e)\n", gt0->P0[0], gt0->P0[1], gt0->P0[2], gt0->P1[0], gt0->P1[1], gt0->P1[2]);
+      //printf("(%.5e, %.5e, %.5e) -> (%.5e, %.5e, %.5e)\n", gt1->P0[0], gt1->P0[1], gt1->P0[2], gt1->P1[0], gt1->P1[1], gt1->P1[2]);
+      //printf("(%.5e, %.5e, %.5e) -> (%.5e, %.5e, %.5e)\n", gt2->P0[0], gt2->P0[1], gt2->P0[2], gt2->P1[0], gt2->P1[1], gt2->P1[2]);
+      //printf("(%.5e, %.5e, %.5e) -> (%.5e, %.5e, %.5e)\n", gt3->P0[0], gt3->P0[1], gt3->P0[2], gt3->P1[0], gt3->P1[1], gt3->P1[2]);
    }
 
    /*
@@ -406,7 +412,7 @@ namespace NShapes
       char* res,
       const unsigned int w,
       const unsigned int h
-      )
+      ) const
    {
       MultiPlaneShape::LineShape res0, res1, res2, res3; // with respect to origin of plane, along axis0 and axis1
       calcLineProjection(plane, axis0, axis1, *gt0, res0);
@@ -630,8 +636,8 @@ namespace NShapes
       getLineSegment(*bnd, *pos, leftBound, rightBound, *gt0); // right cap
       getLineSegment(*bnd, *neg, leftBound, rightBound, *gt1); // left cap
 
-      printf("(%.5e, %.5e, %.5e) -> (%.5e, %.5e, %.5e)\n", gt0->P0[0], gt0->P0[1], gt0->P0[2], gt0->P1[0], gt0->P1[1], gt0->P1[2]);
-      printf("(%.5e, %.5e, %.5e) -> (%.5e, %.5e, %.5e)\n", gt1->P0[0], gt1->P0[1], gt1->P0[2], gt1->P1[0], gt1->P1[1], gt1->P1[2]);
+      //printf("(%.5e, %.5e, %.5e) -> (%.5e, %.5e, %.5e)\n", gt0->P0[0], gt0->P0[1], gt0->P0[2], gt0->P1[0], gt0->P1[1], gt0->P1[2]);
+      //printf("(%.5e, %.5e, %.5e) -> (%.5e, %.5e, %.5e)\n", gt1->P0[0], gt1->P0[1], gt1->P0[2], gt1->P1[0], gt1->P1[1], gt1->P1[2]);
    }
 
    __host__ __device__ void HorizontalStrip::calcRasterization(
@@ -643,7 +649,7 @@ namespace NShapes
       char* res,
       const unsigned int w,
       const unsigned int h
-      )
+      ) const
    {
       MultiPlaneShape::LineShape res0, res1; // with respect to origin of plane, along axis0 and axis1
       calcLineProjection(plane, axis0, axis1, *gt0, res0);

@@ -113,15 +113,13 @@ namespace LinesOnLayers
 
    //__device__ MONSEL_MaterialScatterModelT* glCMSMDeep = nullptr;
 
-   __constant__ const float phononE = 0.063f;
-   __constant__ const float phononStrength = 3.f;
-
+   __constant__ const float SiphononE = 0.063f;
+   __constant__ const float SiphononStrength = 3.f;
    __constant__ const float Sidensity = 2330.f;
    __constant__ const float Siworkfun = 4.85f;
    __constant__ const float Sibandgap = 1.1f;
    __constant__ const float SiEFermi = -1.1f;//-Sibandgap;
    __constant__ const float SipotU = -4.85f - (-1.1f);//-Siworkfun - SiEFermi;
-
    //__device__ SEmaterialT* Si = nullptr;
 
    //__device__ SelectableElasticSMT* SiNISTMott = nullptr;
@@ -135,6 +133,14 @@ namespace LinesOnLayers
    //__device__ MONSEL_MaterialScatterModelT* SiMSM = nullptr;
 
    //__device__ MONSEL_MaterialScatterModelT* SiMSMDeep = nullptr;
+
+   __constant__ const float SiO2density = 2200.f;
+   __constant__ const float SiO2workfun = 10.f;
+   __constant__ const float SiO2phononStrength = 2.f; // Number of phonon modes
+   __constant__ const float SiO2phononE = 0.145f; // Phonon mode energy in eV
+   __constant__ const float SiO2bandgap = 8.9f; // width of band gap in eV
+   __constant__ const float SiO2EFermi = -8.9f; // This puts the Fermi level at the top of the valence band.
+   __constant__ const float SiO2potU = -10.f - (-8.9f);
 
    //__device__ SphereT* sphere = nullptr;
 
@@ -305,9 +311,8 @@ namespace LinesOnLayers
 
    //MONSEL_MaterialScatterModelT* glCMSMDeep = nullptr;
 
-   const float phononE = 0.063f;
-   const float phononStrength = 3.f;
-
+   const float SiphononE = 0.063f;
+   const float SiphononStrength = 3.f;
    const float Sidensity = 2330.f;
    const float Siworkfun = 4.85f;
    const float Sibandgap = 1.1f;
@@ -327,6 +332,14 @@ namespace LinesOnLayers
    //MONSEL_MaterialScatterModelT* SiMSM = nullptr;
 
    //MONSEL_MaterialScatterModelT* SiMSMDeep = nullptr;
+
+   const float SiO2density = 2200.f;
+   const float SiO2workfun = 10.f;
+   const float SiO2phononStrength = 2.f; // Number of phonon modes
+   const float SiO2phononE = 0.145f; // Phonon mode energy in eV
+   const float SiO2bandgap = 8.9f; // width of band gap in eV
+   const float SiO2EFermi = -SiO2bandgap; // This puts the Fermi level at the top of the valence band.
+   const float SiO2potU = -SiO2workfun - SiO2EFermi;
 
    //SphereT* sphere = nullptr;
 
@@ -726,7 +739,7 @@ namespace LinesOnLayers
 #endif
       TabulatedInelasticSMT SiDS(Si, 3, SiTables, ToSI::eV(13.54f));
 
-      GanachaudMokraniPhononInelasticSMT Siphonon(phononStrength, ToSI::eV(phononE), 300.f, 11.7f, 1.f);
+      GanachaudMokraniPhononInelasticSMT Siphonon(SiphononStrength, ToSI::eV(SiphononE), 300.f, 11.7f, 1.f);
 
       ExpQMBarrierSMT sieqmbsm(&Si);
 
@@ -742,13 +755,6 @@ namespace LinesOnLayers
 
       SiMSMDeep.setMinEforTracking(ToSI::eV(50.f));
 
-      const float density = 2200.f;
-      const float workfun = 10.f;
-      const float phononStrength = 2.f; // Number of phonon modes
-      const float phononE = 0.145f; // Phonon mode energy in eV
-      const float bandgap = 8.9f; // width of band gap in eV
-      const float EFermi = -bandgap; // This puts the Fermi level at the top of the valence band.
-      const float potU = -workfun - EFermi;
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
       const float SiWeight = Element::dSi->getAtomicWeight();
       const float OxWeight = 2.f * Element::dO->getAtomicWeight();
@@ -764,14 +770,14 @@ namespace LinesOnLayers
 #endif
 
       const float SiO2massFrac[] = { SiWeight / totalWeight, OxWeight / totalWeight };
-      SEmaterialT SiO2(SiO2Components, 2, SiO2massFrac, 2, density, "Silicon Dioxide");
+      SEmaterialT SiO2(SiO2Components, 2, SiO2massFrac, 2, SiO2density, "Silicon Dioxide");
 
-      const float SiO2Workfunction = ToSI::eV(workfun);
+      const float SiO2Workfunction = ToSI::eV(SiO2workfun);
       SiO2.setWorkfunction(SiO2Workfunction);
-      SiO2.setBandgap(ToSI::eV(bandgap));
-      SiO2.setEnergyCBbottom(ToSI::eV(potU));
-      const float ceSiO2[] = { ToSI::eV(41.6), ToSI::eV(99.2), ToSI::eV(99.8), ToSI::eV(149.7), ToSI::eV(543.1), ToSI::eV(1839.) };
-      SiO2.setCoreEnergy(ceSiO2, 6);
+      SiO2.setBandgap(ToSI::eV(SiO2bandgap));
+      SiO2.setEnergyCBbottom(ToSI::eV(SiO2potU));
+      const float SiO2ce[] = { ToSI::eV(41.6), ToSI::eV(99.2), ToSI::eV(99.8), ToSI::eV(149.7), ToSI::eV(543.1), ToSI::eV(1839.) };
+      SiO2.setCoreEnergy(SiO2ce, 6);
 
       // Create scatter mechanisms
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
@@ -780,8 +786,8 @@ namespace LinesOnLayers
       SelectableElasticSMT SiO2NISTMott((MaterialT&)SiO2, NISTMottRS::Factory);
 #endif
 
-      TabulatedInelasticSMT SiO2DS(SiO2, 3, SiO2Tables, ToSI::eV(20. + bandgap));
-      GanachaudMokraniPhononInelasticSMT SiO2phonon(phononStrength, ToSI::eV(phononE), 300., 3.82, 1.);
+      TabulatedInelasticSMT SiO2DS(SiO2, 3, SiO2Tables, ToSI::eV(20. + SiO2bandgap));
+      GanachaudMokraniPhononInelasticSMT SiO2phonon(SiO2phononStrength, ToSI::eV(SiO2phononE), 300., 3.82, 1.);
       GanachaudMokraniPolaronTrapSMT SiO2polaron(1.0e9, 1. / ToSI::eV(1.));
       ExpQMBarrierSMT SiO2ClassicalBarrier(&SiO2); // The default.No need to actually execute this line.
       //SiO2CSD = mon.ZeroCSD(); // The default.No need to actually execute this line.
@@ -950,10 +956,10 @@ namespace LinesOnLayers
       const double dist1[3] = { 0.f, 0.f, linelength / 2. };
       line.get()->translate(dist1);
 
-      line.calcGroundtruth(); // get points/line segments that need to be projected
       hs0.calcGroundtruth();
       hs1.calcGroundtruth();
       hs2.calcGroundtruth();
+      line.calcGroundtruth(); // get points/line segments that need to be projected
 
       const double p[3] = { xstartnm * 1.e-9, ystartnm * 1.e-9, 0. };
       const double n[3] = { 0., 0., -1. };

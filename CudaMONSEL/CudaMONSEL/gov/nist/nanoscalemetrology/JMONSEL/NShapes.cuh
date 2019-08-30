@@ -5,6 +5,12 @@
 
 namespace NShapes
 {
+   //class CustomShape
+   //{
+   //public:
+   //   __host__ __device__ virtual void calcGroundtruth() = 0;
+   //};
+
    class Line
    {
    public:
@@ -21,7 +27,7 @@ namespace NShapes
 
       __host__ __device__ void create();
       __host__ __device__ void calcGroundtruth();
-      __host__ __device__ void calcRasterization(const PlaneT&, const double*, const double*, const float, const float, char*, const unsigned int, const unsigned int);
+      __host__ __device__ void calcRasterization(const PlaneT&, const double*, const double*, const float, const float, char*, const unsigned int, const unsigned int) const;
 
       __host__ __device__ NormalIntersectionShapeT* get();
 
@@ -68,7 +74,7 @@ namespace NShapes
       __host__ __device__ ~HorizontalStrip();
 
       __host__ __device__ void calcGroundtruth();
-      __host__ __device__ void calcRasterization(const PlaneT&, const double*, const double*, const float, const float, char*, const unsigned int, const unsigned int);
+      __host__ __device__ void calcRasterization(const PlaneT&, const double*, const double*, const float, const float, char*, const unsigned int, const unsigned int) const;
       __host__ __device__ NormalMultiPlaneShapeT* get();
 
    private:
