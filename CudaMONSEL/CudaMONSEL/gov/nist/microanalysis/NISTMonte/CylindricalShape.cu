@@ -14,8 +14,8 @@ namespace CylindricalShape
 
    __host__ __device__ CylindricalShape::CylindricalShape(const double end0[], const double end1[], double radius)
    {
-      memcpy(mEnd0, end0, sizeof(double) * 3);
-      memcpy(mEnd1, end1, sizeof(double) * 3);
+      memcpy(mEnd0, end0, sizeof(mEnd0[0]) * 3);
+      memcpy(mEnd1, end1, sizeof(mEnd1[0]) * 3);
       mRadius2 = radius * radius;
       mDelta[0] = end1[0] - end0[0];
       mDelta[1] = end1[1] - end0[1];
@@ -32,9 +32,9 @@ namespace CylindricalShape
       mLen2(other.mLen2),
       mDelta2(other.mDelta2)
    {
-      memcpy(mEnd0, other.mEnd0, sizeof(double) * 3);
-      memcpy(mEnd1, other.mEnd1, sizeof(double) * 3);
-      memcpy(mDelta, other.mDelta, sizeof(double) * 3);
+      memcpy(mEnd0, other.mEnd0, sizeof(mEnd0[0]) * 3);
+      memcpy(mEnd1, other.mEnd1, sizeof(mEnd1[0]) * 3);
+      memcpy(mDelta, other.mDelta, sizeof(mDelta[0]) * 3);
    }
 
    __host__ __device__ double CylindricalShape::closestPointOnAxis(const double p[]) const
@@ -61,8 +61,11 @@ namespace CylindricalShape
       return mEnd0;
    }
 
-   const double* CylindricalShape::getEnd1() const
+   __host__ __device__ const double* CylindricalShape::getEnd1()
    {
+      mEnd1[0] = mEnd0[0] + mDelta[0];
+      mEnd1[1] = mEnd0[1] + mDelta[1];
+      mEnd1[2] = mEnd0[2] + mDelta[2];
       return mEnd1;
    }
 

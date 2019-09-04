@@ -223,23 +223,43 @@ namespace NShapes
       //getLineSegment(*pl0, *pl4, *pl2, *pl3, *gt2); // right length
       //getLineSegment(*pl0, *pl5, *pl2, *pl3, *gt3); // left length
 
-      // side view
+      // side view (back)
+      //{
+      //   if (!pll) {
+      //      getLineSegment(*pl3, *pl5, *pl0, *pl1, *gt1); // left cap
+      //      getLineSegment(*pl3, *pl0, *pl4, *pl5, *gt3); // top length
+      //   }
+      //   else {
+      //      getLineSegment(*pl3, *pl5, *pll, *pl1, *gt1); // left cap
+      //      getLineSegment(*pl3, *pl0, *plr, *pll, *gt3); // top length
+      //   }
+      //   if (!plr) {
+      //      getLineSegment(*pl3, *pl4, *pl0, *pl1, *gt0); // right cap
+      //      getLineSegment(*pl3, *pl1, *pl4, *pl5, *gt2); // bottom length
+      //   }
+      //   else {
+      //      getLineSegment(*pl3, *pl4, *plr, *pl1, *gt0); // right cap
+      //      getLineSegment(*pl3, *pl1, *pl4, *pl5, *gt2); // bottom length
+      //   }
+      //}
+
+      // side view (front)
       {
          if (!pll) {
-            getLineSegment(*pl3, *pl5, *pl0, *pl1, *gt1); // left cap
-            getLineSegment(*pl3, *pl0, *pl4, *pl5, *gt3); // top length
+            getLineSegment(*pl2, *pl5, *pl0, *pl1, *gt1); // left cap
+            getLineSegment(*pl2, *pl0, *pl4, *pl5, *gt3); // top length
          }
          else {
-            getLineSegment(*pl3, *pl5, *pll, *pl1, *gt1); // left cap
-            getLineSegment(*pl3, *pl0, *plr, *pll, *gt3); // top length
+            getLineSegment(*pl2, *pl5, *pll, *pl1, *gt1); // left cap
+            getLineSegment(*pl2, *pl0, *plr, *pll, *gt3); // top length
          }
          if (!plr) {
-            getLineSegment(*pl3, *pl4, *pl0, *pl1, *gt0); // right cap
-            getLineSegment(*pl3, *pl1, *pl4, *pl5, *gt2); // bottom length
+            getLineSegment(*pl2, *pl4, *pl0, *pl1, *gt0); // right cap
+            getLineSegment(*pl2, *pl1, *pl4, *pl5, *gt2); // bottom length
          }
          else {
-            getLineSegment(*pl3, *pl4, *plr, *pl1, *gt0); // right cap
-            getLineSegment(*pl3, *pl1, *pl4, *pl5, *gt2); // bottom length
+            getLineSegment(*pl2, *pl4, *plr, *pl1, *gt0); // right cap
+            getLineSegment(*pl2, *pl1, *pl4, *pl5, *gt2); // bottom length
          }
       }
 
@@ -440,7 +460,7 @@ namespace NShapes
 
       DrawLine(s0, e0, 255, res, w, h);
       DrawLine(s1, e1, 255, res, w, h);
-      DrawLine(s2, e2, 0, res, w, h); // assuming same material as top layer
+      DrawLine(s2, e2, 255, res, w, h); // assuming same material as top layer
       DrawLine(s3, e3, 255, res, w, h);
 
       {
@@ -473,11 +493,16 @@ namespace NShapes
          // points on the quarter circle, uncomment the code above to see why this is valid
          for (int i = 180; i < 270; ++i) {
             const double theta = i / 180. * Math2::PI;
-            double orig[3] = { lcylinder->getEnd0()[0] + lcylinder->getRadius() * ::cosf(theta), lcylinder->getEnd0()[1] + lcylinder->getRadius() * ::sinf(theta), lcylinder->getEnd0()[2] }; // eg. point on the circle
+            double orig[3] = {
+               lcylinder->getEnd1()[0] + lcylinder->getRadius() * ::cosf(theta),
+               lcylinder->getEnd1()[1] + lcylinder->getRadius() * ::sinf(theta),
+               lcylinder->getEnd1()[2]
+            }; // eg. point on the circle
             double proj[3];
             calcPointProjection(plane, axis0, axis1, orig, proj);
             const int s[3] = { proj[0] / xlenperpix, proj[1] / ylenperpix, proj[2] };
-            res[s[1] * w + s[0]] = 255;
+            const unsigned int idx = s[1] * w + s[0];
+            if (idx >= 0 && idx < h * w) res[idx] = 255;
          }
       }
       {
@@ -510,11 +535,16 @@ namespace NShapes
          // points on the quarter circle, uncomment the code above to see why this is valid
          for (int i = 270; i < 360; ++i) {
             const double theta = i / 180. * Math2::PI;
-            double orig[3] = { rcylinder->getEnd0()[0] + rcylinder->getRadius() * ::cosf(theta), rcylinder->getEnd0()[1] + rcylinder->getRadius() * ::sinf(theta), lcylinder->getEnd0()[2] }; // eg. point on the circle
+            const double orig[3] = {
+               rcylinder->getEnd1()[0] + rcylinder->getRadius() * ::cosf(theta),
+               rcylinder->getEnd1()[1] + rcylinder->getRadius() * ::sinf(theta),
+               rcylinder->getEnd1()[2]
+            }; // eg. point on the circle
             double proj[3];
             calcPointProjection(plane, axis0, axis1, orig, proj);
             const int s[3] = { proj[0] / xlenperpix, proj[1] / ylenperpix, proj[2] };
-            res[s[1] * w + s[0]] = 255;
+            const unsigned int idx = s[1] * w + s[0];
+            if (idx >= 0 && idx < h * w) res[idx] = 255;
          }
       }
 

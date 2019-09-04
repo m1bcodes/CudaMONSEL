@@ -239,7 +239,7 @@ namespace LinesOnLayers
    __device__ float xstartnm, xstopnm, ystartnm, ystopnm;
    __device__ const NShapes::LineParams* lineParams[3];
 #else
-   const int nTrajectories = 100;
+   const int nTrajectories = 10;
 
    const float pitchnm = 180.f;
    const int nlines = 3;
@@ -497,25 +497,10 @@ namespace LinesOnLayers
       checkCudaErrors(cudaDeviceSynchronize());
       checkCudaErrors(cudaGetLastError());
 
-      const StringT IIMFPPennInterpglassy(glCTables[0]);
-      const StringT SimReducedDeltaEglassy(glCTables[1]);
-      const StringT simTableThetaNUglassy(glCTables[2]);
-      const StringT SimESE0NUglassy(glCTables[3]);
-
-      NUTableInterpolation::transferDataToCuda(IIMFPPennInterpglassy.c_str());
-      NUTableInterpolation::transferDataToCuda(SimReducedDeltaEglassy.c_str());
-      NUTableInterpolation::transferDataToCuda(simTableThetaNUglassy.c_str());
-      NUTableInterpolation::transferDataToCuda(SimESE0NUglassy.c_str());
-
-      //tablePath = "C:\\Program Files\\NIST\\JMONSEL\\ScatteringTables\\SiTables\\";
-      //const StringT IIMFPFullPennInterpSiSI = tablePath + "IIMFPFullPennInterpSiSI.csv";
-      //const StringT interpNUSimReducedDeltaEFullPennSiSI = tablePath + "interpNUSimReducedDeltaEFullPennSiSI.csv";
-      //const StringT interpNUThetaFullPennSiBGSI = tablePath + "interpNUThetaFullPennSiBGSI.csv";
-      //const StringT interpSimESE0NUSiBGSI = tablePath + "interpSimESE0NUSiBGSI.csv";
-      //NUTableInterpolation::copyDataToCuda(IIMFPFullPennInterpSiSI.c_str());
-      //NUTableInterpolation::copyDataToCuda(interpNUSimReducedDeltaEFullPennSiSI.c_str());
-      //NUTableInterpolation::copyDataToCuda(interpNUThetaFullPennSiBGSI.c_str());
-      //NUTableInterpolation::copyDataToCuda(interpSimESE0NUSiBGSI.c_str());
+      NUTableInterpolation::transferDataToCuda(glCTables[0]);
+      NUTableInterpolation::transferDataToCuda(glCTables[1]);
+      NUTableInterpolation::transferDataToCuda(glCTables[2]);
+      NUTableInterpolation::transferDataToCuda(glCTables[3]);
 
       char* d_fn = nullptr;
 
@@ -874,7 +859,9 @@ namespace LinesOnLayers
          //NShapes::Line line(-h, w, linelength, thetal, thetar, radl, radr);
          lines[i] = new NShapes::Line(-lineParams[i]->h, lineParams[i]->w, lineParams[i]->linelength, lineParams[i]->thetal, lineParams[i]->thetar, lineParams[i]->radl, lineParams[i]->radr);
          const double pivot[3] = { 0.f, 0.f, 0.f };
-         lines[i]->get()->rotate(pivot, -Math2::PI / 2.f, Math2::PI / 2.f, Math2::PI / 2.f);
+         //lines[i]->get()->rotate(pivot, -Math2::PI / 2.f, Math2::PI / 2.f, Math2::PI / 2.f);
+         //lines[i]->get()->rotate(pivot, Math2::PI / 2.f, Math2::PI / 2.f, -Math2::PI / 2.f);
+         lines[i]->get()->rotate(pivot, -Math2::PI / 2.f + 20.f / (Math2::PI / 2.f), Math2::PI / 2.f - 20.f / (Math2::PI / 2.f), Math2::PI / 2.f - 20.f / (Math2::PI / 2.f));
          //const double dist1[3] = { 0.f, 0.f, linelength / 2. };
          const double dist1[3] = { lineParams[i]->x, 0.f, linelength / 2. };
          lines[i]->get()->translate(dist1);
@@ -1041,7 +1028,8 @@ namespace LinesOnLayers
          NShapes::Line line(-lineParams[i]->h, lineParams[i]->w, lineParams[i]->linelength, lineParams[i]->thetal, lineParams[i]->thetar, lineParams[i]->radl, lineParams[i]->radr);
          //NShapes::Line line(-lp.h, lp.w, lp.linelength, lp.thetal, lp.thetar, lp.radl, lp.radr);
          const double pivot[3] = { 0.f, 0.f, 0.f };
-         line.get()->rotate(pivot, -Math2::PI / 2.f, Math2::PI / 2.f, Math2::PI / 2.f);
+         //line.get()->rotate(pivot, -Math2::PI / 2.f, Math2::PI / 2.f, Math2::PI / 2.f);
+         line.get()->rotate(pivot, -Math2::PI / 2.f + 20.f / (Math2::PI / 2.f), Math2::PI / 2.f - 20.f / (Math2::PI / 2.f), Math2::PI / 2.f - 20.f / (Math2::PI / 2.f));
          //const double dist1[3] = { 0.f, 0.f, linelength / 2. };
          //const double dist1[3] = { lp.x, 0.f, linelength / 2. };
          const double dist1[3] = { lineParams[i]->x, 0.f, linelength / 2. };

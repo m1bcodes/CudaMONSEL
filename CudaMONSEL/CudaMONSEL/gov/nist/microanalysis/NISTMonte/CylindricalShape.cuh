@@ -21,7 +21,7 @@ namespace CylindricalShape
       __host__ __device__ void translate(const double distance[]) override;
 
       __host__ __device__ const double* getEnd0() const;
-      const double* getEnd1() const;
+      __host__ __device__ const double* getEnd1();
 
       __host__ __device__ double getRadius() const;
       double getLength() const;
@@ -31,7 +31,7 @@ namespace CylindricalShape
       __host__ __device__ double distanceSqr(const double p[], double u) const;
 
       double mEnd0[3]; // The position of the center of one end cap
-      double mEnd1[3]; // redundant...
+      double mEnd1[3]; // redundant... = mEnd0 + mDelta
       double mDelta[3]; // The length and direction of the axis
       double mRadius2; // The sqr(radius) of the cylinder
       double mLen2; // Cache the length squared...
