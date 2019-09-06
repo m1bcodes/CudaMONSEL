@@ -1,8 +1,6 @@
 # CudaMONSEL
+[comment]: <> ![alt text](https://raw.githubusercontent.com/username/projectname/branch/path/to/img.png)
 
-```
-![alt text](https://raw.githubusercontent.com/username/projectname/branch/path/to/img.png)
-```
 CudaMONSEL is a full-fledged electron tracker based on first physical principles. Its primary application is to carry out Monte Carlo simulation of SEM Signals. It can be ran on CPU using a thread pool, as well as GPU using the CUDA framework.
 
 CudaMONSEL is is a direct port of JMONSEL, which is a Java version the software built by J.S. Villarrubia and Nicholas Ritchie of NIST. CudaMONSEL aims to speed up the original simulation in order to mass produce SEM images for ML training. It also added extra functionalities to describe the geometry of the setup.
