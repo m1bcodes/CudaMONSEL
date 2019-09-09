@@ -1,5 +1,8 @@
 # CudaMONSEL
+<!--
 ![alt text](https://raw.githubusercontent.com/zengrz/CudaMONSEL/double-to-float/CudaMONSEL/12.png)
+-->
+<img align="center" src="https://raw.githubusercontent.com/zengrz/CudaMONSEL/double-to-float/CudaMONSEL/12.png"> 
 
 CudaMONSEL is a full-fledged electron tracker based on first physical principles. Its primary application is to carry out Monte Carlo simulation of SEM Signals. It can be ran on CPU using a thread pool, as well as GPU using the CUDA framework.
 
