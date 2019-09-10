@@ -37,6 +37,7 @@ namespace Electron
       __host__ __device__ bool isTrajectoryComplete() const;
       __host__ __device__ void setTrajectoryComplete(bool trajectoryComplete);
       __host__ __device__ long getIdent() const;
+      __host__ __device__ float getInitialEnergy() const;
       long getParentID() const;
 
    private:
@@ -54,6 +55,8 @@ namespace Electron
 
       // Kinetic energy of the electron upon conclusion of the previous step
       float previousEnergy; // transient
+
+      const float initialEnergy; // check if energy has increased, which is invalid
 
       int mStepCount; // transient
 

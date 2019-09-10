@@ -98,8 +98,10 @@ namespace TabulatedInelasticSM
       float minE = (offsetFermiEnergy + bandgap) - Ezq;
       if (minE < 0.) minE = 0.;
       float maxE = offsetFermiEnergy - (kz * kz);
-      if (maxE < 1e-25) // TODO: not necessary with double, needs fix
-         maxE = 0;
+      if (maxE < minE) {// TODO: not necessary with double, needs fix
+         printf("TabulatedInelasticSM::simESEf: maxE (%.5e) < minE (%.5e)\n", maxE, minE);
+         maxE = minE;
+      }
       if (!(minE <= maxE)) printf("TabulatedInelasticSM::simESEf: minE (%.10e) <= maxE (%.10e)\n", minE, maxE);
       const float Exy = (minE * (1. - r)) + (maxE * r);
       const float ESEf = Exy + Ezq;

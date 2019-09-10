@@ -37,17 +37,17 @@ namespace Electron
       parentID = 0;
    }
 
-   __host__ __device__ Electron::Electron(const double initialPos[], float kE)
+   __host__ __device__ Electron::Electron(const double initialPos[], float kE) : initialEnergy(kE)
    {
       init(initialPos, 0., 0., kE);
    }
 
-   Electron::Electron(const double initialPos[], float theta, float phi, float kE)
+   Electron::Electron(const double initialPos[], float theta, float phi, float kE) : initialEnergy(kE)
    {
       init(initialPos, theta, phi, kE);
    }
 
-   __host__ __device__ Electron::Electron(const Electron& parent, float theta, float phi, float kE)
+   __host__ __device__ Electron::Electron(const Electron& parent, float theta, float phi, float kE) : initialEnergy(kE)
    {
       init(parent.getPosition(), theta, phi, kE);
       mCurrentRegion = parent.getCurrentRegion();
@@ -202,6 +202,11 @@ namespace Electron
    __host__ __device__ long Electron::getIdent() const
    {
       return ident;
+   }
+
+   __host__ __device__ float Electron::getInitialEnergy() const
+   {
+      return initialEnergy;
    }
 
    long Electron::getParentID() const

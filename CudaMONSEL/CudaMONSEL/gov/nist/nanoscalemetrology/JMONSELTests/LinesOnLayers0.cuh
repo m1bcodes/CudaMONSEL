@@ -1,6 +1,8 @@
 #ifndef _LINES_ON_LAYERS_0_CUH_
 #define _LINES_ON_LAYERS_0_CUH_
 
+#include "gov\nist\nanoscalemetrology\JMONSEL\NShapes.cuh"
+
 #include <cuda_runtime.h>
 
 namespace LinesOnLayers
@@ -23,7 +25,7 @@ namespace LinesOnLayers
 
    extern void runSinglePixelThread(int id, const unsigned int r, const unsigned int c, float* result);
 
-   extern void testLineProjection();
+   extern void lineProjection();
 }
 
 #endif

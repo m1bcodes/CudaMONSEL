@@ -86,6 +86,7 @@
     <CudaCompile Include="gov\nist\microanalysis\Utility\UncertainValue2.cu" />
     <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSELTests\LinesOnLayers.cu" />
     <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSELTests\LinesOnLayers0.cu" />
+    <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSELTests\LinesOnLayersCPU.cu" />
     <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSELutils\NULagrangeInterpolation.cu" />
     <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSELutils\ULagrangeInterpolation.cu" />
     <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSEL\ExpQMBarrierSM.cu" />
@@ -190,6 +191,7 @@
     <ClInclude Include="gov\nist\microanalysis\Utility\UncertainValue2.cuh" />
     <ClInclude Include="gov\nist\nanoscalemetrology\JMONSELTests\LinesOnLayers.cuh" />
     <ClInclude Include="gov\nist\nanoscalemetrology\JMONSELTests\LinesOnLayers0.cuh" />
+    <ClInclude Include="gov\nist\nanoscalemetrology\JMONSELTests\LinesOnLayersCPU.cuh" />
     <ClInclude Include="gov\nist\nanoscalemetrology\JMONSELutils\NULagrangeInterpolation.cuh" />
     <ClInclude Include="gov\nist\nanoscalemetrology\JMONSELutils\ULagrangeInterpolation.cuh" />
     <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\BarrierScatterMechanism.cuh" />

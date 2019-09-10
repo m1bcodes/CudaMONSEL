@@ -75,7 +75,8 @@ namespace NShapes
       rightNMPS(nullptr), rightSide(nullptr), pl4(nullptr), plr(nullptr), rcylinder(nullptr),
       leftNMPS(nullptr), leftSide(nullptr), pl5(nullptr), pll(nullptr), lcylinder(nullptr),
       nts(nullptr), nis(nullptr),
-      gt0(nullptr), gt1(nullptr), gt2(nullptr), gt3(nullptr)
+      gt0(nullptr), gt1(nullptr), gt2(nullptr), gt3(nullptr),
+      pl6(nullptr)//, pl7(nullptr)
    {
       create();
       //project();
@@ -88,6 +89,9 @@ namespace NShapes
       delete this->pl1; this->pl1 = nullptr;
       delete this->pl2; this->pl2 = nullptr;
       delete this->pl3; this->pl3 = nullptr;
+
+      delete this->pl6; this->pl6 = nullptr;
+      //delete this->pl7; this->pl7 = nullptr;
 
       delete this->rightNMPS; this->rightNMPS = nullptr;
       if (this->rightSide) {
@@ -565,6 +569,17 @@ namespace NShapes
       return nis;
    }
 
+   __host__ __device__ void Line::addRestrainingPlanes()
+   {
+      const double n6[] = { 0., 0., -1. }, p6[] = { 0., 0., 0. }; // Add top plane
+      pl6 = new PlaneT(n6, p6);
+      enclosure->addPlane(pl6);
+
+      //const double n7[] = { 0., 1., 0. }, p7[] = { 0., 0., 0 }; // Add top plane
+      //pl7 = new PlaneT(n7, p7);
+      //enclosure->addPlane(pl7);
+   }
+
    __host__ __device__ void TestProjection()
    {
       const double p[3] = { 
@@ -624,7 +639,8 @@ namespace NShapes
       bnd = new PlaneT(n0, p0);
       enclosure->addPlane(bnd);
 
-      const double n1[] = { 0., 1., 0. }, p1[] = { 0., width / 2., 0. }; // Right end
+      double n1[] = { 0., 0.1, 0.2 }, p1[] = { 0., width / 2., 0. }; // Right end
+      Math2::normalize3d(n1, n1);
       pos = new PlaneT(n1, p1);
       enclosure->addPlane(pos);
 

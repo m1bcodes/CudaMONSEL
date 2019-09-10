@@ -72,6 +72,8 @@ namespace Transform3D
       return rotation(ph, th, ps);
    }
 
+   // using the x-convention Euler angle
+   // http://mathworld.wolfram.com/EulerAngles.html
    __host__ __device__ void rotate3d(const double v[], const double phi, const double th, const double psi, double res[])
    {
       //const MatrixXd& rot = rotation(phi, th, psi);

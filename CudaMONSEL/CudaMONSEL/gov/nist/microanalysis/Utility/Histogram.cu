@@ -91,7 +91,15 @@ namespace Histogram
 
    __host__ __device__ void Histogram::add(double val)
    {
-      ++mCounts[bin(val) + 1];
+      const unsigned int b = bin(val);
+
+      if (b >= mCounts.size() - 1) {
+         printf("Histogram::add: bin index is out of range (%d/%d, val = %.5e)\n", b, mCounts.size(), val);
+         ++mCounts[b];
+      }
+      else {
+         ++mCounts[b + 1];
+      }
    }
 
    void Histogram::add(double vals[], int len)

@@ -47,6 +47,8 @@ namespace NShapes
 
       __host__ __device__ NormalIntersectionShapeT* get();
 
+      __host__ __device__ void addRestrainingPlanes();
+
    private:
       const double topz; // z of the top face
       const double width; // line width
@@ -76,6 +78,10 @@ namespace NShapes
 
       NormalIntersectionShapeT* nts;
       NormalIntersectionShapeT* nis; // the entire shape
+
+      PlaneT* pl6;
+      //PlaneT* pl7;
+      NormalIntersectionShapeT* nis2;
 
       LineShapeT* gt0;
       LineShapeT* gt1;

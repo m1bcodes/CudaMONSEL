@@ -464,8 +464,8 @@ void deviceQuery()
 
 int main()
 {
-   LinesOnLayers::initRange();
-   LinesOnLayers::testLineProjection();
+   //LinesOnLayers::initRange();
+   //LinesOnLayers::LineProjection();
 
    deviceQuery();
 
@@ -482,6 +482,7 @@ int main()
    testSim();
    LinesOnLayers::loadNUTable();
    LinesOnLayers::initRange();
+   LinesOnLayers::lineProjection();
 
    const unsigned int H = LinesOnLayers::ysize, W = LinesOnLayers::xsize;
    //testGPU(H, W);
@@ -495,78 +496,79 @@ int main()
    //LinesOnLayers::initCuda << <1, 1 >> >();
    //checkCudaErrors(cudaDeviceSynchronize());
    //checkCudaErrors(cudaGetLastError());
+   for (int n = 0; n < 1; ++n) {
+      float* d_result = nullptr;
 
-   float* d_result = nullptr;
+      //checkCudaErrors(cudaMalloc((void**)&d_result, sizeof(d_result[0]) * H * W));
+      d_result = new float[H * W];
+      auto start = std::chrono::system_clock::now();
+      printf("start timing\n");
 
-   //checkCudaErrors(cudaMalloc((void**)&d_result, sizeof(d_result[0]) * H * W));
-   d_result = new float[H * W];
-   auto start = std::chrono::system_clock::now();
-   printf("start timing\n");
+      //LinesOnLayers::runCuda << <gridSize, blockSize >> >(d_result);
+      //checkCudaErrors(cudaDeviceSynchronize());
+      //checkCudaErrors(cudaGetLastError());
 
-   //LinesOnLayers::runCuda << <gridSize, blockSize >> >(d_result);
-   //checkCudaErrors(cudaDeviceSynchronize());
-   //checkCudaErrors(cudaGetLastError());
-
-   //std::thread* threads = new std::thread[H * W];
-   //for (int i = 0; i < H; ++i) {
-   //    for (int j = 0; j < W; ++j) {
-   //        threads[i*W + j] = std::thread(LinesOnLayers::runSinglePixel, i, j, d_result);
-   //    }
-   //}
-   //for (int i = 0; i < H; ++i) {
-   //    for (int j = 0; j < W; ++j) {
-   //        threads[i*W + j].join();
-   //    }
-   //}
-   //delete[] threads;
-
-   ctpl::thread_pool tasks(11);
-   std::vector<std::future<void>> results(H * W);
-   for (int i = 0; i < H; ++i) {
-      for (int j = 0; j < W; ++j) {
-         results[i*W + j] = tasks.push(LinesOnLayers::runSinglePixelThread, i, j, d_result);
+      //std::thread* threads = new std::thread[H * W];
+      //for (int i = 0; i < H; ++i) {
+      //    for (int j = 0; j < W; ++j) {
+      //        threads[i*W + j] = std::thread(LinesOnLayers::runSinglePixel, i, j, d_result);
+      //    }
+      //}
+      //for (int i = 0; i < H; ++i) {
+      //    for (int j = 0; j < W; ++j) {
+      //        threads[i*W + j].join();
+      //    }
+      //}
+      //delete[] threads;
+      //LinesOnLayers::createShapes();
+      ctpl::thread_pool tasks(11);
+      std::vector<std::future<void>> results(H * W);
+      for (int i = 0; i < H; ++i) {
+         for (int j = 0; j < W; ++j) {
+            results[i*W + j] = tasks.push(LinesOnLayers::runSinglePixelThread, i, j, d_result);
+         }
       }
-   }
-   for (int i = 0; i < H; ++i) {
-      for (int j = 0; j < W; ++j) {
-         results[i*W + j].get();
+      for (int i = 0; i < H; ++i) {
+         for (int j = 0; j < W; ++j) {
+            results[i*W + j].get();
+         }
       }
-   }
+      //LinesOnLayers::destroyShapes();
+      //for (int i = 0; i < H; ++i) {
+      //   for (int j = 0; j < W; ++j) {
+      //      LinesOnLayers::runSinglePixel(i, j, d_result);
+      //   }
+      //}
 
-   //for (int i = 0; i < H; ++i) {
-   //   for (int j = 0; j < W; ++j) {
-   //      LinesOnLayers::runSinglePixel(i, j, d_result);
-   //   }
-   //}
+      auto end = std::chrono::system_clock::now();
+      std::chrono::duration<double> elapsed_seconds = end - start;
+      std::time_t end_time = std::chrono::system_clock::to_time_t(end);
+      std::cout << std::endl << "finished computation at " << std::ctime(&end_time) << "elapsed time: " << elapsed_seconds.count() << "s" << std::endl;
 
-   auto end = std::chrono::system_clock::now();
-   std::chrono::duration<double> elapsed_seconds = end - start;
-   std::time_t end_time = std::chrono::system_clock::to_time_t(end);
-   std::cout << std::endl << "finished computation at " << std::ctime(&end_time) << "elapsed time: " << elapsed_seconds.count() << "s" << std::endl;
+      float* h_result = new float[H * W];
+      //checkCudaErrors(cudaMemcpy(h_result, d_result, sizeof(h_result[0]) * H * W, cudaMemcpyDeviceToHost));
+      memcpy(h_result, d_result, sizeof(h_result[0]) * H * W);
+      delete[] d_result;
+      //ImageUtil::saveResults("img.bmp", h_result, W, H);
 
-   float* h_result = new float[H * W];
-   //checkCudaErrors(cudaMemcpy(h_result, d_result, sizeof(h_result[0]) * H * W, cudaMemcpyDeviceToHost));
-   memcpy(h_result, d_result, sizeof(h_result[0]) * H * W);
-   delete[] d_result;
-   //ImageUtil::saveResults("img.bmp", h_result, W, H);
-
-   std::string output;
-   for (int i = 0; i < H; ++i) {
-      for (int j = 0; j < W; ++j) {
-         //printf("%.5e ", h_result[i * W + j]);
-         output += std::to_string(h_result[i * W + j]) + " ";
+      std::string output;
+      for (int i = 0; i < H; ++i) {
+         for (int j = 0; j < W; ++j) {
+            //printf("%.5e ", h_result[i * W + j]);
+            output += std::to_string(h_result[i * W + j]) + " ";
+         }
+         //printf("\n");
       }
-      //printf("\n");
+      delete[] h_result;
+      output += "\n" + std::to_string(elapsed_seconds.count());
+
+      std::ofstream myfile;
+      myfile.open("outputs\\output" + std::to_string(n) + ".txt");
+      myfile << output.c_str();
+      myfile.close();
+
+      printf("done\n");
    }
-   delete[] h_result;
-   output += "\n" + std::to_string(elapsed_seconds.count());
-
-   std::ofstream myfile;
-   myfile.open("output.txt");
-   myfile << output.c_str();
-   myfile.close();
-
-   printf("done\n");
 
    return 0;
 }
