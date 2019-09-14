@@ -1,6 +1,6 @@
 \chapter{Concepts}
 \label{sec:concepts}
-The project's final goals is to simulate the trajectory of a electron from creation to destruction (defined by the falling of electron energy below a threashold) in a highly computational efficient manner so that large quantity of images derived from the simulation can be obtained in feasible time and used for training of neural network. In order to do this, the code should be as efficient as possible and any computation resource available should fully--utilized. This section contains the background and algorithm for tracking each electron through its lifetime. The algorithm was developed--jointly by John S.  Villarrubia and Nicholas W. M. Ritchie using a variety of techniques from particle physics.
+The project's final goals is to simulate the trajectory of a electron from creation to destruction in a computational efficient manner so that large quantity of synthesized images can be obtained in feasible time to be used for training of neural networks. This section contains the background and algorithm for tracking each electron throughout its lifetime. The algorithm is being developed jointly by John S.  Villarrubia and Nicholas W. M. Ritchie of NIST.
 
 \section{Simulation}\label{sec:concept_monte_carlo_ss}
 %\begin{figure}[h]
@@ -18,3 +18,26 @@ The simulation tracks the propagation of an electron trversing through regions. 
 %     &= \sum_{t}\sum_{k=1}^{N(t)} A_k(t) R_s(r_c(t)-r_k(t))e^{-\frac{j 2 \pi r f_c }{c}}
 %\end{align*}
 
+\section{Material Scatter Model}\label{sec:msm}
+A material scatter model consists of three parts:
+\begin{enumerate}
+\item A list of scattering mechanisms (e.g., Mott elastic scattering, Moller SE production, Plasmon SE production,...) that operate in the material. These scattering mechanisms may discontinuously (i.e., at a scattering event) change the primary electron energy and direction and they may create secondary electrons.
+\item A single barrier scattering function. This method models scattering at a material interface.
+\item A single continuous slowing down function. Determines the energy loss of the primary electron within the material. 
+\end{enumerate}
+Each material in the sample must be associated with a material scattering model. It combines the various mechanisms to determine overall scattering behavior, including free path, secondary generation, etc. 
+
+\section{Scatter Mechanism}\label{sec:sm}
+A scatter mechanism is a physical event which governs the motion of electron. Each material scatter model can hold multiple scatter mechanisms, each with its own scatter effects and probability of occuring (eg. scattering rate). Its effects are a function of the medium/material and the electron's current energy. Effects can include changing the (primary) electron's direction and energy, and even generating a secondary electron with its own energy and direction through some inelastic scattering events. 
+
+Scatter mechanisms included in JMONSEL are:
+\begin{enumerate}
+\item BrowningMottElasticSM
+\item FittedInelSM
+\item GanachaudMokraniPhononInelasticSM
+\item GanachaudMokraniPolaronTrapSM
+\item KoteraPlasmonInelasticSM
+\item MollerInelasticSM
+\item SelectableElasticSM
+\item TabulatedInelasticSM
+\end{enumerate}
