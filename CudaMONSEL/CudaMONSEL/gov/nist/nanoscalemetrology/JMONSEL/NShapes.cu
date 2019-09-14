@@ -629,7 +629,7 @@ namespace NShapes
       printf("(%.5e, %.5e, %.5e), (%.5e, %.5e, %.5e)", res.P0[0], res.P0[1], res.P0[2], res.P1[0], res.P1[1], res.P1[2]);
    }
 
-   __host__ __device__ HorizontalStrip::HorizontalStrip(const double width) :
+   __host__ __device__ HorizontalStrip::HorizontalStrip(const double width, const bool fadeBottom) :
       enclosure(nullptr), bnd(nullptr), pos(nullptr), neg(nullptr),
       gt0(nullptr), gt1(nullptr)
    {
@@ -639,9 +639,15 @@ namespace NShapes
       bnd = new PlaneT(n0, p0);
       enclosure->addPlane(bnd);
 
-      double n1[] = { 0., 0.1, 0.2 }, p1[] = { 0., width / 2., 0. }; // Right end
-      Math2::normalize3d(n1, n1);
-      pos = new PlaneT(n1, p1);
+      if (fadeBottom) {
+         double n1[] = { 0., 0.1, 0.2 }, p1[] = { 0., width / 2., 0. }; // Right end
+         Math2::normalize3d(n1, n1);
+         pos = new PlaneT(n1, p1);
+      }
+      else {
+         const double n1[] = { 0., 1., 0. }, p1[] = { 0., width / 2., 0. }; // Right end
+         pos = new PlaneT(n1, p1);
+      }
       enclosure->addPlane(pos);
 
       const double n2[] = { 0., -1., 0. }, p2[] = { 0., -width / 2., 0. }; // Left end

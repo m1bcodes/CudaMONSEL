@@ -55,6 +55,8 @@
 
 #include <chrono>
 #include <thread>
+#include <ctime>
+#include <direct.h>
 
 #include "Amphibian\ctpl_stl.h"
 
@@ -464,6 +466,16 @@ void deviceQuery()
 
 int main()
 {
+   time_t now = time(0);
+
+   tm *ltm = localtime(&now);
+
+   std::string folder =
+      std::to_string(ltm->tm_year) + "-" + std::to_string(ltm->tm_mon) + "-" + std::to_string(ltm->tm_mday) + "_" +
+      std::to_string(ltm->tm_hour) + "-" + std::to_string(ltm->tm_min) + "-" + std::to_string(ltm->tm_sec);
+
+   _mkdir(folder.c_str());
+
    //LinesOnLayers::initRange();
    //LinesOnLayers::LineProjection();
 
@@ -482,7 +494,6 @@ int main()
    testSim();
    LinesOnLayers::loadNUTable();
    LinesOnLayers::initRange();
-   LinesOnLayers::lineProjection();
 
    const unsigned int H = LinesOnLayers::ysize, W = LinesOnLayers::xsize;
    //testGPU(H, W);
@@ -496,7 +507,16 @@ int main()
    //LinesOnLayers::initCuda << <1, 1 >> >();
    //checkCudaErrors(cudaDeviceSynchronize());
    //checkCudaErrors(cudaGetLastError());
-   for (int n = 0; n < 1; ++n) {
+   for (int n = 0; n < 100; ++n) {
+      LinesOnLayers::setParams();
+
+      char* gt = new char[LinesOnLayers::ysize * LinesOnLayers::xsize];
+      memset(gt, 0, sizeof(gt[0]) * LinesOnLayers::ysize * LinesOnLayers::xsize);
+      LinesOnLayers::lineProjection(n, gt);
+      std::string fn = folder + "\\gt" + std::to_string(n) + ".bmp";
+      ImageUtil::saveImage(fn.c_str(), gt, LinesOnLayers::xsize, LinesOnLayers::ysize);
+      delete[] gt;
+
       float* d_result = nullptr;
 
       //checkCudaErrors(cudaMalloc((void**)&d_result, sizeof(d_result[0]) * H * W));
@@ -560,10 +580,13 @@ int main()
          //printf("\n");
       }
       delete[] h_result;
-      output += "\n" + std::to_string(elapsed_seconds.count());
+      output += "\n seconds: " + std::to_string(elapsed_seconds.count());
+      output += "\n nTrajectories: " + std::to_string(LinesOnLayers::nTrajectories);
+      output += "\n beamEeV: " + std::to_string(LinesOnLayers::beamEeV);
+      output += "\n beamsizenm: " + std::to_string(LinesOnLayers::beamsizenm);
 
       std::ofstream myfile;
-      myfile.open("outputs\\output" + std::to_string(n) + ".txt");
+      myfile.open(folder + "\\output" + std::to_string(n) + ".txt");
       myfile << output.c_str();
       myfile.close();
 

@@ -40,7 +40,7 @@
 namespace LinesOnLayers
 {
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-   __constant__ const int nTrajectories = 100;
+   __device__ unsigned int nTrajectories = 100;
 
    __constant__ const float pitchnm = 180.f;
    __constant__ const int nlines = 3;
@@ -56,7 +56,7 @@ namespace LinesOnLayers
 
    __constant__ const float beamEeVvals[] = { 500.f };
    __constant__ const int beamEeVvalsLen = 1;
-   __constant__ const float beamsizenm = 0.5f;
+   __device__ float beamsizenm = 0.5f;
    __constant__ const float deepnm = 15.f;
 
    __constant__ const bool trajImg = true;
@@ -156,7 +156,7 @@ namespace LinesOnLayers
    __constant__ const float radl = 20.f * 1.e-9f;
    __constant__ const float layer1thickness = 80.f * 1.e-9f;
    __constant__ const float layer2thickness = 200.f * 1.e-9f;
-   __constant__ const float beamsize = 0.5f * 1.e-9f;
+   __device__ float beamsize = 0.5f * 1.e-9f;
    __constant__ const float deep = 15.f * 1.e-9f;
 
    __constant__ const double center[] = {
@@ -165,10 +165,10 @@ namespace LinesOnLayers
       0.0
    };
 
-   __constant__ const float beamEeV = 500.f;
-   __constant__ const float beamE = 1.60217653e-19f * 500.f;
+   __device__ float beamEeV = 500.f;
+   __device__ float beamE = 1.60217653e-19f * 500.f;
    __constant__ const float binSizeEV = 10.f;
-   __constant__ const float cutoffFractionForSE = 0.1f;
+   __constant__ const float cutoffEnergyForSE = 50.f;
 
    //__device__ NullMaterialScatterModelT* NULL_MSM = nullptr;
 
@@ -242,7 +242,7 @@ namespace LinesOnLayers
    __device__ float xstartnm, xstopnm, ystartnm, ystopnm;
    __device__ const NShapes::LineParams* lineParams[3];
 #else
-   const int nTrajectories = 500;
+   unsigned int nTrajectories = 100;
 
    const float pitchnm = 180.f;
    const int nlines = 3;
@@ -258,7 +258,7 @@ namespace LinesOnLayers
 
    const float beamEeVvals[] = { 500.f };
    const int beamEeVvalsLen = 1;
-   const float beamsizenm = 0.5f;
+   float beamsizenm = 0.5f;
    const float deepnm = 15.f;
 
    const bool trajImg = true;
@@ -359,7 +359,7 @@ namespace LinesOnLayers
    const float radl = radlnm * 1.e-9f;
    const float layer1thickness = layer1thicknessnm * 1.e-9f;
    const float layer2thickness = layer2thicknessnm * 1.e-9f;
-   const float beamsize = beamsizenm * 1.e-9f;
+   float beamsize = beamsizenm * 1.e-9f;
    const float deep = deepnm * 1.e-9f;
 
    const double center[] = {
@@ -368,10 +368,10 @@ namespace LinesOnLayers
       0.0
    };
 
-   const float beamEeV = 500.f;
-   const float beamE = ToSI::eV(beamEeV);
+   float beamEeV = 500.f;
+   float beamE = ToSI::eV(beamEeV);
    const float binSizeEV = 10.f;
-   const float cutoffFractionForSE = 0.1f;
+   const float cutoffEnergyForSE = 50.f;
 
    //NullMaterialScatterModelT* NULL_MSM = nullptr;
 
@@ -815,17 +815,17 @@ namespace LinesOnLayers
       layer0->translate(dist0);
       RegionT layer0Region(&chamber, &ARCMSM, (NormalShapeT*)layer0);
 
-      //NShapes::HorizontalStrip cs1(stripWidth);
-      //NormalMultiPlaneShapeT* layer1 = cs1.get();
-      //dist0[1] += stripWidth;
-      //layer1->translate(dist0);
-      //RegionT layer1Region(&chamber, &SiO2MSM, (NormalShapeT*)layer1);
+      NShapes::HorizontalStrip cs1(stripWidth);
+      NormalMultiPlaneShapeT* layer1 = cs1.get();
+      dist0[1] += stripWidth;
+      layer1->translate(dist0);
+      RegionT layer1Region(&chamber, &SiO2MSM, (NormalShapeT*)layer1);
 
-      //NShapes::HorizontalStrip cs2(stripWidth);
-      //NormalMultiPlaneShapeT* layer2 = cs2.get();
-      //dist0[1] += stripWidth;
-      //layer2->translate(dist0);
-      //RegionT layer2Region(&chamber, &ARCMSM, (NormalShapeT*)layer2);
+      NShapes::HorizontalStrip cs2(stripWidth, true);
+      NormalMultiPlaneShapeT* layer2 = cs2.get();
+      dist0[1] += stripWidth;
+      layer2->translate(dist0);
+      RegionT layer2Region(&chamber, &ARCMSM, (NormalShapeT*)layer2);
 
       //NormalMultiPlaneShapeT layer1;
       //PlaneT pl1(normalvector, layer1Pos);
@@ -856,27 +856,27 @@ namespace LinesOnLayers
 
       //RegionT lineRegion(&chamber, &PMMAMSM, (NormalIntersectionShapeT*)line.get());
 
-      //NShapes::Line* lines[3];
-      //RegionT* regions[3];
-      //for (int i = 0; i < nlines; ++i) {
-      //   //NShapes::Line line(-h, w, linelength, thetal, thetar, radl, radr);
-      //   lines[i] = new NShapes::Line(-lineParams[i]->h, lineParams[i]->w, lineParams[i]->linelength, lineParams[i]->thetal, lineParams[i]->thetar, lineParams[i]->radl, lineParams[i]->radr);
-      //   const double pivot[3] = { 0.f, 0.f, 0.f };
-      //   lines[i]->get()->rotate(pivot, -Math2::PI / 2.f, Math2::PI / 2.f, Math2::PI / 2.f);
-      //   //lines[i]->get()->rotate(pivot, -Math2::PI / 2.f + 20.f / (Math2::PI / 2.f), Math2::PI / 2.f - 20.f / (Math2::PI / 2.f), Math2::PI / 2.f - 20.f / (Math2::PI / 2.f));
-      //   //const double dist1[3] = { 0.f, 0.f, linelength / 2. };
-      //   const double offset[3] = { lineParams[i]->x, 0.f, linelength / 2. };
-      //   lines[i]->get()->translate(offset);
-      //   lines[i]->addRestrainingPlanes();
-      //   regions[i] = new RegionT(&chamber, &PMMAMSM, (NormalIntersectionShapeT*)lines[i]->get());
-      //}
+      NShapes::Line* lines[3];
+      RegionT* regions[3];
+      for (int i = 0; i < nlines; ++i) {
+         //NShapes::Line line(-h, w, linelength, thetal, thetar, radl, radr);
+         lines[i] = new NShapes::Line(-lineParams[i]->h, lineParams[i]->w, lineParams[i]->linelength, lineParams[i]->thetal, lineParams[i]->thetar, lineParams[i]->radl, lineParams[i]->radr);
+         const double pivot[3] = { 0.f, 0.f, 0.f };
+         lines[i]->get()->rotate(pivot, -Math2::PI / 2.f, Math2::PI / 2.f, Math2::PI / 2.f);
+         //lines[i]->get()->rotate(pivot, -Math2::PI / 2.f + 20.f / (Math2::PI / 2.f), Math2::PI / 2.f - 20.f / (Math2::PI / 2.f), Math2::PI / 2.f - 20.f / (Math2::PI / 2.f));
+         //const double dist1[3] = { 0.f, 0.f, linelength / 2. };
+         const double offset[3] = { lineParams[i]->x, 0.f, linelength / 2. };
+         lines[i]->get()->translate(offset);
+         //lines[i]->addRestrainingPlanes();
+         regions[i] = new RegionT(&chamber, &PMMAMSM, (NormalIntersectionShapeT*)lines[i]->get());
+      }
 
-      NShapes::Line line(-h, w, linelength, thetal * 5.5f, thetar * 5.5f, radl / 4.f, radr / 4.f);
-      const double pivot[3] = { 0.f, 0.f, 0.f };
-      line.get()->rotate(pivot, -Math2::PI / 2.f, Math2::PI / 2.f, Math2::PI / 2.f);
-      const double offset[3] = { lineParams[0]->x, 0.f, linelength / 2. };
-      line.get()->translate(offset);
-      RegionT region(&chamber, &PMMAMSM, (NormalIntersectionShapeT*)line.get());
+      //NShapes::Line line(-h, w, linelength, thetal * 5.5f, thetar * 5.5f, radl / 4.f, radr / 4.f);
+      //const double pivot[3] = { 0.f, 0.f, 0.f };
+      //line.get()->rotate(pivot, -Math2::PI / 2.f, Math2::PI / 2.f, Math2::PI / 2.f);
+      //const double offset[3] = { lineParams[0]->x, 0.f, linelength / 2. };
+      //line.get()->translate(offset);
+      //RegionT region(&chamber, &PMMAMSM, (NormalIntersectionShapeT*)line.get());
 
       const double egCenter[] = { x, y, -h - 20.f * 1.e-9f };
       GaussianBeamT eg(beamsize, beamE, egCenter);
@@ -902,7 +902,7 @@ namespace LinesOnLayers
       const HistogramT& hist = back.backscatterEnergyHistogram();
 
       const float energyperbineV = beamEeV / hist.binCount();
-      const float maxSEbin = beamEeV * cutoffFractionForSE / energyperbineV;
+      const float maxSEbin = cutoffEnergyForSE / energyperbineV;
       int totalSE = 0;
       for (int j = 0; j < (int)maxSEbin; ++j) {
          totalSE = totalSE + hist.counts(j);
@@ -915,10 +915,10 @@ namespace LinesOnLayers
 
       result[r * xsize + c] = SEf;
 
-      //for (int i = 0; i < nlines; ++i) {
-      //   delete lines[i];
-      //   delete regions[i];
-      //}
+      for (int i = 0; i < nlines; ++i) {
+         delete lines[i];
+         delete regions[i];
+      }
    }
 
    __global__ void
@@ -953,11 +953,41 @@ namespace LinesOnLayers
       return val * (1.f + (1.f - Random::random() * 2.f) * fraction); // val +/- val*fraction
    }
 
-   void lineProjection()
+   void setParams()
+   {
+      float curx = -w;
+
+      for (int i = 0; i < nlines; ++i) {
+         lineParams[i] = new NShapes::LineParams(
+            getAdjustedValPlusMinus(h, 0.1f),
+            w,
+            getAdjustedValPlusMinus(linelength, 0.f),
+            getAdjustedValPlusMinus(thetal, 0.1f),
+            getAdjustedValPlusMinus(thetar, 0.1f),
+            getAdjustedValPlusMinus(radl, 0.1f),
+            getAdjustedValPlusMinus(radr, 0.1f),
+            curx);
+         curx += w * 1.5f;
+      }
+
+      nTrajectories = Random::randomInt(240) + 10; // 10 - 250
+
+      beamEeV = 15000.f * Random::random() + 500.f; // 500.f - 20000.f
+      beamE = ToSI::eV(beamEeV);
+
+      beamsizenm = Random::random() + 0.5f; // 0.5f - 1.5f
+      beamsize = beamsizenm * ToSI::NANO;
+
+      printf("nTrajectories: %d\n", nTrajectories);
+      printf("beamEeV: %.5e\n", beamEeV);
+      printf("beamsizenm: %.5e\n", beamsizenm);
+   }
+
+   void lineProjection(const unsigned int idx, char* gt)
    {
       NShapes::HorizontalStrip hs0(stripWidth);
       NormalMultiPlaneShapeT* layer0 = hs0.get();
-      double offset[3] = { 0., stripWidth / 2, 0. };
+      double offset[3] = { 0., stripWidth / 2., 0. };
       layer0->translate(offset);
 
       NShapes::HorizontalStrip hs1(stripWidth);
@@ -965,7 +995,7 @@ namespace LinesOnLayers
       offset[1] += stripWidth;
       layer1->translate(offset);
 
-      NShapes::HorizontalStrip hs2(stripWidth);
+      NShapes::HorizontalStrip hs2(stripWidth, true);
       NormalMultiPlaneShapeT* layer2 = hs2.get();
       offset[1] += stripWidth;
       layer2->translate(offset);
@@ -983,27 +1013,11 @@ namespace LinesOnLayers
       const float xlenperpix = (xstopnm - xstartnm) / xsize * 1.e-9;
       const float ylenperpix = (ystopnm - ystartnm) / ysize * 1.e-9;
 
-      char* gt = new char[ysize * xsize];
-      memset(gt, 0, sizeof(gt[0]) * ysize * xsize);
-
       hs0.calcRasterization(projectionPlane, axis0, axis1, xlenperpix, ylenperpix, gt, xsize, ysize);
       hs1.calcRasterization(projectionPlane, axis0, axis1, xlenperpix, ylenperpix, gt, xsize, ysize);
       hs2.calcRasterization(projectionPlane, axis0, axis1, xlenperpix, ylenperpix, gt, xsize, ysize);
 
-      float curx = -w;
-
       for (int i = 0; i < nlines; ++i) {
-         lineParams[i] = new NShapes::LineParams(
-         //NShapes::LineParams lp(
-            getAdjustedValPlusMinus(h, 0.15f),
-            w,
-            getAdjustedValPlusMinus(linelength, 0.f),
-            getAdjustedValPlusMinus(thetal, 0.f),
-            getAdjustedValPlusMinus(thetar, 0.2f),
-            getAdjustedValPlusMinus(radl, 0.f),
-            getAdjustedValPlusMinus(radr, 0.f),
-            curx
-            );
          //NShapes::Line line(-h, w, linelength, thetal, thetar, radl, radr);
          NShapes::Line line(-lineParams[i]->h, lineParams[i]->w, lineParams[i]->linelength, lineParams[i]->thetal, lineParams[i]->thetar, lineParams[i]->radl, lineParams[i]->radr);
          //NShapes::Line line(-lp.h, lp.w, lp.linelength, lp.thetal, lp.thetar, lp.radl, lp.radr);
@@ -1016,15 +1030,7 @@ namespace LinesOnLayers
          line.get()->translate(offset);
          line.calcGroundtruth(); // get points/line segments that need to be projected
          line.calcRasterization(projectionPlane, axis0, axis1, xlenperpix, ylenperpix, gt, xsize, ysize); // needs to be last since bottom needs to be removed due to same material
-
-         curx += w * 1.5;
       }
-
-#if (!(defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0)))
-      ImageUtil::saveImage("gt.bmp", gt, xsize, ysize);
-#endif
-
-      delete[] gt;
 
       //NShapes::TestProjection();
    }

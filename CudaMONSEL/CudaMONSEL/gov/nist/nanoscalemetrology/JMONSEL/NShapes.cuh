@@ -92,7 +92,7 @@ namespace NShapes
    class HorizontalStrip
    {
    public:
-      __host__ __device__ HorizontalStrip(const double width);
+      __host__ __device__ HorizontalStrip(const double width, const bool fadeBottom = false);
       __host__ __device__ ~HorizontalStrip();
 
       __host__ __device__ void calcGroundtruth();

@@ -10,9 +10,21 @@ namespace LinesOnLayers
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
    extern __device__ unsigned int ysize;
    extern __device__ unsigned int xsize;
+
+   extern __device__ unsigned int nTrajectories;
+   extern __device__ float beamsizenm;
+   extern __device__ float beamsize;
+   extern __device__ float beamEeV;
+   extern __device__ float beamE;
 #else
    extern unsigned int ysize;
    extern unsigned int xsize;
+
+   extern unsigned int nTrajectories;
+   extern float beamsizenm;
+   extern float beamsize;
+   extern float beamEeV;
+   extern float beamE;
 #endif
    extern void loadNUTable();
    extern void transferNUTableToCuda();
@@ -25,7 +37,9 @@ namespace LinesOnLayers
 
    extern void runSinglePixelThread(int id, const unsigned int r, const unsigned int c, float* result);
 
-   extern void lineProjection();
+   extern void setParams();
+
+   extern void lineProjection(const unsigned int n, char* gt);
 }
 
 #endif
