@@ -15,3 +15,28 @@ public:
    virtual ElectronT* barrierScatter(ElectronT* pe, const RegionBaseT* nextRegion) const = 0;
 };
 \end{lstlisting}
+
+\section{Events}\label{sec:events}
+The event mechanism provides a way to transmit information about the simulation out of the simulation loop. This means that event listeners is by design unable to affect the outcome of the simulations. The simulation will work even when all event-related code are removed, in which case some other mean of acquiring simulation state needs to be implemented if one wishes to retrieve any information about the on-going simulation.
+
+The simulation supports the following events:
+\begin{enumerate}
+\item ScatterEvent
+\item NonScatterEvent
+\item BackscatterEvent
+\item ExitMaterialEvent
+\item TrajectoryStartEvent
+\item TrajectoryEndEvent
+\item LastTrajectoryEvent
+\item FirstTrajectoryEvent
+\item StartSecondaryEvent
+\item EndSecondaryEvent
+\item PostScatterEvent
+\item BeamEnergyChanged
+\end{enumerate}
+All events symbols are defined inside $MonteCarloSS$ class.
+
+\subsection{Detector}\label{subsec:detector}
+One of the most important group of events with respect to our application is events relating to detecting backscattered electrons. Detectors are devices that collect the information about electrons for later processing. In the simulation, electrons that are characterized as secondary electrons are backscattered electrons with energy below $50 eV$. To simulate the detector, backscatter events are used. Backscatter events are fired only when the electron hits the chamber wall (one of the three normal end states of a electron). If required, we may also obtain forward--scattered secondary electrons for TEM image simulations.
+
+Concretely, the event listener must be added to the simulation class (ie $MonteCarloSS$), before the start of the simulation, and have member function $actionPerformed$ of the listener classes added to the simulation deal with the appropriate events. Note that, each member function $actionPerformed$ of every listener class added to the simulation will be called whenever $fireEvent$ is called.
