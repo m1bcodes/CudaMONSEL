@@ -1,14 +1,15 @@
-\chapter{Implementation}
-\section{Simulation}
-In the simulation, the movement of the electron is computed for each unit of time step. First, the active electron's position is obtained. From the position info, the current active region and the associated material scattering model is obtained. To obtain the position of electron at the next time step, the simulation acquires a random mean path length of the electron based on the scattering model and computes the electron's position at next time step. With the new position, the simulation obtains the next region, moves the electron and decreases its energy. Finally, the simulation perfoems a check to determine if the active electron's trajectory is completed. If the trajectory is not completed, the simulation performs one of three actions based on the next region. Refer to function \emph{takeStep} in MonteCarloSS.cu for details.
+\chapter{Implementation}\label{impl}
+In this section we discuss the Most of the details are direct quotes from the comments in the JMONSEL program. 
 
-\section{Material}\label{sec:impl_mat}
+\section{Simulation}\label{impl:sim}
+The simulation computes the movement of the electron for each unit of time step. First, it acquires the active electron's position. From the position info, it calculates the current active region and the associated material scattering model. To obtain the position of electron at the next time step, the simulation acquires a random mean path length of the electron based on the scattering model and computes the electron's position at next time step. With the new position, the simulation obtains the next region, moves the electron and decreases its energy. Finally, it perfoems a check to determine if the active electron's trajectory is completed. If the trajectory is not completed, the simulation performs one of three actions based on the next region. At each time step, the energy loss and position of the electron is updated. When a new electron is spawned, the original electron is stored on a stack until the new electron is destroyed when its energy falls below the tracking threshold of the scattering mechanism. Refer to function \emph{takeStep} in MonteCarloSS.cu for details. 
+
+\section{Material}\label{impl:mat}
 \subsection{Material}
 \subsection{Secondary Eleectron Material}
-%\subsubsection{Antenna}
 
-\section{Barrier Scattering Mechanism}\label{sec:impl_barrierSM}
-\begin{lstlisting}
+\section{Barrier Scattering Mechanism}\label{impl:barrier_sm}
+\begin{lstlisting}[caption={BarrierScatterMechanism.cuh},label={lst:barrierSM},numbers=left,escapeinside={@}{@}]
 class BarrierScatterMechanism
 {
 public:
@@ -16,10 +17,81 @@ public:
 };
 \end{lstlisting}
 
-\section{Events}\label{sec:events}
-The event mechanism provides a way to transmit information about the simulation out of the simulation loop. This means that event listeners is by design unable to affect the outcome of the simulations. The simulation will work even when all event-related code are removed, in which case some other mean of acquiring simulation state needs to be implemented if one wishes to retrieve any information about the on-going simulation.
+The barrier scatter mechanism follows the abstract class shown in \ref{lst:barrierSM}.
 
-The simulation supports the following events:
+\subsection{Exponential Quantum Mechanical Barrier Scatter Mechanism}
+A barrier scattering mechanism is associated with each region of our sample, but barrier transmission is a pair-wise phenomenon. That is, the barrier height and width at an interface between materials A and B depends in principle upon the properties of both materials. If the electron starts inside material A, then it is material A's barrier scatter mechanism that governs that particular scattering event. The present scatter mechanism determines the barrier height by comparing the potential energies in the materials on each side of the interface. It uses the barrier width associated with material A. This scattering mechanism uses the property energyCBbottom, which therefore need to be properly defined for the materials on both sides of the interface.
+
+This class computes barrier transmission using the formula provided by \cite{Landau}. Note that this is the only barrier SM available in the JMONSEL package. 
+
+\section{Scatter Mechanism}\label{impl:sm}
+\begin{lstlisting}
+class ScatterMechanism
+{
+public:
+   /**
+    * Returns the reciprocal of the mean free path.
+    *
+    * @param pe - the primary electron
+    * @return double Reciprocal of mfp in inverse meters
+    */
+   virtual double scatterRate(Electron pe) = 0;
+
+   /**
+    * Updates properties of the primary electron based on results of scattering and returns either a secondary electron or null.
+    * @param pe -- the primary electron
+    * @return Electron -- the generated secondary electron or null
+    */
+   virtual Electron scatter(Electron pe) = 0;
+
+   /**
+    * Sets the material within which the electron scatters. This method typically precomputes and caches combinations of material properties required by the scattering model.
+    * @param mat
+    */
+   virtual void setMaterial(Material mat) = 0;
+}
+\end{lstlisting}
+
+Scatter mechanisms included in JMONSEL are:
+\begin{enumerate}
+\item BrowningMottElasticSM
+\item FittedInelSM
+\item GanachaudMokraniPhononInelasticSM
+\item GanachaudMokraniPolaronTrapSM
+\item KoteraPlasmonInelasticSM
+\item MollerInelasticSM
+\item SelectableElasticSM
+\item TabulatedInelasticSM
+\end{enumerate}
+
+\section{Slowing Down Algorithm}\label{impl:sda}
+\begin{lstlisting}
+public interface SlowingDownAlg {
+   /**
+    * Sets the material for which the energy loss is to be computed
+    *
+    * @param mat
+    */
+   void setMaterial(SEmaterial mat);
+
+   /**
+    * compute - Computes the energy change for an electron with initial energy
+    * eK traversing distance d. The return value is negative if the electron
+    * loses energy.
+    *
+    * @param d double -- the distance moved by the electron
+    * @param pe Electron, the primary electron
+    * @return double -- the energy change
+    */
+   double compute(double d, Electron pe);
+}
+\end{lstlisting}
+\subsection{Joy--Lou--Nieminen}
+
+\section{Events}\label{impl:events}
+The event listener `hooks' onto the simulation and provides a way to transfer information out of the simulation loop. This means that event listeners are by design passive and unable to affect the outcome of the simulations. The simulation will work even when all event--related code are removed, in which case some other mean of acquiring simulation state needs to be implemented if one wishes to retrieve any information about the on--going simulation.
+
+The following events are defined inside $MonteCarloSS$ class:
 \begin{enumerate}
 \item ScatterEvent
 \item NonScatterEvent
@@ -34,9 +106,8 @@ The simulation supports the following events:
 \item PostScatterEvent
 \item BeamEnergyChanged
 \end{enumerate}
-All events symbols are defined inside $MonteCarloSS$ class.
 
 \subsection{Detector}\label{subsec:detector}
-One of the most important group of events with respect to our application is events relating to detecting backscattered electrons. Detectors are devices that collect the information about electrons for later processing. In the simulation, electrons that are characterized as secondary electrons are backscattered electrons with energy below $50 eV$. To simulate the detector, backscatter events are used. Backscatter events are fired only when the electron hits the chamber wall (one of the three normal end states of a electron). If required, we may also obtain forward--scattered secondary electrons for TEM image simulations.
+The most important events of are events relating to detecting backscattered electrons. Detectors are devices that collect the information about electrons for later processing. In the simulation, electrons that are characterized as secondary electrons are backscattered electrons with energy below $50 eV$. To simulate the detector, backscatter events are used. Backscatter events are fired only when the electron hits the chamber wall (one of the three normal end states of a electron). If required, we may also obtain forward--scattered secondary electrons for TEM image simulations.
 
-Concretely, the event listener must be added to the simulation class (ie $MonteCarloSS$), before the start of the simulation, and have member function $actionPerformed$ of the listener classes added to the simulation deal with the appropriate events. Note that, each member function $actionPerformed$ of every listener class added to the simulation will be called whenever $fireEvent$ is called.
+Concretely, the event listener must be added to the simulation class (ie $MonteCarloSS$), before the start of the simulation, and have member function $actionPerformed$ of the listener classes added to the simulation deal with the appropriate events. Note that, the simulation broadcasts the event triggered to all listener classes by calling the member function $actionPerformed$ of every listener class added to the simulation in the function $fireEvent$.
