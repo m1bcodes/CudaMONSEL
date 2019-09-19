@@ -242,7 +242,8 @@ namespace LinesOnLayers
    __device__ float xstartnm, xstopnm, ystartnm, ystopnm;
    __device__ const NShapes::LineParams* lineParams[3];
 #else
-   unsigned int nTrajectories = 100;
+   //unsigned int nTrajectories = 100;
+   unsigned int nTrajectories = 0;
 
    const float pitchnm = 180.f;
    const int nlines = 3;
@@ -259,6 +260,7 @@ namespace LinesOnLayers
    const float beamEeVvals[] = { 500.f };
    const int beamEeVvalsLen = 1;
    float beamsizenm = 0.5f;
+   //float beamsizenm = 0.f;
    const float deepnm = 15.f;
 
    const bool trajImg = true;
@@ -369,6 +371,7 @@ namespace LinesOnLayers
    };
 
    float beamEeV = 500.f;
+   //float beamEeV = 0.f;
    float beamE = ToSI::eV(beamEeV);
    const float binSizeEV = 10.f;
    const float cutoffEnergyForSE = 50.f;
@@ -813,13 +816,13 @@ namespace LinesOnLayers
       NormalMultiPlaneShapeT* layer0 = cs0.get();
       double dist0[3] = { 0., stripWidth / 2, 0. };
       layer0->translate(dist0);
-      RegionT layer0Region(&chamber, &ARCMSM, (NormalShapeT*)layer0);
+      RegionT layer0Region(&chamber, &SiO2MSM, (NormalShapeT*)layer0);
 
       NShapes::HorizontalStrip cs1(stripWidth);
       NormalMultiPlaneShapeT* layer1 = cs1.get();
       dist0[1] += stripWidth;
       layer1->translate(dist0);
-      RegionT layer1Region(&chamber, &SiO2MSM, (NormalShapeT*)layer1);
+      RegionT layer1Region(&chamber, &SiMSM, (NormalShapeT*)layer1);
 
       NShapes::HorizontalStrip cs2(stripWidth, true);
       NormalMultiPlaneShapeT* layer2 = cs2.get();
@@ -856,6 +859,21 @@ namespace LinesOnLayers
 
       //RegionT lineRegion(&chamber, &PMMAMSM, (NormalIntersectionShapeT*)line.get());
 
+      //NShapes::Line* lines[3];
+      //RegionT* regions[3];
+      //for (int i = 0; i < nlines; ++i) {
+      //   //NShapes::Line line(-h, w, linelength, thetal, thetar, radl, radr);
+      //   lines[i] = new NShapes::Line(-lineParams[i]->h, lineParams[i]->w, lineParams[i]->linelength, lineParams[i]->thetal, lineParams[i]->thetar, lineParams[i]->radl, lineParams[i]->radr);
+      //   const double pivot[3] = { 0.f, 0.f, 0.f };
+      //   lines[i]->get()->rotate(pivot, -Math2::PI / 2.f, Math2::PI / 2.f, Math2::PI / 2.f);
+      //   //lines[i]->get()->rotate(pivot, -Math2::PI / 2.f + 20.f / (Math2::PI / 2.f), Math2::PI / 2.f - 20.f / (Math2::PI / 2.f), Math2::PI / 2.f - 20.f / (Math2::PI / 2.f));
+      //   //const double dist1[3] = { 0.f, 0.f, linelength / 2. };
+      //   const double offset[3] = { lineParams[i]->x, 0.f, linelength / 2. };
+      //   lines[i]->get()->translate(offset);
+      //   //lines[i]->addRestrainingPlanes();
+      //   regions[i] = new RegionT(&chamber, &PMMAMSM, (NormalIntersectionShapeT*)lines[i]->get());
+      //}
+
       NShapes::Line* lines[3];
       RegionT* regions[3];
       for (int i = 0; i < nlines; ++i) {
@@ -868,7 +886,17 @@ namespace LinesOnLayers
          const double offset[3] = { lineParams[i]->x, 0.f, linelength / 2. };
          lines[i]->get()->translate(offset);
          //lines[i]->addRestrainingPlanes();
-         regions[i] = new RegionT(&chamber, &PMMAMSM, (NormalIntersectionShapeT*)lines[i]->get());
+         switch (i) {
+         case 0:
+            regions[i] = new RegionT(&chamber, &PMMAMSM, (NormalIntersectionShapeT*)lines[i]->get());
+            break;
+         case 1:
+            regions[i] = new RegionT(&chamber, &SiMSM, (NormalIntersectionShapeT*)lines[i]->get());
+            break;
+         case 2:
+            regions[i] = new RegionT(&chamber, &SiO2MSM, (NormalIntersectionShapeT*)lines[i]->get());
+            break;
+         }
       }
 
       //NShapes::Line line(-h, w, linelength, thetal * 5.5f, thetar * 5.5f, radl / 4.f, radr / 4.f);
@@ -955,27 +983,46 @@ namespace LinesOnLayers
 
    void setParams()
    {
+      //float curx = -w;
+
+      //for (int i = 0; i < nlines; ++i) {
+      //   lineParams[i] = new NShapes::LineParams(
+      //      getAdjustedValPlusMinus(h, 0.1f),
+      //      w,
+      //      getAdjustedValPlusMinus(linelength, 0.f),
+      //      getAdjustedValPlusMinus(thetal, 0.1f),
+      //      getAdjustedValPlusMinus(thetar, 0.1f),
+      //      getAdjustedValPlusMinus(radl, 0.1f),
+      //      getAdjustedValPlusMinus(radr, 0.1f),
+      //      curx);
+      //   curx += w * 1.5f;
+      //}
+
+      //nTrajectories = Random::randomInt(240) + 10; // 10 - 250
+
+      //beamEeV = 15000.f * Random::random() + 500.f; // 500.f - 20000.f
+      //beamE = ToSI::eV(beamEeV);
+
+      //beamsizenm = Random::random() + 0.5f; // 0.5f - 1.5f
+      //beamsize = beamsizenm * ToSI::NANO;
+
+      //printf("nTrajectories: %d\n", nTrajectories);
+      //printf("beamEeV: %.5e\n", beamEeV);
+      //printf("beamsizenm: %.5e\n", beamsizenm);
+
       float curx = -w;
 
       for (int i = 0; i < nlines; ++i) {
-         lineParams[i] = new NShapes::LineParams(
-            getAdjustedValPlusMinus(h, 0.1f),
-            w,
-            getAdjustedValPlusMinus(linelength, 0.f),
-            getAdjustedValPlusMinus(thetal, 0.1f),
-            getAdjustedValPlusMinus(thetar, 0.1f),
-            getAdjustedValPlusMinus(radl, 0.1f),
-            getAdjustedValPlusMinus(radr, 0.1f),
-            curx);
+         lineParams[i] = new NShapes::LineParams(h, w, linelength, thetal, thetar, radl, radr, curx);
          curx += w * 1.5f;
       }
 
-      nTrajectories = Random::randomInt(240) + 10; // 10 - 250
+      nTrajectories += 250;
 
-      beamEeV = 15000.f * Random::random() + 500.f; // 500.f - 20000.f
+      //beamEeV += 500.f;
       beamE = ToSI::eV(beamEeV);
 
-      beamsizenm = Random::random() + 0.5f; // 0.5f - 1.5f
+      //beamsizenm += 0.1f;
       beamsize = beamsizenm * ToSI::NANO;
 
       printf("nTrajectories: %d\n", nTrajectories);
