@@ -16,6 +16,7 @@ namespace LinesOnLayers
    extern __device__ float beamsize;
    extern __device__ float beamEeV;
    extern __device__ float beamE;
+   extern __device__ const NShapes::LineParams* lineParams[3];
 #else
    extern unsigned int ysize;
    extern unsigned int xsize;
@@ -25,6 +26,7 @@ namespace LinesOnLayers
    extern float beamsize;
    extern float beamEeV;
    extern float beamE;
+   extern const NShapes::LineParams* lineParams[3];
 #endif
    extern void loadNUTable();
    extern void transferNUTableToCuda();

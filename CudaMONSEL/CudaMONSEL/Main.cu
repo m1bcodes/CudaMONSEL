@@ -470,7 +470,7 @@ int main()
 
    tm *ltm = localtime(&now);
 
-   std::string folder =
+   std::string folder = "outputs\\" +
       std::to_string(ltm->tm_year) + "-" + std::to_string(ltm->tm_mon) + "-" + std::to_string(ltm->tm_mday) + "_" +
       std::to_string(ltm->tm_hour) + "-" + std::to_string(ltm->tm_min) + "-" + std::to_string(ltm->tm_sec);
 
