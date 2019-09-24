@@ -1,4 +1,6 @@
 # CudaMONSEL
+Switch to branch double-to-float for latest updates.
+
 <!--
 ![alt text](https://raw.githubusercontent.com/zengrz/CudaMONSEL/double-to-float/CudaMONSEL/outputs/14.png)
 -->
