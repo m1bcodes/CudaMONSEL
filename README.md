@@ -1,6 +1,6 @@
 # CudaMONSEL
 <!--
-![alt text](https://raw.githubusercontent.com/zengrz/CudaMONSEL/double-to-float/CudaMONSEL/CudaMONSEL/outputs/14.png)
+![alt text](https://raw.githubusercontent.com/zengrz/CudaMONSEL/double-to-float/CudaMONSEL/outputs/14.png)
 -->
 <p align="center"> 
 <img src="https://raw.githubusercontent.com/zengrz/CudaMONSEL/double-to-float/CudaMONSEL/14.png"> 
