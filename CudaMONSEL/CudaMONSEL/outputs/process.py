@@ -6,7 +6,7 @@ import matplotlib.image as mim
 #SE = data[:, 4]
 
 for i in range(0, 100):
-    data = np.loadtxt("CudaMONSEL\\outputs\\119-8-18_11-5-35\\output" + str(i) + ".txt", max_rows=1)
+    data = np.loadtxt("CudaMONSEL\\outputs\\119-8-25_16-47-11\\output" + str(i) + ".txt", max_rows=1)
     SE = data
 
     print(SE)
@@ -22,4 +22,4 @@ for i in range(0, 100):
     # plt.imshow(SE, cmap='gray')
     # plt.show()
 
-    mim.imsave("CudaMONSEL\\outputs\\119-8-18_11-5-35\\output" + str(i) + ".png",  SE, cmap='gray')
+    mim.imsave("CudaMONSEL\\outputs\\119-8-25_16-47-11\\output" + str(i) + ".png",  SE, cmap='gray')

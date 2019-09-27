@@ -243,7 +243,7 @@ namespace LinesOnLayers
    __device__ const NShapes::LineParams* lineParams[3];
 #else
    //unsigned int nTrajectories = 100;
-   unsigned int nTrajectories = 0;
+   unsigned int nTrajectories = 250;
 
    const float pitchnm = 180.f;
    const int nlines = 3;
@@ -370,8 +370,8 @@ namespace LinesOnLayers
       0.0
    };
 
-   float beamEeV = 500.f;
-   //float beamEeV = 0.f;
+   //float beamEeV = 500.f;
+   float beamEeV = 0.f;
    float beamE = ToSI::eV(beamEeV);
    const float binSizeEV = 10.f;
    const float cutoffEnergyForSE = 50.f;
@@ -683,7 +683,7 @@ namespace LinesOnLayers
       PMMAMSMDeep.addScatterMechanism(&PMMApolaron);
 
       PMMAMSMDeep.setCSD(&PMMACSD);
-      PMMAMSMDeep.setMinEforTracking(ToSI::eV(50.f));
+      PMMAMSMDeep.setMinEforTracking(ToSI::eV(cutoffEnergyForSE));
 
       MONSEL_MaterialScatterModelT& ARCMSM = PMMAMSM;
 
@@ -715,7 +715,7 @@ namespace LinesOnLayers
       glCMSMDeep.addScatterMechanism(&glCNISTMott);
       glCMSMDeep.addScatterMechanism(&glCDS);
 
-      glCMSMDeep.setMinEforTracking(ToSI::eV(50.f));
+      glCMSMDeep.setMinEforTracking(ToSI::eV(cutoffEnergyForSE));
 
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
       SiComponent[0] = Element::dSi;
@@ -749,7 +749,7 @@ namespace LinesOnLayers
       SiMSMDeep.addScatterMechanism(&SiDS);
       SiMSMDeep.addScatterMechanism(&Siphonon);
 
-      SiMSMDeep.setMinEforTracking(ToSI::eV(50.f));
+      SiMSMDeep.setMinEforTracking(ToSI::eV(cutoffEnergyForSE));
 
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
       const float SiWeight = Element::dSi->getAtomicWeight();
@@ -1017,9 +1017,9 @@ namespace LinesOnLayers
          curx += w * 1.5f;
       }
 
-      nTrajectories += 250;
+      //nTrajectories += 250;
 
-      //beamEeV += 500.f;
+      beamEeV += 500.f;
       beamE = ToSI::eV(beamEeV);
 
       //beamsizenm += 0.1f;

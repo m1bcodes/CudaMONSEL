@@ -680,7 +680,7 @@
 //      PMMAMSMDeep.addScatterMechanism(&PMMApolaron);
 //
 //      PMMAMSMDeep.setCSD(&PMMACSD);
-//      PMMAMSMDeep.setMinEforTracking(ToSI::eV(50.f));
+//      PMMAMSMDeep.setMinEforTracking(ToSI::eV(cutoffEnergyForSE));
 //
 //      MONSEL_MaterialScatterModelT& ARCMSM = PMMAMSM;
 //
@@ -712,7 +712,7 @@
 //      glCMSMDeep.addScatterMechanism(&glCNISTMott);
 //      glCMSMDeep.addScatterMechanism(&glCDS);
 //
-//      glCMSMDeep.setMinEforTracking(ToSI::eV(50.f));
+//      glCMSMDeep.setMinEforTracking(ToSI::eV(cutoffEnergyForSE));
 //
 //#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
 //      SiComponent[0] = Element::dSi;
@@ -746,7 +746,7 @@
 //      SiMSMDeep.addScatterMechanism(&SiDS);
 //      SiMSMDeep.addScatterMechanism(&Siphonon);
 //
-//      SiMSMDeep.setMinEforTracking(ToSI::eV(50.f));
+//      SiMSMDeep.setMinEforTracking(ToSI::eV(cutoffEnergyForSE));
 //
 //#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
 //      const float SiWeight = Element::dSi->getAtomicWeight();
@@ -1045,7 +1045,7 @@
 //      PMMAMSMDeep.addScatterMechanism(&PMMApolaron);
 //
 //      PMMAMSMDeep.setCSD(&PMMACSD);
-//      PMMAMSMDeep.setMinEforTracking(ToSI::eV(50.f));
+//      PMMAMSMDeep.setMinEforTracking(ToSI::eV(cutoffEnergyForSE));
 //
 //      MONSEL_MaterialScatterModelT& ARCMSM = PMMAMSM;
 //
@@ -1069,7 +1069,7 @@
 //      glCMSMDeep.addScatterMechanism(&glCNISTMott);
 //      glCMSMDeep.addScatterMechanism(&glCDS);
 //
-//      glCMSMDeep.setMinEforTracking(ToSI::eV(50.f));
+//      glCMSMDeep.setMinEforTracking(ToSI::eV(cutoffEnergyForSE));
 //
 //      SEmaterialT Si(SiComponent, 1, SiComposition, 1, Sidensity, "Silicon");
 //      Si.setWorkfunction(ToSI::eV(Siworkfun));
@@ -1095,7 +1095,7 @@
 //      SiMSMDeep.addScatterMechanism(&SiDS);
 //      SiMSMDeep.addScatterMechanism(&Siphonon);
 //
-//      SiMSMDeep.setMinEforTracking(ToSI::eV(50.f));
+//      SiMSMDeep.setMinEforTracking(ToSI::eV(cutoffEnergyForSE));
 //
 //      const float SiWeight = Element::Si.getAtomicWeight();
 //      const float OxWeight = 2.f * Element::O.getAtomicWeight();
