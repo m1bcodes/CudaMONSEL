@@ -4,6 +4,8 @@
 #include "gov\nist\nanoscalemetrology\JMONSEL\NormalIntersectionShape.cuh"
 #include "gov\nist\nanoscalemetrology\JMONSEL\NormalCylindricalShape.cuh"
 #include "gov\nist\nanoscalemetrology\JMONSEL\NormalUnionShape.cuh"
+#include "gov\nist\nanoscalemetrology\JMONSEL\NormalComplementShape.cuh"
+#include "gov\nist\nanoscalemetrology\JMONSEL\NormalDifferenceShape.cuh"
 #include "gov\nist\microanalysis\Utility\Math2.cuh"
 
 namespace NShapes
@@ -69,11 +71,15 @@ namespace NShapes
       memcpy(segment.P1, leftIntersect, sizeof(segment.P1[0]) * 3);
    }
 
-   __host__ __device__ Line::Line(const double topz, const double width, const double length, const double thetal, const double thetar, const double radl, const double radr) :
-      topz(topz), width(width), length(length), thetal(thetal), thetar(thetar), radl(radl < 0 ? 0 : radl), radr(radr < 0 ? 0 : radr),
+   __host__ __device__ Line::Line(const double topz, const double width, const double length, const double thetal, const double thetar, const double radtl, const double radtr) :
+      topz(topz), width(width), length(length), thetal(thetal), thetar(thetar), radtl(radtl < 0 ? 0 : radtl), radbl(radbl), radtr(radtr < 0 ? 0 : radtr), radbr(radtr),
       enclosure(nullptr), pl0(nullptr), pl1(nullptr), pl2(nullptr), pl3(nullptr),
-      rightNMPS(nullptr), rightSide(nullptr), pl4(nullptr), plr(nullptr), rcylinder(nullptr),
-      leftNMPS(nullptr), leftSide(nullptr), pl5(nullptr), pll(nullptr), lcylinder(nullptr),
+      rightSide(nullptr), pl4(nullptr),
+      toprightNMPS(nullptr), pltr(nullptr), trcylinder(nullptr),
+      botrightNMPS(nullptr), plbr(nullptr), brcylinder(nullptr), plbr_0(nullptr), plbr_1(nullptr), botrightSide(nullptr),
+      leftSide(nullptr), pl5(nullptr),
+      topleftNMPS(nullptr), pltl(nullptr), tlcylinder(nullptr),
+      botleftNMPS(nullptr), plbl(nullptr), blcylinder(nullptr), plbl_0(nullptr), plbl_1(nullptr),
       nts(nullptr), nis(nullptr),
       gt0(nullptr), gt1(nullptr), gt2(nullptr), gt3(nullptr),
       pl6(nullptr)//, pl7(nullptr)
@@ -93,40 +99,82 @@ namespace NShapes
       delete this->pl6; this->pl6 = nullptr;
       //delete this->pl7; this->pl7 = nullptr;
 
-      delete this->rightNMPS; this->rightNMPS = nullptr;
-      if (this->rightSide) {
-         delete (NormalUnionShapeT*)this->rightSide;
-         this->rightSide = nullptr;
+      delete this->toprightNMPS; this->toprightNMPS = nullptr;
+      if (this->pltr) {
+         delete this->pltr;
+         this->pltr = nullptr;
       }
+      if (this->trcylinder) {
+         delete this->trcylinder;
+         this->trcylinder = nullptr;
+      }
+
+      delete this->botrightNMPS; this->botrightNMPS = nullptr;
+      if (this->plbr) {
+         delete this->plbr;
+         this->plbr = nullptr;
+      }
+      if (this->plbr_0) {
+         delete this->plbr_0;
+         this->plbr_0 = nullptr;
+      }
+      if (this->plbr_1) {
+         delete this->plbr_1;
+         this->plbr_1 = nullptr;
+      }
+      if (this->brcylinder) {
+         delete this->brcylinder;
+         this->brcylinder = nullptr;
+      }
+      if (this->botrightSide) {
+         delete this->botrightSide;
+         this->botrightSide = nullptr;
+      }
+
       if (this->pl4) {
          delete this->pl4;
          this->pl4 = nullptr;
       }
-      if (this->plr) {
-         delete this->plr;
-         this->plr = nullptr;
-      }
-      if (this->rcylinder) {
-         delete this->rcylinder;
-         this->rcylinder = nullptr;
+      if (this->rightSide) {
+         delete (NormalUnionShapeT*)this->rightSide;
+         this->rightSide = nullptr;
       }
 
-      delete this->leftNMPS; this->leftNMPS = nullptr;
-      if (this->leftSide) {
-         delete (NormalUnionShapeT*)this->leftSide;
-         this->leftSide = nullptr;
+      delete this->topleftNMPS; this->topleftNMPS = nullptr;
+      if (this->pltl) {
+         delete this->pltl;
+         this->pltl = nullptr;
       }
+      if (this->tlcylinder) {
+         delete this->tlcylinder;
+         this->tlcylinder = nullptr;
+      }
+
+      delete this->botleftNMPS; this->botleftNMPS = nullptr;
+      if (this->plbl) {
+         delete this->plbl;
+         this->plbl = nullptr;
+      }
+      if (this->plbl_0) {
+         delete this->plbl_0;
+         this->plbl_0 = nullptr;
+      }
+      if (this->plbl_1) {
+         delete this->plbl_1;
+         this->plbl_1 = nullptr;
+      }
+      if (this->blcylinder) {
+         delete this->blcylinder;
+         this->blcylinder = nullptr;
+      }
+
       if (this->pl5) {
          delete this->pl5;
          this->pl5 = nullptr;
       }
-      if (this->pll) {
-         delete this->pll;
-         this->pll = nullptr;
-      }
-      if (this->lcylinder) {
-         delete this->lcylinder;
-         this->lcylinder = nullptr;
+      if (this->leftSide) {
+         delete (NormalUnionShapeT*)this->leftSide;
+         this->leftSide = nullptr;
       }
 
       delete this->nts; this->nts = nullptr;
@@ -158,34 +206,62 @@ namespace NShapes
       pl3 = new PlaneT(n3, p3);
       enclosure->addPlane(pl3);
 
-      rightNMPS = new NormalMultiPlaneShapeT();
+      toprightNMPS = new NormalMultiPlaneShapeT();
       rightSide = nullptr;
 
       // Add right sidewall
       const double costhetar = ::cos(thetar);
       const double sinthetar = ::sin(thetar);
+      const double tanthetar = sinthetar / costhetar;
       const double n4[] = { costhetar, 0., signz * sinthetar }, p4[] = { width / 2., 0., 0. };
       pl4 = new PlaneT(n4, p4);
-      rightNMPS->addPlane(pl4);
-      // If radr>0 add a clipping plane and the cylinder
+      toprightNMPS->addPlane(pl4);
+      // If radtr>0 add a clipping plane and the cylinder
       const double root2 = ::sqrt(2.);
       const double absz = signz * topz;
-      if (radr > 0) {
+      if (radtr > 0) {
+         // top curve
          const double rad = ::sqrt(1. - sinthetar);
-         const double nr[] = { rad / root2, 0., signz * costhetar / root2 / rad }, pr[] = { width / 2. - radr / costhetar + (radr - absz) * sinthetar / costhetar, 0., topz };
-         plr = new PlaneT(nr, pr);
-         rightNMPS->addPlane(plr);
+         //const double xc = ((width / 2.) - (radtr / costhetar)) + ((radtr - absz) * ::tan(thetar));
+         const double xtc = ((width / 2.) - (radtr * costhetar)) + ((radtr - absz) * tanthetar);
+         //const double ntr[] = { rad / root2, 0., signz * costhetar / root2 / rad }, ptr[] = { width / 2. - radtr / costhetar + (radtr - absz) * sinthetar / costhetar, 0., topz };
+         const double ntr[] = { rad / root2, 0., signz * costhetar / root2 / rad }, ptr[] = { xtc, 0., topz };
+         pltr = new PlaneT(ntr, ptr);
+         toprightNMPS->addPlane(pltr);
          // Construct cylinder for right corner
-         const double xc = ((width / 2.) - (radr / ::cos(thetar))) + ((radr - absz) * ::tan(thetar));
-         const double zc = topz - (signz * radr);
-         const double end0r[] = { xc, -length / 2., zc }, end1r[] = { xc, length / 2., zc };
-         rcylinder = new NormalCylindricalShapeT(end0r, end1r, radr);
-         rightSide = new NormalUnionShapeT(*rightNMPS, *rcylinder);
+         const double ztc = topz - (signz * radtr);
+         const double end0tr[] = { xtc, -length / 2., ztc }, end1tr[] = { xtc, length / 2., ztc };
+         trcylinder = new NormalCylindricalShapeT(end0tr, end1tr, radtr);
+         rightSide = new NormalUnionShapeT(*toprightNMPS, *trcylinder);
+
+         // bottom curve
+         botrightNMPS = new NormalMultiPlaneShapeT();
+         const double nbr_0[] = { 0., 0., -signz }, pbr_0[] = { 0., 0., 0. };
+         plbr_0 = new PlaneT(nbr_0, pbr_0);
+         botrightNMPS->addPlane(plbr_0);
+
+         const double nbr_1[] = { -n4[0], -n4[1], -n4[2] }, pbr_1[] = { p4[0], p4[1], p4[2] };
+         plbr_1 = new PlaneT(nbr_1, pbr_1);
+         botrightNMPS->addPlane(plbr_1);
+
+         const double xbc = width / 2. + radbr * (1. - tanthetar);
+         const double nbr[] = { rad / root2, 0., signz * costhetar / root2 / rad }, pbr[] = { xbc, 0., 0. };
+         plbr = new PlaneT(nbr, pbr);
+         botrightNMPS->addPlane(plbr);
+
+         const double zbc = signz * radbr;
+         const double end0br[] = { xbc, -length / 2., zbc }, end1br[] = { xbc, length / 2., zbc };
+         brcylinder = new NormalCylindricalShapeT(end0br, end1br, radbr);
+
+         botrightSide = new NormalDifferenceShapeT(*botrightNMPS, *brcylinder);
+
+         // union
+         rightSide = new NormalUnionShapeT(*toprightSide, *botrightSide);
       }
       else
-         rightSide = rightNMPS;
+         rightSide = toprightNMPS;
 
-      leftNMPS = new NormalMultiPlaneShapeT();
+      topleftNMPS = new NormalMultiPlaneShapeT();
       leftSide = nullptr;
 
       // Add left sidewall
@@ -193,22 +269,24 @@ namespace NShapes
       const double sinthetal = ::sin(thetal);
       const double n5[] = { -costhetal, 0., signz * sinthetal }, p5[] = { -width / 2., 0., 0. };
       pl5 = new PlaneT(n5, p5);
-      leftNMPS->addPlane(pl5);
-      // If radl>0 add a clipping plane and the cylinder
-      if (radl > 0.) {
+      topleftNMPS->addPlane(pl5);
+      // If radtl>0 add a clipping plane and the cylinder
+      if (radtl > 0.) {
          const double rad = ::sqrt(1. - sinthetal);
-         const double nl[] = { -rad / root2, 0., signz * costhetal / root2 / rad }, pl[] = { -width / 2. + radl / costhetal - (radl - absz) * sinthetal / costhetal, 0., topz };
-         pll = new PlaneT(nl, pl);
-         leftNMPS->addPlane(pll);
-         const double xc = ((width / 2.) - (radl / ::cos(thetal))) + ((radl - absz) * ::tan(thetal));
-         const double zc = topz - (signz * radl);
+         //const double nl[] = { -rad / root2, 0., signz * costhetal / root2 / rad }, pl[] = { -width / 2. + radtl / costhetal - (radtl - absz) * sinthetal / costhetal, 0., topz };
+         const double nl[] = { -rad / root2, 0., signz * costhetal / root2 / rad }, pl[] = { -width / 2. + radtl * costhetal - (radtl - absz) * sinthetal / costhetal, 0., topz };
+         pltl = new PlaneT(nl, pl);
+         topleftNMPS->addPlane(pltl);
+         //const double xc = ((width / 2.) - (radtl / ::cos(thetal))) + ((radtl - absz) * ::tan(thetal));
+         const double xc = ((width / 2.) - (radtl * ::cos(thetal))) + ((radtl - absz) * ::tan(thetal));
+         const double zc = topz - (signz * radtl);
          // Construct cylinder for left corner
          const double end0[] = { -xc, -length / 2., zc }, end1[] = { -xc, length / 2., zc };
-         lcylinder = new NormalCylindricalShapeT(end0, end1, radl);
-         leftSide = new NormalUnionShapeT(*leftNMPS, *lcylinder);
+         tlcylinder = new NormalCylindricalShapeT(end0, end1, radtl);
+         leftSide = new NormalUnionShapeT(*topleftNMPS, *tlcylinder);
       }
       else
-         leftSide = leftNMPS;
+         leftSide = topleftNMPS;
 
       nts = new NormalIntersectionShapeT(*leftSide, *rightSide);
       nis = new NormalIntersectionShapeT(*nts, *enclosure);
@@ -222,47 +300,47 @@ namespace NShapes
       if (!gt3) gt3 = new LineShapeT();
 
       // top view
-      //getLineSegment(*pl0, *pl2, *pl4, *pl5, *segment0); // right cap
-      //getLineSegment(*pl0, *pl3, *pl4, *pl5, *gt1); // left cap
+      //getLineSegment(*pl0, *pl2, *pl4, *pl5top, *segment0); // right cap
+      //getLineSegment(*pl0, *pl3, *pl4, *pl5top, *gt1); // left cap
       //getLineSegment(*pl0, *pl4, *pl2, *pl3, *gt2); // right length
-      //getLineSegment(*pl0, *pl5, *pl2, *pl3, *gt3); // left length
+      //getLineSegment(*pl0, *pl5top, *pl2, *pl3, *gt3); // left length
 
       // side view (back)
       //{
-      //   if (!pll) {
-      //      getLineSegment(*pl3, *pl5, *pl0, *pl1, *gt1); // left cap
-      //      getLineSegment(*pl3, *pl0, *pl4, *pl5, *gt3); // top length
+      //   if (!pltl) {
+      //      getLineSegment(*pl3, *pl5top, *pl0, *pl1, *gt1); // left cap
+      //      getLineSegment(*pl3, *pl0, *pl4, *pl5top, *gt3); // top length
       //   }
       //   else {
-      //      getLineSegment(*pl3, *pl5, *pll, *pl1, *gt1); // left cap
-      //      getLineSegment(*pl3, *pl0, *plr, *pll, *gt3); // top length
+      //      getLineSegment(*pl3, *pl5top, *pltl, *pl1, *gt1); // left cap
+      //      getLineSegment(*pl3, *pl0, *pltr, *pltl, *gt3); // top length
       //   }
-      //   if (!plr) {
+      //   if (!pltr) {
       //      getLineSegment(*pl3, *pl4, *pl0, *pl1, *gt0); // right cap
-      //      getLineSegment(*pl3, *pl1, *pl4, *pl5, *gt2); // bottom length
+      //      getLineSegment(*pl3, *pl1, *pl4, *pl5top, *gt2); // bottom length
       //   }
       //   else {
-      //      getLineSegment(*pl3, *pl4, *plr, *pl1, *gt0); // right cap
-      //      getLineSegment(*pl3, *pl1, *pl4, *pl5, *gt2); // bottom length
+      //      getLineSegment(*pl3, *pl4, *pltr, *pl1, *gt0); // right cap
+      //      getLineSegment(*pl3, *pl1, *pl4, *pl5top, *gt2); // bottom length
       //   }
       //}
 
       // side view (front)
       {
-         if (!pll) {
+         if (!pltl) {
             getLineSegment(*pl2, *pl5, *pl0, *pl1, *gt1); // left cap
             getLineSegment(*pl2, *pl0, *pl4, *pl5, *gt3); // top length
          }
          else {
-            getLineSegment(*pl2, *pl5, *pll, *pl1, *gt1); // left cap
-            getLineSegment(*pl2, *pl0, *plr, *pll, *gt3); // top length
+            getLineSegment(*pl2, *pl5, *pltl, *pl1, *gt1); // left cap
+            getLineSegment(*pl2, *pl0, *pltr, *pltl, *gt3); // top length
          }
-         if (!plr) {
+         if (!pltr) {
             getLineSegment(*pl2, *pl4, *pl0, *pl1, *gt0); // right cap
             getLineSegment(*pl2, *pl1, *pl4, *pl5, *gt2); // bottom length
          }
          else {
-            getLineSegment(*pl2, *pl4, *plr, *pl1, *gt0); // right cap
+            getLineSegment(*pl2, *pl4, *pltr, *pl1, *gt0); // right cap
             getLineSegment(*pl2, *pl1, *pl4, *pl5, *gt2); // bottom length
          }
       }
@@ -486,7 +564,7 @@ namespace NShapes
          //drawRaster(cstart3, cend3, plane, axis0, axis1, xlenperpix, ylenperpix, res, w, h);
 
          //LineShapeT clipper0, clipper0Proj;
-         //getLineSegment(*pl3, *pll, *pl0, *pl5, clipper0);
+         //getLineSegment(*pl3, *pltl, *pl0, *pl5top, clipper0);
          //calcLineProjection(plane, axis0, axis1, clipper0, clipper0Proj);
          //const int clstart0[3] = { clipper0Proj.P0[0] / xlenperpix, clipper0Proj.P0[1] / ylenperpix, clipper0Proj.P0[2] };
          //const int clend0[3] = { clipper0Proj.P1[0] / xlenperpix, clipper0Proj.P1[1] / ylenperpix, clipper0Proj.P1[2] };
@@ -498,9 +576,9 @@ namespace NShapes
          for (int i = 180; i < 270; ++i) {
             const double theta = i / 180. * Math2::PI;
             double orig[3] = {
-               lcylinder->getEnd1()[0] + lcylinder->getRadius() * ::cosf(theta),
-               lcylinder->getEnd1()[1] + lcylinder->getRadius() * ::sinf(theta),
-               lcylinder->getEnd1()[2]
+               tlcylinder->getEnd1()[0] + tlcylinder->getRadius() * ::cosf(theta),
+               tlcylinder->getEnd1()[1] + tlcylinder->getRadius() * ::sinf(theta),
+               tlcylinder->getEnd1()[2]
             }; // eg. point on the circle
             double proj[3];
             calcPointProjection(plane, axis0, axis1, orig, proj);
@@ -528,7 +606,7 @@ namespace NShapes
          //drawRaster(cstart3, cend3, plane, axis0, axis1, xlenperpix, ylenperpix, res, w, h);
 
          //LineShapeT clipper0, clipper0Proj;
-         //getLineSegment(*pl3, *plr, *pl0, *pl4, clipper0);
+         //getLineSegment(*pl3, *pltr, *pl0, *pl4, clipper0);
          //calcLineProjection(plane, axis0, axis1, clipper0, clipper0Proj);
          //const int clstart0[3] = { clipper0Proj.P0[0] / xlenperpix, clipper0Proj.P0[1] / ylenperpix, clipper0Proj.P0[2] };
          //const int clend0[3] = { clipper0Proj.P1[0] / xlenperpix, clipper0Proj.P1[1] / ylenperpix, clipper0Proj.P1[2] };
@@ -540,9 +618,9 @@ namespace NShapes
          for (int i = 270; i < 360; ++i) {
             const double theta = i / 180. * Math2::PI;
             const double orig[3] = {
-               rcylinder->getEnd1()[0] + rcylinder->getRadius() * ::cosf(theta),
-               rcylinder->getEnd1()[1] + rcylinder->getRadius() * ::sinf(theta),
-               rcylinder->getEnd1()[2]
+               trcylinder->getEnd1()[0] + trcylinder->getRadius() * ::cosf(theta),
+               trcylinder->getEnd1()[1] + trcylinder->getRadius() * ::sinf(theta),
+               trcylinder->getEnd1()[2]
             }; // eg. point on the circle
             double proj[3];
             calcPointProjection(plane, axis0, axis1, orig, proj);

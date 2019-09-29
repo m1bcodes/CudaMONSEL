@@ -287,6 +287,20 @@ namespace NormalUnionShape
 
 typedef NormalUnionShape::NormalUnionShape NormalUnionShapeT;
 
+namespace NormalComplementShape
+{
+   class NormalComplementShape;
+}
+
+typedef NormalComplementShape::NormalComplementShape NormalComplementShapeT;
+
+namespace NormalDifferenceShape
+{
+   class NormalDifferenceShape;
+}
+
+typedef NormalDifferenceShape::NormalDifferenceShape NormalDifferenceShapeT;
+
 namespace BetheElectronEnergyLoss
 {
    class BetheElectronEnergyLoss;

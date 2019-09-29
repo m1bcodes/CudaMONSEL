@@ -55,8 +55,10 @@ namespace NShapes
       const double length; // length of line
       const double thetal; // angle of right sidewall
       const double thetar; // angle of left sidewall
-      const double radl; // radius of top right corner
-      const double radr; // radius of top left corner
+      const double radtl; // radius of top right corner
+      const double radtr; // radius of top left corner
+      const double radbl; // radius of bottom right corner
+      const double radbr; // radius of bottom left corner
 
       NormalMultiPlaneShapeT* enclosure;
       PlaneT* pl0;
@@ -64,18 +66,41 @@ namespace NShapes
       PlaneT* pl2;
       PlaneT* pl3;
 
-      NormalMultiPlaneShapeT* rightNMPS;
+      // right
       NormalShapeT* rightSide;
       PlaneT* pl4;
-      PlaneT* plr;
-      NormalCylindricalShapeT* rcylinder;
 
-      NormalMultiPlaneShapeT* leftNMPS;
+      // top right
+      NormalMultiPlaneShapeT* toprightNMPS;
+      PlaneT* pltr;
+      NormalCylindricalShapeT* trcylinder;
+      NormalUnionShapeT* toprightSide;
+
+      // bottom right
+      NormalMultiPlaneShapeT* botrightNMPS;
+      PlaneT* plbr;
+      PlaneT* plbr_0;
+      PlaneT* plbr_1;
+      NormalCylindricalShapeT* brcylinder;
+      NormalDifferenceShapeT* botrightSide;;
+
+      // left
       NormalShapeT* leftSide;
       PlaneT* pl5;
-      PlaneT* pll;
-      NormalCylindricalShapeT* lcylinder;
 
+      // top left
+      NormalMultiPlaneShapeT* topleftNMPS;
+      PlaneT* pltl;
+      NormalCylindricalShapeT* tlcylinder;
+
+      // bot left
+      NormalMultiPlaneShapeT* botleftNMPS;
+      PlaneT* plbl;
+      PlaneT* plbl_0;
+      PlaneT* plbl_1;
+      NormalCylindricalShapeT* blcylinder;
+
+      // together
       NormalIntersectionShapeT* nts;
       NormalIntersectionShapeT* nis; // the entire shape
 
