@@ -243,18 +243,24 @@ namespace LinesOnLayers
    __device__ float xstartnm, xstopnm, ystartnm, ystopnm;
    __device__ const NShapes::LineParams* lineParams[3];
 #else
-   unsigned int nTrajectories = 250;
+   unsigned int nTrajectories = 10;
    //unsigned int nTrajectories = 250;
+
+   //const float wnm = 80.f;
+   //const float thetardeg = 3.f;
+   //const float thetaldeg = 3.f;
+   //const float radrnm = 20.f;
+   //const float radlnm = 20.f;
 
    const float pitchnm = 180.f;
    const int nlines = 3;
    const float hnm = 120.f;
-   const float wnm = 80.f;
+   const float wnm = 30.f;
    const float linelengthnm = 120.f;
-   const float thetardeg = 3.f;
-   const float thetaldeg = 3.f;
-   const float radrnm = 20.f;
-   const float radlnm = 20.f;
+   const float thetardeg = 1.f;
+   const float thetaldeg = 1.f;
+   const float radrnm = wnm / 3.f;
+   const float radlnm = wnm / 3.f;
    const float layer1thicknessnm = 80.f;
    const float layer2thicknessnm = 200.f;
 
@@ -371,7 +377,7 @@ namespace LinesOnLayers
       0.0
    };
 
-   float beamEeV = 500.f;
+   float beamEeV = 3000.f;
    //float beamEeV = 0.f;
    float beamE = ToSI::eV(beamEeV);
    const float binSizeEV = 10.f;
@@ -565,7 +571,7 @@ namespace LinesOnLayers
       NUTableInterpolation::transferDataToCuda(SiTables[3]);
    }
 
-   __host__ __device__ void initRange()
+   __host__ __device__ void initImgRange()
    {
       //VectorXf yvalstmp(128);
       //for (int i = -64; i < 64; i += 1) {
@@ -623,7 +629,7 @@ namespace LinesOnLayers
          printf("%.10e\n", Random::random());
       }
 
-      initRange();
+      initImgRange();
 
       printf("(%d, %d)", xsize, ysize);
    }
@@ -875,6 +881,23 @@ namespace LinesOnLayers
       //   regions[i] = new RegionT(&chamber, &PMMAMSM, (NormalIntersectionShapeT*)lines[i]->get());
       //}
 
+      static const unsigned int MAT_PMMA = 0;
+      static const unsigned int MAT_SI = 1;
+      static const unsigned int MAT_SIO2 = 2;
+      unsigned int matopt = Random::randomInt(3);
+      MONSEL_MaterialScatterModelT* curmat = nullptr;
+      switch (matopt) {
+      case MAT_PMMA:
+         curmat = &PMMAMSM;
+         break;
+      case MAT_SI:
+         curmat = &SiMSM;
+         break;
+      case MAT_SIO2:
+         curmat = &SiO2MSM;
+         break;
+      }
+
       NShapes::Line* lines[3];
       RegionT* regions[3];
       for (int i = 0; i < nlines; ++i) {
@@ -887,17 +910,18 @@ namespace LinesOnLayers
          const double offset[3] = { lineParams[i]->x, 0.f, linelength / 2. };
          lines[i]->get()->translate(offset);
          //lines[i]->addRestrainingPlanes();
-         switch (i) {
-         case 0:
-            regions[i] = new RegionT(&chamber, &PMMAMSM, (NormalIntersectionShapeT*)lines[i]->get());
-            break;
-         case 1:
-            regions[i] = new RegionT(&chamber, &SiMSM, (NormalIntersectionShapeT*)lines[i]->get());
-            break;
-         case 2:
-            regions[i] = new RegionT(&chamber, &SiO2MSM, (NormalIntersectionShapeT*)lines[i]->get());
-            break;
-         }
+         //switch (mat) {
+         //case 0:
+         //   regions[i] = new RegionT(&chamber, &PMMAMSM, (NormalIntersectionShapeT*)lines[i]->get());
+         //   break;
+         //case 1:
+         //   regions[i] = new RegionT(&chamber, &SiMSM, (NormalIntersectionShapeT*)lines[i]->get());
+         //   break;
+         //case 2:
+         //   regions[i] = new RegionT(&chamber, &SiO2MSM, (NormalIntersectionShapeT*)lines[i]->get());
+         //   break;
+         //}
+         regions[i] = new RegionT(&chamber, curmat, (NormalIntersectionShapeT*)lines[i]->get());
       }
 
       //NShapes::Line line(-h, w, linelength, thetal, thetar, radl, radr);
@@ -985,7 +1009,7 @@ namespace LinesOnLayers
       return val * (1.f + (1.f - Random::random() * 2.f) * fraction); // val +/- val*fraction
    }
 
-   void setParams()
+   __host__ __device__ void setSimParams()
    {
       //float curx = -w;
 

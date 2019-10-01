@@ -10,7 +10,7 @@ namespace RegionBase
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
    __constant__ static double SMALL_DISP = 1.0e-15; // 1 fm
 #else
-   static double SMALL_DISP = 1.0e-15; // 1 fm
+   static const double SMALL_DISP = 1.0e-15; // 1 fm
 #endif
    
    //void RegionBase::updateMaterial(const MaterialT& oldMat, const IMaterialScatterModelT& newMat)

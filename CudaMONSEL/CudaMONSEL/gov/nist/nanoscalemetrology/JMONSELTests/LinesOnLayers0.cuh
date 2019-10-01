@@ -35,11 +35,11 @@ namespace LinesOnLayers
    extern __global__ void runCuda(float* result);
 
    extern __host__ __device__ void runSinglePixel(const unsigned int r, const unsigned int c, float* result);
-   extern __host__ __device__ void initRange();
+   extern __host__ __device__ void initImgRange();
 
    extern void runSinglePixelThread(int id, const unsigned int r, const unsigned int c, float* result);
 
-   extern void setParams();
+   extern __host__ __device__ void setSimParams();
 
    extern void lineProjection(const unsigned int n, char* gt);
 }

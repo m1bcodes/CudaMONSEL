@@ -493,9 +493,9 @@ int main()
    initSim();
    testSim();
    LinesOnLayers::loadNUTable();
-   LinesOnLayers::initRange();
+   //LinesOnLayers::initRange();
 
-   const unsigned int H = LinesOnLayers::ysize, W = LinesOnLayers::xsize;
+   //const unsigned int H = LinesOnLayers::ysize, W = LinesOnLayers::xsize;
    //testGPU(H, W);
    //initCuda();
    //LinesOnLayers::transferDataToCuda();
@@ -508,7 +508,9 @@ int main()
    //checkCudaErrors(cudaDeviceSynchronize());
    //checkCudaErrors(cudaGetLastError());
    for (int n = 0; n < 1; ++n) {
-      LinesOnLayers::setParams();
+      LinesOnLayers::setSimParams();
+      LinesOnLayers::initImgRange();
+      const unsigned int H = LinesOnLayers::ysize, W = LinesOnLayers::xsize;
 
       char* gt = new char[LinesOnLayers::ysize * LinesOnLayers::xsize];
       memset(gt, 0, sizeof(gt[0]) * LinesOnLayers::ysize * LinesOnLayers::xsize);
