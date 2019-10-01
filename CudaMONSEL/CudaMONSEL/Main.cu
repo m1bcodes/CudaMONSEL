@@ -507,7 +507,7 @@ int main()
    //LinesOnLayers::initCuda << <1, 1 >> >();
    //checkCudaErrors(cudaDeviceSynchronize());
    //checkCudaErrors(cudaGetLastError());
-   for (int n = 0; n < 100; ++n) {
+   for (int n = 0; n < 1; ++n) {
       LinesOnLayers::setParams();
 
       char* gt = new char[LinesOnLayers::ysize * LinesOnLayers::xsize];
@@ -549,6 +549,7 @@ int main()
          }
       }
       for (int i = 0; i < H; ++i) {
+         printf("%d\n", i);
          for (int j = 0; j < W; ++j) {
             results[i*W + j].get();
          }

@@ -23,6 +23,7 @@
 #include "gov\nist\nanoscalemetrology\JMONSEL\GanachaudMokraniPhononInelasticSM.cuh"
 #include "gov\nist\nanoscalemetrology\JMONSEL\NormalMultiPlaneShape.cuh"
 #include "gov\nist\nanoscalemetrology\JMONSEL\NormalIntersectionShape.cuh"
+#include "gov\nist\nanoscalemetrology\JMONSEL\NormalDifferenceShape.cuh"
 #include "gov\nist\nanoscalemetrology\JMONSEL\NShapes.cuh"
 
 #include "gov\nist\nanoscalemetrology\JMONSEL\NUTableInterpolation.cuh"
@@ -242,8 +243,8 @@ namespace LinesOnLayers
    __device__ float xstartnm, xstopnm, ystartnm, ystopnm;
    __device__ const NShapes::LineParams* lineParams[3];
 #else
-   //unsigned int nTrajectories = 100;
    unsigned int nTrajectories = 250;
+   //unsigned int nTrajectories = 250;
 
    const float pitchnm = 180.f;
    const int nlines = 3;
@@ -370,8 +371,8 @@ namespace LinesOnLayers
       0.0
    };
 
-   //float beamEeV = 500.f;
-   float beamEeV = 0.f;
+   float beamEeV = 500.f;
+   //float beamEeV = 0.f;
    float beamE = ToSI::eV(beamEeV);
    const float binSizeEV = 10.f;
    const float cutoffEnergyForSE = 50.f;
@@ -899,12 +900,15 @@ namespace LinesOnLayers
          }
       }
 
-      //NShapes::Line line(-h, w, linelength, thetal * 5.5f, thetar * 5.5f, radl / 4.f, radr / 4.f);
+      //NShapes::Line line(-h, w, linelength, thetal, thetar, radl, radr);
       //const double pivot[3] = { 0.f, 0.f, 0.f };
       //line.get()->rotate(pivot, -Math2::PI / 2.f, Math2::PI / 2.f, Math2::PI / 2.f);
       //const double offset[3] = { lineParams[0]->x, 0.f, linelength / 2. };
       //line.get()->translate(offset);
       //RegionT region(&chamber, &PMMAMSM, (NormalIntersectionShapeT*)line.get());
+
+      //NShapes::Washer washer(w / 10., w / 5.);
+      //RegionT region(&chamber, &PMMAMSM, (NormalDifferenceShapeT*)washer.get());
 
       const double egCenter[] = { x, y, -h - 20.f * 1.e-9f };
       GaussianBeamT eg(beamsize, beamE, egCenter);
@@ -1019,7 +1023,7 @@ namespace LinesOnLayers
 
       //nTrajectories += 250;
 
-      beamEeV += 500.f;
+      //beamEeV += 250.f;
       beamE = ToSI::eV(beamEeV);
 
       //beamsizenm += 0.1f;

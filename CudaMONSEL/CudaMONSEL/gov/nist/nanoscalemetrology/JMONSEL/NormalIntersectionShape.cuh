@@ -29,8 +29,8 @@ namespace NormalIntersectionShape
       double result[4];
    };
 
-   extern __host__ __device__ void rotateNormalShape(const double pivot[], const double phi, const double theta, const double psi, NormalShapeT& shape);
-   extern __host__ __device__ void translateNormalShape(const double distance[], NormalShapeT& shape);
+   //extern __host__ __device__ void rotateNormalShape(const double pivot[], const double phi, const double theta, const double psi, NormalShapeT& shape);
+   //extern __host__ __device__ void translateNormalShape(const double distance[], NormalShapeT& shape);
 }
 
 #endif

@@ -7,7 +7,7 @@
 #include "gov\nist\microanalysis\NISTMonte\MultiPlaneShape.cuh"
 #include "gov\nist\microanalysis\NISTMonte\Sphere.cuh"
 
-#include "gov\nist\nanoscalemetrology\JMONSEL\NormalIntersectionShape.cuh"
+#include "gov\nist\nanoscalemetrology\JMONSEL\NormalShapeTransformer.cuh"
 
 namespace SumShape
 {
@@ -93,7 +93,8 @@ namespace SumShape
    {
       StringT& name = shape->toString();
       if (name.starts_with("Normal")) {
-         NormalIntersectionShape::rotateNormalShape(pivot, phi, theta, psi, (NormalShapeT&)(*shape));
+         //NormalIntersectionShape::rotateNormalShape(pivot, phi, theta, psi, (NormalShapeT&)(*shape));
+         NormalShapeTransformer::rotate(pivot, phi, theta, psi, (NormalShapeT&)(*shape));
       }
       else if (name.starts_with("SumShape")) {
          ((SumShapeT*)shape)->rotate(pivot, phi, theta, psi);
@@ -126,7 +127,7 @@ namespace SumShape
    {
       StringT& name = shape->toString();
       if (name.starts_with("Normal")) {
-         NormalIntersectionShape::translateNormalShape(distance, (NormalShapeT&)(*shape));
+         NormalShapeTransformer::translate(distance, (NormalShapeT&)(*shape));
       }
       else if (name.starts_with("SumShape")) {
          ((SumShapeT*)shape)->translate(distance);

@@ -21,9 +21,9 @@ namespace CylindricalShape
       mDelta[1] = end1[1] - end0[1];
       mDelta[2] = end1[2] - end0[2];
 
-      if (mRadius2 < 1.0e-30) printf("The cylinder radius is unrealistically small.");
+      if (mRadius2 < 1.0e-30) printf("The cylinder radius is unrealistically small.\n");
       mLen2 = Math2::sqr(mDelta[0]) + Math2::sqr(mDelta[1]) + Math2::sqr(mDelta[2]);
-      if (mLen2 < 1.0e-30) printf("The cylinder length is unrealistically small.");
+      if (mLen2 < 1.0e-30) printf("The cylinder length is unrealistically small.\n");
       mDelta2 = Math2::dot3d(mDelta, mDelta);
    }
 

@@ -101,6 +101,7 @@
     <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSEL\NormalDifferenceShape.cu" />
     <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSEL\NormalIntersectionShape.cu" />
     <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSEL\NormalMultiPlaneShape.cu" />
+    <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSEL\NormalShapeTransformer.cu" />
     <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSEL\NormalUnionShape.cu" />
     <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSEL\NShapes.cu" />
     <CudaCompile Include="gov\nist\nanoscalemetrology\JMONSEL\NUTableInterpolation.cu" />
@@ -210,6 +211,7 @@
     <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\NormalIntersectionShape.cuh" />
     <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\NormalMultiPlaneShape.cuh" />
     <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\NormalShape.cuh" />
+    <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\NormalShapeTransformer.cuh" />
     <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\NormalUnionShape.cuh" />
     <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\NShapes.cuh" />
     <ClInclude Include="gov\nist\nanoscalemetrology\JMONSEL\NUTableInterpolation.cuh" />

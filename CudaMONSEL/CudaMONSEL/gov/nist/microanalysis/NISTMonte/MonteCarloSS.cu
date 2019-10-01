@@ -153,16 +153,16 @@ namespace MonteCarloSS
       mElectron->setTrajectoryComplete(tc);
       if (!tc) {
          if (nextRegion == currentRegion) {
-            if (mChamber == nullptr) printf("MonteCarloSS::takeStep(): mChamber == nullptr");
-            if (mElectron == nullptr) printf("MonteCarloSS::takeStep(): mElectron == nullptr");
-            if (currentRegion == nullptr) printf("MonteCarloSS::takeStep(): currentRegion == nullptr");
+            if (mChamber == nullptr) printf("MonteCarloSS::takeStep: mChamber == nullptr");
+            if (mElectron == nullptr) printf("MonteCarloSS::takeStep: mElectron == nullptr");
+            if (currentRegion == nullptr) printf("MonteCarloSS::takeStep: currentRegion == nullptr");
             fireEvent(ScatterEvent);
             ElectronT* secondary = msm->scatter(*mElectron);
             fireEvent(PostScatterEvent);
             mElectron->setTrajectoryComplete((mElectron->getEnergy() < msm->getMinEforTracking()) || mElectron->isTrajectoryComplete());
             if (secondary != nullptr) trackSecondaryElectron(secondary);
 
-            if (mElectron->getCurrentRegion() != currentRegion) printf("MonteCarloSS::takeStep()MonteCarloSS::takeStep(): mElectron->getCurrentRegion() != currentRegion\n");
+            if (mElectron->getCurrentRegion() != currentRegion) printf("MonteCarloSS::takeStep: mElectron->getCurrentRegion() != currentRegion\n");
          }
          else if (nextRegion != nullptr) {
             fireEvent(NonScatterEvent);

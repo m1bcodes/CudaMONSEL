@@ -82,7 +82,7 @@ namespace NShapes
       PlaneT* plbr_0;
       PlaneT* plbr_1;
       NormalCylindricalShapeT* brcylinder;
-      NormalDifferenceShapeT* botrightSide;;
+      NormalDifferenceShapeT* botrightSide;
 
       // left
       NormalShapeT* leftSide;
@@ -92,6 +92,7 @@ namespace NShapes
       NormalMultiPlaneShapeT* topleftNMPS;
       PlaneT* pltl;
       NormalCylindricalShapeT* tlcylinder;
+      NormalUnionShapeT* topleftSide;
 
       // bot left
       NormalMultiPlaneShapeT* botleftNMPS;
@@ -99,13 +100,14 @@ namespace NShapes
       PlaneT* plbl_0;
       PlaneT* plbl_1;
       NormalCylindricalShapeT* blcylinder;
+      NormalDifferenceShapeT* botleftSide;
 
       // together
       NormalIntersectionShapeT* nts;
       NormalIntersectionShapeT* nis; // the entire shape
 
-      PlaneT* pl6;
-      //PlaneT* pl7;
+      PlaneT* plrestr0;
+      //PlaneT* plrestr1;
       NormalIntersectionShapeT* nis2;
 
       LineShapeT* gt0;
@@ -133,6 +135,23 @@ namespace NShapes
       LineShapeT* gt0;
       LineShapeT* gt1;
    };
+
+   class Washer
+   {
+   public:
+      __host__ __device__ Washer(const double innerRadius, const double outerRadius);
+      __host__ __device__ ~Washer();
+
+      __host__ __device__ void calcGroundtruth();
+      __host__ __device__ void calcRasterization(const PlaneT&, const double*, const double*, const float, const float, char*, const unsigned int, const unsigned int) const;
+      __host__ __device__ NormalDifferenceShapeT* get();
+
+   private:
+      NormalCylindricalShapeT* inner;
+      NormalCylindricalShapeT* outer;
+      NormalDifferenceShapeT* diff;
+   };
+
 
    extern __host__ __device__ void TestProjection();
 }
