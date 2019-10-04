@@ -1,5 +1,5 @@
 \chapter{Implementation}\label{impl}
-In this section we discuss the Most of the details are direct quotes from the comments in the JMONSEL program. 
+In this section we discuss the implementation details of CudaMONSEL.
 
 \section{Simulation}\label{impl:sim}
 The simulation computes the movement of the electron for each unit of time step. First, it acquires the active electron's position. From the position info, it calculates the current active region and the associated material scattering model. To obtain the position of electron at the next time step, the simulation acquires a random mean path length of the electron based on the scattering model and computes the electron's position at next time step. With the new position, the simulation obtains the next region, moves the electron and decreases its energy. Finally, it perfoems a check to determine if the active electron's trajectory is completed. If the trajectory is not completed, the simulation performs one of three actions based on the next region. At each time step, the energy loss and position of the electron is updated. When a new electron is spawned, the original electron is stored on a stack until the new electron is destroyed when its energy falls below the tracking threshold of the scattering mechanism. Refer to function \emph{takeStep} in MonteCarloSS.cu for details. 
@@ -111,3 +111,16 @@ The following events are defined inside $MonteCarloSS$ class:
 The most important events of are events relating to detecting backscattered electrons. Detectors are devices that collect the information about electrons for later processing. In the simulation, electrons that are characterized as secondary electrons are backscattered electrons with energy below $50 eV$. To simulate the detector, backscatter events are used. Backscatter events are fired only when the electron hits the chamber wall (one of the three normal end states of a electron). If required, we may also obtain forward--scattered secondary electrons for TEM image simulations.
 
 Concretely, the event listener must be added to the simulation class (ie $MonteCarloSS$), before the start of the simulation, and have member function $actionPerformed$ of the listener classes added to the simulation deal with the appropriate events. Note that, the simulation broadcasts the event triggered to all listener classes by calling the member function $actionPerformed$ of every listener class added to the simulation in the function $fireEvent$.
+
+\section{Amphibian -- custom C++ library}
+Since one of the goals of the project is to make MONSEL compiler--independent, we built a custom library to minimize dependence on the C++ standard template library (STL). The following data structures are included,
+\begin{enumerate}
+\item linkedlist (single-- and double--linked)
+\item vector
+\item stack
+\item unordered set
+\item unordered map
+\item (mutable) string
+\end{enumerate}
+
+Algorithms like quick sort, binary search are also included. There is also a random class responsible for generating random numbers reliably.

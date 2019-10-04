@@ -22,10 +22,13 @@
 \usepackage{listings}
 \usepackage{longtable}
 \usepackage{enumitem}
-\usepackage{subfig}
+%\usepackage{subfig}
 \usepackage{placeins}
 
 \usepackage{color}
+
+\usepackage{caption}
+\usepackage{subcaption}
 
 \newcommand\numberthis{\addtocounter{equation}{1}\tag{\theequation}}
 
@@ -76,7 +79,7 @@
 \renewcommand\listtablename{\centering List Of Tables}
 \renewcommand{\contentsname}{\centering Contents}
 \renewcommand\bibname{References}
-\renewcommand{\abstractname}{\vspace{-1.2cm}Executive Summary} 
+\renewcommand{\abstractname}{\vspace{-1.2cm}Executive Summary}
 
 \newcommand{\docSpacing}{1.6}
 
@@ -132,8 +135,12 @@
 \input{./implementation.tex}
 \input{./verification.tex}
 \input{./working_details.tex}
+\input{./analysis.tex}
 \input{./conclusion.tex}
 \input{./deliverables.tex}
 \input{./recommendations.tex}
+
+\bibliography{refs}
+\bibliographystyle{plain}
 
 \end{document}
