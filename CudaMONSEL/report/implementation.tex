@@ -7,6 +7,8 @@ The simulation is divided into two main packages, microanalysis and nanoanalysis
 In this package, the physics of the simulation are provided by subclasses of \emph{AlgorithmUser} and \emph{AlgorithmClass} abstract classes.
 
 \subsection{Algorithm Classes}
+This section is dedicated to the implementation details of classes that are related the physics of the simulation. All of these classes are derived from the abstract base class algorithm 
+
 The main purpose of \emph{AlgorithmUser} class is to provide the abstract method \emph{initializeDefaultStrategy} which provides a function shared by its subclasses to set each class in a proper state required to run the physics. 
 
 The secondary purpose of this class is to provide a place for the simulation to define the default algorithms to use when none is specified. This is enabled by the \emph{Strategy} class.
