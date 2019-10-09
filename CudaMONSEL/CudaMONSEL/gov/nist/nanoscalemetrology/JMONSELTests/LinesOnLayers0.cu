@@ -899,37 +899,12 @@ namespace LinesOnLayers
       //   }
       //}
 
-      NShapes::Line* lines[3];
-      RegionT* regions[3];
-      for (int i = 0; i < nlines; ++i) {
-         //NShapes::Line line(-h, w, linelength, thetal, thetar, radl, radr);
-         lines[i] = new NShapes::Line(-lineParams[i]->h, lineParams[i]->w, lineParams[i]->linelength, lineParams[i]->thetal, lineParams[i]->thetar, lineParams[i]->radl, lineParams[i]->radr);
-         const double pivot[3] = { 0.f, 0.f, 0.f };
-         lines[i]->get()->rotate(pivot, -Math2::PI / 2.f, Math2::PI / 2.f, Math2::PI / 2.f);
-         //lines[i]->get()->rotate(pivot, -Math2::PI / 2.f + 20.f / (Math2::PI / 2.f), Math2::PI / 2.f - 20.f / (Math2::PI / 2.f), Math2::PI / 2.f - 20.f / (Math2::PI / 2.f));
-         //const double dist1[3] = { 0.f, 0.f, linelength / 2. };
-         const double offset[3] = { lineParams[i]->x, 0.f, linelength / 2. };
-         lines[i]->get()->translate(offset);
-         //lines[i]->addRestrainingPlanes();
-         switch (i) {
-         case 0:
-            regions[i] = new RegionT(&chamber, &PMMAMSM, (NormalIntersectionShapeT*)lines[i]->get());
-            break;
-         case 1:
-            regions[i] = new RegionT(&chamber, &SiMSM, (NormalIntersectionShapeT*)lines[i]->get());
-            break;
-         case 2:
-            regions[i] = new RegionT(&chamber, &SiO2MSM, (NormalIntersectionShapeT*)lines[i]->get());
-            break;
-         }
-      }
-
-      //NShapes::Line line(-h, w, linelength, thetal * 5.5f, thetar * 5.5f, radl / 4.f, radr / 4.f);
-      //const double pivot[3] = { 0.f, 0.f, 0.f };
-      //line.get()->rotate(pivot, -Math2::PI / 2.f, Math2::PI / 2.f, Math2::PI / 2.f);
-      //const double offset[3] = { lineParams[0]->x, 0.f, linelength / 2. };
-      //line.get()->translate(offset);
-      //RegionT region(&chamber, &PMMAMSM, (NormalIntersectionShapeT*)line.get());
+      NShapes::Line line(-h, w, linelength, thetal * 5.5f, thetar * 5.5f, radl / 4.f, radr / 4.f);
+      const double pivot[3] = { 0.f, 0.f, 0.f };
+      line.get()->rotate(pivot, -Math2::PI / 2.f, Math2::PI / 2.f, Math2::PI / 2.f);
+      const double offset[3] = { lineParams[0]->x, 0.f, linelength / 2. };
+      line.get()->translate(offset);
+      RegionT region(&chamber, &PMMAMSM, (NormalIntersectionShapeT*)line.get());
 
       const double egCenter[] = { x, y, -h - 20.f * 1.e-9f };
       GaussianBeamT eg(beamsize, beamE, egCenter);
