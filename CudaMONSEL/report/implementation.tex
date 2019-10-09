@@ -1,6 +1,21 @@
 \chapter{Implementation}\label{impl}
 In this section we discuss the implementation details of CudaMONSEL.
 
+The simulation is divided into two main packages, microanalysis and nanoanalysis, based on their respective functionalities and thus, authors. The microanalysis package, authored by Nicholas Ritchie, deals primarily with x--ray analysis, while the nanoanalysis package, authored by John Villarrubia, focuses on electron's interactions with materials. While their applications are different, nanoanalysis depends on microanalysis' implementation (mostly geometry) to work. I will introduce both sections below, with an emphasis on the connections between the two packages.
+
+\section{Microanalysis}
+In this package, the physics of the simulation are provided by subclasses of \emph{AlgorithmUser} and \emph{AlgorithmClass} abstract classes.
+
+\subsection{Algorithm Classes}
+The main purpose of \emph{AlgorithmUser} class is to provide the abstract method \emph{initializeDefaultStrategy} which provides a function shared by its subclasses to set each class in a proper state required to run the physics. 
+
+The secondary purpose of this class is to provide a place for the simulation to define the default algorithms to use when none is specified. This is enabled by the \emph{Strategy} class.
+
+The \emph{AlgorithmClass} abstract class inherits from \emph{AlgorithmUser} abstract class and included more information about the source of the physics algorithm (eg author). It also provides a way to query all algorithms of the same type (TODO: explain CLEARLY) via the \emph{getAllImplementations} abstract method.
+
+\subsubsection{}
+
+
 \section{Simulation}\label{impl:sim}
 The simulation computes the movement of the electron for each unit of time step. First, it acquires the active electron's position. From the position info, it calculates the current active region and the associated material scattering model. To obtain the position of electron at the next time step, the simulation acquires a random mean path length of the electron based on the scattering model and computes the electron's position at next time step. With the new position, the simulation obtains the next region, moves the electron and decreases its energy. Finally, it perfoems a check to determine if the active electron's trajectory is completed. If the trajectory is not completed, the simulation performs one of three actions based on the next region. At each time step, the energy loss and position of the electron is updated. When a new electron is spawned, the original electron is stored on a stack until the new electron is destroyed when its energy falls below the tracking threshold of the scattering mechanism. Refer to function \emph{takeStep} in MonteCarloSS.cu for details. 
 

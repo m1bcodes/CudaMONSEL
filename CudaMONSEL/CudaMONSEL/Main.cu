@@ -518,6 +518,12 @@ int main()
       delete[] gt;
 
       float* d_result = nullptr;
+      int** d_counts = new int*[H*W];
+      int nbins = (int)(LinesOnLayers::beamEeV / LinesOnLayers::binSizeEV);
+      printf("nbins: %d\n", nbins);
+      for (int i = 0; i < H*W; ++i) {
+          d_counts[i] = new int[nbins+2];
+      }
 
       //checkCudaErrors(cudaMalloc((void**)&d_result, sizeof(d_result[0]) * H * W));
       d_result = new float[H * W];
@@ -541,11 +547,11 @@ int main()
       //}
       //delete[] threads;
       //LinesOnLayers::createShapes();
-      ctpl::thread_pool tasks(11);
+      ctpl::thread_pool tasks(5);
       std::vector<std::future<void>> results(H * W);
       for (int i = 0; i < H; ++i) {
          for (int j = 0; j < W; ++j) {
-            results[i*W + j] = tasks.push(LinesOnLayers::runSinglePixelThread, i, j, d_result);
+            results[i*W + j] = tasks.push(LinesOnLayers::runSinglePixelThread, i, j, d_result, d_counts[i * W + j]);
          }
       }
       for (int i = 0; i < H; ++i) {
@@ -569,6 +575,21 @@ int main()
       //checkCudaErrors(cudaMemcpy(h_result, d_result, sizeof(h_result[0]) * H * W, cudaMemcpyDeviceToHost));
       memcpy(h_result, d_result, sizeof(h_result[0]) * H * W);
       delete[] d_result;
+
+      std::ofstream bse;
+      bse.open(folder + "\\bse" + std::to_string(n) + ".txt");
+      for (int i = 0; i < H * W; ++i) {
+          for (int j = 0; j < nbins + 1; ++j) {
+              bse << std::to_string(d_counts[i][j]);
+              bse << " ";
+          }
+          bse << "\n";
+      }
+      bse.close();
+      for (int i = 0; i < H * W; ++i) {
+          delete[] d_counts[i];
+      }
+      delete d_counts;
       //ImageUtil::saveResults("img.bmp", h_result, W, H);
 
       std::string output;
@@ -580,6 +601,7 @@ int main()
          //printf("\n");
       }
       delete[] h_result;
+
       output += "\n seconds: " + std::to_string(elapsed_seconds.count());
       output += "\n nTrajectories: " + std::to_string(LinesOnLayers::nTrajectories);
       output += "\n beamEeV: " + std::to_string(LinesOnLayers::beamEeV);

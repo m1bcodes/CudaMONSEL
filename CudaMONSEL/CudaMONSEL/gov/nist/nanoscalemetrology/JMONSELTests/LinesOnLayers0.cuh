@@ -17,6 +17,8 @@ namespace LinesOnLayers
    extern __device__ float beamEeV;
    extern __device__ float beamE;
    extern __device__ const NShapes::LineParams* lineParams[3];
+
+   extern __device__ const float binSizeEV;
 #else
    extern unsigned int ysize;
    extern unsigned int xsize;
@@ -27,6 +29,8 @@ namespace LinesOnLayers
    extern float beamEeV;
    extern float beamE;
    extern const NShapes::LineParams* lineParams[3];
+
+   extern const float binSizeEV;
 #endif
    extern void loadNUTable();
    extern void transferNUTableToCuda();
@@ -34,10 +38,10 @@ namespace LinesOnLayers
    extern __global__ void initCuda();
    extern __global__ void runCuda(float* result);
 
-   extern __host__ __device__ void runSinglePixel(const unsigned int r, const unsigned int c, float* result);
+   extern __host__ __device__ void runSinglePixel(const unsigned int r, const unsigned int c, float* result, int*);
    extern __host__ __device__ void initRange();
 
-   extern void runSinglePixelThread(int id, const unsigned int r, const unsigned int c, float* result);
+   extern void runSinglePixelThread(int id, const unsigned int r, const unsigned int c, float* result, int*);
 
    extern void setParams();
 

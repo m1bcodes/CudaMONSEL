@@ -40,7 +40,7 @@
 namespace LinesOnLayers
 {
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-   __device__ unsigned int nTrajectories = 100;
+   __device__ unsigned int nTrajectories = 250;
 
    __constant__ const float pitchnm = 180.f;
    __constant__ const int nlines = 3;
@@ -243,7 +243,7 @@ namespace LinesOnLayers
    __device__ const NShapes::LineParams* lineParams[3];
 #else
    //unsigned int nTrajectories = 100;
-   unsigned int nTrajectories = 0;
+   unsigned int nTrajectories = 200;
 
    const float pitchnm = 180.f;
    const int nlines = 3;
@@ -370,7 +370,7 @@ namespace LinesOnLayers
       0.0
    };
 
-   float beamEeV = 500.f;
+   float beamEeV = 1000.f;
    //float beamEeV = 0.f;
    float beamE = ToSI::eV(beamEeV);
    const float binSizeEV = 10.f;
@@ -627,7 +627,7 @@ namespace LinesOnLayers
       printf("(%d, %d)", xsize, ysize);
    }
 
-   __host__ __device__ void runSinglePixel(const unsigned int r, const unsigned int c, float* result)
+   __host__ __device__ void runSinglePixel(const unsigned int r, const unsigned int c, float* result, int* countbin)
    {
       const float deltay = (ystopnm - ystartnm) / ysize;
       const float deltax = (xstopnm - xstartnm) / xsize;
@@ -749,7 +749,7 @@ namespace LinesOnLayers
       SiMSMDeep.addScatterMechanism(&SiDS);
       SiMSMDeep.addScatterMechanism(&Siphonon);
 
-      SiMSMDeep.setMinEforTracking(ToSI::eV(50.f));
+      SiMSMDeep.setMinEforTracking(ToSI::eV(cutoffEnergyForSE));
 
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
       const float SiWeight = Element::dSi->getAtomicWeight();
@@ -812,52 +812,67 @@ namespace LinesOnLayers
       RegionT chamber(nullptr, &NULL_MSM, &sphere);
       chamber.updateMaterial(*(chamber.getScatterModel()), vacuumMSM);
 
-      NShapes::HorizontalStrip cs0(stripWidth);
-      NormalMultiPlaneShapeT* layer0 = cs0.get();
-      double dist0[3] = { 0., stripWidth / 2, 0. };
-      layer0->translate(dist0);
-      RegionT layer0Region(&chamber, &SiO2MSM, (NormalShapeT*)layer0);
+      //NShapes::HorizontalStrip cs0(stripWidth);
+      //NormalMultiPlaneShapeT* layer0 = cs0.get();
+      //double dist0[3] = { 0., stripWidth / 2, 0. };
+      //layer0->translate(dist0);
+      //RegionT layer0Region(&chamber, &SiO2MSM, (NormalShapeT*)layer0);
 
-      NShapes::HorizontalStrip cs1(stripWidth);
-      NormalMultiPlaneShapeT* layer1 = cs1.get();
-      dist0[1] += stripWidth;
-      layer1->translate(dist0);
-      RegionT layer1Region(&chamber, &SiMSM, (NormalShapeT*)layer1);
+      //NShapes::HorizontalStrip cs1(stripWidth);
+      //NormalMultiPlaneShapeT* layer1 = cs1.get();
+      //dist0[1] += stripWidth;
+      //layer1->translate(dist0);
+      //RegionT layer1Region(&chamber, &SiMSM, (NormalShapeT*)layer1);
 
-      NShapes::HorizontalStrip cs2(stripWidth, true);
-      NormalMultiPlaneShapeT* layer2 = cs2.get();
-      dist0[1] += stripWidth;
-      layer2->translate(dist0);
-      RegionT layer2Region(&chamber, &ARCMSM, (NormalShapeT*)layer2);
+      //NShapes::HorizontalStrip cs2(stripWidth, true);
+      //NormalMultiPlaneShapeT* layer2 = cs2.get();
+      //dist0[1] += stripWidth;
+      //layer2->translate(dist0);
+      //RegionT layer2Region(&chamber, &ARCMSM, (NormalShapeT*)layer2);
 
-      //NormalMultiPlaneShapeT layer1;
-      //PlaneT pl1(normalvector, layer1Pos);
-      //layer1.addPlane(&pl1);
-      //RegionT layer1Region(&chamber, &ARCMSM, (NormalShapeT*)&layer1);
+      ////NormalMultiPlaneShapeT layer1;
+      ////PlaneT pl1(normalvector, layer1Pos);
+      ////layer1.addPlane(&pl1);
+      ////RegionT layer1Region(&chamber, &ARCMSM, (NormalShapeT*)&layer1);
 
-      //NormalMultiPlaneShapeT layer2;
-      //PlaneT pl2(normalvector, layer2Pos);
-      //layer2.addPlane(&pl2);
-      //RegionT layer2Region(&layer1Region, &glCMSM, (NormalShapeT*)&layer2);
+      ////NormalMultiPlaneShapeT layer2;
+      ////PlaneT pl2(normalvector, layer2Pos);
+      ////layer2.addPlane(&pl2);
+      ////RegionT layer2Region(&layer1Region, &glCMSM, (NormalShapeT*)&layer2);
 
-      //NormalMultiPlaneShapeT layer3;
-      //PlaneT pl3(normalvector, layer3Pos);
-      //layer3.addPlane(&pl3);
-      //RegionT layer3Region(&layer2Region, &SiMSM, (NormalShapeT*)&layer3);
+      ////NormalMultiPlaneShapeT layer3;
+      ////PlaneT pl3(normalvector, layer3Pos);
+      ////layer3.addPlane(&pl3);
+      ////RegionT layer3Region(&layer2Region, &SiMSM, (NormalShapeT*)&layer3);
 
-      //NormalMultiPlaneShapeT layer4;
-      //PlaneT pl4(normalvector, layer4Pos);
-      //RegionT layer4Region(&layer3Region, &SiMSM, (NormalShapeT*)&layer4);
+      ////NormalMultiPlaneShapeT layer4;
+      ////PlaneT pl4(normalvector, layer4Pos);
+      ////RegionT layer4Region(&layer3Region, &SiMSM, (NormalShapeT*)&layer4);
 
-      //RegionT deepRegion(&layer3Region, &SiMSMDeep, (NormalShapeT*)&layer4);
+      ////RegionT deepRegion(&layer3Region, &SiMSMDeep, (NormalShapeT*)&layer4);
 
-      //NShapes::Line line(-h, w, linelength, thetal, thetar, radl, radr);
-      //const double pivot[3] = { 0.f, 0.f, 0.f };
-      //line.get()->rotate(pivot, -Math2::PI / 2.f, Math2::PI / 2.f, Math2::PI / 2.f);
-      //const double dist1[3] = { 0.f, 0.f, linelength / 2. };
-      //line.get()->translate(dist1);
+      ////NShapes::Line line(-h, w, linelength, thetal, thetar, radl, radr);
+      ////const double pivot[3] = { 0.f, 0.f, 0.f };
+      ////line.get()->rotate(pivot, -Math2::PI / 2.f, Math2::PI / 2.f, Math2::PI / 2.f);
+      ////const double dist1[3] = { 0.f, 0.f, linelength / 2. };
+      ////line.get()->translate(dist1);
 
-      //RegionT lineRegion(&chamber, &PMMAMSM, (NormalIntersectionShapeT*)line.get());
+      ////RegionT lineRegion(&chamber, &PMMAMSM, (NormalIntersectionShapeT*)line.get());
+
+      ////NShapes::Line* lines[3];
+      ////RegionT* regions[3];
+      ////for (int i = 0; i < nlines; ++i) {
+      ////   //NShapes::Line line(-h, w, linelength, thetal, thetar, radl, radr);
+      ////   lines[i] = new NShapes::Line(-lineParams[i]->h, lineParams[i]->w, lineParams[i]->linelength, lineParams[i]->thetal, lineParams[i]->thetar, lineParams[i]->radl, lineParams[i]->radr);
+      ////   const double pivot[3] = { 0.f, 0.f, 0.f };
+      ////   lines[i]->get()->rotate(pivot, -Math2::PI / 2.f, Math2::PI / 2.f, Math2::PI / 2.f);
+      ////   //lines[i]->get()->rotate(pivot, -Math2::PI / 2.f + 20.f / (Math2::PI / 2.f), Math2::PI / 2.f - 20.f / (Math2::PI / 2.f), Math2::PI / 2.f - 20.f / (Math2::PI / 2.f));
+      ////   //const double dist1[3] = { 0.f, 0.f, linelength / 2. };
+      ////   const double offset[3] = { lineParams[i]->x, 0.f, linelength / 2. };
+      ////   lines[i]->get()->translate(offset);
+      ////   //lines[i]->addRestrainingPlanes();
+      ////   regions[i] = new RegionT(&chamber, &PMMAMSM, (NormalIntersectionShapeT*)lines[i]->get());
+      ////}
 
       //NShapes::Line* lines[3];
       //RegionT* regions[3];
@@ -871,7 +886,17 @@ namespace LinesOnLayers
       //   const double offset[3] = { lineParams[i]->x, 0.f, linelength / 2. };
       //   lines[i]->get()->translate(offset);
       //   //lines[i]->addRestrainingPlanes();
-      //   regions[i] = new RegionT(&chamber, &PMMAMSM, (NormalIntersectionShapeT*)lines[i]->get());
+      //   switch (i) {
+      //   case 0:
+      //      regions[i] = new RegionT(&chamber, &PMMAMSM, (NormalIntersectionShapeT*)lines[i]->get());
+      //      break;
+      //   case 1:
+      //      regions[i] = new RegionT(&chamber, &SiMSM, (NormalIntersectionShapeT*)lines[i]->get());
+      //      break;
+      //   case 2:
+      //      regions[i] = new RegionT(&chamber, &SiO2MSM, (NormalIntersectionShapeT*)lines[i]->get());
+      //      break;
+      //   }
       //}
 
       NShapes::Line* lines[3];
@@ -936,6 +961,10 @@ namespace LinesOnLayers
          totalSE = totalSE + hist.counts(j);
       }
 
+      for (int j = 0; j < nbins + 1; ++j) {
+         countbin[j] = hist.counts(j);
+      }
+
       const float SEf = (float)totalSE / nTrajectories;
       const float bsf = back.backscatterFraction() - SEf;
       //printf("%lf %lf %lf %lf %lf\n", beamEeV, xnm, ynm, bsf, SEf);
@@ -943,10 +972,10 @@ namespace LinesOnLayers
 
       result[r * xsize + c] = SEf;
 
-      for (int i = 0; i < nlines; ++i) {
-         delete lines[i];
-         delete regions[i];
-      }
+      //for (int i = 0; i < nlines; ++i) {
+      //   delete lines[i];
+      //   delete regions[i];
+      //}
    }
 
    __global__ void
@@ -961,15 +990,15 @@ namespace LinesOnLayers
       const unsigned int threadId = blockId * (blockDim.x * blockDim.y) + (threadIdx.y * blockDim.x) + threadIdx.x;
       printf("%d, %d (%d) began\n", r, c, threadId);
 
-      runSinglePixel(r, c, result);
+      //runSinglePixel(r, c, result);
 
       printf("%d, %d (%d) ended\n", r, c, threadId);
    }
 
-   void runSinglePixelThread(int id, const unsigned int r, const unsigned int c, float* result)
+   void runSinglePixelThread(int id, const unsigned int r, const unsigned int c, float* result, int* counts)
    {
       try {
-         runSinglePixel(r, c, result);
+         runSinglePixel(r, c, result, counts);
       }
       catch (std::exception ex) {
          printf("%s\n", ex.what());
@@ -1017,7 +1046,7 @@ namespace LinesOnLayers
          curx += w * 1.5f;
       }
 
-      nTrajectories += 250;
+      //nTrajectories += 200;
 
       //beamEeV += 500.f;
       beamE = ToSI::eV(beamEeV);
