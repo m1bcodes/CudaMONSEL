@@ -16,7 +16,9 @@ namespace LinesOnLayers
    extern __device__ float beamsize;
    extern __device__ float beamEeV;
    extern __device__ float beamE;
-   extern __device__ const NShapes::LineParams* lineParams[3];
+   extern __device__ NShapes::LineParams** lineParams;
+   extern __device__ unsigned int nlines;
+   extern __device__ unsigned int linemat;
 #else
    extern unsigned int ysize;
    extern unsigned int xsize;
@@ -26,7 +28,9 @@ namespace LinesOnLayers
    extern float beamsize;
    extern float beamEeV;
    extern float beamE;
-   extern const NShapes::LineParams* lineParams[3];
+   extern NShapes::LineParams** lineParams;
+   extern unsigned int nlines;
+   extern unsigned int linemat;
 #endif
    extern void loadNUTable();
    extern void transferNUTableToCuda();
@@ -39,9 +43,14 @@ namespace LinesOnLayers
 
    extern void runSinglePixelThread(int id, const unsigned int r, const unsigned int c, float* result);
 
+   //extern void setSimParamsFromCSVFile(const char* fname);
    extern __host__ __device__ void setSimParams();
+   extern __host__ __device__ void destroySimParams();
 
    extern void lineProjection(const unsigned int n, char* gt);
+
+   extern void writeSerializedParams(const char res[]);
+   extern void readSerializedParams(const char fname[]);
 }
 
 #endif

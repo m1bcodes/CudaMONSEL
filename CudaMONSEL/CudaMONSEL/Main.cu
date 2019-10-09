@@ -466,6 +466,8 @@ void deviceQuery()
 
 int main()
 {
+   //LinesOnLayers::readSerializedParams("C:\\Users\\rey\\Documents\\GitHub\\CudaMONSEL\\CudaMONSEL\\CudaMONSEL\\outputs\\119-9-7_18-3-33\\params2.txt");
+
    time_t now = time(0);
 
    tm *ltm = localtime(&now);
@@ -507,9 +509,15 @@ int main()
    //LinesOnLayers::initCuda << <1, 1 >> >();
    //checkCudaErrors(cudaDeviceSynchronize());
    //checkCudaErrors(cudaGetLastError());
-   for (int n = 0; n < 1; ++n) {
+   for (int n = 0; n < 100; ++n) {
+      auto start = std::chrono::system_clock::now();
+      printf("start timing\n");
+
       LinesOnLayers::setSimParams();
+      //LinesOnLayers::readSerializedParams("C:\\Users\\rey\\Documents\\GitHub\\CudaMONSEL\\CudaMONSEL\\CudaMONSEL\\outputs\\119-9-7_18-3-33\\params2.txt");
       LinesOnLayers::initImgRange();
+      std::string paramlog = folder + "\\params" + std::to_string(n) + ".csv";
+      LinesOnLayers::writeSerializedParams(paramlog.c_str());
       const unsigned int H = LinesOnLayers::ysize, W = LinesOnLayers::xsize;
 
       char* gt = new char[LinesOnLayers::ysize * LinesOnLayers::xsize];
@@ -523,8 +531,6 @@ int main()
 
       //checkCudaErrors(cudaMalloc((void**)&d_result, sizeof(d_result[0]) * H * W));
       d_result = new float[H * W];
-      auto start = std::chrono::system_clock::now();
-      printf("start timing\n");
 
       //LinesOnLayers::runCuda << <gridSize, blockSize >> >(d_result);
       //checkCudaErrors(cudaDeviceSynchronize());
@@ -543,6 +549,8 @@ int main()
       //}
       //delete[] threads;
       //LinesOnLayers::createShapes();
+      //LinesOnLayers::runSinglePixelThread(0, 0, 0, d_result);
+
       ctpl::thread_pool tasks(11);
       std::vector<std::future<void>> results(H * W);
       for (int i = 0; i < H; ++i) {
@@ -563,6 +571,7 @@ int main()
       //   }
       //}
 
+      LinesOnLayers::destroySimParams();
       auto end = std::chrono::system_clock::now();
       std::chrono::duration<double> elapsed_seconds = end - start;
       std::time_t end_time = std::chrono::system_clock::to_time_t(end);
@@ -587,6 +596,8 @@ int main()
       output += "\n nTrajectories: " + std::to_string(LinesOnLayers::nTrajectories);
       output += "\n beamEeV: " + std::to_string(LinesOnLayers::beamEeV);
       output += "\n beamsizenm: " + std::to_string(LinesOnLayers::beamsizenm);
+      output += "\n nlines: " + std::to_string(LinesOnLayers::nlines);
+      output += "\n linemat: " + std::to_string(LinesOnLayers::linemat);
 
       std::ofstream myfile;
       myfile.open(folder + "\\output" + std::to_string(n) + ".txt");

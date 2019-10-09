@@ -200,8 +200,8 @@ namespace BackscatterStats
          mAzimuthalBins->add(azimuth);
          double kEeV = FromSI::eV(el.getEnergy());
          if (kEeV > FromSI::eV(el.getInitialEnergy())) {
-            printf("Histogram::add: energy higher than energy of eletron spawned (%.5e/%.5e)\n", kEeV / el.getInitialEnergy());
-            kEeV = el.getInitialEnergy();
+            printf("Histogram::add: energy higher than energy of eletron spawned (%.5e/%.5e)\n", kEeV, FromSI::eV(el.getInitialEnergy()));
+            kEeV = FromSI::eV(el.getInitialEnergy());
          }
          if (elevation < (Math2::PI / 2.0))
             mFwdEnergyBins->add(kEeV);

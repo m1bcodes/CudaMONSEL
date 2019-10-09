@@ -742,6 +742,64 @@ namespace NShapes
       printf("(%d, %d, %d) -> (%d, %d, %d)\n", start3[0], start3[1], start3[2], end3[0], end3[1], end3[2]);
    }
 
+
+   // axis2 would be the normal of the plane, which creates no projection
+   __host__ __device__ void Line::calcRasterizationCorrection(
+      const PlaneT& plane,
+      const double* axis0, // vector from the plane origin
+      const double* axis1, // vector from the plane origin
+      const float xlenperpix,
+      const float ylenperpix,
+      char* res,
+      const unsigned int w,
+      const unsigned int h
+      ) const
+   {
+      MultiPlaneShape::LineShape res2;
+      calcLineProjection(plane, axis0, axis1, *gt2, res2);
+
+      const int start2[3] = { res2.P0[0] / xlenperpix, res2.P0[1] / ylenperpix, res2.P0[2] };
+      const int end2[3] = { res2.P1[0] / xlenperpix, res2.P1[1] / ylenperpix, res2.P1[2] };
+
+      const Point s2(start2[0], start2[1]);
+      const Point e2(end2[0], end2[1]);
+
+      DrawLine(s2, e2, 0, res, w, h);
+
+      // bottom left
+      if (blcylinder) {
+         for (int i = 0; i < 90; ++i) {
+            const double theta = i / 180. * Math2::PI;
+            double orig[3] = {
+               blcylinder->getEnd1()[0] + blcylinder->getRadius() * ::cosf(theta),
+               blcylinder->getEnd1()[1],
+               blcylinder->getEnd1()[2]
+            }; // eg. point on the circle
+            double proj[3];
+            calcPointProjection(plane, axis0, axis1, orig, proj);
+            const int s[3] = { proj[0] / xlenperpix, proj[1] / ylenperpix, proj[2] };
+            const unsigned int idx = s[1] * w + s[0];
+            if (idx >= 0 && idx < h * w) res[idx] = 0;
+         }
+      }
+      // bottom right
+      if (brcylinder) {
+         for (int i = 90; i < 180; ++i) {
+            const double theta = i / 180. * Math2::PI;
+            const double orig[3] = {
+               brcylinder->getEnd1()[0] + brcylinder->getRadius() * ::cosf(theta),
+               brcylinder->getEnd1()[1],
+               brcylinder->getEnd1()[2]
+            }; // eg. point on the circle
+            double proj[3];
+            calcPointProjection(plane, axis0, axis1, orig, proj);
+            const int s[3] = { proj[0] / xlenperpix, proj[1] / ylenperpix, proj[2] };
+            const unsigned int idx = s[1] * w + s[0];
+            if (idx >= 0 && idx < h * w) res[idx] = 0;
+         }
+      }
+   }
+
    __host__ __device__ NormalIntersectionShapeT* Line::get()
    {
       return nis;
@@ -928,12 +986,10 @@ namespace NShapes
 
    __host__ __device__ void Washer::calcGroundtruth()
    {
-
    }
 
    __host__ __device__ void Washer::calcRasterization(const PlaneT&, const double*, const double*, const float, const float, char*, const unsigned int, const unsigned int) const
    {
-
    }
 
    __host__ __device__ NormalDifferenceShapeT* Washer::get()

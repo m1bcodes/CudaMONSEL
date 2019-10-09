@@ -13,18 +13,35 @@ namespace NShapes
 
    struct LineParams
    {
-      __host__ __device__ LineParams(const float h, const float w, const float linelength, const float thetal, const float thetar, const float radl, const float radr, const float x) :
+      __host__ __device__ LineParams(const float h, const float w, const float linelength, const float thetal, const float thetar, const float radl, const float radr, const unsigned int material, const float x) :
          h(h), 
          w(w), 
          linelength(linelength), 
          thetal(thetal), 
          thetar(thetar), 
          radl(radl), 
-         radr(radr), 
+         radr(radr),
+         material(material), // makes no sense to be here
          x(x)
       {};
-      const float h, w, linelength, thetal, thetar, radl, radr; // constructor params
-      const float x; // translate
+      const float h, w, linelength, thetal, thetar, radl, radr; // line params
+      const unsigned int material;
+      float x; // mutable position (translate), not constant since its position depends on the size and pos of previous lines
+   };
+
+   struct HorizontalStripParams
+   {
+      __host__ __device__ HorizontalStripParams(const float w, const bool fadetop, const bool fadebot, const unsigned int material, const float y) :
+         w(w),
+         fadetop(fadetop),
+         fadebot(fadebot),
+         material(material),
+         y(y)
+      {};
+      const float w; // line params
+      const bool fadetop, fadebot;
+      const unsigned int material; // makes no sense to be here
+      float y; // mutable position (translate), not constant since its position depends on the size and pos of previous strips
    };
 
    class Line
@@ -44,6 +61,7 @@ namespace NShapes
       __host__ __device__ void create();
       __host__ __device__ void calcGroundtruth();
       __host__ __device__ void calcRasterization(const PlaneT&, const double*, const double*, const float, const float, char*, const unsigned int, const unsigned int) const;
+      __host__ __device__ void calcRasterizationCorrection(const PlaneT&, const double*, const double*, const float, const float, char*, const unsigned int, const unsigned int) const;
 
       __host__ __device__ NormalIntersectionShapeT* get();
 

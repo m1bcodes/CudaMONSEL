@@ -31,6 +31,7 @@
 #include "Amphibian\random.cuh"
 
 #include <fstream>
+#include <string>
 
 #include <chrono>
 #include <time.h>
@@ -44,7 +45,8 @@ namespace LinesOnLayers
    __device__ unsigned int nTrajectories = 100;
 
    __constant__ const float pitchnm = 180.f;
-   __constant__ const int nlines = 3;
+   __device__ unsigned int nlines = 3;
+   __device__ unsigned int linemat = 0;
    __constant__ const float hnm = 120.f;
    __constant__ const float wnm = 80.f;
    __constant__ const float linelengthnm = 1000.f;
@@ -202,8 +204,6 @@ namespace LinesOnLayers
    __constant__ const float leftmostLineCenterx = -180.f * 1.e-9f * (3.f / 2.f);
    __constant__ const float xcenter = -180.f * 1.e-9f * (3.f / 2.f) + 0.f * 180.f * 1.e-9f;
 
-   __constant__ const float stripWidth = 30.f * 1e-9f;
-
    //__device__ NormalIntersectionShapeT* line = nullptr;
    //__device__ RegionT* lineRegion = nullptr;
 
@@ -241,9 +241,14 @@ namespace LinesOnLayers
 
    __device__ unsigned int ysize, xsize;
    __device__ float xstartnm, xstopnm, ystartnm, ystopnm;
-   __device__ const NShapes::LineParams* lineParams[3];
+
+   __device__ NShapes::LineParams** lineParams;
+
+   __device__ unsigned int nhstrips;
+   __device__ NShapes::HorizontalStripParams** hstripParams;
+   __device__ float horizontalStripWidth;
 #else
-   unsigned int nTrajectories = 10;
+   unsigned int nTrajectories = 100;
    //unsigned int nTrajectories = 250;
 
    //const float wnm = 80.f;
@@ -253,7 +258,8 @@ namespace LinesOnLayers
    //const float radlnm = 20.f;
 
    const float pitchnm = 180.f;
-   const int nlines = 3;
+   unsigned int nlines = 3;
+   unsigned int linemat = 0;
    const float hnm = 120.f;
    const float wnm = 30.f;
    const float linelengthnm = 120.f;
@@ -414,8 +420,6 @@ namespace LinesOnLayers
    const float leftmostLineCenterx = -180.f * 1.e-9f * (3.f / 2.f);
    const float xcenter = -180.f * 1.e-9f * (3.f / 2.f) + 0.f * 180.f * 1.e-9f;
 
-   const float stripWidth = 30.f * 1e-9f;
-
    //NormalIntersectionShapeT* line = nullptr;
    //RegionT* lineRegion = nullptr;
 
@@ -453,7 +457,12 @@ namespace LinesOnLayers
 
    unsigned int ysize, xsize;
    float xstartnm, xstopnm, ystartnm, ystopnm;
-   const NShapes::LineParams* lineParams[3];
+
+   NShapes::LineParams** lineParams;
+
+   NShapes::HorizontalStripParams** hstripParams;
+   unsigned int nhstrips;
+   float horizontalStripWidth;
 #endif
 
    __global__ void verifyNUTable1d(const char* fn)
@@ -581,15 +590,16 @@ namespace LinesOnLayers
 
       //const float xbottom = wnm / 2.f;
       //const float xtop = wnm / 2.f - hnm * ::tanf(thetar);
-      const float xbottom = 80.f / 2.f;
-      const float xtop = 80.f / 2.f - hnm * ::tanf(thetar);
-      xstartnm = xbottom - 200.f;
-      xstopnm = xbottom + 200.f;
+      //xstartnm = xbottom - 200.f;
+      //xstopnm = xbottom + 200.f;
       //const float xfinestart = xtop - 20.5f;
       //const float xfinestop = (thetar < 0.f) ? xtop + 20.5f : wnm / 2.f + 20.5f;
 
-      ystartnm = -128.f;
-      ystopnm = 128;
+      xstartnm = lineParams[0]->x - lineParams[0]->w * 1.e9 / 2. - lineParams[0]->radl * 1.e9 - 20. * Random::random();
+      xstopnm = lineParams[nlines - 1]->x * 1.e9 + lineParams[nlines - 1]->w * 1.e9 / 2. + lineParams[nlines - 1]->radr * 1.e9 + 20. * Random::random();
+      
+      ystartnm = -128.f + (Random::random() - 0.5) * 2. * 20.f;
+      ystopnm = 128 + (Random::random() - 0.5) * 2. * 20.f;
 
       xsize = 512;
       ysize = 512;
@@ -633,6 +643,13 @@ namespace LinesOnLayers
 
       printf("(%d, %d)", xsize, ysize);
    }
+
+   enum MaterialTypes
+   {
+      PMMA = 0,
+      Si = 1,
+      SiO2 = 2,
+   };
 
    __host__ __device__ void runSinglePixel(const unsigned int r, const unsigned int c, float* result)
    {
@@ -819,23 +836,29 @@ namespace LinesOnLayers
       RegionT chamber(nullptr, &NULL_MSM, &sphere);
       chamber.updateMaterial(*(chamber.getScatterModel()), vacuumMSM);
 
-      NShapes::HorizontalStrip cs0(stripWidth);
-      NormalMultiPlaneShapeT* layer0 = cs0.get();
-      double dist0[3] = { 0., stripWidth / 2, 0. };
-      layer0->translate(dist0);
-      RegionT layer0Region(&chamber, &SiO2MSM, (NormalShapeT*)layer0);
+      NShapes::HorizontalStrip** strips = new NShapes::HorizontalStrip*[nhstrips];
+      RegionT** stripRegions = new RegionT*[nhstrips];
+      for (int i = 0; i < nhstrips; ++i) {
+         strips[i] = new NShapes::HorizontalStrip(hstripParams[i]->w, hstripParams[i]->fadebot);
+         NormalMultiPlaneShapeT* layer = strips[i]->get();
+         double dist[3] = { 0., hstripParams[i]->y, 0. };
+         layer->translate(dist);
 
-      NShapes::HorizontalStrip cs1(stripWidth);
-      NormalMultiPlaneShapeT* layer1 = cs1.get();
-      dist0[1] += stripWidth;
-      layer1->translate(dist0);
-      RegionT layer1Region(&chamber, &SiMSM, (NormalShapeT*)layer1);
+         stripRegions[i] = new RegionT(&chamber, &PMMAMSM, (NormalShapeT*)layer);
 
-      NShapes::HorizontalStrip cs2(stripWidth, true);
-      NormalMultiPlaneShapeT* layer2 = cs2.get();
-      dist0[1] += stripWidth;
-      layer2->translate(dist0);
-      RegionT layer2Region(&chamber, &ARCMSM, (NormalShapeT*)layer2);
+         //switch (i)
+         //{
+         //case MaterialTypes::SiO2:
+         //   stripRegions[i] = new RegionT(&chamber, &SiO2MSM, (NormalMultiPlaneShapeT*)layer);
+         //   break;
+         //case MaterialTypes::Si:
+         //   stripRegions[i] = new RegionT(&chamber, &SiMSM, (MultiPlaneShapeT*)layer);
+         //   break;
+         //case MaterialTypes::PMMA:
+         //   stripRegions[i] = new RegionT(&chamber, &PMMAMSM, (MultiPlaneShapeT*)layer);
+         //   break;
+         //}
+      }
 
       //NormalMultiPlaneShapeT layer1;
       //PlaneT pl1(normalvector, layer1Pos);
@@ -881,25 +904,8 @@ namespace LinesOnLayers
       //   regions[i] = new RegionT(&chamber, &PMMAMSM, (NormalIntersectionShapeT*)lines[i]->get());
       //}
 
-      static const unsigned int MAT_PMMA = 0;
-      static const unsigned int MAT_SI = 1;
-      static const unsigned int MAT_SIO2 = 2;
-      unsigned int matopt = Random::randomInt(3);
-      MONSEL_MaterialScatterModelT* curmat = nullptr;
-      switch (matopt) {
-      case MAT_PMMA:
-         curmat = &PMMAMSM;
-         break;
-      case MAT_SI:
-         curmat = &SiMSM;
-         break;
-      case MAT_SIO2:
-         curmat = &SiO2MSM;
-         break;
-      }
-
-      NShapes::Line* lines[3];
-      RegionT* regions[3];
+      NShapes::Line** lines = new NShapes::Line*[nlines];
+      RegionT** lineRegions = new RegionT*[nlines];
       for (int i = 0; i < nlines; ++i) {
          //NShapes::Line line(-h, w, linelength, thetal, thetar, radl, radr);
          lines[i] = new NShapes::Line(-lineParams[i]->h, lineParams[i]->w, lineParams[i]->linelength, lineParams[i]->thetal, lineParams[i]->thetar, lineParams[i]->radl, lineParams[i]->radr);
@@ -910,18 +916,19 @@ namespace LinesOnLayers
          const double offset[3] = { lineParams[i]->x, 0.f, linelength / 2. };
          lines[i]->get()->translate(offset);
          //lines[i]->addRestrainingPlanes();
-         //switch (mat) {
-         //case 0:
-         //   regions[i] = new RegionT(&chamber, &PMMAMSM, (NormalIntersectionShapeT*)lines[i]->get());
-         //   break;
-         //case 1:
-         //   regions[i] = new RegionT(&chamber, &SiMSM, (NormalIntersectionShapeT*)lines[i]->get());
-         //   break;
-         //case 2:
-         //   regions[i] = new RegionT(&chamber, &SiO2MSM, (NormalIntersectionShapeT*)lines[i]->get());
-         //   break;
-         //}
-         regions[i] = new RegionT(&chamber, curmat, (NormalIntersectionShapeT*)lines[i]->get());
+         switch (linemat) {
+         case MaterialTypes::PMMA:
+            lineRegions[i] = new RegionT(&chamber, &PMMAMSM, (NormalIntersectionShapeT*)lines[i]->get());
+            break;
+         case MaterialTypes::Si:
+            lineRegions[i] = new RegionT(&chamber, &SiMSM, (NormalIntersectionShapeT*)lines[i]->get());
+            break;
+         case MaterialTypes::SiO2:
+            lineRegions[i] = new RegionT(&chamber, &SiO2MSM, (NormalIntersectionShapeT*)lines[i]->get());
+            break;
+         }
+         //regions[i] = new RegionT(&chamber, curmat, (NormalIntersectionShapeT*)lines[i]->get());
+         //regions[i] = new RegionT(&chamber, &SiMSM, (NormalIntersectionShapeT*)lines[i]->get());
       }
 
       //NShapes::Line line(-h, w, linelength, thetal, thetar, radl, radr);
@@ -971,10 +978,20 @@ namespace LinesOnLayers
 
       result[r * xsize + c] = SEf;
 
+      // clean up
+      for (int i = 0; i < nhstrips; ++i) {
+         delete strips[i];
+         delete stripRegions[i];
+      }
+      delete strips;
+      delete stripRegions;
+
       for (int i = 0; i < nlines; ++i) {
          delete lines[i];
-         delete regions[i];
+         delete lineRegions[i];
       }
+      delete lines;
+      delete lineRegions;
    }
 
    __global__ void
@@ -1009,76 +1026,136 @@ namespace LinesOnLayers
       return val * (1.f + (1.f - Random::random() * 2.f) * fraction); // val +/- val*fraction
    }
 
+   //__host__ __device__ void ResetParams()
+   //{
+   //   strip0Width = 30.f * 1.e-9f;
+   //   strip1Width = 30.f * 1.e-9f;
+   //   strip2Width = 30.f * 1.e-9f;
+   //   fade2 = false;
+
+   //   nlines = 3;
+   //   linemat = 0;
+
+   //   nTrajectories = 100;
+
+   //   beamEeV = 3000.f;
+   //}
+
    __host__ __device__ void setSimParams()
    {
-      //float curx = -w;
+      // hrizontal strips
+      //nhstrips = 3 + Random::randomInt(2);
+      nhstrips = 3;
+      hstripParams = new NShapes::HorizontalStripParams*[nhstrips];
+      horizontalStripWidth = 30.f * 1e-9f;
+      // generate strips
+      for (int i = 0; i < nhstrips; ++i) {
+         unsigned int mat = 0;
+         switch (i) {
+         case MaterialTypes::PMMA: mat = MaterialTypes::PMMA; break;
+         case MaterialTypes::Si: mat = MaterialTypes::Si; break;
+         case MaterialTypes::SiO2: mat = MaterialTypes::SiO2; break;
+         }
 
-      //for (int i = 0; i < nlines; ++i) {
-      //   lineParams[i] = new NShapes::LineParams(
-      //      getAdjustedValPlusMinus(h, 0.1f),
-      //      w,
-      //      getAdjustedValPlusMinus(linelength, 0.f),
-      //      getAdjustedValPlusMinus(thetal, 0.1f),
-      //      getAdjustedValPlusMinus(thetar, 0.1f),
-      //      getAdjustedValPlusMinus(radl, 0.1f),
-      //      getAdjustedValPlusMinus(radr, 0.1f),
-      //      curx);
-      //   curx += w * 1.5f;
-      //}
+         hstripParams[i] = new NShapes::HorizontalStripParams(horizontalStripWidth * (1 + (Random::random() - .5f)), false, i == nhstrips - 1 ? Random::random() > .5f : false, mat, 0.f);
+      }
 
-      //nTrajectories = Random::randomInt(240) + 10; // 10 - 250
+      // translate
+      float cury = hstripParams[0]->w / 2.f;
+      hstripParams[0]->y = cury;
+      for (int i = 1; i < nhstrips; ++i) {
+         cury += hstripParams[i - 1]->w / 2.f + hstripParams[i]->w / 2.f;
+         hstripParams[i]->y = cury;
+      }
 
-      //beamEeV = 15000.f * Random::random() + 500.f; // 500.f - 20000.f
-      //beamE = ToSI::eV(beamEeV);
-
-      //beamsizenm = Random::random() + 0.5f; // 0.5f - 1.5f
-      //beamsize = beamsizenm * ToSI::NANO;
-
-      //printf("nTrajectories: %d\n", nTrajectories);
-      //printf("beamEeV: %.5e\n", beamEeV);
-      //printf("beamsizenm: %.5e\n", beamsizenm);
-
-      float curx = -w;
-
+      // feature lines
+      //nlines = 3 + Random::randomInt(3);
+      nlines = 3;
+      linemat = Random::randomInt(3);
+      lineParams = new NShapes::LineParams*[nlines];
+      // generate line shape
       for (int i = 0; i < nlines; ++i) {
-         lineParams[i] = new NShapes::LineParams(h, w, linelength, thetal, thetar, radl, radr, curx);
-         curx += w * 1.5f;
+         const float curh = h * (.5f + Random::random());
+         const float curw = w * (.2f + Random::random());
+         const float curl = linelength;
+         const float curtl = Math2::toRadians(thetal + (Random::random() - .5f));
+         const float curtr = thetar;
+         const float currl = curw / 3.f + curw / 3.f * (.5f - Random::random());
+         const float currr = curw / 3.f + curw / 3.f * (.5f - Random::random());
+
+         lineParams[i] = new NShapes::LineParams(curh, curw, curl, curtl, curtr, currl, currr, linemat, 0.f);
+      }
+
+      // update line position
+      float curx = 0.f;
+      lineParams[0]->x = curx;
+      for (int i = 1; i < nlines; ++i) {
+         curx += lineParams[i - 1]->w / 2.f + lineParams[i - 1]->radr + lineParams[i]->w / 2.f + lineParams[i]->radl;
+         lineParams[i]->x = curx;
       }
 
       //nTrajectories += 250;
+      nTrajectories += Random::random() * 100;
 
-      //beamEeV += 250.f;
+      beamEeV += 3000.f * Random::random();
       beamE = ToSI::eV(beamEeV);
 
       //beamsizenm += 0.1f;
-      beamsize = beamsizenm * ToSI::NANO;
+      //beamsize = beamsizenm * ToSI::NANO * (.5f + Random::random());
 
+      printf("nlines: %d\n", nlines);
+      printf("linemat: %d\n", linemat);
       printf("nTrajectories: %d\n", nTrajectories);
       printf("beamEeV: %.5e\n", beamEeV);
       printf("beamsizenm: %.5e\n", beamsizenm);
    }
 
+   //void setSimParamsFromCSVFile(const char* fname)
+   //{
+   //   std::fstream fin(fname, std::ios::in);
+
+   //   std::string line, word, temp;
+
+   //   while (fin >> temp) {
+   //      getline(fin, line);
+
+   //      std::stringstream s(line);
+   //      int c = 0;
+   //      while (getline(s, word, ',')) {
+   //         float val = std::stof(word.c_str());
+
+   //         switch (c) {
+   //         case 0:
+   //         {
+   //            break;
+   //         }
+   //         default:
+   //         {
+   //            break;
+   //         }
+   //         }
+
+   //         ++c;
+   //      }
+   //   }
+   //   fin.close();
+   //}
+
+   __host__ __device__ void destroySimParams()
+   {
+      for (int i = 0; i < nlines; ++i) {
+         delete lineParams[i];
+      }
+      delete[] lineParams;
+
+      for (int i = 0; i < nhstrips; ++i) {
+         delete hstripParams[i];
+      }
+      delete[] hstripParams;
+   }
+
    void lineProjection(const unsigned int idx, char* gt)
    {
-      NShapes::HorizontalStrip hs0(stripWidth);
-      NormalMultiPlaneShapeT* layer0 = hs0.get();
-      double offset[3] = { 0., stripWidth / 2., 0. };
-      layer0->translate(offset);
-
-      NShapes::HorizontalStrip hs1(stripWidth);
-      NormalMultiPlaneShapeT* layer1 = hs1.get();
-      offset[1] += stripWidth;
-      layer1->translate(offset);
-
-      NShapes::HorizontalStrip hs2(stripWidth, true);
-      NormalMultiPlaneShapeT* layer2 = hs2.get();
-      offset[1] += stripWidth;
-      layer2->translate(offset);
-
-      hs0.calcGroundtruth();
-      hs1.calcGroundtruth();
-      hs2.calcGroundtruth();
-
       const double p[3] = { xstartnm * 1.e-9, ystartnm * 1.e-9, 0. };
       const double n[3] = { 0., 0., -1. };
       PlaneT projectionPlane(n, p); // projection plane
@@ -1088,10 +1165,18 @@ namespace LinesOnLayers
       const float xlenperpix = (xstopnm - xstartnm) / xsize * 1.e-9;
       const float ylenperpix = (ystopnm - ystartnm) / ysize * 1.e-9;
 
-      hs0.calcRasterization(projectionPlane, axis0, axis1, xlenperpix, ylenperpix, gt, xsize, ysize);
-      hs1.calcRasterization(projectionPlane, axis0, axis1, xlenperpix, ylenperpix, gt, xsize, ysize);
-      hs2.calcRasterization(projectionPlane, axis0, axis1, xlenperpix, ylenperpix, gt, xsize, ysize);
+      // horizontal strips
+      for (int i = 0; i < nhstrips; ++i) {
+         NShapes::HorizontalStrip hs(hstripParams[i]->w);
+         NormalMultiPlaneShapeT* layer = hs.get();
+         double offset[3] = { 0., hstripParams[i]->y, 0. };
+         layer->translate(offset);
 
+         hs.calcGroundtruth();
+         hs.calcRasterization(projectionPlane, axis0, axis1, xlenperpix, ylenperpix, gt, xsize, ysize);
+      }
+
+      // lines
       for (int i = 0; i < nlines; ++i) {
          //NShapes::Line line(-h, w, linelength, thetal, thetar, radl, radr);
          NShapes::Line line(-lineParams[i]->h, lineParams[i]->w, lineParams[i]->linelength, lineParams[i]->thetal, lineParams[i]->thetar, lineParams[i]->radl, lineParams[i]->radr);
@@ -1103,10 +1188,144 @@ namespace LinesOnLayers
          //const double dist1[3] = { lp.x, 0.f, linelength / 2. };
          const double offset[3] = { lineParams[i]->x, 0.f, linelength / 2. };
          line.get()->translate(offset);
+
          line.calcGroundtruth(); // get points/line segments that need to be projected
-         line.calcRasterization(projectionPlane, axis0, axis1, xlenperpix, ylenperpix, gt, xsize, ysize); // needs to be last since bottom needs to be removed due to same material
+         line.calcRasterization(projectionPlane, axis0, axis1, xlenperpix, ylenperpix, gt, xsize, ysize); // calculation for line needs to be last since bottom needs to be removed due to same material
+
+         // boundary corrections
+         if (lineParams[i]->material == hstripParams[0]->material) { // bottom needs to be removed due to same material
+            line.calcRasterizationCorrection(projectionPlane, axis0, axis1, xlenperpix, ylenperpix, gt, xsize, ysize);
+         }
       }
 
       //NShapes::TestProjection();
+   }
+
+   void writeSerializedParams(const char fname[])
+   {
+      std::fstream fout(fname, std::ios::out | std::ios::app);
+
+      fout << xstartnm << ",";
+      fout << xstopnm << ",";
+
+      fout << ystartnm << ",";
+      fout << ystopnm << ",";
+
+      fout << xsize << ",";
+      fout << ysize << ",";
+
+      fout << nhstrips << ",";
+      for (int i = 0; i < nhstrips; ++i) {
+         fout << hstripParams[i]->w << ",";
+         fout << hstripParams[i]->fadetop << ",";
+         fout << hstripParams[i]->fadebot << ",";
+
+         fout << hstripParams[i]->material << ",";
+         fout << hstripParams[i]->y << ",";
+      }
+
+      fout << nlines << ",";
+      for (int i = 0; i < nlines; ++i) {
+         fout << lineParams[i]->h << ",";
+         fout << lineParams[i]->w << ",";
+         fout << lineParams[i]->linelength << ",";
+         fout << lineParams[i]->thetal << ",";
+         fout << lineParams[i]->thetar << ",";
+         fout << lineParams[i]->radl << ",";
+         fout << lineParams[i]->radr << ",";
+
+         fout << lineParams[i]->material << ",";
+         fout << lineParams[i]->x << ",";
+      }
+
+      fout << nTrajectories << ",";
+      fout << beamEeV << ",";
+      fout << beamsizenm << ",";
+
+      fout << "\n";
+
+      fout.close();
+   }
+
+   void readSerializedParams(const char fname[])
+   {
+      std::fstream fin(fname, std::ios::in);
+      std::string line, word;
+      while (fin >> line) {
+         std::stringstream s(line);
+
+         getline(s, word, ',');
+         xstartnm = std::stof(word.c_str()); //printf("%.5e\n", xstartnm);
+
+         getline(s, word, ',');
+         xstopnm = std::stof(word.c_str()); //printf("%.5e\n", xstopnm);
+
+         getline(s, word, ',');
+         ystartnm = std::stof(word.c_str()); //printf("%.5e\n", ystartnm);
+
+         getline(s, word, ',');
+         ystopnm = std::stof(word.c_str()); //printf("%.5e\n", ystopnm);
+
+         getline(s, word, ',');
+         xsize = std::stoi(word.c_str()); //printf("%d\n", xsize);
+
+         getline(s, word, ',');
+         ysize = std::stoi(word.c_str()); //printf("%d\n", ysize);
+
+         getline(s, word, ',');
+         nhstrips = std::stoi(word.c_str()); //printf("%d\n", nhstrips);
+         hstripParams = new NShapes::HorizontalStripParams*[nhstrips];
+         for (int i = 0; i < nhstrips; ++i) {
+            getline(s, word, ',');
+            const float w = std::stof(word.c_str()); //printf("%.5e\n", w);
+            getline(s, word, ',');
+            const int ft = std::stoi(word.c_str()); //printf("%d\n", ft);
+            getline(s, word, ',');
+            const int fb = std::stoi(word.c_str()); //printf("%d\n", fb);
+
+            getline(s, word, ',');
+            const unsigned int mat = std::stoi(word.c_str()); //printf("%d\n", mat);
+            getline(s, word, ',');
+            const float y = std::stof(word.c_str()); //printf("%.5e\n", y);
+
+            hstripParams[i] = new NShapes::HorizontalStripParams(w, ft, fb, mat, y);
+         }
+
+         getline(s, word, ',');
+         nlines = std::stoi(word.c_str()); //printf("%d\n", nlines);
+         lineParams = new NShapes::LineParams*[nlines];
+         for (int i = 0; i < nlines; ++i) {
+            getline(s, word, ',');
+            const float h = std::stof(word.c_str()); //printf("%.5e\n", h);
+            getline(s, word, ',');
+            const float w = std::stof(word.c_str()); //printf("%.5e\n", w);
+            getline(s, word, ',');
+            const float l = std::stof(word.c_str()); //printf("%.5e\n", l);
+            getline(s, word, ',');
+            const float tl = std::stof(word.c_str()); //printf("%.5e\n", tl);
+            getline(s, word, ',');
+            const float tr = std::stof(word.c_str()); //printf("%.5e\n", tr);
+            getline(s, word, ',');
+            const float rl = std::stof(word.c_str()); //printf("%.5e\n", rl);
+            getline(s, word, ',');
+            const float rr = std::stof(word.c_str()); //printf("%.5e\n", rr);
+
+            getline(s, word, ',');
+            const unsigned int mat = std::stoi(word.c_str()); //printf("%d\n", mat);
+            getline(s, word, ',');
+            const float x = std::stof(word.c_str()); //printf("%.5e\n", x);
+
+            lineParams[i] = new NShapes::LineParams(h, w, l, tl, tr, rl, rr, mat, x);
+         }
+
+         getline(s, word, ',');
+         nTrajectories = std::stoi(word.c_str()); //printf("%d\n", nTrajectories);
+         getline(s, word, ',');
+         beamEeV = std::stof(word.c_str()); //printf("%.5e\n", beamEeV);
+         getline(s, word, ',');
+         beamsizenm = std::stof(word.c_str()); //printf("%.5e\n", beamsizenm);
+      }
+
+      fin.close();
    }
 }
