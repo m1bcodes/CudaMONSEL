@@ -492,9 +492,9 @@ int main()
    printf("cudaLimitStackSize: %d\n", pValue);
 
    testLibrary();
-   //initSim();
-   //testSim();
-   //LinesOnLayers::loadNUTable();
+   initSim();
+   testSim();
+   LinesOnLayers::loadNUTable();
    //LinesOnLayers::initRange();
 
    //const unsigned int H = LinesOnLayers::ysize, W = LinesOnLayers::xsize;
