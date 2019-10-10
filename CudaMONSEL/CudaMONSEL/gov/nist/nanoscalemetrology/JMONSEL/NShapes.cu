@@ -438,13 +438,13 @@ namespace NShapes
       double s = Math2::dot3d(v, n0); // perpendicular distance between p and plane
       s = s == 0. ? 1. : s;
       MultiPlaneShape::LineShape l;
-      static const float extensionFactor = 10.f;
+      static const float extensionFactor = 20.f;
       l.P0[0] = p[0] + extensionFactor * s * n0[0]; l.P0[1] = p[1] + extensionFactor * s * n0[1]; l.P0[2] = p[2] + extensionFactor * s * n0[2];
       l.P1[0] = p[0] - extensionFactor * s * n0[0]; l.P1[1] = p[1] - extensionFactor * s * n0[1]; l.P1[2] = p[2] - extensionFactor * s * n0[2];
       const int ind = MultiPlaneShape::intersect3D_SegmentPlane(l, plane, res);
 
       // checks
-      if (ind == 0) printf("getPerpendicularIntersection: no intersect\n");
+      if (ind == 0) printf("getPerpendicularIntersection: no intersect (check if decreasing MultiPlaneShape::SMALL_NUM helps)\n");
       else if (ind == 1) printf("getPerpendicularIntersection: intersect\n");
       else if (ind == 2) printf("getPerpendicularIntersection: on plane\n");
    }
@@ -742,6 +742,21 @@ namespace NShapes
       printf("(%d, %d, %d) -> (%d, %d, %d)\n", start3[0], start3[1], start3[2], end3[0], end3[1], end3[2]);
    }
 
+   __host__ __device__ unsigned int Line::calcRasterPoint(
+      const PlaneT& plane,
+      const double* axis0, // vector from the plane origin
+      const double* axis1, // vector from the plane origin
+      const float xlenperpix,
+      const float ylenperpix,
+      const unsigned int w,
+      const double pt[],
+      const double theta) const
+   {
+      double proj[3];
+      calcPointProjection(plane, axis0, axis1, pt, proj);
+      const int s[3] = { proj[0] / xlenperpix, proj[1] / ylenperpix, proj[2] };
+      return s[1] * w + s[0];
+   }
 
    // axis2 would be the normal of the plane, which creates no projection
    __host__ __device__ void Line::calcRasterizationCorrection(
@@ -768,34 +783,53 @@ namespace NShapes
 
       // bottom left
       if (blcylinder) {
-         for (int i = 0; i < 90; ++i) {
+         for (int i = 0; i <= 90; ++i) {
             const double theta = i / 180. * Math2::PI;
-            double orig[3] = {
+
+            double pt0[3] = {
                blcylinder->getEnd1()[0] + blcylinder->getRadius() * ::cosf(theta),
-               blcylinder->getEnd1()[1],
+               blcylinder->getEnd1()[1] + blcylinder->getRadius() * ::sinf(theta),
                blcylinder->getEnd1()[2]
             }; // eg. point on the circle
-            double proj[3];
-            calcPointProjection(plane, axis0, axis1, orig, proj);
-            const int s[3] = { proj[0] / xlenperpix, proj[1] / ylenperpix, proj[2] };
-            const unsigned int idx = s[1] * w + s[0];
-            if (idx >= 0 && idx < h * w) res[idx] = 0;
+            const unsigned int idx = calcRasterPoint(plane, axis0, axis1, xlenperpix, ylenperpix, w, pt0, theta);
+            
+            double pt1[3] = {
+               blcylinder->getEnd1()[0] + blcylinder->getRadius() * ::cosf(theta),
+               blcylinder->getEnd1()[1] + blcylinder->getRadius(),
+               blcylinder->getEnd1()[2]
+            }; // eg. point on the boundary
+            const unsigned int idx1 = calcRasterPoint(plane, axis0, axis1, xlenperpix, ylenperpix, w, pt1, theta);
+            
+            if (idx >= 0 && idx < h * w) { // valid index
+               if (idx == idx1) { // on the boundary
+                  res[idx1] = 255;
+               }
+            }
          }
       }
       // bottom right
       if (brcylinder) {
-         for (int i = 90; i < 180; ++i) {
+         for (int i = 90; i <= 180; ++i) {
             const double theta = i / 180. * Math2::PI;
-            const double orig[3] = {
+            const double pt0[3] = {
                brcylinder->getEnd1()[0] + brcylinder->getRadius() * ::cosf(theta),
-               brcylinder->getEnd1()[1],
+               brcylinder->getEnd1()[1] + brcylinder->getRadius() * ::sinf(theta),
                brcylinder->getEnd1()[2]
             }; // eg. point on the circle
-            double proj[3];
-            calcPointProjection(plane, axis0, axis1, orig, proj);
-            const int s[3] = { proj[0] / xlenperpix, proj[1] / ylenperpix, proj[2] };
-            const unsigned int idx = s[1] * w + s[0];
-            if (idx >= 0 && idx < h * w) res[idx] = 0;
+            const unsigned int idx = calcRasterPoint(plane, axis0, axis1, xlenperpix, ylenperpix, w, pt0, theta);
+            
+            double pt1[3] = {
+               brcylinder->getEnd1()[0] + brcylinder->getRadius() * ::cosf(theta),
+               brcylinder->getEnd1()[1] + brcylinder->getRadius(),
+               brcylinder->getEnd1()[2]
+            }; // eg. point on the boundary
+            const unsigned int idx1 = calcRasterPoint(plane, axis0, axis1, xlenperpix, ylenperpix, w, pt1, theta);
+            
+            if (idx >= 0 && idx < h * w) { // valid index
+               if (idx == idx1) { // on the boundary
+                  res[idx1] = 255;
+               }
+            }
          }
       }
    }
@@ -962,6 +996,29 @@ namespace NShapes
 
       printf("(%d, %d, %d) -> (%d, %d, %d)\n", start0[0], start0[1], start0[2], end0[0], end0[1], end0[2]);
       printf("(%d, %d, %d) -> (%d, %d, %d)\n", start1[0], start1[1], start1[2], end1[0], end1[1], end1[2]);
+   }
+
+   __host__ __device__ void HorizontalStrip::calcRasterizationCorrection(
+      const PlaneT& plane,
+      const double* axis0, // vector from the plane origin
+      const double* axis1, // vector from the plane origin
+      const float xlenperpix,
+      const float ylenperpix,
+      char* res,
+      const unsigned int w,
+      const unsigned int h
+      ) const
+   {
+      MultiPlaneShape::LineShape res1; // with respect to origin of plane, along axis0 and axis1
+      calcLineProjection(plane, axis0, axis1, *gt1, res1);
+
+      int start1[3] = { res1.P0[0] / xlenperpix, res1.P0[1] / ylenperpix, res1.P0[2] };
+      int end1[3] = { res1.P1[0] / xlenperpix, res1.P1[1] / ylenperpix, res1.P1[2] };
+
+      Point s1(start1[0], start1[1]);
+      Point e1(end1[0], end1[1]);
+
+      DrawLine(s1, e1, 0, res, w, h);
    }
 
    __host__ __device__ Washer::Washer(const double innerRadius, const double outerRadius)

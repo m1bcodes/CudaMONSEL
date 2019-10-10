@@ -1051,11 +1051,11 @@ namespace LinesOnLayers
       // generate strips
       for (int i = 0; i < nhstrips; ++i) {
          unsigned int mat = 0;
-         switch (i) {
-         case MaterialTypes::PMMA: mat = MaterialTypes::PMMA; break;
-         case MaterialTypes::Si: mat = MaterialTypes::Si; break;
-         case MaterialTypes::SiO2: mat = MaterialTypes::SiO2; break;
-         }
+         //switch (i) {
+         //case MaterialTypes::PMMA: mat = MaterialTypes::PMMA; break;
+         //case MaterialTypes::Si: mat = MaterialTypes::Si; break;
+         //case MaterialTypes::SiO2: mat = MaterialTypes::SiO2; break;
+         //}
 
          hstripParams[i] = new NShapes::HorizontalStripParams(horizontalStripWidth * (1 + (Random::random() - .5f)), false, i == nhstrips - 1 ? Random::random() > .5f : false, mat, 0.f);
       }
@@ -1071,7 +1071,8 @@ namespace LinesOnLayers
       // feature lines
       //nlines = 3 + Random::randomInt(3);
       nlines = 3;
-      linemat = Random::randomInt(3);
+      //linemat = Random::randomInt(3);
+      linemat = 0;
       lineParams = new NShapes::LineParams*[nlines];
       // generate line shape
       for (int i = 0; i < nlines; ++i) {
@@ -1191,6 +1192,39 @@ namespace LinesOnLayers
 
          line.calcGroundtruth(); // get points/line segments that need to be projected
          line.calcRasterization(projectionPlane, axis0, axis1, xlenperpix, ylenperpix, gt, xsize, ysize); // calculation for line needs to be last since bottom needs to be removed due to same material
+      }
+
+      // corrections, separated from above so that it is more robust to changing of code order
+      // corrections are needed bcuz in the case where two regions have the same material, the groundtruths has to change accordingly
+      // horizontal strips
+      for (int i = 0; i < nhstrips; ++i) {
+         NShapes::HorizontalStrip hs(hstripParams[i]->w);
+         NormalMultiPlaneShapeT* layer = hs.get();
+         double offset[3] = { 0., hstripParams[i]->y, 0. };
+         layer->translate(offset);
+
+         hs.calcGroundtruth();
+
+         // boundary corrections
+         if (i > 0 && hstripParams[i]->material == hstripParams[i - 1]->material) { // bottom needs to be removed due to same material
+            hs.calcRasterizationCorrection(projectionPlane, axis0, axis1, xlenperpix, ylenperpix, gt, xsize, ysize);
+         }
+      }
+
+      // lines
+      for (int i = 0; i < nlines; ++i) {
+         //NShapes::Line line(-h, w, linelength, thetal, thetar, radl, radr);
+         NShapes::Line line(-lineParams[i]->h, lineParams[i]->w, lineParams[i]->linelength, lineParams[i]->thetal, lineParams[i]->thetar, lineParams[i]->radl, lineParams[i]->radr);
+         //NShapes::Line line(-lp.h, lp.w, lp.linelength, lp.thetal, lp.thetar, lp.radl, lp.radr);
+         const double pivot[3] = { 0.f, 0.f, 0.f };
+         line.get()->rotate(pivot, -Math2::PI / 2.f, Math2::PI / 2.f, Math2::PI / 2.f);
+         //line.get()->rotate(pivot, -Math2::PI / 2.f + 20.f / (Math2::PI / 2.f), Math2::PI / 2.f - 20.f / (Math2::PI / 2.f), Math2::PI / 2.f - 20.f / (Math2::PI / 2.f));
+         //const double dist1[3] = { 0.f, 0.f, linelength / 2. };
+         //const double dist1[3] = { lp.x, 0.f, linelength / 2. };
+         const double offset[3] = { lineParams[i]->x, 0.f, linelength / 2. };
+         line.get()->translate(offset);
+
+         line.calcGroundtruth(); // get points/line segments that need to be projected
 
          // boundary corrections
          if (lineParams[i]->material == hstripParams[0]->material) { // bottom needs to be removed due to same material

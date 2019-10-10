@@ -492,9 +492,9 @@ int main()
    printf("cudaLimitStackSize: %d\n", pValue);
 
    testLibrary();
-   initSim();
-   testSim();
-   LinesOnLayers::loadNUTable();
+   //initSim();
+   //testSim();
+   //LinesOnLayers::loadNUTable();
    //LinesOnLayers::initRange();
 
    //const unsigned int H = LinesOnLayers::ysize, W = LinesOnLayers::xsize;
@@ -514,8 +514,8 @@ int main()
       printf("start timing\n");
 
       LinesOnLayers::setSimParams();
-      //LinesOnLayers::readSerializedParams("C:\\Users\\rey\\Documents\\GitHub\\CudaMONSEL\\CudaMONSEL\\CudaMONSEL\\outputs\\119-9-7_18-3-33\\params2.txt");
       LinesOnLayers::initImgRange();
+      //LinesOnLayers::readSerializedParams("C:\\Users\\rey\\Documents\\GitHub\\CudaMONSEL\\CudaMONSEL\\CudaMONSEL\\outputs\\119-9-9_15-43-56\\params0.csv");
       std::string paramlog = folder + "\\params" + std::to_string(n) + ".csv";
       LinesOnLayers::writeSerializedParams(paramlog.c_str());
       const unsigned int H = LinesOnLayers::ysize, W = LinesOnLayers::xsize;

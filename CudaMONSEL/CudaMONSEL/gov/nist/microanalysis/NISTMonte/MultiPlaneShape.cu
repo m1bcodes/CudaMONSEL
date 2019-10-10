@@ -430,9 +430,9 @@ namespace MultiPlaneShape
    }
 
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-   __constant__ const double SMALL_NUM = 1.e-24f; // anything that avoids division overflow
+   __constant__ const double SMALL_NUM = 1.e-25f; // anything that avoids division overflow
 #else
-   const double SMALL_NUM = 1.e-24f; // anything that avoids division overflow
+   const double SMALL_NUM = 1.e-25f; // anything that avoids division overflow
 #endif
 
    __host__ __device__ LineShape::LineShape()

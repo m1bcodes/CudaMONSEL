@@ -62,6 +62,7 @@ namespace NShapes
       __host__ __device__ void calcGroundtruth();
       __host__ __device__ void calcRasterization(const PlaneT&, const double*, const double*, const float, const float, char*, const unsigned int, const unsigned int) const;
       __host__ __device__ void calcRasterizationCorrection(const PlaneT&, const double*, const double*, const float, const float, char*, const unsigned int, const unsigned int) const;
+      __host__ __device__ unsigned int calcRasterPoint(const PlaneT&, const double*, const double*, const float, const float, const unsigned int, const double*, const double) const;
 
       __host__ __device__ NormalIntersectionShapeT* get();
 
@@ -142,6 +143,7 @@ namespace NShapes
 
       __host__ __device__ void calcGroundtruth();
       __host__ __device__ void calcRasterization(const PlaneT&, const double*, const double*, const float, const float, char*, const unsigned int, const unsigned int) const;
+      __host__ __device__ void calcRasterizationCorrection(const PlaneT&, const double*, const double*, const float, const float, char*, const unsigned int, const unsigned int) const;
       __host__ __device__ NormalMultiPlaneShapeT* get();
 
    private:
