@@ -603,7 +603,7 @@ namespace LinesOnLayers
       float minz = 0.f;
       for (int i = 0; i < nlines; ++i) {
          minz = -lineParams[i]->h < minz ? -lineParams[i]->h : minz;
-         ystartnm = minz + (Random::random() - 0.5) * 2. * 20.f;
+         ystartnm = ToSI::GIGA * minz + (Random::random() - 0.5) * 2. * 20.f;
       }
       ystopnm = ToSI::GIGA * (hstripParams[nhstrips - 1]->y + hstripParams[nhstrips - 1]->w / 2.) + (Random::random() - 0.5) * 2. * 10.f;
 
