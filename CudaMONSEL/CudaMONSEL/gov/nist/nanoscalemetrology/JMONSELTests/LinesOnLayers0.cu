@@ -54,6 +54,7 @@ namespace LinesOnLayers
    __constant__ const float thetaldeg = 3.f;
    __constant__ const float radrnm = 20.f;
    __constant__ const float radlnm = 20.f;
+   __constant__ const float layerthicknessnm = 30.f;
    __constant__ const float layer1thicknessnm = 80.f;
    __constant__ const float layer2thicknessnm = 200.f;
 
@@ -157,6 +158,7 @@ namespace LinesOnLayers
    __constant__ const float thetal = 3.f * 3.14159265358979323846f / 180.f;
    __constant__ const float radr = 20.f * 1.e-9f;
    __constant__ const float radl = 20.f * 1.e-9f;
+   __device__ float layerthickness = 80.f * 1.e-9f;
    __constant__ const float layer1thickness = 80.f * 1.e-9f;
    __constant__ const float layer2thickness = 200.f * 1.e-9f;
    __device__ float beamsize = 0.5f * 1.e-9f;
@@ -246,9 +248,8 @@ namespace LinesOnLayers
 
    __device__ unsigned int nhstrips;
    __device__ NShapes::HorizontalStripParams** hstripParams;
-   __device__ float horizontalStripWidth;
 #else
-   unsigned int nTrajectories = 100;
+   unsigned int nTrajectories = 10;
    //unsigned int nTrajectories = 250;
 
    //const float wnm = 80.f;
@@ -260,13 +261,14 @@ namespace LinesOnLayers
    const float pitchnm = 180.f;
    unsigned int nlines = 3;
    unsigned int linemat = 0;
-   const float hnm = 120.f;
-   const float wnm = 30.f;
+   const float hnm = 200.f;
+   const float wnm = 20.f;
    const float linelengthnm = 120.f;
    const float thetardeg = 1.f;
    const float thetaldeg = 1.f;
    const float radrnm = wnm / 3.f;
    const float radlnm = wnm / 3.f;
+   const float layerthicknessnm = 20.f;
    const float layer1thicknessnm = 80.f;
    const float layer2thicknessnm = 200.f;
 
@@ -372,6 +374,7 @@ namespace LinesOnLayers
    const float thetal = thetaldeg * Math2::PI / 180.f;
    const float radr = radrnm * 1.e-9f;
    const float radl = radlnm * 1.e-9f;
+   float layerthickness = layerthicknessnm * 1.e-9f;
    const float layer1thickness = layer1thicknessnm * 1.e-9f;
    const float layer2thickness = layer2thicknessnm * 1.e-9f;
    float beamsize = beamsizenm * 1.e-9f;
@@ -462,7 +465,6 @@ namespace LinesOnLayers
 
    NShapes::HorizontalStripParams** hstripParams;
    unsigned int nhstrips;
-   float horizontalStripWidth;
 #endif
 
    __global__ void verifyNUTable1d(const char* fn)
@@ -595,11 +597,15 @@ namespace LinesOnLayers
       //const float xfinestart = xtop - 20.5f;
       //const float xfinestop = (thetar < 0.f) ? xtop + 20.5f : wnm / 2.f + 20.5f;
 
-      xstartnm = lineParams[0]->x - lineParams[0]->w * 1.e9 / 2. - lineParams[0]->radl * 1.e9 - 20. * Random::random();
-      xstopnm = lineParams[nlines - 1]->x * 1.e9 + lineParams[nlines - 1]->w * 1.e9 / 2. + lineParams[nlines - 1]->radr * 1.e9 + 20. * Random::random();
-      
-      ystartnm = -128.f + (Random::random() - 0.5) * 2. * 20.f;
-      ystopnm = 128 + (Random::random() - 0.5) * 2. * 20.f;
+      xstartnm = ToSI::GIGA * (lineParams[0]->x - lineParams[0]->w / 2. - lineParams[0]->radl) - 10. * Random::random();
+      xstopnm = ToSI::GIGA * (lineParams[nlines - 1]->x + lineParams[nlines - 1]->w / 2. + lineParams[nlines - 1]->radr);// +20. * Random::random();
+
+      float minz = 0.f;
+      for (int i = 0; i < nlines; ++i) {
+         minz = -lineParams[i]->h < minz ? -lineParams[i]->h : minz;
+         ystartnm = minz + (Random::random() - 0.5) * 2. * 20.f;
+      }
+      ystopnm = ToSI::GIGA * (hstripParams[nhstrips - 1]->y + hstripParams[nhstrips - 1]->w / 2.) + (Random::random() - 0.5) * 2. * 10.f;
 
       xsize = 512;
       ysize = 512;
@@ -844,20 +850,20 @@ namespace LinesOnLayers
          double dist[3] = { 0., hstripParams[i]->y, 0. };
          layer->translate(dist);
 
-         stripRegions[i] = new RegionT(&chamber, &PMMAMSM, (NormalShapeT*)layer);
+         //stripRegions[i] = new RegionT(&chamber, &PMMAMSM, (NormalShapeT*)layer);
 
-         //switch (i)
-         //{
-         //case MaterialTypes::SiO2:
-         //   stripRegions[i] = new RegionT(&chamber, &SiO2MSM, (NormalMultiPlaneShapeT*)layer);
-         //   break;
-         //case MaterialTypes::Si:
-         //   stripRegions[i] = new RegionT(&chamber, &SiMSM, (MultiPlaneShapeT*)layer);
-         //   break;
-         //case MaterialTypes::PMMA:
-         //   stripRegions[i] = new RegionT(&chamber, &PMMAMSM, (MultiPlaneShapeT*)layer);
-         //   break;
-         //}
+         switch (hstripParams[i]->material)
+         {
+         case MaterialTypes::SiO2:
+            stripRegions[i] = new RegionT(&chamber, &SiO2MSM, (NormalShapeT*)layer);
+            break;
+         case MaterialTypes::Si:
+            stripRegions[i] = new RegionT(&chamber, &SiMSM, (NormalShapeT*)layer);
+            break;
+         case MaterialTypes::PMMA:
+            stripRegions[i] = new RegionT(&chamber, &PMMAMSM, (NormalShapeT*)layer);
+            break;
+         }
       }
 
       //NormalMultiPlaneShapeT layer1;
@@ -916,7 +922,7 @@ namespace LinesOnLayers
          const double offset[3] = { lineParams[i]->x, 0.f, linelength / 2. };
          lines[i]->get()->translate(offset);
          //lines[i]->addRestrainingPlanes();
-         switch (linemat) {
+         switch (lineParams[i]->material) {
          case MaterialTypes::PMMA:
             lineRegions[i] = new RegionT(&chamber, &PMMAMSM, (NormalIntersectionShapeT*)lines[i]->get());
             break;
@@ -1045,19 +1051,19 @@ namespace LinesOnLayers
    {
       // hrizontal strips
       //nhstrips = 3 + Random::randomInt(2);
-      nhstrips = 3;
+      nhstrips = 1;
       hstripParams = new NShapes::HorizontalStripParams*[nhstrips];
-      horizontalStripWidth = 30.f * 1e-9f;
+      layerthickness = 30.f * 1e-9f;
       // generate strips
+      unsigned int mat = Random::randomInt(3);
       for (int i = 0; i < nhstrips; ++i) {
-         unsigned int mat = 0;
          //switch (i) {
          //case MaterialTypes::PMMA: mat = MaterialTypes::PMMA; break;
          //case MaterialTypes::Si: mat = MaterialTypes::Si; break;
          //case MaterialTypes::SiO2: mat = MaterialTypes::SiO2; break;
          //}
 
-         hstripParams[i] = new NShapes::HorizontalStripParams(horizontalStripWidth * (1 + (Random::random() - .5f)), false, i == nhstrips - 1 ? Random::random() > .5f : false, mat, 0.f);
+         hstripParams[i] = new NShapes::HorizontalStripParams(layerthickness * (1 + (Random::random() - .5f)), i == nhstrips - 1 ? Random::random() > .5f : false, false, mat, 0.f);
       }
 
       // translate
@@ -1069,10 +1075,10 @@ namespace LinesOnLayers
       }
 
       // feature lines
-      //nlines = 3 + Random::randomInt(3);
-      nlines = 3;
+      nlines = 3 + Random::randomInt(3);
+      //nlines = 3;
       //linemat = Random::randomInt(3);
-      linemat = 0;
+      linemat = mat;
       lineParams = new NShapes::LineParams*[nlines];
       // generate line shape
       for (int i = 0; i < nlines; ++i) {
@@ -1088,7 +1094,7 @@ namespace LinesOnLayers
       }
 
       // update line position
-      float curx = 0.f;
+      float curx = -10.f * ToSI::NANO;
       lineParams[0]->x = curx;
       for (int i = 1; i < nlines; ++i) {
          curx += lineParams[i - 1]->w / 2.f + lineParams[i - 1]->radr + lineParams[i]->w / 2.f + lineParams[i]->radl;
@@ -1096,13 +1102,13 @@ namespace LinesOnLayers
       }
 
       //nTrajectories += 250;
-      nTrajectories += Random::random() * 100;
+      nTrajectories += Random::random() * 50;
 
       beamEeV += 3000.f * Random::random();
       beamE = ToSI::eV(beamEeV);
 
       //beamsizenm += 0.1f;
-      //beamsize = beamsizenm * ToSI::NANO * (.5f + Random::random());
+      beamsize = beamsizenm * ToSI::NANO * (.5f + Random::random());
 
       printf("nlines: %d\n", nlines);
       printf("linemat: %d\n", linemat);

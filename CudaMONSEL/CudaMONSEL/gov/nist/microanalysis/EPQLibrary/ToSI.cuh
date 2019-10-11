@@ -16,6 +16,7 @@ namespace ToSI
    __constant__ extern const float ANGSTROM;
    __constant__ extern const float BARN;
    __constant__ extern const float TORR;
+   __constant__ extern const float GIGA;
    __constant__ extern const float NANO;
    __constant__ extern const float PICO;
 #else
@@ -29,6 +30,7 @@ namespace ToSI
    extern const float ANGSTROM;
    extern const float BARN;
    extern const float TORR;
+   extern const float GIGA;
    extern const float NANO;
    extern const float PICO;
 #endif

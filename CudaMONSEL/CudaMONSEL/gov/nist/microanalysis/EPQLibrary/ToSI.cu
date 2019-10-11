@@ -14,6 +14,7 @@ namespace ToSI
    __constant__ const float ANGSTROM = 1.0e-10;
    __constant__ const float BARN = 1.0e-28;
    __constant__ const float TORR = 101325.0 / 760; // PhysicalConstants::StandardAtmosphere / 760.0;
+   __constant__ const float GIGA = 1.0e9;
    __constant__ const float NANO = 1.0e-9;
    __constant__ const float PICO = 1.0e-12;
 #else
@@ -27,6 +28,7 @@ namespace ToSI
    const float ANGSTROM = 1.0e-10;
    const float BARN = 1.0e-28;
    const float TORR = 101325.0 / 760; // PhysicalConstants::StandardAtmosphere / 760.0;
+   const float GIGA = 1.0e9;
    const float NANO = 1.0e-9;
    const float PICO = 1.0e-12;
 #endif
