@@ -598,12 +598,12 @@ namespace LinesOnLayers
       //const float xfinestop = (thetar < 0.f) ? xtop + 20.5f : wnm / 2.f + 20.5f;
 
       xstartnm = ToSI::GIGA * (lineParams[0]->x - lineParams[0]->w / 2. - lineParams[0]->radl) - 10. * Random::random();
-      xstopnm = ToSI::GIGA * (lineParams[nlines - 1]->x + lineParams[nlines - 1]->w / 2. + lineParams[nlines - 1]->radr);// +20. * Random::random();
+      xstopnm = ToSI::GIGA * (lineParams[nlines - 1]->x + lineParams[nlines - 1]->w / 2. + lineParams[nlines - 1]->radr) + 10. * Random::random();
 
       float minz = 0.f;
       for (int i = 0; i < nlines; ++i) {
          minz = -lineParams[i]->h < minz ? -lineParams[i]->h : minz;
-         ystartnm = ToSI::GIGA * minz + (Random::random() - 0.5) * 2. * 20.f;
+         ystartnm = ToSI::GIGA * minz + (Random::random() - 0.75) * 2. * 20.f;
       }
       ystopnm = ToSI::GIGA * (hstripParams[nhstrips - 1]->y + hstripParams[nhstrips - 1]->w / 2.) + (Random::random() - 0.5) * 2. * 10.f;
 
@@ -1081,16 +1081,16 @@ namespace LinesOnLayers
       linemat = mat;
       lineParams = new NShapes::LineParams*[nlines];
       // generate line shape
-      const float h0 = h * (.5f + Random::random());
-      const float w0 = w * (.1f + Random::random());
+      const float h0 = h * (.5f + Random::random()); // 50% to 150%
+      const float w0 = w + w * 0.1f * 2.f * (Random::random() - 0.5f); // +/- 10%
       for (int i = 0; i < nlines; ++i) {
-         const float curh = h0 * (1.f + Random::random() * 0.05f);
-         const float curw = w0 * (1.f + Random::random() * 0.05f);
+         const float curh = h0 * (1.f + Random::random() * 0.05f); // 100% to 105%
+         const float curw = w0 * (1.f + Random::random() * 0.05f); // 100% to 105%
          const float curl = linelength;
-         const float curtl = Math2::toRadians(thetal + (Random::random() - .5f));
-         const float curtr = thetar;
-         const float currl = curw / 3.f + curw / 3.f * (.5f - Random::random());
-         const float currr = curw / 3.f + curw / 3.f * (.5f - Random::random());
+         const float curtl = thetal + Math2::toRadians(Random::random() / 2.f); // + 0 to .5 deg
+         const float curtr = thetar + Math2::toRadians(Random::random() / 2.f); // + 0 to .5 deg
+         const float currl = curw / 3.f + curw / 3.f * (Random::random() - .5f);
+         const float currr = curw / 3.f + curw / 3.f * (Random::random() - .5f);
 
          lineParams[i] = new NShapes::LineParams(curh, curw, curl, curtl, curtr, currl, currr, linemat, 0.f);
       }
@@ -1104,7 +1104,7 @@ namespace LinesOnLayers
       }
 
       //nTrajectories += 250;
-      nTrajectories = 50 + Random::random() * 50;
+      nTrajectories = 100 + Random::random() * 100;
 
       beamEeV = 3000.f + 3000.f * Random::random();
       beamE = ToSI::eV(beamEeV);
