@@ -1081,9 +1081,11 @@ namespace LinesOnLayers
       linemat = mat;
       lineParams = new NShapes::LineParams*[nlines];
       // generate line shape
+      const float h0 = h * (.5f + Random::random());
+      const float w0 = w * (.1f + Random::random());
       for (int i = 0; i < nlines; ++i) {
-         const float curh = h * (.5f + Random::random());
-         const float curw = w * (.2f + Random::random());
+         const float curh = h0 * (1.f + Random::random() * 0.05f);
+         const float curw = w0 * (1.f + Random::random() * 0.05f);
          const float curl = linelength;
          const float curtl = Math2::toRadians(thetal + (Random::random() - .5f));
          const float curtr = thetar;
@@ -1102,9 +1104,9 @@ namespace LinesOnLayers
       }
 
       //nTrajectories += 250;
-      nTrajectories += Random::random() * 50;
+      nTrajectories = 50 + Random::random() * 50;
 
-      beamEeV += 3000.f * Random::random();
+      beamEeV = 3000.f + 3000.f * Random::random();
       beamE = ToSI::eV(beamEeV);
 
       //beamsizenm += 0.1f;
