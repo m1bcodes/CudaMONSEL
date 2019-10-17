@@ -10,11 +10,18 @@
 
 namespace BrowningEmpiricalCrossSection
 {
+    static const Reference::CrudeReference REFERENCE("Browning Empirical");
+
    __host__ __device__ BrowningEmpiricalCrossSection::BrowningEmpiricalCrossSection(const ElementT& elm) :
       mElement(elm),
       mZp17(::powf(elm.getAtomicNumber(), 1.7)),
       mZp2(::powf(elm.getAtomicNumber(), 2.0)),
-      mZp3(::powf(elm.getAtomicNumber(), 3.0))
+      mZp3(::powf(elm.getAtomicNumber(), 3.0)),
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+       RandomizedScatterT("Browning Empirical", *Reference::d_NullReference)
+#else
+       RandomizedScatterT("Browning Empirical", REFERENCE)
+#endif
    {
    }
 
