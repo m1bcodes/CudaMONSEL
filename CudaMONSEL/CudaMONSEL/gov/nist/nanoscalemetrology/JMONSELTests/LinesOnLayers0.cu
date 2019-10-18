@@ -603,7 +603,7 @@ namespace LinesOnLayers
       float minz = 0.f;
       for (int i = 0; i < nlines; ++i) {
          minz = -lineParams[i]->h < minz ? -lineParams[i]->h : minz;
-         ystartnm = ToSI::GIGA * minz + (Random::random() - 0.75) * 2. * 20.f;
+         ystartnm = ToSI::GIGA * minz - Random::random() * 20.f;
       }
       ystopnm = ToSI::GIGA * (hstripParams[nhstrips - 1]->y + hstripParams[nhstrips - 1]->w / 2.) + (Random::random() - 0.5) * 2. * 10.f;
 
@@ -1084,7 +1084,7 @@ namespace LinesOnLayers
       const float h0 = h * (.5f + Random::random()); // 50% to 150%
       const float w0 = w + w * 0.1f * 2.f * (Random::random() - 0.5f); // +/- 10%
       for (int i = 0; i < nlines; ++i) {
-         const float curh = h0 * (1.f + Random::random() * 0.05f); // 100% to 105%
+         const float curh = h0 * (1.f + Random::random() * 0.01f); // 100% to 105%
          const float curw = w0 * (1.f + Random::random() * 0.05f); // 100% to 105%
          const float curl = linelength;
          const float curtl = thetal + Math2::toRadians(Random::random() / 2.f); // + 0 to .5 deg
@@ -1104,9 +1104,9 @@ namespace LinesOnLayers
       }
 
       //nTrajectories += 250;
-      nTrajectories = 100 + Random::random() * 100;
+      nTrajectories = 40 + Random::random() * 60;
 
-      beamEeV = 3000.f + 3000.f * Random::random();
+      beamEeV = 300.f + 700.f * Random::random();
       beamE = ToSI::eV(beamEeV);
 
       //beamsizenm += 0.1f;
