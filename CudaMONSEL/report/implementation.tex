@@ -81,11 +81,22 @@ Scatter mechanisms included in JMONSEL are:
 \end{enumerate}
 
 \section{Randomized Scatter}
-The type of randomized scatter depends on the the energy of the electron.
+The type of randomized scatter depends on the the energy of the electron. The main computations are performed by these two member functions below
+
+\begin{lstlisting}
+__host__ __device__ virtual double randomScatteringAngle(const double energy) const = 0;
+__host__ __device__ virtual double totalCrossSection(const double energy) const = 0;
+\end{lstlisting}
+
+The method \textit{totalCrossSection} computes the total cross section for an electron of the specified energy.
+
+The method \texit{randomScatteringAngle} returns a randomized scattering angle in the range [0,PI] that comes from the distribution of scattering angles for an electron of specified energy on an atom of the element represented by the instance of the class.
+
+There is also a method that tracks the type of element the class is applicable to. Below we introduce each type of randomized scatter in the simulation.
 
 \subsection{CzyzewskiMottCrossSection}
 \subsection{BrowningEmpiricalCrossSection}
-Browning empirical cross section is applicable to low energy (\<100eV) electrons. 
+Browning empirical cross section is applicable to low energy electrons (although not lower than $100eV$). 
 \begin{align*}
    CS(Z, e) &= \frac{3e-22 Z^{1.7}}{e + 0.005 Z^{1.7} \sqrt{e} + 0.0007 Z^{2} / \sqrt{e}}
 \end{align*}
@@ -101,7 +112,7 @@ where $e$ is electron energy in keV, $Z$ is the proton number of the element.
 where $\alpha = 7.0e-3/e$, $r_1, r_2 \text{are random numbrs} \in \[0, 1\]$, and $r = (300.0 * e / Z) + (Z^3 / 3.0e5 * e)$.
 
 \subsection{ScreenedRutherfordScatteringAngle}
-Browning empirical cross section is applicable to high energy (\>20keV) electrons. 
+Screened Rutherford cross section is applicable to high energy (\>20keV) electrons. 
 \begin{align*}
    CS(Z, e) &= \frac{7.670843088080456e-38 zp (1.0 + z)}{e + 5.44967975966321e-19 zp^2}
 \end{align*}
@@ -114,7 +125,13 @@ where $\alpha = 5.44968e-19 Z^{2.0 / 3.0} / e$, $r \text{is a random numbrs} \in
 
 \subsection{NISTMottScatteringAngle}
 \subsection{NISTMott}
-NISTMott randomized scatter tries to provide a comprehensive model for all energy ranges. For low energy, it uses the Browning empirical scattering angle while for high energy, the screened Rutherford scattering angle. For energy between $100eV$ and $20keV$, it interpolates from a table built with the NIST SRD 64 method (TODO??) with Lagrange interpolation.
+NISTMott randomized scatter tries to provide a comprehensive model for all energy ranges. It is a function of electron energy and material/element the electron is colliding with. For energy between $100eV$ and $20keV$, it calculates using the the NIST SRD 64 method by interpolating from a table of cross sections with Lagrange interpolation. For energies lower than $100eV$, it uses one of three methods. 
+\begin{enumerate}
+\item Cutoff energy is $50 eV$, interpolation Browning,
+\item Cutoff energy is $100 eV$, interpolation Browning,
+\item Cutoff energy is $100 eV$, linear interpolation
+\end{enumerate}
+In all three methods, the cross section is zero when the energy is zero, and the cross section matches the tabulated value when energy is at some minimum cutoff value, which may or may not be the minimum tabulated value at $50eV$. Findally, for energies above the tabulated range, computations use Screened Rutherford Scattering Angle.
 
 \begin{appendices}
 \chapter{Lagrange Interpolation}
@@ -125,10 +142,11 @@ Given $n+1$ points $(x_0, y_0)$, ... $(x_n, y_n)$, the Lagrange Interpolation is
 where $f(x_i) = y_i$ and $L_i(x)=\prod_{j=0,j\ne i}^{n}\frac{x-x_j}{x_i-x_j}$.
 \end{appendices}
 
-NISTMottScatteringAngle uses 2nd order interpolation in $log(E)$ for the totalCrossSection calculation. For randomScatteringAngle it uses 0th order interpolation (i.e., it chooses the nearest tabulated value) in $log(E)$ and 1st order in the random number. In contrast the present class uses 3rd order for all interpolations. Orders can be set by the constants \textit{qINTERPOLATIONORDER} and \textit{sigmaINTERPOLATIONORDER}.
-
-$mSpwem$ is a 1--d table of total cross sections, uniform in $log(E)$ from $log(50.)$ to $log(20000)$
-$mX1[j][i]$ is a 2--d table of $q$ vs $Log(E)$ and random \#. $j$ indexes $log(E)$. $i$ indexes $r$. $q$ is related to $cos(\theta)$ by $1-2q^2=cos(theta)$.
+NISTMottScatteringAngle uses 2nd order Lagrange interpolation in $log(E)$ for the totalCrossSection calculation. For randomScatteringAngle it uses $0^{th}$ order interpolation (i.e., it chooses the nearest tabulated value) in $log(E)$ and 1st order in the random number. In contrast the present class uses 3rd order for all interpolations. Orders can be set by the constants \textit{qINTERPOLATIONORDER} and \textit{sigmaINTERPOLATIONORDER}. The interpolation tables are given by
+\begin{enumerate}
+\item $mSpwem$ is a 1--d table of total cross sections, uniform in $log(E)$ from $log(50.)$ to $log(20000)$
+\item $mX1[j][i]$ is a 2--d table of $q$ vs $Log(E)$ and random \#. $j$ indexes $log(E)$. $i$ indexes $r$. $q$ is related to $cos(\theta)$ by $1-2q^2=cos(theta)$
+\end{enumerate}
 
 \begin{align*}
    CS(Z, e) =
