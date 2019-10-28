@@ -249,7 +249,7 @@ namespace LinesOnLayers
    __device__ unsigned int nhstrips;
    __device__ NShapes::HorizontalStripParams** hstripParams;
 #else
-   unsigned int nTrajectories = 10;
+   unsigned int nTrajectories = 100;
    //unsigned int nTrajectories = 250;
 
    //const float wnm = 80.f;
@@ -262,7 +262,7 @@ namespace LinesOnLayers
    unsigned int nlines = 3;
    unsigned int linemat = 0;
    const float hnm = 200.f;
-   const float wnm = 60.f;
+   const float wnm = 40.f;
    const float linelengthnm = 120.f;
    const float thetardeg = 1.f;
    const float thetaldeg = 1.f;
@@ -274,7 +274,7 @@ namespace LinesOnLayers
 
    const float beamEeVvals[] = { 500.f };
    const int beamEeVvalsLen = 1;
-   float beamsizenm = 0.5f;
+   float beamsizenm = 0.1f;
    //float beamsizenm = 0.f;
    const float deepnm = 15.f;
 
@@ -1129,8 +1129,8 @@ namespace LinesOnLayers
       beamE = ToSI::eV(beamEeV);
 
       //beamsizenm += 0.1f;
-      beamsizenm = beamsizenm + (.5f + Random::random());
-      beamsize = beamsizenm * ToSI::NANO;
+      beamsizenm = .1f + .4f * Random::random();
+      beamsize = beamsizenm * ToSI::NANO; // 0.1 nm to 0.5 nm
 
       printf("nlines: %d\n", nlines);
       printf("linemat: %d\n", linemat);
