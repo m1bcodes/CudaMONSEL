@@ -229,7 +229,7 @@ namespace BackscatterStats
       return *mBackEnergyBins;
    }
 
-   const HistogramT& BackscatterStats::forwardscatterEnergyHistogram() const
+   __host__ __device__ const HistogramT& BackscatterStats::forwardscatterEnergyHistogram() const
    {
       return *mFwdEnergyBins;
    }

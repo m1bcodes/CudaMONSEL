@@ -527,10 +527,14 @@ int main()
       ImageUtil::saveImage(fn.c_str(), gt, LinesOnLayers::xsize, LinesOnLayers::ysize);
       delete[] gt;
 
-      float* d_result = nullptr;
+      float* d_bse = nullptr;
+      float* d_fse = nullptr;
+      float* d_totalse = nullptr;
 
       //checkCudaErrors(cudaMalloc((void**)&d_result, sizeof(d_result[0]) * H * W));
-      d_result = new float[H * W];
+      d_bse = new float[H * W];
+      d_fse = new float[H * W];
+      d_totalse = new float[H * W];
 
       //LinesOnLayers::runCuda << <gridSize, blockSize >> >(d_result);
       //checkCudaErrors(cudaDeviceSynchronize());
@@ -555,7 +559,7 @@ int main()
       std::vector<std::future<void>> results(H * W);
       for (int i = 0; i < H; ++i) {
          for (int j = 0; j < W; ++j) {
-            results[i*W + j] = tasks.push(LinesOnLayers::runSinglePixelThread, i, j, d_result);
+            results[i*W + j] = tasks.push(LinesOnLayers::runSinglePixelThread, i, j, d_bse, d_fse, d_totalse);
          }
       }
       for (int i = 0; i < H; ++i) {
@@ -577,32 +581,53 @@ int main()
       std::time_t end_time = std::chrono::system_clock::to_time_t(end);
       std::cout << std::endl << "finished computation at " << std::ctime(&end_time) << "elapsed time: " << elapsed_seconds.count() << "s" << std::endl;
 
-      float* h_result = new float[H * W];
+      float* h_bse = new float[H * W];
+      float* h_fse = new float[H * W];
+      float* h_totalse = new float[H * W];
       //checkCudaErrors(cudaMemcpy(h_result, d_result, sizeof(h_result[0]) * H * W, cudaMemcpyDeviceToHost));
-      memcpy(h_result, d_result, sizeof(h_result[0]) * H * W);
-      delete[] d_result;
+      memcpy(h_bse, d_bse, sizeof(h_bse[0]) * H * W);
+      memcpy(h_fse, d_fse, sizeof(h_fse[0]) * H * W);
+      memcpy(h_totalse, d_totalse, sizeof(h_totalse[0]) * H * W);
+      delete[] h_bse;
+      delete[] h_fse;
+      delete[] h_totalse;
       //ImageUtil::saveResults("img.bmp", h_result, W, H);
 
-      std::string output;
+      std::string outputBSE, outputFSE, outputTotalSE;
       for (int i = 0; i < H; ++i) {
          for (int j = 0; j < W; ++j) {
             //printf("%.5e ", h_result[i * W + j]);
-            output += std::to_string(h_result[i * W + j]) + " ";
+            outputBSE += std::to_string(h_bse[i * W + j]) + " ";
+            outputFSE += std::to_string(h_fse[i * W + j]) + " ";
+            outputTotalSE += std::to_string(h_totalse[i * W + j]) + " ";
          }
          //printf("\n");
       }
-      delete[] h_result;
-      output += "\n seconds: " + std::to_string(elapsed_seconds.count());
-      output += "\n nTrajectories: " + std::to_string(LinesOnLayers::nTrajectories);
-      output += "\n beamEeV: " + std::to_string(LinesOnLayers::beamEeV);
-      output += "\n beamsizenm: " + std::to_string(LinesOnLayers::beamsizenm);
-      output += "\n nlines: " + std::to_string(LinesOnLayers::nlines);
-      output += "\n linemat: " + std::to_string(LinesOnLayers::linemat);
+      delete[] h_bse;
+      delete[] h_fse;
+      delete[] h_totalse;
+      //std::string info;
+      //info += "\n seconds: " + std::to_string(elapsed_seconds.count());
+      //info += "\n nTrajectories: " + std::to_string(LinesOnLayers::nTrajectories);
+      //info += "\n beamEeV: " + std::to_string(LinesOnLayers::beamEeV);
+      //info += "\n beamsizenm: " + std::to_string(LinesOnLayers::beamsizenm);
+      //info += "\n nlines: " + std::to_string(LinesOnLayers::nlines);
+      //info += "\n linemat: " + std::to_string(LinesOnLayers::linemat);
 
-      std::ofstream myfile;
-      myfile.open(folder + "\\output" + std::to_string(n) + ".txt");
-      myfile << output.c_str();
-      myfile.close();
+      std::ofstream fileBSE;
+      fileBSE.open(folder + "\\BSE" + std::to_string(n) + ".txt");
+      fileBSE << outputBSE.c_str();
+      fileBSE.close();
+
+      std::ofstream fileFSE;
+      fileFSE.open(folder + "\\FSE" + std::to_string(n) + ".txt");
+      fileFSE << outputFSE.c_str();
+      fileFSE.close();
+
+      std::ofstream fileTotalSE;
+      fileTotalSE.open(folder + "\\TotalSE" + std::to_string(n) + ".txt");
+      fileTotalSE << outputTotalSE.c_str();
+      fileTotalSE.close();
 
       printf("done\n");
    }

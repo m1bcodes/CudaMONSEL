@@ -14,13 +14,13 @@ namespace NShapes
    struct LineParams
    {
       __host__ __device__ LineParams(const float h, const float w, const float linelength, const float thetal, const float thetar, const float radl, const float radr, const unsigned int material, const float x) :
-         h(h), 
-         w(w), 
-         linelength(linelength), 
-         thetal(thetal), 
-         thetar(thetar), 
-         radl(radl), 
-         radr(radr),
+         h(h), // m
+         w(w), // m 
+         linelength(linelength), // m
+         thetal(thetal), // degree
+         thetar(thetar), // degree
+         radl(radl), // m 
+         radr(radr), // m
          material(material), // makes no sense to be here
          x(x)
       {};
@@ -31,17 +31,18 @@ namespace NShapes
 
    struct HorizontalStripParams
    {
-      __host__ __device__ HorizontalStripParams(const float w, const bool fadetop, const bool fadebot, const unsigned int material, const float y) :
+      __host__ __device__ HorizontalStripParams(const float w, const bool fadetop, const bool fadebot, const unsigned int material, const float y, const float z) :
          w(w),
          fadetop(fadetop),
          fadebot(fadebot),
          material(material),
-         y(y)
+         y(y),
+         z(z)
       {};
       const float w; // line params
       const bool fadetop, fadebot;
       const unsigned int material; // makes no sense to be here
-      float y; // mutable position (translate), not constant since its position depends on the size and pos of previous strips
+      float y, z; // mutable position (translate), not constant since its position depends on the size and pos of previous strips
    };
 
    class Line

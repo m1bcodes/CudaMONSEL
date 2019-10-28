@@ -262,7 +262,7 @@ namespace LinesOnLayers
    unsigned int nlines = 3;
    unsigned int linemat = 0;
    const float hnm = 200.f;
-   const float wnm = 20.f;
+   const float wnm = 60.f;
    const float linelengthnm = 120.f;
    const float thetardeg = 1.f;
    const float thetaldeg = 1.f;
@@ -657,7 +657,7 @@ namespace LinesOnLayers
       SiO2 = 2,
    };
 
-   __host__ __device__ void runSinglePixel(const unsigned int r, const unsigned int c, float* result)
+   __host__ __device__ void runSinglePixel(const unsigned int r, const unsigned int c, float* bse, float* fse, float* totalse)
    {
       const float deltay = (ystopnm - ystartnm) / ysize;
       const float deltax = (xstopnm - xstartnm) / xsize;
@@ -968,21 +968,31 @@ namespace LinesOnLayers
 
       monte.runMultipleTrajectories(nTrajectories);
 
-      const HistogramT& hist = back.backscatterEnergyHistogram();
-
-      const float energyperbineV = beamEeV / hist.binCount();
-      const float maxSEbin = cutoffEnergyForSE / energyperbineV;
-      int totalSE = 0;
-      for (int j = 0; j < (int)maxSEbin; ++j) {
-         totalSE = totalSE + hist.counts(j);
+      const HistogramT& histBSE = back.backscatterEnergyHistogram();
+      const float energyperbineVBSE = beamEeV / histBSE.binCount();
+      const float maxSEbinBSE = cutoffEnergyForSE / energyperbineVBSE;
+      int totalBSE = 0;
+      for (int j = 0; j < (int)maxSEbinBSE; ++j) {
+         totalBSE += histBSE.counts(j);
       }
+      const float BSEf = (float)totalBSE / nTrajectories;
 
-      const float SEf = (float)totalSE / nTrajectories;
-      const float bsf = back.backscatterFraction() - SEf;
+      const HistogramT& histFSE = back.forwardscatterEnergyHistogram();
+      const float energyperbineVFSE = beamEeV / histFSE.binCount();
+      const float maxSEbinFSE = cutoffEnergyForSE / energyperbineVFSE;
+      int totalFSE = 0;
+      for (int j = 0; j < (int)maxSEbinFSE; ++j) {
+         totalFSE += histFSE.counts(j);
+      }
+      const float FSEf = (float)totalFSE / nTrajectories;
+
+      const float bsf = back.backscatterFraction() - BSEf;
       //printf("%lf %lf %lf %lf %lf\n", beamEeV, xnm, ynm, bsf, SEf);
       monte.removeActionListener(back);
 
-      result[r * xsize + c] = SEf;
+      bse[r * xsize + c] = BSEf;
+      fse[r * xsize + c] = FSEf;
+      totalse[r * xsize + c] = BSEf + FSEf;
 
       // clean up
       for (int i = 0; i < nhstrips; ++i) {
@@ -1002,7 +1012,7 @@ namespace LinesOnLayers
 
    __global__ void
       //__launch_bounds__(256, 3)
-      runCuda(float* result)
+      runCuda(float* bse, float* fse, float* totalse)
    {
       const unsigned int r = blockIdx.y*blockDim.y + threadIdx.y;
       const unsigned int c = blockIdx.x*blockDim.x + threadIdx.x;
@@ -1012,15 +1022,15 @@ namespace LinesOnLayers
       const unsigned int threadId = blockId * (blockDim.x * blockDim.y) + (threadIdx.y * blockDim.x) + threadIdx.x;
       printf("%d, %d (%d) began\n", r, c, threadId);
 
-      runSinglePixel(r, c, result);
+      runSinglePixel(r, c, bse, fse, totalse);
 
       printf("%d, %d (%d) ended\n", r, c, threadId);
    }
 
-   void runSinglePixelThread(int id, const unsigned int r, const unsigned int c, float* result)
+   void runSinglePixelThread(int id, const unsigned int r, const unsigned int c, float* bse, float* fse, float* totalse)
    {
       try {
-         runSinglePixel(r, c, result);
+         runSinglePixel(r, c, bse, fse, totalse);
       }
       catch (std::exception ex) {
          printf("%s\n", ex.what());
@@ -1055,7 +1065,8 @@ namespace LinesOnLayers
       hstripParams = new NShapes::HorizontalStripParams*[nhstrips];
       layerthickness = 30.f * 1e-9f;
       // generate strips
-      unsigned int mat = Random::randomInt(3);
+      //unsigned int mat = Random::randomInt(3);
+      unsigned int mat = 0; // PMMA
       for (int i = 0; i < nhstrips; ++i) {
          //switch (i) {
          //case MaterialTypes::PMMA: mat = MaterialTypes::PMMA; break;
@@ -1063,7 +1074,7 @@ namespace LinesOnLayers
          //case MaterialTypes::SiO2: mat = MaterialTypes::SiO2; break;
          //}
 
-         hstripParams[i] = new NShapes::HorizontalStripParams(layerthickness * (1 + (Random::random() - .5f)), i == nhstrips - 1 ? Random::random() > .5f : false, false, mat, 0.f);
+         hstripParams[i] = new NShapes::HorizontalStripParams(layerthickness * (1 + (Random::random() - .5f)), i == nhstrips - 1 ? Random::random() > .5f : false, false, mat, 0.f, 0.f);
       }
 
       // translate
@@ -1074,9 +1085,17 @@ namespace LinesOnLayers
          hstripParams[i]->y = cury;
       }
 
+      //// TODO: delete tmp code
+      //{
+      //   hstripParams[1]->y = hstripParams[0]->y;
+      //   hstripParams[1]->z = hstripParams[0]->z;
+
+      //   hstripParams[0]->y = (-100.f + (1.f - Random::random()) * 10.f) * ToSI::NANO;
+      //   hstripParams[0]->z = linelength;
+      //}
       // feature lines
       nlines = 3 + Random::randomInt(3);
-      //nlines = 3;
+      //nlines = 2;
       //linemat = Random::randomInt(3);
       linemat = mat;
       lineParams = new NShapes::LineParams*[nlines];
@@ -1104,13 +1123,14 @@ namespace LinesOnLayers
       }
 
       //nTrajectories += 250;
-      nTrajectories = 40 + Random::random() * 60;
+      nTrajectories = 100 + Random::random() * 150;
 
-      beamEeV = 300.f + 700.f * Random::random();
+      beamEeV = 10000.f + 2000.f * Random::random();
       beamE = ToSI::eV(beamEeV);
 
       //beamsizenm += 0.1f;
-      beamsize = beamsizenm * ToSI::NANO * (.5f + Random::random());
+      beamsizenm = beamsizenm + (.5f + Random::random());
+      beamsize = beamsizenm * ToSI::NANO;
 
       printf("nlines: %d\n", nlines);
       printf("linemat: %d\n", linemat);
@@ -1177,9 +1197,9 @@ namespace LinesOnLayers
       // horizontal strips
       for (int i = 0; i < nhstrips; ++i) {
          NShapes::HorizontalStrip hs(hstripParams[i]->w);
-         NormalMultiPlaneShapeT* layer = hs.get();
-         double offset[3] = { 0., hstripParams[i]->y, 0. };
-         layer->translate(offset);
+         NormalMultiPlaneShapeT* strip = hs.get();
+         double offset[3] = { 0., hstripParams[i]->y, hstripParams[i]->z };
+         strip->translate(offset);
 
          hs.calcGroundtruth();
          hs.calcRasterization(projectionPlane, axis0, axis1, xlenperpix, ylenperpix, gt, xsize, ysize);
@@ -1208,7 +1228,7 @@ namespace LinesOnLayers
       for (int i = 0; i < nhstrips; ++i) {
          NShapes::HorizontalStrip hs(hstripParams[i]->w);
          NormalMultiPlaneShapeT* layer = hs.get();
-         double offset[3] = { 0., hstripParams[i]->y, 0. };
+         double offset[3] = { 0., hstripParams[i]->y, hstripParams[i]->z };
          layer->translate(offset);
 
          hs.calcGroundtruth();
@@ -1264,6 +1284,7 @@ namespace LinesOnLayers
 
          fout << hstripParams[i]->material << ",";
          fout << hstripParams[i]->y << ",";
+         fout << hstripParams[i]->z << ",";
       }
 
       fout << nlines << ",";
@@ -1329,8 +1350,10 @@ namespace LinesOnLayers
             const unsigned int mat = std::stoi(word.c_str()); //printf("%d\n", mat);
             getline(s, word, ',');
             const float y = std::stof(word.c_str()); //printf("%.5e\n", y);
+            getline(s, word, ',');
+            const float z = std::stof(word.c_str()); //printf("%.5e\n", z);
 
-            hstripParams[i] = new NShapes::HorizontalStripParams(w, ft, fb, mat, y);
+            hstripParams[i] = new NShapes::HorizontalStripParams(w, ft, fb, mat, y, z);
          }
 
          getline(s, word, ',');

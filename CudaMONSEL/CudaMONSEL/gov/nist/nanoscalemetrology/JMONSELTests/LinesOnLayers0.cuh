@@ -36,12 +36,12 @@ namespace LinesOnLayers
    extern void transferNUTableToCuda();
 
    extern __global__ void initCuda();
-   extern __global__ void runCuda(float* result);
+   extern __global__ void runCuda(float*, float*, float*);
 
-   extern __host__ __device__ void runSinglePixel(const unsigned int r, const unsigned int c, float* result);
+   extern __host__ __device__ void runSinglePixel(const unsigned int r, const unsigned int c, float*, float*, float*);
    extern __host__ __device__ void initImgRange();
 
-   extern void runSinglePixelThread(int id, const unsigned int r, const unsigned int c, float* result);
+   extern void runSinglePixelThread(int id, const unsigned int r, const unsigned int c, float*, float*, float*);
 
    //extern void setSimParamsFromCSVFile(const char* fname);
    extern __host__ __device__ void setSimParams();

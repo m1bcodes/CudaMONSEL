@@ -45,7 +45,7 @@ namespace BackscatterStats
       __host__ __device__ void actionPerformed(const int ae) override;
 
       __host__ __device__ const HistogramT& backscatterEnergyHistogram() const;
-      const HistogramT& forwardscatterEnergyHistogram() const;
+      __host__ __device__ const HistogramT& forwardscatterEnergyHistogram() const;
       const HistogramT& elevationHistogram() const;
       const HistogramT& azimuthalHistogram() const;
 
