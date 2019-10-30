@@ -588,9 +588,9 @@ int main()
       memcpy(h_bse, d_bse, sizeof(h_bse[0]) * H * W);
       memcpy(h_fse, d_fse, sizeof(h_fse[0]) * H * W);
       memcpy(h_totalse, d_totalse, sizeof(h_totalse[0]) * H * W);
-      delete[] h_bse;
-      delete[] h_fse;
-      delete[] h_totalse;
+      delete[] d_bse;
+      delete[] d_fse;
+      delete[] d_totalse;
       //ImageUtil::saveResults("img.bmp", h_result, W, H);
 
       std::string outputBSE, outputFSE, outputTotalSE;
