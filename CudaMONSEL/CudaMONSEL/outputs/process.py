@@ -5,8 +5,10 @@ import matplotlib.image as mim
 #data = np.loadtxt("CudaMONSEL\outputs\data54.txt")
 #SE = data[:, 4]
 
+folder = "119-9-29_11-52-3"
+
 for i in range(0, 100):
-    data = np.loadtxt("CudaMONSEL\\outputs\\119-9-29_11-52-3\\TotalSE" + str(i) + ".txt", max_rows=1)
+    data = np.loadtxt("CudaMONSEL\\outputs\\" + folder + "\\TotalSE" + str(i) + ".txt", max_rows=1)
     SE = data
 
     print(SE)
@@ -22,4 +24,40 @@ for i in range(0, 100):
     # plt.imshow(SE, cmap='gray')
     # plt.show()
 
-    mim.imsave("CudaMONSEL\\outputs\\119-9-29_11-52-3\\TotalSE" + str(i) + ".png",  SE, cmap='gray')
+    mim.imsave("CudaMONSEL\\outputs\\" + folder + "\\TotalSE" + str(i) + ".png",  SE, cmap='gray')
+
+    data = np.loadtxt("CudaMONSEL\\outputs\\" + folder + "\\FSE" + str(i) + ".txt", max_rows=1)
+    SE = data
+
+    print(SE)
+    c = 512
+    r = (int)(SE.shape[0]/c)
+
+    # plt.plot(SE[1:c])
+    # plt.ylabel('counts')
+    # plt.show()
+
+    SE = SE / np.linalg.norm(SE)
+    SE = SE.reshape((r, c))
+    # plt.imshow(SE, cmap='gray')
+    # plt.show()
+
+    mim.imsave("CudaMONSEL\\outputs\\" + folder + "\\FSE" + str(i) + ".png",  SE, cmap='gray')
+
+    data = np.loadtxt("CudaMONSEL\\outputs\\" + folder + "\\BSE" + str(i) + ".txt", max_rows=1)
+    SE = data
+
+    print(SE)
+    c = 512
+    r = (int)(SE.shape[0]/c)
+
+    # plt.plot(SE[1:c])
+    # plt.ylabel('counts')
+    # plt.show()
+
+    SE = SE / np.linalg.norm(SE)
+    SE = SE.reshape((r, c))
+    # plt.imshow(SE, cmap='gray')
+    # plt.show()
+
+    mim.imsave("CudaMONSEL\\outputs\\" + folder + "\\BSE" + str(i) + ".png",  SE, cmap='gray')
