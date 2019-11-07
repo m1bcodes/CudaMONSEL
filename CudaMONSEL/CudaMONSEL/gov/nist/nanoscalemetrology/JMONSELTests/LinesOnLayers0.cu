@@ -61,6 +61,7 @@ namespace LinesOnLayers
    __constant__ const float beamEeVvals[] = { 500.f };
    __constant__ const int beamEeVvalsLen = 1;
    __device__ float beamsizenm = 0.5f;
+   __constant__ const float beamznm = -120.f - 20.f;
    __constant__ const float deepnm = 15.f;
 
    __constant__ const bool trajImg = true;
@@ -162,6 +163,7 @@ namespace LinesOnLayers
    __constant__ const float layer1thickness = 80.f * 1.e-9f;
    __constant__ const float layer2thickness = 200.f * 1.e-9f;
    __device__ float beamsize = 0.5f * 1.e-9f;
+   __device__ float beamz = -140.f * 1.e-9f;
    __constant__ const float deep = 15.f * 1.e-9f;
 
    __constant__ const double center[] = {
@@ -174,6 +176,8 @@ namespace LinesOnLayers
    __device__ float beamE = 1.60217653e-19f * 500.f;
    __constant__ const float binSizeEV = 10.f;
    __constant__ const float cutoffEnergyForSE = 50.f;
+   __device__ float beamphideg = 1.f;
+   __device__ float beamthetadeg = 0.f;
 
    //__device__ NullMaterialScatterModelT* NULL_MSM = nullptr;
 
@@ -275,6 +279,7 @@ namespace LinesOnLayers
    const float beamEeVvals[] = { 500.f };
    const int beamEeVvalsLen = 1;
    float beamsizenm = 0.1f;
+   const float beamznm = -hnm - 20.f;
    //float beamsizenm = 0.f;
    const float deepnm = 15.f;
 
@@ -378,6 +383,7 @@ namespace LinesOnLayers
    const float layer1thickness = layer1thicknessnm * 1.e-9f;
    const float layer2thickness = layer2thicknessnm * 1.e-9f;
    float beamsize = beamsizenm * 1.e-9f;
+   float beamz = beamznm * 1.e-9f;
    const float deep = deepnm * 1.e-9f;
 
    const double center[] = {
@@ -391,6 +397,8 @@ namespace LinesOnLayers
    float beamE = ToSI::eV(beamEeV);
    const float binSizeEV = 10.f;
    const float cutoffEnergyForSE = 50.f;
+   float beamphideg = 0.f;
+   float beamthetadeg = 10.f;
 
    //NullMaterialScatterModelT* NULL_MSM = nullptr;
 
@@ -946,9 +954,9 @@ namespace LinesOnLayers
 
       //NShapes::Washer washer(w / 10., w / 5.);
       //RegionT region(&chamber, &PMMAMSM, (NormalDifferenceShapeT*)washer.get());
-
-      const double egCenter[] = { x, y, -h - 20.f * 1.e-9f };
-      GaussianBeamT eg(beamsize, beamE, egCenter);
+      
+      const double egCenter[] = { x, y, beamz};
+      GaussianBeamT eg(beamsize, beamE, Math2::toRadians(beamthetadeg), Math2::toRadians(beamphideg), egCenter);
       MonteCarloSST monte(&eg, &chamber, nullptr);
 
       const int nbins = (int)(beamEeV / binSizeEV);
@@ -1123,13 +1131,14 @@ namespace LinesOnLayers
       }
 
       //nTrajectories += 250;
-      nTrajectories = 100 + Random::random() * 150;
+      nTrajectories = 50 + Random::random() * 150;
+      //nTrajectories = 100;
 
-      beamEeV = 10000.f + 2000.f * Random::random();
+      beamEeV = 100.f + 400.f * Random::random();
       beamE = ToSI::eV(beamEeV);
 
       //beamsizenm += 0.1f;
-      beamsizenm = .1f + .4f * Random::random();
+      beamsizenm = .25f + .5f * Random::random();
       beamsize = beamsizenm * ToSI::NANO; // 0.1 nm to 0.5 nm
 
       printf("nlines: %d\n", nlines);
@@ -1185,15 +1194,22 @@ namespace LinesOnLayers
 
    void lineProjection(const unsigned int idx, char* gt)
    {
-      const double p[3] = { xstartnm * 1.e-9, ystartnm * 1.e-9, 0. };
-      const double n[3] = { 0., 0., -1. };
-      PlaneT projectionPlane(n, p); // projection plane
-      const double axis0[3] = { 1., 0., 0. }; // absolute (projection) vector from plane origin
-      const double axis1[3] = { 0., 1., 0. }; // absolute (projection) vector from plane origin
+      const double p[3] = { xstartnm * 1.e-9, ystartnm * 1.e-9, beamz };
+      static const double n[3] = { 0., 0., 1. };
+      PlaneT projectionPlane(n, p); // image plane (where light source will be moving on)
+      static const double axis0[3] = { 1., 0., 0. }; // relative spanning vector from plane origin
+      static const double axis1[3] = { 0., 1., 0. }; // relative spanning vector from plane origin
 
-      const float xlenperpix = (xstopnm - xstartnm) / xsize * 1.e-9;
-      const float ylenperpix = (ystopnm - ystartnm) / ysize * 1.e-9;
+      const float xlenperpix = (xstopnm - xstartnm) / xsize * 1.e-9; // resolution m / pix
+      const float ylenperpix = (ystopnm - ystartnm) / ysize * 1.e-9; // resolution m / pix
 
+      static const double st = ::sinf(Math2::toRadians(beamthetadeg));
+      static const double beamdir[3] = {
+         ::cosf(Math2::toRadians(beamphideg)) * st,
+         ::sinf(Math2::toRadians(beamphideg)) * st,
+         ::cosf(Math2::toRadians(beamthetadeg))
+      };
+      
       // horizontal strips
       for (int i = 0; i < nhstrips; ++i) {
          NShapes::HorizontalStrip hs(hstripParams[i]->w);
@@ -1202,7 +1218,7 @@ namespace LinesOnLayers
          strip->translate(offset);
 
          hs.calcGroundtruth();
-         hs.calcRasterization(projectionPlane, axis0, axis1, xlenperpix, ylenperpix, gt, xsize, ysize);
+         hs.calcRasterization(projectionPlane, axis0, axis1, beamdir, xlenperpix, ylenperpix, gt, xsize, ysize);
       }
 
       // lines
@@ -1219,7 +1235,7 @@ namespace LinesOnLayers
          line.get()->translate(offset);
 
          line.calcGroundtruth(); // get points/line segments that need to be projected
-         line.calcRasterization(projectionPlane, axis0, axis1, xlenperpix, ylenperpix, gt, xsize, ysize); // calculation for line needs to be last since bottom needs to be removed due to same material
+         line.calcRasterization(projectionPlane, axis0, axis1, beamdir, xlenperpix, ylenperpix, gt, xsize, ysize); // calculation for line needs to be last since bottom needs to be removed due to same material
       }
 
       // corrections, separated from above so that it is more robust to changing of code order
@@ -1235,7 +1251,7 @@ namespace LinesOnLayers
 
          // boundary corrections
          if (i > 0 && hstripParams[i]->material == hstripParams[i - 1]->material) { // bottom needs to be removed due to same material
-            hs.calcRasterizationCorrection(projectionPlane, axis0, axis1, xlenperpix, ylenperpix, gt, xsize, ysize);
+            hs.calcRasterizationCorrection(projectionPlane, axis0, axis1, beamdir, xlenperpix, ylenperpix, gt, xsize, ysize);
          }
       }
 
@@ -1256,7 +1272,7 @@ namespace LinesOnLayers
 
          // boundary corrections
          if (lineParams[i]->material == hstripParams[0]->material) { // bottom needs to be removed due to same material
-            line.calcRasterizationCorrection(projectionPlane, axis0, axis1, xlenperpix, ylenperpix, gt, xsize, ysize);
+            line.calcRasterizationCorrection(projectionPlane, axis0, axis1, beamdir, xlenperpix, ylenperpix, gt, xsize, ysize);
          }
       }
 
@@ -1304,6 +1320,9 @@ namespace LinesOnLayers
       fout << nTrajectories << ",";
       fout << beamEeV << ",";
       fout << beamsizenm << ",";
+      fout << beamz << ",";
+      fout << beamphideg << ",";
+      fout << beamthetadeg << ",";
 
       fout << "\n";
 
@@ -1389,6 +1408,12 @@ namespace LinesOnLayers
          beamEeV = std::stof(word.c_str()); //printf("%.5e\n", beamEeV);
          getline(s, word, ',');
          beamsizenm = std::stof(word.c_str()); //printf("%.5e\n", beamsizenm);
+         getline(s, word, ',');
+         beamz = std::stof(word.c_str()); //printf("%.5e\n", beamz);
+         getline(s, word, ',');
+         beamphideg = std::stof(word.c_str()); //printf("%.5e\n", beamphideg);
+         getline(s, word, ',');
+         beamthetadeg = std::stof(word.c_str()); //printf("%.5e\n", beamthetadeg);
       }
 
       fin.close();

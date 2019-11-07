@@ -124,6 +124,11 @@ namespace Math2
    //   * @param x double
    //   * @return double
    //   */
+   __host__ __device__ double fabs(double x)
+   {
+      return x >= 0 ? x : -x;
+   }
+
    __host__ __device__ double sqr(double x)
    {
       return x * x;

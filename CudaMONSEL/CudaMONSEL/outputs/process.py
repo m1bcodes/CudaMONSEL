@@ -5,7 +5,7 @@ import matplotlib.image as mim
 #data = np.loadtxt("CudaMONSEL\outputs\data54.txt")
 #SE = data[:, 4]
 
-folder = "119-9-29_11-52-3"
+folder = "119-10-6_14-56-1"
 
 for i in range(0, 100):
     data = np.loadtxt("CudaMONSEL\\outputs\\" + folder + "\\TotalSE" + str(i) + ".txt", max_rows=1)

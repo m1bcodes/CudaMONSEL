@@ -42,7 +42,7 @@ namespace Electron
       init(initialPos, 0., 0., kE);
    }
 
-   Electron::Electron(const double initialPos[], float theta, float phi, float kE) : initialEnergy(kE)
+   __host__ __device__ Electron::Electron(const double initialPos[], float theta, float phi, float kE) : initialEnergy(kE)
    {
       init(initialPos, theta, phi, kE);
    }

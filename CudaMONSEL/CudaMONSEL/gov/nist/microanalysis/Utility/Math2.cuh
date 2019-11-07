@@ -10,6 +10,7 @@
 
 namespace Math2
 {
+   extern __host__ __device__ double fabs(double x);
    extern __host__ __device__ void minus3d(const double a[], const double b[], double res[]);
    extern __host__ __device__ void divide3d(const double a[], double b, double res[]);
    extern __host__ __device__ void plus3d(const double a[], const double b[], double res[]);

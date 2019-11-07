@@ -9,16 +9,29 @@
 namespace GaussianBeam
 {
    GaussianBeam::GaussianBeam(double width) :
-      mWidth(width)
+      mWidth(width),
+      mPhi(0.),
+      mTheta(0.)
    {
       double mult[3];
       Math2::multiply3d(0.99 * MonteCarloSS::ChamberRadius, Math2::MINUS_Z_AXIS, mult);
       setCenter(mult);
    }
 
-   __host__ __device__ GaussianBeam::GaussianBeam(double width, double energy, const double center[]) :
+   __host__ __device__ GaussianBeam::GaussianBeam(const double width, const double energy, const double center[]) :
       mWidth(width),
-      mBeamEnergy(energy)
+      mBeamEnergy(energy),
+      mPhi(0.),
+      mTheta(0.)
+   {
+      setCenter(center);
+   }
+
+   __host__ __device__ GaussianBeam::GaussianBeam(const double width, const double energy, const double theta, const double phi, const double center[]) :
+      mWidth(width),
+      mBeamEnergy(energy),
+      mPhi(phi),
+      mTheta(theta)
    {
       setCenter(center);
    }
@@ -65,7 +78,7 @@ namespace GaussianBeam
       initialPos[0] += r * ::cos(th);
       initialPos[1] += r * ::sin(th);
 
-      ElectronT* newElectron = new ElectronT(initialPos, mBeamEnergy);
+      ElectronT* newElectron = new ElectronT(initialPos, mTheta, mPhi, mBeamEnergy);
       if (!newElectron) printf("ElectronT* GaussianBeam::createElectron: failed creating electron.\n");
       return newElectron;
    }

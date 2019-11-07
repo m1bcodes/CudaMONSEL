@@ -515,7 +515,7 @@ int main()
 
       LinesOnLayers::setSimParams();
       LinesOnLayers::initImgRange();
-      //LinesOnLayers::readSerializedParams("C:\\Users\\rey\\Documents\\GitHub\\CudaMONSEL\\CudaMONSEL\\CudaMONSEL\\outputs\\119-9-9_15-43-56\\params0.csv");
+      //LinesOnLayers::readSerializedParams("C:\\Users\\rey-2990wx-x399\\Documents\\params0.csv");
       std::string paramlog = folder + "\\params" + std::to_string(n) + ".csv";
       LinesOnLayers::writeSerializedParams(paramlog.c_str());
       const unsigned int H = LinesOnLayers::ysize, W = LinesOnLayers::xsize;
@@ -555,7 +555,7 @@ int main()
       //LinesOnLayers::createShapes();
       //LinesOnLayers::runSinglePixelThread(0, 0, 0, d_result);
 
-      ctpl::thread_pool tasks(11);
+      ctpl::thread_pool tasks(63);
       std::vector<std::future<void>> results(H * W);
       for (int i = 0; i < H; ++i) {
          for (int j = 0; j < W; ++j) {

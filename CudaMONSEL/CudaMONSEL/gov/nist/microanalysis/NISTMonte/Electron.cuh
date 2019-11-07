@@ -9,7 +9,7 @@ namespace Electron
    {
    public:
       __host__ __device__ Electron(const double initialPos[], float kE);
-      Electron(const double initialPos[], float theta, float phi, float kE);
+      __host__ __device__ Electron(const double initialPos[], float theta, float phi, float kE);
       __host__ __device__ Electron(const Electron& parent, float theta, float phi, float kE);
 
       __host__ __device__ void init(const double initialPos[], float theta, float phi, float kE);

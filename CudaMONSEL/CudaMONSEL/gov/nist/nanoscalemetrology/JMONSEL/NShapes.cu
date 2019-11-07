@@ -430,7 +430,7 @@ namespace NShapes
       const double* n0 = plane.getNormal();
       const double* p0 = plane.getPoint();
       const float len = ::sqrtf(Math2::dot3d(n0, n0));
-      if (len - 1.f > .000001f) printf("Line::calcProjection: plane normal length not unity %.5e\n", len);
+      if (len - 1.f > .000001f) printf("Line::getPerpendicularIntersection: plane normal length not unity %.5e\n", len);
 
       // calc
       double v[3];
@@ -447,6 +447,43 @@ namespace NShapes
       if (ind == 0) printf("getPerpendicularIntersection: no intersect (check if decreasing MultiPlaneShape::SMALL_NUM helps)\n");
       else if (ind == 1) printf("getPerpendicularIntersection: intersect\n");
       else if (ind == 2) printf("getPerpendicularIntersection: on plane\n");
+   }
+
+   /*
+   * note that the projdir and the plane normal is assumed to point in 'opposite' directions (cross a plane in opposite directions)
+   */
+   __host__ __device__ static void getIntersection(
+       const PlaneT& plane, // the projection plane
+       const double* p, // absolute coordinate to be projected
+       const double* projdir, // absolute projection direction from p
+       double* res // the absolute intersection coordinate between p and plane (lies on the plane)
+       )
+   {
+       // checks
+       const double* n0 = plane.getNormal();
+       const float len = ::sqrtf(Math2::dot3d(n0, n0));
+       if (Math2::fabs(len - 1.f) > .000001f) printf("Line::getIntersection: plane normal length not unity %.5e\n", len);
+
+       const float projdirlen = ::sqrtf(Math2::dot3d(projdir, projdir));
+       if (Math2::fabs(projdirlen - 1.f) > .000001f) printf("Line::getIntersection: direction vector length not unity %.5e\n", projdirlen);
+
+       // calc
+       double v[3];
+       const double* p0 = plane.getPoint();
+       Math2::minus3d(p, p0, v);
+       double s = Math2::dot3d(v, n0); // perpendicular distance between p and plane
+       s = s == 0. ? 1. : s;
+       //const double d = s / -Math2::dot3d(v, n0); // length of the hypothenuse
+       MultiPlaneShape::LineShape l;
+       static const float extensionFactor = 50.f;
+       l.P0[0] = p[0] + extensionFactor * s * projdir[0]; l.P0[1] = p[1] + extensionFactor * s * projdir[1]; l.P0[2] = p[2] + extensionFactor * s * projdir[2]; // WARNING: using s (ie the perpendicular ditance) is wrong, need hypothenuse
+       l.P1[0] = p[0] - extensionFactor * s * projdir[0]; l.P1[1] = p[1] - extensionFactor * s * projdir[1]; l.P1[2] = p[2] - extensionFactor * s * projdir[2]; // WARNING: using s (ie the perpendicular ditance) is wrong, need hypothenuse
+       const int ind = MultiPlaneShape::intersect3D_SegmentPlane(l, plane, res);
+
+       // checks
+       if (ind == 0) printf("getPerpendicularIntersection: no intersect (check if decreasing MultiPlaneShape::SMALL_NUM helps)\n");
+       else if (ind == 1) printf("getPerpendicularIntersection: intersect\n");
+       else if (ind == 2) printf("getPerpendicularIntersection: on plane\n");
    }
 
    // get vectors relative to plane origin
@@ -481,12 +518,15 @@ namespace NShapes
       const PlaneT& plane, // plane on which point is projected
       const double* axis0, // vector wrt the plane origin (plane coordinate)
       const double* axis1, // vector wrt the plane origin (plane coordinate)
+      const double* lightdir, // abosolute vector of where the light source is pointing
       const double line[], // line in absolute coordinates to be projected onto plane
       double res[] // output: line with respect to origin of plane (ie. res + plane.origin = line)
       )
    {
       double tmp[3]; // required
-      getPerpendicularIntersection(plane, line, tmp);
+      //getPerpendicularIntersection(plane, line, tmp);
+      const double reverseddir[3] = { -lightdir[0], -lightdir[1], -lightdir[2] };
+      getIntersection(plane, line, reverseddir, tmp);
       getRelativeCoord(plane, axis0, axis1, tmp, res);
    }
 
@@ -494,12 +534,13 @@ namespace NShapes
       const PlaneT& plane,
       const double* axis0, // vector from the plane origin
       const double* axis1, // vector from the plane origin
+      const double* lightdir,
       const MultiPlaneShape::LineShape& line, // line in absolute coordinates to be projected onto plane
       MultiPlaneShape::LineShape& res // line with respect to origin of plane (ie. res + plane.origin = line)
       )
    {
-      calcPointProjection(plane, axis0, axis1, line.P0, res.P0);
-      calcPointProjection(plane, axis0, axis1, line.P1, res.P1);
+      calcPointProjection(plane, axis0, axis1, lightdir, line.P0, res.P0);
+      calcPointProjection(plane, axis0, axis1, lightdir, line.P1, res.P1);
    }
 
    struct Point
@@ -553,6 +594,7 @@ namespace NShapes
       const PlaneT& plane,
       const double* axis0, // vector from the plane origin
       const double* axis1, // vector from the plane origin
+      const double* lightdir,
       const float xlenperpix,
       const float ylenperpix,
       char* res,
@@ -562,7 +604,7 @@ namespace NShapes
    {
       LineShapeT l(start, end);
       MultiPlaneShape::LineShape lr;
-      calcLineProjection(plane, axis0, axis1, l, lr);
+      calcLineProjection(plane, axis0, axis1, lightdir, l, lr); // TODO: 
       const int s4[3] = { lr.P0[0] / xlenperpix, lr.P0[1] / ylenperpix, lr.P0[2] };
       const int e4[3] = { lr.P1[0] / xlenperpix, lr.P1[1] / ylenperpix, lr.P1[2] };
       const Point c0(s4[0], s4[1]);
@@ -570,11 +612,15 @@ namespace NShapes
       DrawLine(c0, c1, 255, res, w, h);
    }
 
+   /*
+   * project from point to light source in reverse lightdir
+   */
    // axis2 would be the normal of the plane, which creates no projection
    __host__ __device__ void Line::calcRasterization(
-      const PlaneT& plane,
+      const PlaneT& plane, // plane where the light source is on/will be moving on
       const double* axis0, // vector from the plane origin
       const double* axis1, // vector from the plane origin
+      const double* lightdir,
       const float xlenperpix,
       const float ylenperpix,
       char* res,
@@ -583,10 +629,10 @@ namespace NShapes
       ) const
    {
       MultiPlaneShape::LineShape res0, res1, res2, res3; // with respect to origin of plane, along axis0 and axis1
-      calcLineProjection(plane, axis0, axis1, *gt0, res0);
-      calcLineProjection(plane, axis0, axis1, *gt1, res1);
-      calcLineProjection(plane, axis0, axis1, *gt2, res2);
-      calcLineProjection(plane, axis0, axis1, *gt3, res3);
+      calcLineProjection(plane, axis0, axis1, lightdir, *gt0, res0); // TODO: 
+      calcLineProjection(plane, axis0, axis1, lightdir, *gt1, res1); // TODO: 
+      calcLineProjection(plane, axis0, axis1, lightdir, *gt2, res2); // TODO: 
+      calcLineProjection(plane, axis0, axis1, lightdir, *gt3, res3); // TODO: 
 
       const int start0[3] = { res0.P0[0] / xlenperpix, res0.P0[1] / ylenperpix, res0.P0[2] };
       const int end0[3] = { res0.P1[0] / xlenperpix, res0.P1[1] / ylenperpix, res0.P1[2] };
@@ -648,10 +694,11 @@ namespace NShapes
                tlcylinder->getEnd1()[2]
             }; // eg. point on the circle
             double proj[3];
-            calcPointProjection(plane, axis0, axis1, orig, proj);
+            calcPointProjection(plane, axis0, axis1, lightdir, orig, proj);
             const int s[3] = { proj[0] / xlenperpix, proj[1] / ylenperpix, proj[2] };
             const unsigned int idx = s[1] * w + s[0];
-            if (idx >= 0 && idx < h * w) res[idx] = 255;
+            if (idx >= 0 && idx < h * w && s[1] >= 0 && s[1] < h && s[0] >= 0 && s[0] < w) res[idx] = 255;
+            else printf("Line::calcRasterization: out of bound index top left: %d, %d\n", s[0], s[1]);
          }
       }
       // top right
@@ -691,10 +738,11 @@ namespace NShapes
                trcylinder->getEnd1()[2]
             }; // eg. point on the circle
             double proj[3];
-            calcPointProjection(plane, axis0, axis1, orig, proj);
+            calcPointProjection(plane, axis0, axis1, lightdir, orig, proj);
             const int s[3] = { proj[0] / xlenperpix, proj[1] / ylenperpix, proj[2] };
             const unsigned int idx = s[1] * w + s[0];
             if (idx >= 0 && idx < h * w) res[idx] = 255;
+            else printf("Line::calcRasterization: out of bound index top right: %d, %d\n", s[0], s[1]);
          }
       }
       // bottom left
@@ -707,10 +755,11 @@ namespace NShapes
                blcylinder->getEnd1()[2]
             }; // eg. point on the circle
             double proj[3];
-            calcPointProjection(plane, axis0, axis1, orig, proj);
+            calcPointProjection(plane, axis0, axis1, lightdir, orig, proj);
             const int s[3] = { proj[0] / xlenperpix, proj[1] / ylenperpix, proj[2] };
             const unsigned int idx = s[1] * w + s[0];
             if (idx >= 0 && idx < h * w) res[idx] = 255;
+            else printf("Line::calcRasterization: out of bound index bot left: %d, %d\n", s[0], s[1]);
          }
       }
       // bottom right
@@ -723,10 +772,11 @@ namespace NShapes
                brcylinder->getEnd1()[2]
             }; // eg. point on the circle
             double proj[3];
-            calcPointProjection(plane, axis0, axis1, orig, proj);
+            calcPointProjection(plane, axis0, axis1, lightdir, orig, proj);
             const int s[3] = { proj[0] / xlenperpix, proj[1] / ylenperpix, proj[2] };
             const unsigned int idx = s[1] * w + s[0];
             if (idx >= 0 && idx < h * w) res[idx] = 255;
+            else printf("Line::calcRasterization: out of bound index bot right: %d, %d\n", s[0], s[1]);
          }
       }
 
@@ -746,6 +796,7 @@ namespace NShapes
       const PlaneT& plane,
       const double* axis0, // vector from the plane origin
       const double* axis1, // vector from the plane origin
+      const double* lightdir, 
       const float xlenperpix,
       const float ylenperpix,
       const unsigned int w,
@@ -753,16 +804,17 @@ namespace NShapes
       const double theta) const
    {
       double proj[3];
-      calcPointProjection(plane, axis0, axis1, pt, proj);
+      calcPointProjection(plane, axis0, axis1, lightdir, pt, proj);
       const int s[3] = { proj[0] / xlenperpix, proj[1] / ylenperpix, proj[2] };
       return s[1] * w + s[0];
    }
 
    // axis2 would be the normal of the plane, which creates no projection
    __host__ __device__ void Line::calcRasterizationCorrection(
-      const PlaneT& plane,
+      const PlaneT& plane, // plane where the light source is on
       const double* axis0, // vector from the plane origin
       const double* axis1, // vector from the plane origin
+      const double* lightdir,
       const float xlenperpix,
       const float ylenperpix,
       char* res,
@@ -771,7 +823,7 @@ namespace NShapes
       ) const
    {
       MultiPlaneShape::LineShape res2;
-      calcLineProjection(plane, axis0, axis1, *gt2, res2);
+      calcLineProjection(plane, axis0, axis1, lightdir, *gt2, res2); // TODO: 
 
       const int start2[3] = { res2.P0[0] / xlenperpix, res2.P0[1] / ylenperpix, res2.P0[2] };
       const int end2[3] = { res2.P1[0] / xlenperpix, res2.P1[1] / ylenperpix, res2.P1[2] };
@@ -791,14 +843,14 @@ namespace NShapes
                blcylinder->getEnd1()[1] + blcylinder->getRadius() * ::sinf(theta),
                blcylinder->getEnd1()[2]
             }; // eg. point on the circle
-            const unsigned int idx = calcRasterPoint(plane, axis0, axis1, xlenperpix, ylenperpix, w, pt0, theta);
+            const unsigned int idx = calcRasterPoint(plane, axis0, axis1, lightdir, xlenperpix, ylenperpix, w, pt0, theta);
             
             double pt1[3] = {
                blcylinder->getEnd1()[0] + blcylinder->getRadius() * ::cosf(theta),
                blcylinder->getEnd1()[1] + blcylinder->getRadius(),
                blcylinder->getEnd1()[2]
             }; // eg. point on the boundary
-            const unsigned int idx1 = calcRasterPoint(plane, axis0, axis1, xlenperpix, ylenperpix, w, pt1, theta);
+            const unsigned int idx1 = calcRasterPoint(plane, axis0, axis1, lightdir, xlenperpix, ylenperpix, w, pt1, theta);
             
             if (idx >= 0 && idx < h * w) { // valid index
                if (idx == idx1) { // on the boundary
@@ -816,14 +868,14 @@ namespace NShapes
                brcylinder->getEnd1()[1] + brcylinder->getRadius() * ::sinf(theta),
                brcylinder->getEnd1()[2]
             }; // eg. point on the circle
-            const unsigned int idx = calcRasterPoint(plane, axis0, axis1, xlenperpix, ylenperpix, w, pt0, theta);
+            const unsigned int idx = calcRasterPoint(plane, axis0, axis1, lightdir, xlenperpix, ylenperpix, w, pt0, theta);
             
             double pt1[3] = {
                brcylinder->getEnd1()[0] + brcylinder->getRadius() * ::cosf(theta),
                brcylinder->getEnd1()[1] + brcylinder->getRadius(),
                brcylinder->getEnd1()[2]
             }; // eg. point on the boundary
-            const unsigned int idx1 = calcRasterPoint(plane, axis0, axis1, xlenperpix, ylenperpix, w, pt1, theta);
+            const unsigned int idx1 = calcRasterPoint(plane, axis0, axis1, lightdir, xlenperpix, ylenperpix, w, pt1, theta);
             
             if (idx >= 0 && idx < h * w) { // valid index
                if (idx == idx1) { // on the boundary
@@ -886,7 +938,15 @@ namespace NShapes
       };
       MultiPlaneShape::LineShape seg(p0, p1);
       MultiPlaneShape::LineShape res;
-      calcLineProjection(plane, axis0, axis1, seg, res);
+
+      const double st = ::sinf(Math2::toRadians(0.));
+      const double beamdir[3] = {
+         ::cosf(Math2::toRadians(0.)) * st,
+         ::sinf(Math2::toRadians(0.)) * st,
+         ::cosf(Math2::toRadians(1.))
+      };
+
+      calcLineProjection(plane, axis0, axis1, beamdir, seg, res); // TODO: 
 
       static const float tol = 0.00001f;
       if (::fabsf(::sqrtf(50.f) - res.P0[0]) > tol) printf("res.P0[0] wrong: %.5e\n", res.P0[0]);
@@ -963,9 +1023,10 @@ namespace NShapes
    }
 
    __host__ __device__ void HorizontalStrip::calcRasterization(
-      const PlaneT& plane,
+      const PlaneT& plane, // light source plane
       const double* axis0, // vector from the plane origin
       const double* axis1, // vector from the plane origin
+      const double * lightdir,
       const float xlenperpix,
       const float ylenperpix,
       char* res,
@@ -974,8 +1035,8 @@ namespace NShapes
       ) const
    {
       MultiPlaneShape::LineShape res0, res1; // with respect to origin of plane, along axis0 and axis1
-      calcLineProjection(plane, axis0, axis1, *gt0, res0);
-      calcLineProjection(plane, axis0, axis1, *gt1, res1);
+      calcLineProjection(plane, axis0, axis1, lightdir, *gt0, res0); // TODO: 
+      calcLineProjection(plane, axis0, axis1, lightdir, *gt1, res1); // TODO: 
 
       int start0[3] = { res0.P0[0] / xlenperpix, res0.P0[1] / ylenperpix, res0.P0[2] };
       int end0[3] = { res0.P1[0] / xlenperpix, res0.P1[1] / ylenperpix, res0.P1[2] };
@@ -1002,6 +1063,7 @@ namespace NShapes
       const PlaneT& plane,
       const double* axis0, // vector from the plane origin
       const double* axis1, // vector from the plane origin
+      const double* lightdir,
       const float xlenperpix,
       const float ylenperpix,
       char* res,
@@ -1010,7 +1072,7 @@ namespace NShapes
       ) const
    {
       MultiPlaneShape::LineShape res1; // with respect to origin of plane, along axis0 and axis1
-      calcLineProjection(plane, axis0, axis1, *gt1, res1);
+      calcLineProjection(plane, axis0, axis1, lightdir, *gt1, res1); // TODO: 
 
       int start1[3] = { res1.P0[0] / xlenperpix, res1.P0[1] / ylenperpix, res1.P0[2] };
       int end1[3] = { res1.P1[0] / xlenperpix, res1.P1[1] / ylenperpix, res1.P1[2] };
