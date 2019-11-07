@@ -697,7 +697,10 @@ namespace NShapes
             calcPointProjection(plane, axis0, axis1, lightdir, orig, proj);
             const int s[3] = { proj[0] / xlenperpix, proj[1] / ylenperpix, proj[2] };
             const unsigned int idx = s[1] * w + s[0];
-            if (idx >= 0 && idx < h * w && s[1] >= 0 && s[1] < h && s[0] >= 0 && s[0] < w) res[idx] = 255;
+            if (idx >= 0 && idx < h * w) {
+               if (s[1] >= 0 && s[1] < h && s[0] >= 0 && s[0] < w)
+                  res[idx] = 255;
+            }
             else printf("Line::calcRasterization: out of bound index top left: %d, %d\n", s[0], s[1]);
          }
       }
@@ -741,7 +744,10 @@ namespace NShapes
             calcPointProjection(plane, axis0, axis1, lightdir, orig, proj);
             const int s[3] = { proj[0] / xlenperpix, proj[1] / ylenperpix, proj[2] };
             const unsigned int idx = s[1] * w + s[0];
-            if (idx >= 0 && idx < h * w) res[idx] = 255;
+            if (idx >= 0 && idx < h * w) {
+               if (s[1] >= 0 && s[1] < h && s[0] >= 0 && s[0] < w)
+                  res[idx] = 255;
+            }
             else printf("Line::calcRasterization: out of bound index top right: %d, %d\n", s[0], s[1]);
          }
       }
@@ -758,7 +764,10 @@ namespace NShapes
             calcPointProjection(plane, axis0, axis1, lightdir, orig, proj);
             const int s[3] = { proj[0] / xlenperpix, proj[1] / ylenperpix, proj[2] };
             const unsigned int idx = s[1] * w + s[0];
-            if (idx >= 0 && idx < h * w) res[idx] = 255;
+            if (idx >= 0 && idx < h * w) {
+               if (s[1] >= 0 && s[1] < h && s[0] >= 0 && s[0] < w)
+                  res[idx] = 255;
+            }
             else printf("Line::calcRasterization: out of bound index bot left: %d, %d\n", s[0], s[1]);
          }
       }
@@ -775,7 +784,10 @@ namespace NShapes
             calcPointProjection(plane, axis0, axis1, lightdir, orig, proj);
             const int s[3] = { proj[0] / xlenperpix, proj[1] / ylenperpix, proj[2] };
             const unsigned int idx = s[1] * w + s[0];
-            if (idx >= 0 && idx < h * w) res[idx] = 255;
+            if (idx >= 0 && idx < h * w) {
+               if (s[1] >= 0 && s[1] < h && s[0] >= 0 && s[0] < w)
+                  res[idx] = 255;
+            }
             else printf("Line::calcRasterization: out of bound index bot right: %d, %d\n", s[0], s[1]);
          }
       }
