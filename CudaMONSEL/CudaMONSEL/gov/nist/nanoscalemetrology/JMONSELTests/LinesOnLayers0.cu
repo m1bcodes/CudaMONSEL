@@ -398,7 +398,7 @@ namespace LinesOnLayers
    const float binSizeEV = 10.f;
    const float cutoffEnergyForSE = 50.f;
    float beamphideg = 0.f;
-   float beamthetadeg = 10.f;
+   float beamthetadeg = Random::random() * 20.f;
 
    //NullMaterialScatterModelT* NULL_MSM = nullptr;
 
