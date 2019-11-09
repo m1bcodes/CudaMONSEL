@@ -90,7 +90,7 @@ __host__ __device__ virtual double totalCrossSection(const double energy) const 
 
 The method \textit{totalCrossSection} computes the total cross section for an electron of the specified energy.
 
-The method \texit{randomScatteringAngle} returns a randomized scattering angle in the range [0,PI] that comes from the distribution of scattering angles for an electron of specified energy on an atom of the element represented by the instance of the class.
+The method \textit{randomScatteringAngle} returns a randomized scattering angle in the range [0,PI] that comes from the distribution of scattering angles for an electron of specified energy on an atom of the element represented by the instance of the class.
 
 There is also a method that tracks the type of element the class is applicable to. Below we introduce each type of randomized scatter in the simulation.
 
@@ -98,7 +98,7 @@ There is also a method that tracks the type of element the class is applicable t
 \subsection{BrowningEmpiricalCrossSection}
 Browning empirical cross section is applicable to low energy electrons (although not lower than $100eV$). 
 \begin{align*}
-   CS(Z, e) &= \frac{3e-22 Z^{1.7}}{e + 0.005 Z^{1.7} \sqrt{e} + 0.0007 Z^{2} / \sqrt{e}}
+   CS(Z, e) &= \frac{3\times 10^{-22} Z^{1.7}}{e + 0.005 Z^{1.7} \sqrt{e} + 0.0007 Z^{2} / \sqrt{e}}
 \end{align*}
 where $e$ is electron energy in keV, $Z$ is the proton number of the element.
 
@@ -109,19 +109,19 @@ where $e$ is electron energy in keV, $Z$ is the proton number of the element.
     acos(1-2.0r_2),& \text{otherwise}
 \end{cases}
 \end{align*}
-where $\alpha = 7.0e-3/e$, $r_1, r_2 \text{are random numbrs} \in \[0, 1\]$, and $r = (300.0 * e / Z) + (Z^3 / 3.0e5 * e)$.
+where $\alpha = 7.0\times 10^{-3}/e$, $r_1, r_2$ are random numbers $\in [0, 1]$, and $r = (300.0 e / Z) + (Z^3 / 3.0\times 10^5 e)$.
 
 \subsection{ScreenedRutherfordScatteringAngle}
-Screened Rutherford cross section is applicable to high energy (\>20keV) electrons. 
+Screened Rutherford cross section is applicable to high energy ($\geq 20keV$) electrons. 
 \begin{align*}
-   CS(Z, e) &= \frac{7.670843088080456e-38 zp (1.0 + z)}{e + 5.44967975966321e-19 zp^2}
+   CS(Z, e) &= \frac{7.670843088080456\times 10^{-38} zp (1.0 + z)}{e + 5.44967975966321\times 10^{-19} zp^2}
 \end{align*}
 where $e$ is the electron energy in keV, $Z$ is the proton number, and $zp = Z^{1.0/3.0}$.
 
 \begin{align*}
     SA(Z, e) &= acos\frac{1 - 2.0 * alpha * r}{1 + alpha - r}
 \end{align*}
-where $\alpha = 5.44968e-19 Z^{2.0 / 3.0} / e$, $r \text{is a random numbrs} \in \[0, 1\]$.
+where $\alpha = 5.44968\times 10^{-19} Z^{2.0 / 3.0} / e$, $r \text{is a random numbrs} \in [0, 1]$.
 
 \subsection{NISTMottScatteringAngle}
 \subsection{NISTMott}
@@ -148,22 +148,22 @@ NISTMottScatteringAngle uses 2nd order Lagrange interpolation in $log(E)$ for th
 \item $mX1[j][i]$ is a 2--d table of $q$ vs $Log(E)$ and random \#. $j$ indexes $log(E)$. $i$ indexes $r$. $q$ is related to $cos(\theta)$ by $1-2q^2=cos(theta)$
 \end{enumerate}
 
-\begin{align*}
-   CS(Z, e) =
-   \begin{cases}
-      \text{browning SA}, \text{if } e \lt 
-   \end{cases}
-\end{align*}
-where $e$ is electron energy in keV, $Z$ is the proton number of the element.
+% \begin{align*}
+%    CS(Z, e) =
+%    \begin{cases}
+%       \text{browning SA}, \text{if } e \lt 
+%    \end{cases}
+% \end{align*}
+% where $e$ is electron energy in keV, $Z$ is the proton number of the element.
 
 \begin{align*}
     SA(Z, e)= 
 \begin{cases}
-    acos\left (1.0 - \frac{2.0 \alpha r_2}{\alpha - r_2 + 1}\right ),& \text{if } r_1 \leq \frac{r}{r+1}\\
-    acos(1-2.0r_2),              & \text{otherwise}
+    acos\left (1.0 - \frac{2.0 \alpha r_2}{\alpha - r_2 + 1}\right ), & \text{if } r_1 \leq \frac{r}{r+1}\\
+    acos(1-2.0r_2), & \text{otherwise}
 \end{cases}
 \end{align*}
-where $\alpha = 7.0e-3/e$, $r_1, r_2 \text{are random numbrs} \in \[0, 1\]$, and $r = (300.0 * e / Z) + (Z^3 / 3.0e5 * e)$.
+where $\alpha = 7.0\times 10^{-3}/e$, $r_1, r_2 \text{are random numbrs} \in [0, 1]$, and $r = (300.0 e / Z) + (Z^3 / 3.0\times 10^5 e)$.
 
 \section{Slowing Down Algorithm}\label{impl:sda}
 \begin{lstlisting}
