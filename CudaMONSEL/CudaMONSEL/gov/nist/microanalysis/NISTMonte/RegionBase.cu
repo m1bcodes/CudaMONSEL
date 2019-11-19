@@ -78,17 +78,17 @@ namespace RegionBase
    
    __host__ __device__ const RegionBase* RegionBase::findEndOfStep(const double p0[], double p1[]) const
    {
+      if (p1[0] != p1[0] || p1[1] != p1[1] || p1[2] != p1[2])
+         printf("RegionBase::findEndOfStep0: (%.5e, %.5e, %.5e)\n", p1[0], p1[1], p1[2]);
       const RegionBase* base = this;
       double t = mShape->getFirstIntersection(p0, p1);
-      if (t < 0.0 || t != t) printf("RegionBase::findEndOfStep0: %s %lf\n", mShape->toString().c_str(), t);
+      if (t < 0.0 || t != t) printf("RegionBase::findEndOfStep1: %s %lf\n", mShape->toString().c_str(), t);
       if ((t <= 1.0) && mParent != nullptr)
          base = mParent;
 
       const RegionBase* res = this;
       for (auto subRegion : mSubRegions) {
-         //const double candidate = subRegion->mShape->getFirstIntersection(p0, p1);
-         double candidate = subRegion->mShape->getFirstIntersection(p0, p1);
-         if (p1[0] != p1[0] || p1[1] != p1[1] || p1[2] != p1[2]) printf("RegionBase::findEndOfStep1: wtf 1\n");
+         const double candidate = subRegion->mShape->getFirstIntersection(p0, p1);
          if (candidate <= 0.0) printf("RegionBase::findEndOfStep2: %s %lf\n", subRegion->mShape->toString().c_str(), candidate);
          if ((candidate <= 1.0) && (candidate < t)) {
             //printf("%s, %s, %.10e\n", subRegion->toString().c_str(), subRegion->mShape->toString().c_str(), candidate);

@@ -398,7 +398,7 @@ namespace LinesOnLayers
    const float binSizeEV = 10.f;
    const float cutoffEnergyForSE = 50.f;
    float beamphideg = 0.f;
-   float beamthetadeg = Random::random() * 20.f;
+   float beamthetadeg = 20.f;
 
    //NullMaterialScatterModelT* NULL_MSM = nullptr;
 
@@ -1140,6 +1140,8 @@ namespace LinesOnLayers
       //beamsizenm += 0.1f;
       beamsizenm = .25f + .5f * Random::random();
       beamsize = beamsizenm * ToSI::NANO; // 0.1 nm to 0.5 nm
+      beamthetadeg = -5.f  + Random::random() + 10.f; // polar
+      beamphideg = -10.f  + 20.f * Random::random(); // azimuth
 
       printf("nlines: %d\n", nlines);
       printf("linemat: %d\n", linemat);

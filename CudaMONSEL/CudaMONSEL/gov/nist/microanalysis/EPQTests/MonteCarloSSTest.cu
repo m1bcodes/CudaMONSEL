@@ -66,7 +66,8 @@ namespace MonteCarloSSTest
             o[1] + u * (t[1] - o[1]),
             o[2] + u * (t[2] - o[2])
          };
-         assertTrue(mcss.getChamber()->getShape()->contains(res));
+         bool b = mcss.getChamber()->getShape()->contains(res);
+         assertTrue(b);
       }
       {
          const double c0[] = {

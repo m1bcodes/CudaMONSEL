@@ -59,6 +59,11 @@ namespace Electron
    {
       mTheta = theta;
       mPhi = phi;
+
+      if (mTheta != mTheta)
+         printf("RegionBase::setDirection: mTheta");
+      if (mPhi != mPhi)
+         printf("RegionBase::setDirection: mPhi");
    }
 
    __host__ __device__ const double * Electron::getPosition() const
@@ -115,6 +120,9 @@ namespace Electron
       res[0] = mPosition[0] + dS * ::cosf(mPhi) * st;
       res[1] = mPosition[1] + dS * ::sinf(mPhi) * st;
       res[2] = mPosition[2] + dS * ::cosf(mTheta);
+
+      if (res[0] != res[0] || res[1] != res[1] || res[2] != res[2])
+         printf("RegionBase::candidatePoint: (%.5e, %.5e, %.5e)\n", res[0], res[1], res[2]);
    }
 
    __host__ __device__ void Electron::updateDirection(const float dTheta, const float dPhi)
@@ -137,6 +145,11 @@ namespace Electron
 
       mTheta = ::atan2f(::sqrtf(dx * dx + dy * dy), dz);
       mPhi = ::atan2f(dy, dx);
+
+      if (mTheta != mTheta)
+         printf("RegionBase::updateDirection: mTheta");
+      if (mPhi != mPhi)
+         printf("RegionBase::updateDirection: mPhi");
    }
 
    __host__ __device__ void Electron::move(const double newPoint[], float dE)
