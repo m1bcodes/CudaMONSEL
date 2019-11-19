@@ -555,7 +555,9 @@ int main()
       //LinesOnLayers::createShapes();
       //LinesOnLayers::runSinglePixelThread(0, 0, 0, d_result);
 
-      ctpl::thread_pool tasks(63);
+      unsigned concurentThreadsSupported = std::thread::hardware_concurrency();
+      printf("# threads: %d\n", concurentThreadsSupported);
+      ctpl::thread_pool tasks(concurentThreadsSupported-1);
       std::vector<std::future<void>> results(H * W);
       for (int i = 0; i < H; ++i) {
          for (int j = 0; j < W; ++j) {
