@@ -11,7 +11,7 @@ namespace GaussianBeam
    public:
       GaussianBeam(double width);
       __host__ __device__ GaussianBeam(const double width, const double energy, const double center[]);
-      __host__ __device__ GaussianBeam(const double width, const double energy, const double theta, const double phi, const double center[]);
+      __host__ __device__ GaussianBeam(const double width, const double energy, const double theta, const double phi, const double center[], const double focalLength);
 
       void setWidth(double width);
       double getWidth();
@@ -30,6 +30,7 @@ namespace GaussianBeam
       double mWidth = 1.0e-9;
       const double mTheta;
       const double mPhi;
+      const double mFocalLength;
    };
 }
 

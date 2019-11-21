@@ -49,7 +49,7 @@ namespace LinesOnLayers
    __device__ unsigned int linemat = 0;
    __constant__ const float hnm = 120.f;
    __constant__ const float wnm = 80.f;
-   __constant__ const float linelengthnm = 1000.f;
+   __device__ float linelengthnm = 1000.f;
    __constant__ const float thetardeg = 3.f;
    __constant__ const float thetaldeg = 3.f;
    __constant__ const float radrnm = 20.f;
@@ -61,7 +61,7 @@ namespace LinesOnLayers
    __constant__ const float beamEeVvals[] = { 500.f };
    __constant__ const int beamEeVvalsLen = 1;
    __device__ float beamsizenm = 0.5f;
-   __constant__ const float beamznm = -120.f - 20.f;
+   __device__ float beamznm = -120.f - 20.f;
    __constant__ const float deepnm = 15.f;
 
    __constant__ const bool trajImg = true;
@@ -152,7 +152,7 @@ namespace LinesOnLayers
    __constant__ const float pitch = 180.f * 1.e-9f;
    __constant__ const float h = 120.f * 1.e-9f;
    __constant__ const float w = 80.f * 1.e-9f;
-   __constant__ const float linelength = 1000.f * 1.e-9f;
+   __device__ float linelength = 1000.f * 1.e-9f;
 
    __constant__ const float radperdeg = 3.14159265358979323846f / 180.f;
    __constant__ const float thetar = 3.f * 3.14159265358979323846f / 180.f;
@@ -178,6 +178,7 @@ namespace LinesOnLayers
    __constant__ const float cutoffEnergyForSE = 50.f;
    __device__ float beamphideg = 1.f;
    __device__ float beamthetadeg = 0.f;
+   __device__ float beamfocallength = 20.f;;
 
    //__device__ NullMaterialScatterModelT* NULL_MSM = nullptr;
 
@@ -267,7 +268,7 @@ namespace LinesOnLayers
    unsigned int linemat = 0;
    const float hnm = 200.f;
    const float wnm = 40.f;
-   const float linelengthnm = 120.f;
+   float linelengthnm = 120.f;
    const float thetardeg = 1.f;
    const float thetaldeg = 1.f;
    const float radrnm = wnm / 3.f;
@@ -279,7 +280,7 @@ namespace LinesOnLayers
    const float beamEeVvals[] = { 500.f };
    const int beamEeVvalsLen = 1;
    float beamsizenm = 0.1f;
-   const float beamznm = -hnm - 20.f;
+   float beamznm = -hnm - 20.f;
    //float beamsizenm = 0.f;
    const float deepnm = 15.f;
 
@@ -372,7 +373,7 @@ namespace LinesOnLayers
    const float pitch = pitchnm * 1.e-9f;
    const float h = hnm * 1.e-9f;
    const float w = wnm * 1.e-9f;
-   const float linelength = linelengthnm * 1.e-9f;
+   float linelength = linelengthnm * 1.e-9f;
 
    const float radperdeg = Math2::PI / 180.f;
    const float thetar = thetardeg * Math2::PI / 180.f;
@@ -399,6 +400,7 @@ namespace LinesOnLayers
    const float cutoffEnergyForSE = 50.f;
    float beamphideg = 0.f;
    float beamthetadeg = 20.f;
+   float beamfocallength = 20.f;
 
    //NullMaterialScatterModelT* NULL_MSM = nullptr;
 
@@ -956,7 +958,7 @@ namespace LinesOnLayers
       //RegionT region(&chamber, &PMMAMSM, (NormalDifferenceShapeT*)washer.get());
       
       const double egCenter[] = { x, y, beamz};
-      GaussianBeamT eg(beamsize, beamE, Math2::toRadians(beamthetadeg), Math2::toRadians(beamphideg), egCenter);
+      GaussianBeamT eg(beamsize, beamE, Math2::toRadians(beamthetadeg), Math2::toRadians(beamphideg), egCenter, beamfocallength);
       MonteCarloSST monte(&eg, &chamber, nullptr);
 
       const int nbins = (int)(beamEeV / binSizeEV);
@@ -1142,12 +1144,16 @@ namespace LinesOnLayers
       beamsize = beamsizenm * ToSI::NANO; // 0.1 nm to 0.5 nm
       beamthetadeg = -5.f  + Random::random() + 10.f; // polar
       beamphideg = -10.f  + 20.f * Random::random(); // azimuth
+      beamz = -h0 - 20.f / ToSI::GIGA;
+      beamfocallength = (-beamz - h0) / ::cos(Math2::toRadians(beamthetadeg));
 
       printf("nlines: %d\n", nlines);
       printf("linemat: %d\n", linemat);
       printf("nTrajectories: %d\n", nTrajectories);
       printf("beamEeV: %.5e\n", beamEeV);
       printf("beamsizenm: %.5e\n", beamsizenm);
+      printf("beamz: %.5e\n", beamz);
+      printf("beamfocallength: %.5e\n", beamfocallength);
    }
 
    //void setSimParamsFromCSVFile(const char* fname)
@@ -1325,6 +1331,7 @@ namespace LinesOnLayers
       fout << beamz << ",";
       fout << beamphideg << ",";
       fout << beamthetadeg << ",";
+      fout << beamfocallength << ",";
 
       fout << "\n";
 
@@ -1416,6 +1423,8 @@ namespace LinesOnLayers
          beamphideg = std::stof(word.c_str()); //printf("%.5e\n", beamphideg);
          getline(s, word, ',');
          beamthetadeg = std::stof(word.c_str()); //printf("%.5e\n", beamthetadeg);
+         getline(s, word, ',');
+         beamfocallength = std::stof(word.c_str()); //printf("%.5e\n", beamfocallength);
       }
 
       fin.close();

@@ -555,7 +555,9 @@ int main()
       //LinesOnLayers::createShapes();
       //LinesOnLayers::runSinglePixelThread(0, 0, 0, d_result);
 
-      unsigned concurentThreadsSupported = std::thread::hardware_concurrency();
+      std::cout << "Started image generation" << std::endl;
+
+      unsigned concurentThreadsSupported = std::thread::hardware_concurrency() * 2 - 1;
       printf("# threads: %d\n", concurentThreadsSupported);
       ctpl::thread_pool tasks(concurentThreadsSupported-1);
       std::vector<std::future<void>> results(H * W);
@@ -582,7 +584,7 @@ int main()
       auto end = std::chrono::system_clock::now();
       std::chrono::duration<double> elapsed_seconds = end - start;
       std::time_t end_time = std::chrono::system_clock::to_time_t(end);
-      std::cout << std::endl << "finished computation at " << std::ctime(&end_time) << "elapsed time: " << elapsed_seconds.count() << "s" << std::endl;
+      std::cout << "Finished computation at " << std::ctime(&end_time) << "elapsed time: " << elapsed_seconds.count() << "s" << std::endl;
 
       float* h_bse = new float[H * W];
       float* h_fse = new float[H * W];

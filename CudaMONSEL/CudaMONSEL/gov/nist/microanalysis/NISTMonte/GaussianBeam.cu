@@ -11,7 +11,8 @@ namespace GaussianBeam
    GaussianBeam::GaussianBeam(double width) :
       mWidth(width),
       mPhi(0.),
-      mTheta(0.)
+      mTheta(0.),
+      mFocalLength(20.)
    {
       double mult[3];
       Math2::multiply3d(0.99 * MonteCarloSS::ChamberRadius, Math2::MINUS_Z_AXIS, mult);
@@ -22,17 +23,20 @@ namespace GaussianBeam
       mWidth(width),
       mBeamEnergy(energy),
       mPhi(0.),
-      mTheta(0.)
+      mTheta(0.),
+      mFocalLength(20.)
    {
       setCenter(center);
    }
 
-   __host__ __device__ GaussianBeam::GaussianBeam(const double width, const double energy, const double theta, const double phi, const double center[]) :
+   __host__ __device__ GaussianBeam::GaussianBeam(const double width, const double energy, const double theta, const double phi, const double center[], const double focalLength) :
       mWidth(width),
       mBeamEnergy(energy),
       mPhi(phi),
-      mTheta(theta)
+      mTheta(theta),
+      mFocalLength(focalLength)
    {
+      if (mFocalLength <= 0.) printf("GaussianBeam::GaussianBeam: bad mFocalLength (%.5e)\n", mFocalLength);
       setCenter(center);
    }
 
@@ -89,7 +93,7 @@ namespace GaussianBeam
 
    __host__ __device__ ElectronT* GaussianBeam::createElectron() const
    {
-      const double focalLength = 20. / ToSI::GIGA; // nm
+      //const double focalLength = 20. / ToSI::GIGA;
 
       double p[] = {
          mCenter[0],
@@ -98,29 +102,34 @@ namespace GaussianBeam
       };
 
       double rand = 0.;
-      while (rand == 0. || rand == 1.) {
+      while (rand == 0.) {
          rand = Random::random();
       }
 
       const double r = ::sqrt(-2. * ::log(rand)) * mWidth;
+      if (r != r) {
+         printf("GaussianBeam::createElectron: r\n");
+      }
       const double th = 2.0 * PhysicalConstants::PI * Random::random();
       p[0] += r * ::cos(th);
       p[1] += r * ::sin(th);
 
       double pf[] = {
-         mCenter[0] + focalLength * ::sin(mTheta) * ::cos(mPhi),
-         mCenter[1] + focalLength * ::sin(mTheta) * ::sin(mPhi),
-         mCenter[2] + focalLength * ::cos(mTheta)
+         mCenter[0] + mFocalLength * ::sin(mTheta) * ::cos(mPhi),
+         mCenter[1] + mFocalLength * ::sin(mTheta) * ::sin(mPhi),
+         mCenter[2] + mFocalLength * ::cos(mTheta)
       };
 
       rand = 0.;
-      while (rand == 0. || rand == 1.) {
+      while (rand == 0.) {
          rand = Random::random();
       }
-      const double dr = ::sqrt(-2. * ::log(rand)) * mWidth / 2.;
-      const double dth = 2.0 * PhysicalConstants::PI * Random::random();
-      pf[0] += r * ::cos(th) + dr * ::cos(dth);
-      pf[1] += r * ::sin(th) + dr * ::sin(dth);
+      //const double rf = ::sqrt(-2. * ::log(rand)) * mWidth/2.;
+      //const double thf = 2.0 * PhysicalConstants::PI * Random::random();
+      const double rf = r/2.;
+      const double thf = th;
+      pf[0] += rf * ::cos(thf);
+      pf[1] += rf * ::sin(thf);
       //pf[0] += r * ::cos(th);
       //pf[1] += r * ::sin(th);
 
@@ -138,10 +147,6 @@ namespace GaussianBeam
       if (theta != theta) {
          printf("GaussianBeam::createElectron: theta\n");
       }
-
-      //if (theta != mTheta || phi != mPhi) {
-      //   printf("%.5e, %.5e, %.5e, %.5e\n", theta, mTheta, phi, mPhi);
-      //}
 
       ElectronT* newElectron = new ElectronT(p, theta, phi, mBeamEnergy);
       if (!newElectron) printf("ElectronT* GaussianBeam::createElectron: failed creating electron.\n");
