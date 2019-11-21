@@ -22,7 +22,20 @@ The simulation computes the movement of the electron for each unit of time step.
 
 \section{Material}\label{impl:mat}
 \subsection{Material}
-\subsection{Secondary Eleectron Material}
+\subsection{Secondary Eleectron Generating Material}
+To define an SE material, one will specify
+\begin{enumerate}
+\item composition (what elements and in what proportions)
+\item density
+\item work function (optional)
+\item work function (optional)
+\item energy of its conduction band minimum (optional)
+\item band gap (optional)
+\item core energy levels (optional)
+\item its name (optional)
+\end{enumerate}
+
+The necessity of the optional parameters depends on the model associated with the material, that is, they are only required if they are needed by the model.
 
 \section{Barrier Scattering Mechanism}\label{impl:barrier_sm}
 \begin{lstlisting}[caption={BarrierScatterMechanism.cuh},label={lst:barrierSM},numbers=left,escapeinside={@}{@}]
@@ -41,6 +54,7 @@ A barrier scattering mechanism is associated with each region of our sample, but
 This class computes barrier transmission using the formula provided by \cite{Landau}. Note that this is the only barrier SM available in the JMONSEL package. 
 
 \section{Scatter Mechanism}\label{impl:sm}
+The prototype of the class is shown below
 \begin{lstlisting}
 class ScatterMechanism
 {
@@ -79,6 +93,30 @@ Scatter mechanisms included in JMONSEL are:
 \item SelectableElasticSM
 \item TabulatedInelasticSM
 \end{enumerate}
+
+A model usually requires two scattering mechanism, one for elastic scattering and one for inelastic / SE--generating scattering. For elastic scattering, SelectableElasticSM with NISTMottRS is a good choice. (cite) For inelastic scattering, choose TabulatedInelasticSM pair with ZeroCS) when when scattering tables are available, and use FittedInelasticSM (pair with JoyLuoNieminenCSD) otherwise.
+
+\subsection{FittedInelSM}
+FittedInelSM requires a parameter, $E_{av}$, that represents the average energy required to make a secondary electron. It is based on an old semi--empirical model, described most recently (and perhaps in most refined form) by Lin and Joy. (cite)
+
+\subsection{TabulatedInelasticSM}
+For TabulatedInelasticSM, most of the scattering properties are not hard--coded into the object itself, but read from tables associated with each supported material.
+
+The tables are served as strings of full paths to the files containing the physical data. Each string should is input to NUTableInterpolation object. 
+
+For 3 of the tables, the first input parameter is the kinetic energy of the primary electron. By default, this kinetic energy is assumed to be the PE's energy with respect to the bottom of the conduction band. Sometimes, however, tables use a different convention. For example, in a semiconductor or insulator tables may be computed for energies measured with respect to the bottom of the valence band (the highest occupied band). This can be accommodated by providing the constructor with the energy offset between these two definitions of energy (ie., $E_{offset} = \text{energy of conduction band bottom} - \text{the energy defined as the zero for purpose of the tables}$).
+
+However, an exception to the above generalizations. There remains some uncertainty in the literature over the connection between primary electron energy loss/trajectory change on the one hand and secondary electron (SE) final energy/final trajectory on the other. Part of the reason for this difference lies in varying assumptions about the initial (pre-scattering) energy and trajectory of the SE. Some of the different methods of treating this connection have been implemented in this class. One of them must be selected to instantiate an object of this class. The selection is made by choosing a value for the methodSE parameter in the constructor. Three methods have been implemented to deal with this.
+
+\begin{enumerate}
+    \item $methodSE=1$ \cite{ding1996mcmodeling}: If the PE energy loss, $\delta$ E is greater than a core level binding energy, the SE final energy is $\delta E-E_{binding}$. Otherwise, it is $\delta E + E_{Fermi}$, where $E_{Fermi}$ is the Fermienergy of the material. The final direction of the SE is determined from conservation of momentum with the assumption that the SE initial momentum was 0.
+    \item $methodSE=2$ \cite{ding2001mcse}: If $\delta E$ is greater than a core level binding energy the treatment is the same as $methodSE=1$. If not, the SE final energy is $\delta E + E'$. If $E'$ were the Fermi energy this would be the same as $methodSE = 1$. However, $E'$ lies in the range $max(0, E_{Fermi} - \delta E) <= E' <= E_{Fermi}$. The value of $E'$ is determined probabilistically based upon the free electron densities of occupied and unoccupied states.
+    \item $methodSE=3$ \cite{mao2008electron}: The scattering event is assigned as either an electron--electron event or an electron--plasmon event based upon the momentum transfer. Plasmon events are treated as in $methodSE = 2$, except that the SE direction is isotropic. Electron--electron events have energy and direction determined as described by \cite{mao2008electron}.
+\end{enumerate}
+
+To use this class, the user--provided tables must cover the full range of energies that the electron will encounter in the simulation. This generally means the tables that take PE energy as one of the inputs should cover energies from the material's Fermi energy up to at least the energy of electrons generated by the electron gun.
+
+This class uses coreEnergy array, energyCBbottom, bandgap, and workfunction.
 
 \section{Randomized Scatter}
 The type of randomized scatter depends on the the energy of the electron. The main computations are performed by these two member functions below
@@ -188,6 +226,7 @@ public interface SlowingDownAlg {
 }
 \end{lstlisting}
 \subsection{Joy--Lou--Nieminen}
+The JoyLuoNieminenCSD stopping power requires a parameter, breakE, that specifies where the stopping power switches from the low energy Nieminen expression to the higher energy Joy/Luo one.
 
 \section{Events}\label{impl:events}
 The event listener `hooks' onto the simulation and provides a way to transfer information out of the simulation loop. This means that event listeners are by design passive and unable to affect the outcome of the simulations. The simulation will work even when all event--related code are removed, in which case some other mean of acquiring simulation state needs to be implemented if one wishes to retrieve any information about the on--going simulation.
