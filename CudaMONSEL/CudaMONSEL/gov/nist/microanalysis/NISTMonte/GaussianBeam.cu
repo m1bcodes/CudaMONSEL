@@ -78,7 +78,7 @@ namespace GaussianBeam
    //      mCenter[2]
    //   };
    //   double rand = 0.;
-   //   while (rand == 0. || rand == 1.) {
+   //   while (rand == 0.) {
    //      rand = Random::random();
    //   }
    //   const double r = ::sqrt(-2. * ::log(rand)) * mWidth;

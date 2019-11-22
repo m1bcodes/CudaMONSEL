@@ -1077,6 +1077,7 @@ namespace LinesOnLayers
       // generate strips
       //unsigned int mat = Random::randomInt(3);
       unsigned int mat = 0; // PMMA
+
       for (int i = 0; i < nhstrips; ++i) {
          //switch (i) {
          //case MaterialTypes::PMMA: mat = MaterialTypes::PMMA; break;
@@ -1123,7 +1124,6 @@ namespace LinesOnLayers
 
          lineParams[i] = new NShapes::LineParams(curh, curw, curl, curtl, curtr, currl, currr, linemat, 0.f);
       }
-
       // update line position
       float curx = -10.f * ToSI::NANO;
       lineParams[0]->x = curx;
