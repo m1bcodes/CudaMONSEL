@@ -97,7 +97,7 @@ Scatter mechanisms included in JMONSEL are:
 A model usually requires two scattering mechanism, one for elastic scattering and one for inelastic / SE--generating scattering. For elastic scattering, SelectableElasticSM with NISTMottRS is a good choice. (cite) For inelastic scattering, choose TabulatedInelasticSM pair with ZeroCS) when when scattering tables are available, and use FittedInelasticSM (pair with JoyLuoNieminenCSD) otherwise.
 
 \subsection{FittedInelSM}
-FittedInelSM requires a parameter, $E_{av}$, that represents the average energy required to make a secondary electron. It is based on an old semi--empirical model, described most recently (and perhaps in most refined form) by Lin and Joy. (cite)
+FittedInelSM requires a parameter, $E_{av}$, that represents the average energy required to make a secondary electron. It is based on an old semi--empirical model, described most recently (and perhaps in most refined form) by \cite{lin2005new}.
 
 \subsection{TabulatedInelasticSM}
 For TabulatedInelasticSM, most of the scattering properties are not hard--coded into the object itself, but read from tables associated with each supported material.
@@ -108,9 +108,11 @@ For 3 of the tables, the first input parameter is the kinetic energy of the prim
 
 However, an exception to the above generalizations. There remains some uncertainty in the literature over the connection between primary electron energy loss/trajectory change on the one hand and secondary electron (SE) final energy/final trajectory on the other. Part of the reason for this difference lies in varying assumptions about the initial (pre-scattering) energy and trajectory of the SE. Some of the different methods of treating this connection have been implemented in this class. One of them must be selected to instantiate an object of this class. The selection is made by choosing a value for the methodSE parameter in the constructor. Three methods have been implemented to deal with this.
 
+The tables are found under the directory ``C:\textbackslash Program Files\textbackslash NIST\textbackslash JMONSEL\textbackslash ScatteringTables''.
+
 \begin{enumerate}
-    \item $methodSE=1$ \cite{ding1996mcmodeling}: If the PE energy loss, $\delta$ E is greater than a core level binding energy, the SE final energy is $\delta E-E_{binding}$. Otherwise, it is $\delta E + E_{Fermi}$, where $E_{Fermi}$ is the Fermienergy of the material. The final direction of the SE is determined from conservation of momentum with the assumption that the SE initial momentum was 0.
-    \item $methodSE=2$ \cite{ding2001mcse}: If $\delta E$ is greater than a core level binding energy the treatment is the same as $methodSE=1$. If not, the SE final energy is $\delta E + E'$. If $E'$ were the Fermi energy this would be the same as $methodSE = 1$. However, $E'$ lies in the range $max(0, E_{Fermi} - \delta E) <= E' <= E_{Fermi}$. The value of $E'$ is determined probabilistically based upon the free electron densities of occupied and unoccupied states.
+    \item $methodSE=1$ \cite{ding1996monte}: If the PE energy loss, $\delta$ E is greater than a core level binding energy, the SE final energy is $\delta E-E_{binding}$. Otherwise, it is $\delta E + E_{Fermi}$, where $E_{Fermi}$ is the Fermienergy of the material. The final direction of the SE is determined from conservation of momentum with the assumption that the SE initial momentum was 0.
+    \item $methodSE=2$ \cite{ding2001monte}: If $\delta E$ is greater than a core level binding energy the treatment is the same as $methodSE=1$. If not, the SE final energy is $\delta E + E'$. If $E'$ were the Fermi energy this would be the same as $methodSE = 1$. However, $E'$ lies in the range $max(0, E_{Fermi} - \delta E) <= E' <= E_{Fermi}$. The value of $E'$ is determined probabilistically based upon the free electron densities of occupied and unoccupied states.
     \item $methodSE=3$ \cite{mao2008electron}: The scattering event is assigned as either an electron--electron event or an electron--plasmon event based upon the momentum transfer. Plasmon events are treated as in $methodSE = 2$, except that the SE direction is isotropic. Electron--electron events have energy and direction determined as described by \cite{mao2008electron}.
 \end{enumerate}
 
@@ -253,7 +255,7 @@ The most important events of are events relating to detecting backscattered elec
 Concretely, the event listener must be added to the simulation class (ie $MonteCarloSS$), before the start of the simulation, and have member function $actionPerformed$ of the listener classes added to the simulation deal with the appropriate events. Note that, the simulation broadcasts the event triggered to all listener classes by calling the member function $actionPerformed$ of every listener class added to the simulation in the function $fireEvent$.
 
 \section{Amphibian -- custom C++ library}
-Since one of the goals of the project is to make MONSEL compiler--independent, we built a custom library to minimize dependence on the C++ standard template library (STL). The following data structures are included,
+Since one of the goals of the project is to make MONSEL run on both CPU and GPU, we built a custom library, Amphibian, to eliminate any dependence on the C++ standard template library (STL). The following data structures are included,
 \begin{enumerate}
 \item linkedlist (single-- and double--linked)
 \item vector
