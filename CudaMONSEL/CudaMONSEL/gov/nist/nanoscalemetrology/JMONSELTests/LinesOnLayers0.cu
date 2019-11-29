@@ -24,6 +24,7 @@
 #include "gov\nist\nanoscalemetrology\JMONSEL\NormalMultiPlaneShape.cuh"
 #include "gov\nist\nanoscalemetrology\JMONSEL\NormalIntersectionShape.cuh"
 #include "gov\nist\nanoscalemetrology\JMONSEL\NormalDifferenceShape.cuh"
+#include "gov\nist\nanoscalemetrology\JMONSEL\NormalUnionShape.cuh"
 #include "gov\nist\nanoscalemetrology\JMONSEL\NShapes.cuh"
 
 #include "gov\nist\nanoscalemetrology\JMONSEL\NUTableInterpolation.cuh"
@@ -46,7 +47,8 @@ namespace LinesOnLayers
 
    __constant__ const float pitchnm = 180.f;
    __device__ unsigned int nlines = 3;
-   __device__ unsigned int linemat = 0;
+   __device__ unsigned int linebodymat = 0;
+   __device__ unsigned int linecapmat = 1;
    __constant__ const float hnm = 120.f;
    __constant__ const float wnm = 80.f;
    __device__ float linelengthnm = 1000.f;
@@ -265,7 +267,8 @@ namespace LinesOnLayers
 
    const float pitchnm = 180.f;
    unsigned int nlines = 3;
-   unsigned int linemat = 0;
+   unsigned int linebodymat = 0;
+   unsigned int linecapmat = 1;
    const float hnm = 200.f;
    const float wnm = 40.f;
    float linelengthnm = 120.f;
@@ -607,8 +610,8 @@ namespace LinesOnLayers
       //const float xfinestart = xtop - 20.5f;
       //const float xfinestop = (thetar < 0.f) ? xtop + 20.5f : wnm / 2.f + 20.5f;
 
-      xstartnm = ToSI::GIGA * (lineParams[0]->x - lineParams[0]->w / 2. - lineParams[0]->radl) - 10. * Random::random();
-      xstopnm = ToSI::GIGA * (lineParams[nlines - 1]->x + lineParams[nlines - 1]->w / 2. + lineParams[nlines - 1]->radr) + 10. * Random::random();
+      xstartnm = ToSI::GIGA * (lineParams[0]->x - lineParams[0]->w / 2. - lineParams[0]->radbl) - 10. * Random::random();
+      xstopnm = ToSI::GIGA * (lineParams[nlines - 1]->x + lineParams[nlines - 1]->w / 2. + lineParams[nlines - 1]->radbr) + 10. * Random::random();
 
       float minz = 0.f;
       for (int i = 0; i < nlines; ++i) {
@@ -921,54 +924,92 @@ namespace LinesOnLayers
       //   regions[i] = new RegionT(&chamber, &PMMAMSM, (NormalIntersectionShapeT*)lines[i]->get());
       //}
 
-      NShapes::Line** lines = new NShapes::Line*[nlines];
-      RegionT** lineRegions = new RegionT*[nlines];
-      for (int i = 0; i < nlines; ++i) {
-         //NShapes::Line line(-h, w, linelength, thetal, thetar, radl, radr);
-         lines[i] = new NShapes::Line(-lineParams[i]->h, lineParams[i]->w, lineParams[i]->linelength, lineParams[i]->thetal, lineParams[i]->thetar, lineParams[i]->radl, lineParams[i]->radr);
-         const double pivot[3] = { 0.f, 0.f, 0.f };
-         lines[i]->get()->rotate(pivot, -Math2::PI / 2.f, Math2::PI / 2.f, Math2::PI / 2.f);
-         //lines[i]->get()->rotate(pivot, -Math2::PI / 2.f + 20.f / (Math2::PI / 2.f), Math2::PI / 2.f - 20.f / (Math2::PI / 2.f), Math2::PI / 2.f - 20.f / (Math2::PI / 2.f));
-         //const double dist1[3] = { 0.f, 0.f, linelength / 2. };
-         const double offset[3] = { lineParams[i]->x, 0.f, linelength / 2. };
-         lines[i]->get()->translate(offset);
-         //lines[i]->addRestrainingPlanes();
-         switch (lineParams[i]->material) {
-         case MaterialTypes::PMMA:
-            lineRegions[i] = new RegionT(&chamber, &PMMAMSM, (NormalIntersectionShapeT*)lines[i]->get());
-            break;
-         case MaterialTypes::Si:
-            lineRegions[i] = new RegionT(&chamber, &SiMSM, (NormalIntersectionShapeT*)lines[i]->get());
-            break;
-         case MaterialTypes::SiO2:
-            lineRegions[i] = new RegionT(&chamber, &SiO2MSM, (NormalIntersectionShapeT*)lines[i]->get());
-            break;
-         }
-         //regions[i] = new RegionT(&chamber, curmat, (NormalIntersectionShapeT*)lines[i]->get());
-         //regions[i] = new RegionT(&chamber, &SiMSM, (NormalIntersectionShapeT*)lines[i]->get());
-      }
+      //NShapes::Line** lines = new NShapes::Line*[nlines];
+      //RegionT** lineRegions = new RegionT*[nlines];
+      //for (int i = 0; i < nlines; ++i) {
+      //   //NShapes::Line line(-h, w, linelength, thetal, thetar, radl, radr);
+      //   lines[i] = new NShapes::Line(-lineParams[i]->h, lineParams[i]->w, lineParams[i]->linelength, lineParams[i]->thetal, lineParams[i]->thetar, lineParams[i]->radl, lineParams[i]->radr);
+      //   const double pivot[3] = { 0.f, 0.f, 0.f };
+      //   lines[i]->get()->rotate(pivot, -Math2::PI / 2.f, Math2::PI / 2.f, Math2::PI / 2.f);
+      //   //lines[i]->get()->rotate(pivot, -Math2::PI / 2.f + 20.f / (Math2::PI / 2.f), Math2::PI / 2.f - 20.f / (Math2::PI / 2.f), Math2::PI / 2.f - 20.f / (Math2::PI / 2.f));
+      //   //const double dist1[3] = { 0.f, 0.f, linelength / 2. };
+      //   const double offset[3] = { lineParams[i]->x, 0.f, linelength / 2. };
+      //   lines[i]->get()->translate(offset);
+      //   //lines[i]->addRestrainingPlanes();
+      //   switch (lineParams[i]->material) {
+      //   case MaterialTypes::PMMA:
+      //      lineRegions[i] = new RegionT(&chamber, &PMMAMSM, (NormalIntersectionShapeT*)lines[i]->get());
+      //      break;
+      //   case MaterialTypes::Si:
+      //      lineRegions[i] = new RegionT(&chamber, &SiMSM, (NormalIntersectionShapeT*)lines[i]->get());
+      //      break;
+      //   case MaterialTypes::SiO2:
+      //      lineRegions[i] = new RegionT(&chamber, &SiO2MSM, (NormalIntersectionShapeT*)lines[i]->get());
+      //      break;
+      //   }
+      //   //regions[i] = new RegionT(&chamber, curmat, (NormalIntersectionShapeT*)lines[i]->get());
+      //   //regions[i] = new RegionT(&chamber, &SiMSM, (NormalIntersectionShapeT*)lines[i]->get());
+      //}
 
-      NShapes::Line** caps = new NShapes::Line*[nlines];
-      RegionT** capRegions = new RegionT*[nlines];
+      //NShapes::Line** caps = new NShapes::Line*[nlines];
+      //RegionT** capRegions = new RegionT*[nlines];
+      //for (int i = 0; i < nlines; ++i) {
+      //   //NShapes::Line line(-h, w, linelength, thetal, thetar, radl, radr);
+      //   caps[i] = new NShapes::Line(-lineParams[i]->h/5., lineParams[i]->w, lineParams[i]->linelength, lineParams[i]->thetal, lineParams[i]->thetar, lineParams[i]->radl, lineParams[i]->radr);
+      //   //const double offset0[3] = { 0., 0., -lineParams[i]->h };
+      //   //caps[i]->get()->translate(offset0);
+      //   const double pivot[3] = { 0.f, 0.f, 0.f };
+      //   caps[i]->get()->rotate(pivot, -Math2::PI / 2.f, Math2::PI / 2.f, Math2::PI / 2.f);
+      //   const double offset[3] = { lineParams[i]->x, -lineParams[i]->h, linelength / 2. };
+      //   caps[i]->get()->translate(offset);
+      //   //switch (lineParams[i]->material) {
+      //   switch (1) {
+      //   case MaterialTypes::PMMA:
+      //      capRegions[i] = new RegionT(&chamber, &PMMAMSM, (NormalIntersectionShapeT*)caps[i]->get());
+      //      break;
+      //   case MaterialTypes::Si:
+      //      capRegions[i] = new RegionT(&chamber, &SiMSM, (NormalIntersectionShapeT*)caps[i]->get());
+      //      break;
+      //   case MaterialTypes::SiO2:
+      //      capRegions[i] = new RegionT(&chamber, &SiO2MSM, (NormalIntersectionShapeT*)caps[i]->get());
+      //      break;
+      //   }
+      //}
+
+      NShapes::CappedLine** cappedlines = new NShapes::CappedLine*[nlines];
+      RegionT** cappedlineRegionsBody = new RegionT*[nlines];
+      RegionT** cappedlineRegionsCap = new RegionT*[nlines];
       for (int i = 0; i < nlines; ++i) {
          //NShapes::Line line(-h, w, linelength, thetal, thetar, radl, radr);
-         caps[i] = new NShapes::Line(-lineParams[i]->h/5., lineParams[i]->w, lineParams[i]->linelength, lineParams[i]->thetal, lineParams[i]->thetar, lineParams[i]->radl, lineParams[i]->radr);
+         cappedlines[i] = new NShapes::CappedLine(-lineParams[i]->h, lineParams[i]->w, lineParams[i]->linelength, lineParams[i]->thetal, lineParams[i]->thetar, lineParams[i]->radtl, lineParams[i]->radtr, lineParams[i]->radbl, lineParams[i]->radbr);
          //const double offset0[3] = { 0., 0., -lineParams[i]->h };
          //caps[i]->get()->translate(offset0);
          const double pivot[3] = { 0.f, 0.f, 0.f };
-         caps[i]->get()->rotate(pivot, -Math2::PI / 2.f, Math2::PI / 2.f, Math2::PI / 2.f);
-         const double offset[3] = { lineParams[i]->x, -lineParams[i]->h, linelength / 2. };
-         caps[i]->get()->translate(offset);
-         //switch (lineParams[i]->material) {
-         switch (1) {
+         cappedlines[i]->get()->rotate(pivot, -Math2::PI / 2.f, Math2::PI / 2.f, Math2::PI / 2.f);
+         const double offset[3] = { lineParams[i]->x, 0., linelength / 2. };
+         cappedlines[i]->get()->translate(offset);
+
+         switch (lineParams[i]->matbody) {
          case MaterialTypes::PMMA:
-            capRegions[i] = new RegionT(&chamber, &PMMAMSM, (NormalIntersectionShapeT*)caps[i]->get());
+            cappedlineRegionsBody[i] = new RegionT(&chamber, &PMMAMSM, (SumShapeT*)cappedlines[i]->getbody());
             break;
          case MaterialTypes::Si:
-            capRegions[i] = new RegionT(&chamber, &SiMSM, (NormalIntersectionShapeT*)caps[i]->get());
+            cappedlineRegionsBody[i] = new RegionT(&chamber, &SiMSM, (SumShapeT*)cappedlines[i]->getbody());
             break;
          case MaterialTypes::SiO2:
-            capRegions[i] = new RegionT(&chamber, &SiO2MSM, (NormalIntersectionShapeT*)caps[i]->get());
+            cappedlineRegionsBody[i] = new RegionT(&chamber, &SiO2MSM, (SumShapeT*)cappedlines[i]->getbody());
+            break;
+         }
+
+         switch (lineParams[i]->matcap) {
+         case MaterialTypes::PMMA:
+            cappedlineRegionsCap[i] = new RegionT(&chamber, &SiMSM, (SumShapeT*)cappedlines[i]->getcap());
+            break;
+         case MaterialTypes::Si:
+            cappedlineRegionsCap[i] = new RegionT(&chamber, &SiO2MSM, (SumShapeT*)cappedlines[i]->getcap());
+            break;
+         case MaterialTypes::SiO2:
+            cappedlineRegionsCap[i] = new RegionT(&chamber, &PMMAMSM, (SumShapeT*)cappedlines[i]->getcap());
             break;
          }
       }
@@ -1038,19 +1079,28 @@ namespace LinesOnLayers
       delete strips;
       delete stripRegions;
 
-      for (int i = 0; i < nlines; ++i) {
-         delete lines[i];
-         delete lineRegions[i];
-      }
-      delete lines;
-      delete lineRegions;
+      //for (int i = 0; i < nlines; ++i) {
+      //   delete lines[i];
+      //   delete lineRegions[i];
+      //}
+      //delete lines;
+      //delete lineRegions;
+
+      //for (int i = 0; i < nlines; ++i) {
+      //   delete caps[i];
+      //   delete capRegions[i];
+      //}
+      //delete caps;
+      //delete capRegions;
 
       for (int i = 0; i < nlines; ++i) {
-         delete caps[i];
-         delete capRegions[i];
+         delete cappedlines[i];
+         delete cappedlineRegionsBody[i];
+         delete cappedlineRegionsCap[i];
       }
-      delete caps;
-      delete capRegions;
+      delete cappedlines;
+      delete cappedlineRegionsBody;
+      delete cappedlineRegionsCap;
    }
 
    __global__ void
@@ -1109,7 +1159,8 @@ namespace LinesOnLayers
       layerthickness = 30.f * 1e-9f;
       // generate strips
       //unsigned int mat = Random::randomInt(3);
-      unsigned int mat = 0; // PMMA
+      unsigned int matbody = 0; // PMMA
+      unsigned int matcap = 1; // Si
 
       for (int i = 0; i < nhstrips; ++i) {
          //switch (i) {
@@ -1118,7 +1169,7 @@ namespace LinesOnLayers
          //case MaterialTypes::SiO2: mat = MaterialTypes::SiO2; break;
          //}
 
-         hstripParams[i] = new NShapes::HorizontalStripParams(layerthickness * (1 + (Random::random() - .5f)), i == nhstrips - 1 ? Random::random() > .5f : false, false, mat, 0.f, 0.f);
+         hstripParams[i] = new NShapes::HorizontalStripParams(layerthickness * (1 + (Random::random() - .5f)), i == nhstrips - 1 ? Random::random() > .5f : false, false, matbody, 0.f, 0.f);
       }
 
       // translate
@@ -1141,7 +1192,8 @@ namespace LinesOnLayers
       nlines = 3 + Random::randomInt(3);
       //nlines = 2;
       //linemat = Random::randomInt(3);
-      linemat = mat;
+      linebodymat = matbody;
+      linecapmat = matcap;
       lineParams = new NShapes::LineParams*[nlines];
       // generate line shape
       const float h0 = h * (.5f + Random::random()); // 50% to 150%
@@ -1152,22 +1204,24 @@ namespace LinesOnLayers
          const float curl = linelength;
          const float curtl = thetal + Math2::toRadians(Random::random() / 2.f); // + 0 to .5 deg
          const float curtr = thetar + Math2::toRadians(Random::random() / 2.f); // + 0 to .5 deg
-         const float currl = curw / 3.f + curw / 3.f * (Random::random() - .5f);
-         const float currr = curw / 3.f + curw / 3.f * (Random::random() - .5f);
+         const float currtl = curw / 3.f + curw / 3.f * (Random::random() - .5f);
+         const float currtr = curw / 3.f + curw / 3.f * (Random::random() - .5f);
+         const float currbl = curw / 3.f + curw / 3.f * (Random::random() - .5f);
+         const float currbr = curw / 3.f + curw / 3.f * (Random::random() - .5f);
 
-         lineParams[i] = new NShapes::LineParams(curh, curw, curl, curtl, curtr, currl, currr, linemat, 0.f);
+         lineParams[i] = new NShapes::LineParams(curh, curw, curl, curtl, curtr, currtl, currtr, currbl, currbr, linebodymat, linecapmat, 0.f);
       }
       // update line position
       float curx = -10.f * ToSI::NANO;
       lineParams[0]->x = curx;
       for (int i = 1; i < nlines; ++i) {
-         curx += lineParams[i - 1]->w / 2.f + lineParams[i - 1]->radr + lineParams[i]->w / 2.f + lineParams[i]->radl;
+         curx += lineParams[i - 1]->w / 2.f + lineParams[i - 1]->radbr + lineParams[i]->w / 2.f + lineParams[i]->radbl;
          lineParams[i]->x = curx;
       }
 
       //nTrajectories += 250;
-      //nTrajectories = 50 + Random::random() * 150;
-      nTrajectories = 3;
+      nTrajectories = 50 + Random::random() * 150;
+      //nTrajectories = 3;
 
       beamEeV = 100.f + 400.f * Random::random();
       beamE = ToSI::eV(beamEeV);
@@ -1183,7 +1237,8 @@ namespace LinesOnLayers
       beamfocallength = (-beamz - h0) / ::cos(Math2::toRadians(beamthetadeg));
 
       printf("nlines: %d\n", nlines);
-      printf("linemat: %d\n", linemat);
+      printf("linemat: %d\n", linebodymat);
+      printf("linecap: %d\n", linebodymat);
       printf("nTrajectories: %d\n", nTrajectories);
       printf("beamEeV: %.5e\n", beamEeV);
       printf("beamsizenm: %.5e\n", beamsizenm);
@@ -1264,34 +1319,51 @@ namespace LinesOnLayers
          hs.calcRasterization(projectionPlane, axis0, axis1, beamdir, xlenperpix, ylenperpix, gt, xsize, ysize);
       }
 
-      // lines
+      //// lines
+      //for (int i = 0; i < nlines; ++i) {
+      //   //NShapes::Line line(-h, w, linelength, thetal, thetar, radl, radr);
+      //   NShapes::Line line(-lineParams[i]->h, lineParams[i]->w, lineParams[i]->linelength, lineParams[i]->thetal, lineParams[i]->thetar, lineParams[i]->radl, lineParams[i]->radr);
+      //   //NShapes::Line line(-lp.h, lp.w, lp.linelength, lp.thetal, lp.thetar, lp.radl, lp.radr);
+      //   const double pivot[3] = { 0.f, 0.f, 0.f };
+      //   line.get()->rotate(pivot, -Math2::PI / 2.f, Math2::PI / 2.f, Math2::PI / 2.f);
+      //   //line.get()->rotate(pivot, -Math2::PI / 2.f + 20.f / (Math2::PI / 2.f), Math2::PI / 2.f - 20.f / (Math2::PI / 2.f), Math2::PI / 2.f - 20.f / (Math2::PI / 2.f));
+      //   //const double dist1[3] = { 0.f, 0.f, linelength / 2. };
+      //   //const double dist1[3] = { lp.x, 0.f, linelength / 2. };
+      //   const double offset[3] = { lineParams[i]->x, 0.f, linelength / 2. };
+      //   line.get()->translate(offset);
+
+      //   line.calcGroundtruth(); // get points/line segments that need to be projected
+      //   line.calcRasterization(projectionPlane, axis0, axis1, beamdir, xlenperpix, ylenperpix, gt, xsize, ysize); // calculation for line needs to be last since bottom needs to be removed due to same material
+      //}
+
+      //// top caps
+      //for (int i = 0; i < nlines; ++i) {
+      //   //NShapes::Line line(-h, w, linelength, thetal, thetar, radl, radr);
+      //   NShapes::Line line(-lineParams[i]->h/5., lineParams[i]->w, lineParams[i]->linelength, lineParams[i]->thetal, lineParams[i]->thetar, lineParams[i]->radl, lineParams[i]->radr);
+      //   //NShapes::Line line(-lp.h, lp.w, lp.linelength, lp.thetal, lp.thetar, lp.radl, lp.radr);
+      //   const double pivot[3] = { 0.f, 0.f, 0.f };
+      //   line.get()->rotate(pivot, -Math2::PI / 2.f, Math2::PI / 2.f, Math2::PI / 2.f);
+      //   //line.get()->rotate(pivot, -Math2::PI / 2.f + 20.f / (Math2::PI / 2.f), Math2::PI / 2.f - 20.f / (Math2::PI / 2.f), Math2::PI / 2.f - 20.f / (Math2::PI / 2.f));
+      //   //const double dist1[3] = { 0.f, 0.f, linelength / 2. };
+      //   //const double dist1[3] = { lp.x, 0.f, linelength / 2. };
+      //   const double offset[3] = { lineParams[i]->x, -lineParams[i]->h, linelength / 2. };
+      //   line.get()->translate(offset);
+
+      //   line.calcGroundtruth(); // get points/line segments that need to be projected
+      //   line.calcRasterization(projectionPlane, axis0, axis1, beamdir, xlenperpix, ylenperpix, gt, xsize, ysize); // calculation for line needs to be last since bottom needs to be removed due to same material
+      //}
+
+      // capped lines
       for (int i = 0; i < nlines; ++i) {
          //NShapes::Line line(-h, w, linelength, thetal, thetar, radl, radr);
-         NShapes::Line line(-lineParams[i]->h, lineParams[i]->w, lineParams[i]->linelength, lineParams[i]->thetal, lineParams[i]->thetar, lineParams[i]->radl, lineParams[i]->radr);
+         NShapes::CappedLine line(-lineParams[i]->h, lineParams[i]->w, lineParams[i]->linelength, lineParams[i]->thetal, lineParams[i]->thetar, lineParams[i]->radtl, lineParams[i]->radtr, lineParams[i]->radbl, lineParams[i]->radbr);
          //NShapes::Line line(-lp.h, lp.w, lp.linelength, lp.thetal, lp.thetar, lp.radl, lp.radr);
          const double pivot[3] = { 0.f, 0.f, 0.f };
          line.get()->rotate(pivot, -Math2::PI / 2.f, Math2::PI / 2.f, Math2::PI / 2.f);
          //line.get()->rotate(pivot, -Math2::PI / 2.f + 20.f / (Math2::PI / 2.f), Math2::PI / 2.f - 20.f / (Math2::PI / 2.f), Math2::PI / 2.f - 20.f / (Math2::PI / 2.f));
          //const double dist1[3] = { 0.f, 0.f, linelength / 2. };
          //const double dist1[3] = { lp.x, 0.f, linelength / 2. };
-         const double offset[3] = { lineParams[i]->x, 0.f, linelength / 2. };
-         line.get()->translate(offset);
-
-         line.calcGroundtruth(); // get points/line segments that need to be projected
-         line.calcRasterization(projectionPlane, axis0, axis1, beamdir, xlenperpix, ylenperpix, gt, xsize, ysize); // calculation for line needs to be last since bottom needs to be removed due to same material
-      }
-
-      // top caps
-      for (int i = 0; i < nlines; ++i) {
-         //NShapes::Line line(-h, w, linelength, thetal, thetar, radl, radr);
-         NShapes::Line line(-lineParams[i]->h/5., lineParams[i]->w, lineParams[i]->linelength, lineParams[i]->thetal, lineParams[i]->thetar, lineParams[i]->radl, lineParams[i]->radr);
-         //NShapes::Line line(-lp.h, lp.w, lp.linelength, lp.thetal, lp.thetar, lp.radl, lp.radr);
-         const double pivot[3] = { 0.f, 0.f, 0.f };
-         line.get()->rotate(pivot, -Math2::PI / 2.f, Math2::PI / 2.f, Math2::PI / 2.f);
-         //line.get()->rotate(pivot, -Math2::PI / 2.f + 20.f / (Math2::PI / 2.f), Math2::PI / 2.f - 20.f / (Math2::PI / 2.f), Math2::PI / 2.f - 20.f / (Math2::PI / 2.f));
-         //const double dist1[3] = { 0.f, 0.f, linelength / 2. };
-         //const double dist1[3] = { lp.x, 0.f, linelength / 2. };
-         const double offset[3] = { lineParams[i]->x, -lineParams[i]->h, linelength / 2. };
+         const double offset[3] = { lineParams[i]->x, 0., linelength / 2. };
          line.get()->translate(offset);
 
          line.calcGroundtruth(); // get points/line segments that need to be projected
@@ -1318,7 +1390,7 @@ namespace LinesOnLayers
       // lines
       for (int i = 0; i < nlines; ++i) {
          //NShapes::Line line(-h, w, linelength, thetal, thetar, radl, radr);
-         NShapes::Line line(-lineParams[i]->h, lineParams[i]->w, lineParams[i]->linelength, lineParams[i]->thetal, lineParams[i]->thetar, lineParams[i]->radl, lineParams[i]->radr);
+         NShapes::Line line(-lineParams[i]->h, lineParams[i]->w, lineParams[i]->linelength, lineParams[i]->thetal, lineParams[i]->thetar, lineParams[i]->radtl, lineParams[i]->radtr, lineParams[i]->radbl, lineParams[i]->radbr);
          //NShapes::Line line(-lp.h, lp.w, lp.linelength, lp.thetal, lp.thetar, lp.radl, lp.radr);
          const double pivot[3] = { 0.f, 0.f, 0.f };
          line.get()->rotate(pivot, -Math2::PI / 2.f, Math2::PI / 2.f, Math2::PI / 2.f);
@@ -1331,7 +1403,7 @@ namespace LinesOnLayers
          line.calcGroundtruth(); // get points/line segments that need to be projected
 
          // boundary corrections
-         if (lineParams[i]->material == hstripParams[0]->material) { // bottom needs to be removed due to same material
+         if (lineParams[i]->matbody == hstripParams[0]->material) { // bottom needs to be removed due to same material
             line.calcRasterizationCorrection(projectionPlane, axis0, axis1, beamdir, xlenperpix, ylenperpix, gt, xsize, ysize);
          }
       }
@@ -1370,10 +1442,13 @@ namespace LinesOnLayers
          fout << lineParams[i]->linelength << ",";
          fout << lineParams[i]->thetal << ",";
          fout << lineParams[i]->thetar << ",";
-         fout << lineParams[i]->radl << ",";
-         fout << lineParams[i]->radr << ",";
+         fout << lineParams[i]->radtl << ",";
+         fout << lineParams[i]->radtr << ",";
+         fout << lineParams[i]->radbl << ",";
+         fout << lineParams[i]->radbr << ",";
 
-         fout << lineParams[i]->material << ",";
+         fout << lineParams[i]->matbody << ",";
+         fout << lineParams[i]->matcap << ",";
          fout << lineParams[i]->x << ",";
       }
 
@@ -1451,16 +1526,22 @@ namespace LinesOnLayers
             getline(s, word, ',');
             const float tr = std::stof(word.c_str()); //printf("%.5e\n", tr);
             getline(s, word, ',');
-            const float rl = std::stof(word.c_str()); //printf("%.5e\n", rl);
+            const float rtl = std::stof(word.c_str()); //printf("%.5e\n", rtl);
             getline(s, word, ',');
-            const float rr = std::stof(word.c_str()); //printf("%.5e\n", rr);
+            const float rtr = std::stof(word.c_str()); //printf("%.5e\n", rtr);
+            getline(s, word, ',');
+            const float rbl = std::stof(word.c_str()); //printf("%.5e\n", rbl);
+            getline(s, word, ',');
+            const float rbr = std::stof(word.c_str()); //printf("%.5e\n", rbr);
 
             getline(s, word, ',');
-            const unsigned int mat = std::stoi(word.c_str()); //printf("%d\n", mat);
+            const unsigned int matbody = std::stoi(word.c_str()); //printf("%d\n", mat);
+            getline(s, word, ',');
+            const unsigned int matcap = std::stoi(word.c_str()); //printf("%d\n", mat);
             getline(s, word, ',');
             const float x = std::stof(word.c_str()); //printf("%.5e\n", x);
 
-            lineParams[i] = new NShapes::LineParams(h, w, l, tl, tr, rl, rr, mat, x);
+            lineParams[i] = new NShapes::LineParams(h, w, l, tl, tr, rtl, rtr, rbl, rbr, matbody, matcap, x);
          }
 
          getline(s, word, ',');

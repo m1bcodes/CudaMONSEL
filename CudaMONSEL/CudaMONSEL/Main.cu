@@ -574,6 +574,7 @@ int main()
       }
       //LinesOnLayers::destroyShapes();
       //for (int i = 0; i < H; ++i) {
+      //   printf("%d\n", i);
       //   for (int j = 0; j < W; ++j) {
       //      //LinesOnLayers::runSinglePixel(i, j, d_result);
       //      LinesOnLayers::runSinglePixel(i, j, d_bse, d_fse, d_totalse);

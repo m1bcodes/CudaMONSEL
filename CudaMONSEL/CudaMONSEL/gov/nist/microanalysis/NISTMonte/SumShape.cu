@@ -21,6 +21,8 @@ namespace SumShape
 
    __host__ __device__ SumShape::SumShape(ShapeT* const a, ShapeT* const b)
    {
+      if (!a) printf("SumShape::SumShape: a is null\n");
+      if (!b) printf("SumShape::SumShape: b is null\n");
       mShapes.push_back(a);
       mShapes.push_back(b);
    }

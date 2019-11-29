@@ -24,19 +24,22 @@ namespace NShapes
 
    struct LineParams
    {
-      __host__ __device__ LineParams(const float h, const float w, const float linelength, const float thetal, const float thetar, const float radl, const float radr, const unsigned int material, const float x) :
+      __host__ __device__ LineParams(const float h, const float w, const float linelength, const float thetal, const float thetar, const float radtl, const float radtr, const float radbl, const float radbr, const unsigned int matbody, const unsigned int matcap, const float x) :
          h(h), // m
          w(w), // m 
          linelength(linelength), // m
          thetal(thetal), // degree
          thetar(thetar), // degree
-         radl(radl), // m 
-         radr(radr), // m
-         material(material), // makes no sense to be here
+         radtl(radtl), // m 
+         radtr(radtr), // m
+         radbl(radbl), // m 
+         radbr(radbr), // m
+         matbody(matbody), // makes no sense to be here
+         matcap(matcap),
          x(x)
       {};
-      const float h, w, linelength, thetal, thetar, radl, radr; // line params
-      const unsigned int material;
+      const float h, w, linelength, thetal, thetar, radtl, radtr, radbl, radbr; // line params
+      const unsigned int matbody, matcap;
       float x; // mutable position (translate), not constant since its position depends on the size and pos of previous lines
    };
 
@@ -65,8 +68,10 @@ namespace NShapes
          const double length,
          const double thetal,
          const double thetar,
-         const double radl,
-         const double radr
+         const double radtl,
+         const double radtr,
+         const double radbl,
+         const double radbr
          );
       __host__ __device__ ~Line();
 
@@ -74,7 +79,7 @@ namespace NShapes
       __host__ __device__ void calcGroundtruth();
       __host__ __device__ void calcRasterization(const PlaneT&, const double*, const double*, const double*, const float, const float, char*, const unsigned int, const unsigned int) const;
       __host__ __device__ void calcRasterizationCorrection(const PlaneT&, const double*, const double*, const double*, const float, const float, char*, const unsigned int, const unsigned int) const;
-      __host__ __device__ unsigned int calcRasterPoint(const PlaneT&, const double*, const double*, const double*, const float, const float, const unsigned int, const double*, const double) const;
+      //__host__ __device__ unsigned int calcRasterPoint(const PlaneT&, const double*, const double*, const double*, const float, const float, const unsigned int, const double*, const double) const;
 
       __host__ __device__ NormalIntersectionShapeT* get();
 
@@ -110,8 +115,8 @@ namespace NShapes
       // bottom right
       NormalMultiPlaneShapeT* botrightNMPS;
       PlaneT* plbr;
-      PlaneT* plbr_0;
-      PlaneT* plbr_1;
+      //PlaneT* plbr_0;
+      //PlaneT* plbr_1;
       NormalCylindricalShapeT* brcylinder;
       NormalDifferenceShapeT* botrightSide;
 
@@ -128,8 +133,8 @@ namespace NShapes
       // bot left
       NormalMultiPlaneShapeT* botleftNMPS;
       PlaneT* plbl;
-      PlaneT* plbl_0;
-      PlaneT* plbl_1;
+      //PlaneT* plbl_0;
+      //PlaneT* plbl_1;
       NormalCylindricalShapeT* blcylinder;
       NormalDifferenceShapeT* botleftSide;
 
@@ -145,6 +150,40 @@ namespace NShapes
       LineShapeT* gt1;
       LineShapeT* gt2;
       LineShapeT* gt3;
+   };
+
+   class CappedLine
+   {
+   public:
+      __host__ __device__ CappedLine(
+         const double topz,
+         const double width,
+         const double length,
+         const double thetal,
+         const double thetar,
+         const double radtl,
+         const double radtr,
+         const double radbl,
+         const double radbr
+         );
+      __host__ __device__ ~CappedLine();
+
+      //__host__ __device__ void create();
+      __host__ __device__ void calcGroundtruth();
+      __host__ __device__ void calcRasterization(const PlaneT&, const double*, const double*, const double*, const float, const float, char*, const unsigned int, const unsigned int) const;
+      //__host__ __device__ void calcRasterizationCorrection(const PlaneT&, const double*, const double*, const double*, const float, const float, char*, const unsigned int, const unsigned int) const;
+      //__host__ __device__ unsigned int calcRasterPoint(const PlaneT&, const double*, const double*, const double*, const float, const float, const unsigned int, const double*, const double) const;
+
+      __host__ __device__ NormalUnionShapeT* get();
+      __host__ __device__ NormalIntersectionShapeT* getcap();
+      __host__ __device__ NormalIntersectionShapeT* getbody();
+
+      //__host__ __device__ void addRestrainingPlanes();
+
+   private:
+      Line* line;
+      Line* cap;
+      NormalUnionShapeT* cappedline;
    };
 
    class HorizontalStrip

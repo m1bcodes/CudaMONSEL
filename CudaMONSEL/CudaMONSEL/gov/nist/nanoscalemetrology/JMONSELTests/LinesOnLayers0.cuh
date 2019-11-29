@@ -30,7 +30,8 @@ namespace LinesOnLayers
    extern float beamE;
    extern NShapes::LineParams** lineParams;
    extern unsigned int nlines;
-   extern unsigned int linemat;
+   extern unsigned int linebodymat;
+   extern unsigned int linecapmat;
 #endif
    extern void loadNUTable();
    extern void transferNUTableToCuda();
