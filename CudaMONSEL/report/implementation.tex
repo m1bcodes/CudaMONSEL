@@ -94,7 +94,7 @@ Scatter mechanisms included in JMONSEL are:
 \item TabulatedInelasticSM
 \end{enumerate}
 
-A model usually requires two scattering mechanism, one for elastic scattering and one for inelastic / SE--generating scattering. For elastic scattering, SelectableElasticSM with NISTMottRS is a good choice. (cite) For inelastic scattering, choose TabulatedInelasticSM pair with ZeroCS) when when scattering tables are available, and use FittedInelasticSM (pair with JoyLuoNieminenCSD) otherwise.
+A model usually requires two scattering mechanism, one for elastic scattering and one for inelastic / SE--generating scattering. For elastic scattering, SelectableElasticSM with NISTMottRS is a good choice. (cite) For inelastic scattering, choose TabulatedInelasticSM pair with ZeroCS) when when scattering tables are available, and use FittedInelasticSM (pair with JoyLuoNieminenCSD) otherwise. For most models, the governing equations are hardcoded into the class itself. 
 
 \subsection{FittedInelSM}
 FittedInelSM requires a parameter, $E_{av}$, that represents the average energy required to make a secondary electron. It is based on an old semi--empirical model, described most recently (and perhaps in most refined form) by \cite{lin2005new}.
@@ -102,15 +102,14 @@ FittedInelSM requires a parameter, $E_{av}$, that represents the average energy 
 \subsection{TabulatedInelasticSM}
 For TabulatedInelasticSM, most of the scattering properties are not hardcoded into the object itself, but read from tables associated with each supported material. For example, the inverse mean free path, interpolating an IIMFP table associated with the material, the distribution of energy losses and angle changes by the primary electron are similarly determined by tables. 
 
-The tables are served as strings of full paths to the files containing the physical data. Each string is input to NUTableInterpolation object. The NUTableInterpolation object expects the text files to be in the following format: first entry in the file should be number of dimensions of domain $n$. The next entry is the number of entry in the first dimension $n_1$, then followed by $n_1$ entries representing values in the first dimension, followed by the number $n_2$ etc. The numbers form a $n$ dimensional mesh that represents the domain of interpolation. After repeating the pattern for $n$ times, the file should contain $\Prod_{i=1}^{n}$ numbers representing the values of the data points. 
+The tables are served as strings of full paths to the files containing the physical data. Each string is input to NUTableInterpolation object. The NUTableInterpolation object expects the text files to be in the following format: first entry in the file should be number of dimensions of domain $n$. The next entry is the number of entry in the first dimension $n_1$, then followed by $n_1$ entries representing values in the first dimension, followed by the number $n_2$ etc. The numbers form a $n$ dimensional mesh that represents the domain of interpolation. After repeating the pattern for $n$ times, the file should contain $\prod_{i=1}^{n}n_i$ numbers representing the values of the data points. 
 
 The tables are:
 \begin{enumerate}
-    \item tableIIMFP, IIMFP 1d table (inverse inelastic mean free path vs. primary electron energy $E_O$)
-    \item tableReducedDeltaE, reduced deltaE 2d table ($\delta E/E_0$ vs $E_0$ and $r$, with $r$ a random number)
-    \item tableTheta, the theta 3d table (scattering angle of PE vs. $E_0$, $\delta E/(E_0-E_{Fermi})$, $r$)
-    \item tableSEE0, the table of SE initial energy vs. $\delta E$ and $r$
-2d table
+    \item tableIIMFP, IIMFP 1--d table (inverse inelastic mean free path vs. primary electron energy $E_O$)
+    \item tableReducedDeltaE, reduced deltaE 2--d table ($\delta E/E_0$ vs $E_0$ and $r$, with $r$ a random number)
+    \item tableTheta, the theta 3--d table (scattering angle of PE vs. $E_0$, $\delta E/(E_0-E_{Fermi})$, $r$)
+    \item tableSEE0, the 2--d table of SE initial energy vs. $\delta E$ and $r$
 \end{enumerate}
 
 For 3 of the tables, the first input parameter is the kinetic energy of the primary electron. By default, this kinetic energy is assumed to be the PE's energy with respect to the bottom of the conduction band. Sometimes, however, tables use a different convention. For example, in a semiconductor or insulator tables may be computed for energies measured with respect to the bottom of the valence band (the highest occupied band). This can be accommodated by providing the constructor with the energy offset between these two definitions of energy (ie., $E_{offset} = \text{energy of conduction band bottom} - \text{the energy defined as the zero for purpose of the tables}$).
