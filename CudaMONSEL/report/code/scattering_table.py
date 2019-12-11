@@ -49,6 +49,6 @@ ax.set_zlabel('Z Label')
 
 plt.show()
 
-#plt.plot(x[0], np.sum(y, axis=1))
-plt.plot(x_[0], y_)
+plt.plot(x[0], np.sum(y, axis=1))
+#plt.plot(x_[0], y_)
 plt.show()

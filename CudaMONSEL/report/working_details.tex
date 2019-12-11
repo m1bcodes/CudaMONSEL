@@ -1,11 +1,12 @@
-\chapter{Field test campaign}
+\chapter{Working Details}
 
-\section{Location and Setup}
-\section{Testing procedure}
-\subsection{Issues}
-\section{Simulated Results}
-\section{Test Runs and Results}
-\subsection{Calibration}
-\subsection{Chirp}
-\subsection{PRBS}
-\subsection{No signal}
+The main simulation loop is defined in the \textit{MonteCarloSST} class. To run the simulation, user has to provide the electron gun and the chamber as parameters to the simulation. The electron gun provides information of the initial electron where as the chamber contains the scene to be simulated. At any step of the simulation, only a single electron is being tracked as it traverses through the regions. In the case where secondary electron is spawned, the simulation saves the state of the primary electron on a stack and allow the secondary electron to take over until the secondary electron's trajectory is completed before it resumes simulating the primary electron. 
+
+As soon as the electron leaves the electron gun, the simulation determines the next position of the electron by calculating the mean free path of the electron given the current state of the electron inside the surrounding material. As the electron moves, it loses energy. Once the electron's energy falls under the tracking energy of the material, the electron's trajectory is ended. Otherwise, the electron can be found in one of the following situations.
+
+\begin{enumerate}
+    \item The electron stays in the same region as the region before the step is taken
+    \item The electron crosses a barrier from one region to another
+\end{enumerate}
+
+If either of the above applies, the electron's trajectory is ended. Note that in either situations, it is possible for a secondary electron to spawn. These are the only way a secondary electron can possibly be spawn. The probability of spawning a secondary electron is determined by the material scatter model of the material. For detail see \textit{takeStep} method in \textit{MonteCarloSS} class.

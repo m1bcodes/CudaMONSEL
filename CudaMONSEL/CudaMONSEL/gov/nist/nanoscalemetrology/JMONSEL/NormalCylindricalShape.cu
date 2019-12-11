@@ -122,9 +122,7 @@ namespace NormalCylindricalShape
       * double deltaSquared = Math2.dot(delta, delta); // delta^2
       */
 
-      // Following version avoids function call overhead & shaves about 34%
-      // off
-      // time!
+      // Following version avoids function call overhead & shaves about 34% off time!
       const double p0c[] = {
          pos0[0] - end0[0],
          pos0[1] - end0[1],
@@ -178,8 +176,7 @@ namespace NormalCylindricalShape
          }
 
          // 2nd end cap (end0+axis)
-         u2 = u1 + (mLen / deltadotn); // Distance to plane containing other
-         // endcap
+         u2 = u1 + (mLen / deltadotn); // Distance to plane containing other endcap
 
          if ((u2 > 0.) && (u2 <= 1.) && (u2 < nv[3])
             && (((p0cSquared + (2 * u2 * p0cdotdelta) + (u2 * u2 * deltaSquared) + mLen2)
@@ -227,11 +224,8 @@ namespace NormalCylindricalShape
          * or at least near it.
          */
 
-         const double r0Squared = p0cSquared - (p0cdotn * p0cdotn); // radius of
-         // pos0
-         const double r1Squared = (r0Squared + (2. * (p0cdotdelta - (p0cdotn * deltadotn))) + deltaSquared) - deltadotnSquared; // radius
-         // of
-         // pos1
+         const double r0Squared = p0cSquared - (p0cdotn * p0cdotn); // radius of pos0
+         const double r1Squared = (r0Squared + (2. * (p0cdotdelta - (p0cdotn * deltadotn))) + deltaSquared) - deltadotnSquared; // radius of pos1
 
          if ((r0Squared > radius2) || (r1Squared > radius2)) {
             const double a = deltaSquared - deltadotnSquared;
@@ -241,9 +235,7 @@ namespace NormalCylindricalShape
                term = ::sqrt(term); // term is now the square root
 
                u = (minusbover2 + term) / a; // 1st quadratic solution
-               if ((u > 0) && (u <= 1) && (u < nv[3])) { // Solution falls
-                  // within
-                  // step.
+               if ((u > 0) && (u <= 1) && (u < nv[3])) { // Solution falls within step.
                   /*
                   * We check whether the projection of the intersection point
                   * onto the cylinder axis falls between the end caps.
@@ -252,16 +244,12 @@ namespace NormalCylindricalShape
                   if ((projection >= 0) && (projection <= mLen)) {
                      nv[3] = u;
                      intersectionnumber = 3;
-                     savedprojection = projection; // We'll need this
-                     // for normal
-                     // vector
+                     savedprojection = projection; // We'll need this for normal vector
                   }
                }
 
                u = (minusbover2 - term) / a; // 2nd quadratic solution
-               if ((u > 0) && (u <= 1) && (u < nv[3])) { // Solution falls
-                  // within
-                  // step.
+               if ((u > 0) && (u <= 1) && (u < nv[3])) { // Solution falls within step.
                   /*
                   * We check whether the projection of the intersection point
                   * onto the cylinder axis falls between the end caps.
@@ -270,9 +258,7 @@ namespace NormalCylindricalShape
                   if ((projection >= 0) && (projection <= mLen)) {
                      nv[3] = u;
                      intersectionnumber = 4;
-                     savedprojection = projection; // We'll need this
-                     // for normal
-                     // vector
+                     savedprojection = projection; // We'll need this for normal vector
                   }
                }
             }
