@@ -40,8 +40,8 @@ namespace NormalMultiPlaneShape
       * line intersects the ith plane at ui. Then the part of the line that is
       * inside the half space defined by that plane is an interval, either
       * (-infinity,ui] or [ui,infinity) depending upon whether it is an
-      * insidethisplane->outside or outside->insidethisplane transition. The n
-      * planes that make up this object define n such intervals. The
+      * insidethisplane->outside (umax) or outside->insidethisplane (umin) transition.
+      * The n planes that make up this object define n such intervals. The
       * intersection (in the set theoretic sense) of all of these intervals,
       * call it [umin,umax], is the part of the line that is inside the shape.
       * If umin>0 then our starting position at u=0 is outside of the shape and
@@ -70,20 +70,16 @@ namespace NormalMultiPlaneShape
       * u>1 and undefined normal vector.
       */
 
-      double umin = -INFINITY; // Starting interval is the
-      // whole real line
+      double umin = -INFINITY; // Starting interval is the whole real line
       double umax = INFINITY;
       double u;
       int minindex = -1; // Stores index of plane responsible for umin
-      int maxindex = -1; // Same for umax. Initial values are illegal
-      // indices.
+      int maxindex = -1; // Same for umax. Initial values are illegal indices.
       result[0] = 0.;
       result[1] = 0.;
       result[2] = 0.;
       result[3] = INFINITY;
-      // Initial value
-      // designates
-      // no intersection
+      // Initial value designates no intersection
 
       const double delta[] = { pos1[0] - pos0[0], pos1[1] - pos0[1], pos1[2] - pos0[2] };
       for (int i = 0; i < mPlanes.size(); i++) {

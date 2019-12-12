@@ -150,9 +150,7 @@ namespace NormalCylindricalShape
       double u = 0.;
       double u1 = 0.;
       double u2 = 0.;
-      double projection = 0.;// Stores projection of intersection onto
-      // cylinder
-      // axis
+      double projection = 0.;// Stores projection of intersection onto cylinder axis
       double savedprojection = 0.;
 
       // Check end caps

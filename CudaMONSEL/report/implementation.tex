@@ -1,29 +1,21 @@
 \chapter{Implementation}\label{impl}
-In this section we discuss the implementation details of CudaMONSEL.
+The goal of this project is to generate large quantity of realistic SEM images enough to train a neural network. Genereated images should include landmark features common among all SEM images, such as edge bloom, and defects resulting from microscope characteristics (out of focus etc). To achieve this, it is necessary to simulate the trajectory of an electron in a computational efficient manner. This section contains the background and algorithm for tracking each electron throughout its `lifetime' that is relevant for the purpose of the simulation. The algorithm is being developed jointly by John S. Villarrubia and Nicholas W. M. Ritchie of NIST. 
 
-The simulation is divided into two main packages, microanalysis and nanoanalysis, based on their respective functionalities and thus, authors. The microanalysis package, authored by Nicholas Ritchie, deals primarily with x--ray analysis, while the nanoanalysis package, authored by John Villarrubia, focuses on electron's interactions with materials. While their applications are different, nanoanalysis depends on microanalysis' implementation (mostly geometry) to work. We will introduce both sections below, with an emphasis on the connections between the two packages.
+The simulation is divided into two main packages, microanalysis and nanoanalysis. The microanalysis package, authored by Nicholas Ritchie, deals primarily with x--ray analysis, while the nanoanalysis package, authored by John Villarrubia, focuses on electron's interactions with materials. While their applications are different, nanoanalysis depends on microanalysis. We will introduce both sections below, focusing on the connections between the two packages.
 
-\section{Microanalysis}
-In this package, the physics of the simulation are provided by subclasses of \emph{AlgorithmUser} and \emph{AlgorithmClass} abstract classes.
+\section{Material}\label{impl:material}
+Various physical scattering models require different material properties. Material is defined by its elemental composition and density. The exact composition of the material is used to obtain 
+\begin{enumerate}
+\item MeanIonizationPotential in JoyLuoNieminenCSD
+\item RandomizedScatterFactory (NISTMottRS Factory for example) in SelectableElasticSM etc.
+\end{enumerate}
 
-\subsection{Algorithm Classes}
-This section is dedicated to the implementation details of classes that are related the physics of the simulation. All of these classes are derived from the abstract base class algorithm 
+\subsection{Secondary Eleectron Generating Material}\label{subimpl:sematerial}
+SEmaterial, or Secondary Electron generating material, is an extension of material that provide more material properties for scattering models that supports secondary electron generation. The models can then decide which properties to use and how to use them. Additional properties made available by this extension include the material work function, plasmon energy, the location of the conduction band minimum, and electronic structure of the material in the form of a representation of the density of states. 
 
-The main purpose of \emph{AlgorithmUser} class is to provide the abstract method \emph{initializeDefaultStrategy} which provides a function shared by its subclasses to set each class in a proper state required to run the physics. 
+For some models, scattering cross sections depend upon the kinetic energy of the target electrons and not simply upon its total energy. To facilitate these models, kinetic energies are associated with each of the states. These energies may be supplied by the user (e.g., based upon literature values or the user's own model for the material). If they are not supplied by the user, default values are supplied. For electrons in the conduction band (energy above the conduction band minimum) the default algorithm assigns a kinetic energy equal to the distance of the state above the band minimum. For electrons at lower levels the default algorithm assigns a kinetic energy equal to the distance of the state below the vacuum level. The user should override the default values if more accurate informations are available. 
 
-The secondary purpose of this class is to provide a place for the simulation to define the default algorithms to use when none is specified. This is enabled by the \emph{Strategy} class.
-
-The \emph{AlgorithmClass} abstract class inherits from \emph{AlgorithmUser} abstract class and included more information about the source of the physics algorithm (eg author). It also provides a way to query all physical algorithms of the same type (TODO: explain CLEARLY) via the \emph{getAllImplementations} abstract method.
-
-\subsubsection{}
-
-\section{Simulation}\label{impl:sim}
-The simulation computes the movement of the electron for each unit of time step. First, it acquires the active electron's position. From the position info, it calculates the current active region and the associated material scattering model. To obtain the position of electron at the next time step, the simulation acquires a random mean path length of the electron based on the scattering model and computes the electron's position at next time step. With the new position, the simulation obtains the next region, moves the electron and decreases its energy. Finally, it perfoems a check to determine if the active electron's trajectory is completed. If the trajectory is not completed, the simulation performs one of three actions based on the next region. At each time step, the energy loss and position of the electron is updated. When a new electron is spawned, the original electron is stored on a stack until the new electron is destroyed when its energy falls below the tracking threshold of the scattering mechanism. Refer to function \emph{takeStep} in MonteCarloSS.cu for details. 
-
-\section{Material}\label{impl:mat}
-\subsection{Material}
-\subsection{Secondary Eleectron Generating Material}
-To define an SE material, one will specify
+To define an SE material, one may need to specify any of the parameters below based on the model selected for the material
 \begin{enumerate}
 \item composition (what elements and in what proportions)
 \item density
@@ -32,12 +24,30 @@ To define an SE material, one will specify
 \item energy of its conduction band minimum (optional)
 \item band gap (optional)
 \item core energy levels (optional)
-\item its name (optional)
 \end{enumerate}
 
-The necessity of the optional parameters depends on the model associated with the material, that is, they are only required if they are needed by the model.
+\section{Scattering Physics}
+Physics of the simulation are provided by subclasses of \textit{AlgorithmUser} and \textit{AlgorithmClass} abstract classes.
 
-\section{Barrier Scattering Mechanism}\label{impl:barrier_sm}
+\subsection{Algorithm Classes}
+This section is dedicated to the implementation details of classes that are related the physics of the simulation. All of these classes are derived from the abstract base class algorithm 
+
+The main purpose of \textit{AlgorithmUser} class is to provide the abstract method \textit{initializeDefaultStrategy} which provides a function shared by its subclasses to set each class in a proper state required to run the physics. 
+
+The secondary purpose of this class is to provide a place for the simulation to define the default algorithms to use when none is specified. This is enabled by the \textit{Strategy} class.
+
+The \textit{AlgorithmClass} abstract class inherits from \textit{AlgorithmUser} abstract class and included more information about the source of the physics algorithm (eg author). It also provides a way to query all physical algorithms of the same type (TODO: explain CLEARLY) via the \textit{getAllImplementations} abstract method.
+
+\section{Simulation}\label{impl:sim}
+The simulation computes the movement of the electron for each unit of time step. First, it acquires the position of the active electron. From the position info, it calculates the current active region and the associated material scattering model. To obtain the position of electron at the next time step, the simulation acquires a random mean path length of the electron based on the scattering model and computes the electron's position at next time step. With the new position, the simulation obtains the next region, moves the electron and decreases its energy. Finally, it perfoems a check to determine if the active electron's trajectory is completed. If the trajectory is not completed, the simulation performs one of three actions based on the next region. At each time step, the energy loss and position of the electron is updated. When a new electron is spawned, the original electron is stored on a stack until the new electron is destroyed when its energy falls below the tracking threshold of the scattering mechanism. Refer to function \textit{takeStep} in MonteCarloSS.cu for details. 
+
+The necessity of the optional parameters depends on the scattering model associated with the material (ie. only required if the parameters are needed by the scattering model).
+
+\subsection{Barrier Scattering Mechanism}\label{impl:barrier_sm}
+Barrier scattering occurs when an electron encounters a boundary between two materials and deflects. Differences in the potential energy (work function, etc.) in the two materials may cause a change in the electron's energy or trajectory. Note that it is possible for the barrier scatter mechanism to produce a secondary electron. 
+
+The barrier scatter mechanism follows the abstract class shown in \ref{lst:barrierSM}.
+
 \begin{lstlisting}[caption={BarrierScatterMechanism.cuh},label={lst:barrierSM},numbers=left,escapeinside={@}{@}]
 class BarrierScatterMechanism
 {
@@ -46,14 +56,25 @@ public:
 };
 \end{lstlisting}
 
-The barrier scatter mechanism follows the abstract class shown in \ref{lst:barrierSM}.
+The only barrier scatter mechanisms included in JMONSEL is the default \textit{Exponential Quantum Mechanical Barrier Scatter Mechanism}. 
 
-\subsection{Exponential Quantum Mechanical Barrier Scatter Mechanism}
+\subsubsection{Exponential Quantum Mechanical Barrier Scatter Mechanism}
+\begin{align*}
+   U(x) &= \frac{\Delta U}{1+e^{-2x/\lambda}} \numberthis \label{eq:expqmsm}
+\end{align*}
+Quantum mechanical scattering from a finite--width barrier with ``exponential'' shape, meaning the form of the potential energy barrier is assumed to be \eqref{eq:expqmsm}. This barrier function represents a smooth `s--shaped' transition from $U(x)=0$ well to the left of the barrier to $U(x)=\Delta U$ well to the right. $\lambda$ is a measure of the width of the barrier. Roughly half (~46\%) of the transition occurs over a distance equal to $\lambda$ (from $x = -\lambda/2$ to $x = \lambda/2$), $90\%$ over $3\lambda$. 
+ 
+In the limit that lambda is ``large'', this probability approaches the classical result. In the limit that lambda goes to $0$, it approaches the transmission probability for sharp barriers encountered in elementary quantum mechanics texts. For most purposes the useful range of $\lambda$ values is from $0 m$ to $1E-9 m$. Anything larger than this is essentially classical. 
+ 
+This is therefore a general implementation of barrier scattering that includes classical and sharp--barrier quantum mechanical scattering as special cases. Two constructors are provided. Both constructors accept a material as input (from which the barrier height is determined). One constructor additionally allows specification of $\lambda$. The other does not. The constructor without $\lambda$ specification implements classical barrier scattering (the large lambda limit). This method of implementing classical barrier scattering is preferred to giving an explict but large value of $\lambda$ because it uses a simpler limiting--case formula, and it avoids possible numerical issues associated with large arguments. The constructor with an explicit $\lambda$ specification implements quantum mechanical scattering for a barrier of the specified width. Equation \ref{eq:expqmsm} is an instance of the sigmoid function. 
+
 A barrier scattering mechanism is associated with each region of our sample, but barrier transmission is a pair-wise phenomenon. That is, the barrier height and width at an interface between materials A and B depends in principle upon the properties of both materials. If the electron starts inside material A, then it is material A's barrier scatter mechanism that governs that particular scattering event. The present scatter mechanism determines the barrier height by comparing the potential energies in the materials on each side of the interface. It uses the barrier width associated with material A. This scattering mechanism uses the property energyCBbottom, which therefore need to be properly defined for the materials on both sides of the interface.
 
 This class computes barrier transmission using the formula provided by \cite{Landau}. Note that this is the only barrier SM available in the JMONSEL package. 
 
-\section{Scatter Mechanism}\label{impl:sm}
+\subsection{Scatter Mechanism}\label{impl:sm}
+A scatter mechanism governs the interaction of a electron with the environment. Each material scatter model can be associated with multiple scatter mechanisms, each with its own scatter effects and probability of occuring (eg. scattering rate). Its effects are a function of the medium/material and the electron's current energy. Effects can include changing the (primary) electron's direction and energy, and even generating a secondary electron with its own energy and direction through some inelastic scattering events. 
+
 The prototype of the class is shown below
 \begin{lstlisting}
 class ScatterMechanism
@@ -96,10 +117,10 @@ Scatter mechanisms included in JMONSEL are:
 
 A model usually requires two scattering mechanism, one for elastic scattering and one for inelastic / SE--generating scattering. For elastic scattering, SelectableElasticSM with NISTMottRS is a good choice. (cite) For inelastic scattering, choose TabulatedInelasticSM pair with ZeroCS) when when scattering tables are available, and use FittedInelasticSM (pair with JoyLuoNieminenCSD) otherwise. For most models, the governing equations are hardcoded into the class itself. 
 
-\subsection{FittedInelSM}
+\subsubsection{FittedInelSM}
 FittedInelSM requires a parameter, $E_{av}$, that represents the average energy required to make a secondary electron. It is based on an old semi--empirical model, described most recently (and perhaps in most refined form) by \cite{lin2005new}.
 
-\subsection{TabulatedInelasticSM}
+\subsubsection{TabulatedInelasticSM}
 For TabulatedInelasticSM, most of the scattering properties are not hardcoded into the object itself, but read from tables associated with each supported material. For example, the inverse mean free path, interpolating an IIMFP table associated with the material, the distribution of energy losses and angle changes by the primary electron are similarly determined by tables. 
 
 The tables are served as strings of full paths to the files containing the physical data. Each string is input to NUTableInterpolation object. The NUTableInterpolation object expects the text files to be in the following format: first entry in the file should be number of dimensions of domain $n$. The next entry is the number of entry in the first dimension $n_1$, then followed by $n_1$ entries representing values in the first dimension, followed by the number $n_2$ etc. The numbers form a $n$ dimensional mesh that represents the domain of interpolation. After repeating the pattern for $n$ times, the file should contain $\prod_{i=1}^{n}n_i$ numbers representing the values of the data points. 
@@ -128,7 +149,7 @@ To use this class, the user--provided tables must cover the full range of energi
 
 This class uses coreEnergy array, energyCBbottom, bandgap, and workfunction.
 
-\section{Randomized Scatter}
+\subsection{Randomized Scatter}
 The type of randomized scatter depends on the the energy of the electron. The main computations are performed by these two member functions below
 
 \begin{lstlisting}
@@ -142,8 +163,10 @@ The method \textit{randomScatteringAngle} returns a randomized scattering angle 
 
 There is also a method that tracks the type of element the class is applicable to. Below we introduce each type of randomized scatter in the simulation.
 
-\subsection{CzyzewskiMottCrossSection}
-\subsection{BrowningEmpiricalCrossSection}
+\subsubsection{CzyzewskiMottScatteringAngle}
+CzyzewskiMottScatteringAngle is an extension of CzyzewskiMottCrossSection, which reads its scattering information from a table with domain spanning from $20 eV$ to $30 keV$. This class linearly interpolates the intermediate values. For energy below $20 eV$, it uses the Browning model. For energy above $30 keV$, it uses the Rutherford model.
+
+\subsubsection{BrowningEmpiricalCrossSection}
 Browning empirical cross section is applicable to low energy electrons (although not lower than $100eV$). 
 \begin{align*}
    CS(Z, e) &= \frac{3\times 10^{-22} Z^{1.7}}{e + 0.005 Z^{1.7} \sqrt{e} + 0.0007 Z^{2} / \sqrt{e}}
@@ -159,7 +182,7 @@ where $e$ is electron energy in keV, $Z$ is the proton number of the element.
 \end{align*}
 where $\alpha = 7.0\times 10^{-3}/e$, $r_1, r_2$ are random numbers $\in [0, 1]$, and $r = (300.0 e / Z) + (Z^3 / 3.0\times 10^5 e)$.
 
-\subsection{ScreenedRutherfordScatteringAngle}
+\subsubsection{ScreenedRutherfordScatteringAngle}
 Screened Rutherford cross section is applicable to high energy ($\geq 20keV$) electrons. 
 \begin{align*}
    CS(Z, e) &= \frac{7.670843088080456\times 10^{-38} zp (1.0 + z)}{e + 5.44967975966321\times 10^{-19} zp^2}
@@ -171,8 +194,8 @@ where $e$ is the electron energy in keV, $Z$ is the proton number, and $zp = Z^{
 \end{align*}
 where $\alpha = 5.44968\times 10^{-19} Z^{2.0 / 3.0} / e$, $r \text{is a random numbrs} \in [0, 1]$.
 
-\subsection{NISTMottScatteringAngle}
-\subsection{NISTMott}
+\subsubsection{NISTMottScatteringAngle}
+\subsubsection{NISTMott}
 NISTMott randomized scatter tries to provide a comprehensive model for all energy ranges. It is a function of electron energy and material/element the electron is colliding with. For energy between $100eV$ and $20keV$, it calculates using the the NIST SRD 64 method by interpolating from a table of cross sections with Lagrange interpolation. For energies lower than $100eV$, it uses one of three methods. 
 \begin{enumerate}
 \item Cutoff energy is $50 eV$, interpolation Browning,
@@ -213,7 +236,9 @@ NISTMottScatteringAngle uses 2nd order Lagrange interpolation in $log(E)$ for th
 \end{align*}
 where $\alpha = 7.0\times 10^{-3}/e$, $r_1, r_2 \text{are random numbrs} \in [0, 1]$, and $r = (300.0 e / Z) + (Z^3 / 3.0\times 10^5 e)$.
 
-\section{Slowing Down Algorithm}\label{impl:sda}
+\subsection{Slowing Down Algorithm}\label{impl:sda}
+Slowing down algorithms compute energy loss of the electron as a function of initial energy and distance moved. The loss depends on properties of the medium through which the electron travels. 
+
 \begin{lstlisting}
 public interface SlowingDownAlg {
    /**
@@ -235,8 +260,12 @@ public interface SlowingDownAlg {
    double compute(double d, Electron pe);
 }
 \end{lstlisting}
-\subsection{Joy--Lou--Nieminen}
-The JoyLuoNieminenCSD stopping power requires a parameter, breakE, that specifies where the stopping power switches from the low energy Nieminen expression to the higher energy Joy/Luo one.
+\subsubsection{Joy--Lou--Nieminen}
+Implements a continuous energy loss formula modified for low energies. Above a cutoff energy it uses the Bethe energy loss as modified by Joy and Luo. The Joy/Luo modification improves the accuracy at low energies. Below the cutoff energy it approximates the energy loss as proportional to the electron's energy to the 5/2 power, as described by \cite{Nieminen}. The dividing line between these two approximations is a parameter that must be supplied to the constructor when this slowing down algorithm is instantiated. The proportionality constant in Nieminen's low energy form is then chosen to enforce equality of the two forms at the cutoff energy. 
+
+This scattering mechanism uses the following material properties, which therefore need to be properly defined: workfunction (unless supplied in the constructor), the elemental composition, density, and weight fractions. 
+
+The JoyLuoNieminenCSD stopping power requires a parameter, \textit{breakE}, that specifies where the stopping power switches from the low energy Nieminen expression to the higher energy Joy/Luo one.
 
 \section{Events}\label{impl:events}
 The event listener `hooks' onto the simulation and provides a way to transfer information out of the simulation loop. This means that event listeners are by design passive and unable to affect the outcome of the simulations. The simulation will work even when all event--related code are removed, in which case some other mean of acquiring simulation state needs to be implemented if one wishes to retrieve any information about the on--going simulation.
@@ -257,10 +286,23 @@ The following events are defined inside $MonteCarloSS$ class:
 \item BeamEnergyChanged
 \end{enumerate}
 
-\subsection{Detector}\label{subsec:detector}
+\subsection{Material Scatter Model}
+A material scatter model consists of three parts:
+\begin{enumerate}
+\item A list of scattering mechanisms (e.g., Mott elastic scattering, Moller SE production, Plasmon SE production,...) that operate in the material. These scattering mechanisms may change the primary electron energy and direction and they may create secondary electrons. 
+\item A single barrier scattering function. This method models scattering at the interface between two materials. 
+\item A single continuous slowing down function. Determines the energy loss of the primary electron within the material. 
+\end{enumerate}
+Each material in the sample must be associated with a material scattering model, which determines the overall scattering behavior by calculating the mean free path, scattering angle and secondary electron generation. 
+
+\section{Detector}\label{subsec:detector}
 The most important events of are events relating to detecting backscattered electrons. Detectors are devices that collect the information about electrons for later processing. In the simulation, electrons that are characterized as secondary electrons are backscattered electrons with energy below $50 eV$. To simulate the detector, backscatter events are used. Backscatter events are fired only when the electron hits the chamber wall (one of the three normal end states of a electron). If required, we may also obtain forward--scattered secondary electrons for TEM image simulations.
 
 Concretely, the event listener must be added to the simulation class (ie $MonteCarloSS$), before the start of the simulation, and have member function $actionPerformed$ of the listener classes added to the simulation deal with the appropriate events. Note that, the simulation broadcasts the event triggered to all listener classes by calling the member function $actionPerformed$ of every listener class added to the simulation in the function $fireEvent$.
+
+\section{Shape}
+
+\subsection{NormalShape}
 
 \section{Amphibian -- custom C++ library}
 Since one of the goals of the project is to make MONSEL run on both CPU and GPU, we built a custom library, Amphibian, to eliminate any dependence on the C++ standard template library (STL). The following data structures are included,
