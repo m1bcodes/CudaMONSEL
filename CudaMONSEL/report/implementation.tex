@@ -1,21 +1,19 @@
 \chapter{Implementation}\label{impl}
-The goal of this project is to generate large quantity of realistic SEM images enough to train a neural network. Genereated images should include landmark features common among all SEM images, such as edge bloom, and defects resulting from microscope characteristics (out of focus etc). To achieve this, it is necessary to simulate the trajectory of an electron in a computational efficient manner. This section contains the background and algorithm for tracking each electron throughout its `lifetime' that is relevant for the purpose of the simulation. The algorithm is being developed jointly by John S. Villarrubia and Nicholas W. M. Ritchie of NIST. 
+The goal of this project is to refactor the JMONSEL program in order to generate a large number of realistic SEM images in a reasonable length of time. Genereated images should contain landmark features common among SEM images, such as edge bloom, and features or defects resulting from microscope characteristics (eg. out of focus). To achieve this, it is necessary to simulate the trajectory of an electron in a computational efficient manner. This section contains the background and algorithm used by the simulation. The JMONSEL program is being developed jointly by John S. Villarrubia and Nicholas W. M. Ritchie of NIST. 
 
-The simulation is divided into two main packages, microanalysis and nanoanalysis. The microanalysis package, authored by Nicholas Ritchie, deals primarily with x--ray analysis, while the nanoanalysis package, authored by John Villarrubia, focuses on electron's interactions with materials. While their applications are different, nanoanalysis depends on microanalysis. We will introduce both sections below, focusing on the connections between the two packages.
+The simulation is divided into two main packages, microanalysis and nanoanalysis. The microanalysis package, authored by Nicholas Ritchie, deals primarily with x--ray analysis, while the nanoanalysis package, authored by John Villarrubia, focuses on interactions between electron and the materials in the scene. While their applications are different, the nanoanalysis package expanded on the microanalysis package to allow secondary electron generation. We introduce both packages below, focusing on the connections between the two.
 
 \section{Material}\label{impl:material}
-Various physical scattering models require different material properties. Material is defined by its elemental composition and density. The exact composition of the material is used to obtain 
+Different scattering models require different material properties. Material is defined by its elemental composition and density. The exact composition of the material is used primarily to obtain 
 \begin{enumerate}
 \item MeanIonizationPotential in JoyLuoNieminenCSD
 \item RandomizedScatterFactory (NISTMottRS Factory for example) in SelectableElasticSM etc.
 \end{enumerate}
 
 \subsection{Secondary Eleectron Generating Material}\label{subimpl:sematerial}
-SEmaterial, or Secondary Electron generating material, is an extension of material that provide more material properties for scattering models that supports secondary electron generation. The models can then decide which properties to use and how to use them. Additional properties made available by this extension include the material work function, plasmon energy, the location of the conduction band minimum, and electronic structure of the material in the form of a representation of the density of states. 
+Secondary Electron generating material (SEmaterial) is an extension of material. User is able to specify more material properties required by different scattering models to allow secondary electron generation. % Additional properties made available by this extension include the material work function, plasmon energy, the location of the conduction band minimum, and electronic structure of the material in the form of a representation of the density of states. 
 
-For some models, scattering cross sections depend upon the kinetic energy of the target electrons and not simply upon its total energy. To facilitate these models, kinetic energies are associated with each of the states. These energies may be supplied by the user (e.g., based upon literature values or the user's own model for the material). If they are not supplied by the user, default values are supplied. For electrons in the conduction band (energy above the conduction band minimum) the default algorithm assigns a kinetic energy equal to the distance of the state above the band minimum. For electrons at lower levels the default algorithm assigns a kinetic energy equal to the distance of the state below the vacuum level. The user should override the default values if more accurate informations are available. 
-
-To define an SE material, one may need to specify any of the parameters below based on the model selected for the material
+To define an SE material, one may specify any number of the parameters below based on the model selected for the material
 \begin{enumerate}
 \item composition (what elements and in what proportions)
 \item density
@@ -26,25 +24,23 @@ To define an SE material, one may need to specify any of the parameters below ba
 \item core energy levels (optional)
 \end{enumerate}
 
+For some models, scattering cross sections depend upon the kinetic energy of the target electrons and not simply upon its total energy. To facilitate these models, kinetic energies are associated with each of the states. These energies may be supplied by the user (e.g., based upon literature values or the user's own model for the material). If they are not supplied by the user, default values are supplied. For electrons in the conduction band (energy above the conduction band minimum) the default algorithm assigns a kinetic energy equal to the distance of the state above the band minimum. For electrons at lower levels the default algorithm assigns a kinetic energy equal to the distance of the state below the vacuum level. The user should override the default values if more accurate informations are available. 
+
 \section{Scattering Physics}
-Physics of the simulation are provided by subclasses of \textit{AlgorithmUser} and \textit{AlgorithmClass} abstract classes.
+Simulation physics are provided by subclasses of \textit{AlgorithmUser} and \textit{AlgorithmClass} abstract classes.
 
 \subsection{Algorithm Classes}
-This section is dedicated to the implementation details of classes that are related the physics of the simulation. All of these classes are derived from the abstract base class algorithm 
+All physics classes are derived from the abstract base class, \textit{AlgorithmUser}. \textit{AlgorithmUser} class provides the abstract method \textit{initializeDefaultStrategy}, which initializes the physics for the class. 
 
-The main purpose of \textit{AlgorithmUser} class is to provide the abstract method \textit{initializeDefaultStrategy} which provides a function shared by its subclasses to set each class in a proper state required to run the physics. 
+If a user wishes to use a different algorithm to implement a specific type of algorithm the user can supply a global override Strategy. This is enabled by the \textit{Strategy} class.
 
-The secondary purpose of this class is to provide a place for the simulation to define the default algorithms to use when none is specified. This is enabled by the \textit{Strategy} class.
-
-The \textit{AlgorithmClass} abstract class inherits from \textit{AlgorithmUser} abstract class and included more information about the source of the physics algorithm (eg author). It also provides a way to query all physical algorithms of the same type (TODO: explain CLEARLY) via the \textit{getAllImplementations} abstract method.
+%The \textit{AlgorithmClass} abstract class inherits from \textit{AlgorithmUser} abstract class and included more information about the source of the physics algorithm (eg author). It also provides a way to query all physical algorithms of the same type (TODO: explain CLEARLY) via the \textit{getAllImplementations} abstract method.
 
 \section{Simulation}\label{impl:sim}
-The simulation computes the movement of the electron for each unit of time step. First, it acquires the position of the active electron. From the position info, it calculates the current active region and the associated material scattering model. To obtain the position of electron at the next time step, the simulation acquires a random mean path length of the electron based on the scattering model and computes the electron's position at next time step. With the new position, the simulation obtains the next region, moves the electron and decreases its energy. Finally, it perfoems a check to determine if the active electron's trajectory is completed. If the trajectory is not completed, the simulation performs one of three actions based on the next region. At each time step, the energy loss and position of the electron is updated. When a new electron is spawned, the original electron is stored on a stack until the new electron is destroyed when its energy falls below the tracking threshold of the scattering mechanism. Refer to function \textit{takeStep} in MonteCarloSS.cu for details. 
-
-The necessity of the optional parameters depends on the scattering model associated with the material (ie. only required if the parameters are needed by the scattering model).
+The simulation computes the movement of the electron in steps. First, it acquires the position of the active electron. From the position info, it calculates the current active region and the associated material scattering model. To obtain the position of electron at the next step, the simulation acquires a random mean path length of the electron based on the scattering model and computes the electron's position at next time step. With the new position, the simulation obtains the next region, moves the electron and decreases its energy. Finally, it performs a check to determine if the active electron's trajectory is completed. If the trajectory is not completed, the simulation performs one of three actions based on the next region. At each time step, the energy loss and position of the electron is updated. When a new electron is spawned, the state of the original electron is stored on a stack until the new electron is destroyed when its energy falls below the tracking threshold of the scattering mechanism. Refer to function \textit{takeStep} in MonteCarloSS.cu for details. 
 
 \subsection{Barrier Scattering Mechanism}\label{impl:barrier_sm}
-Barrier scattering occurs when an electron encounters a boundary between two materials and deflects. Differences in the potential energy (work function, etc.) in the two materials may cause a change in the electron's energy or trajectory. Note that it is possible for the barrier scatter mechanism to produce a secondary electron. 
+Barrier scattering occurs when an electron encounters a boundary between two materials and deflects. Differences in the potential energy (ie. work function) in the two materials may cause a change in the electron's energy or trajectory. Note that it is possible for the barrier scatter mechanism to produce a secondary electron. 
 
 The barrier scatter mechanism follows the abstract class shown in \ref{lst:barrierSM}.
 
@@ -59,13 +55,15 @@ public:
 The only barrier scatter mechanisms included in JMONSEL is the default \textit{Exponential Quantum Mechanical Barrier Scatter Mechanism}. 
 
 \subsubsection{Exponential Quantum Mechanical Barrier Scatter Mechanism}
+Quantum mechanical scattering from a finite--width barrier with ``exponential'' shape, meaning the form of the potential energy barrier is assumed to be \eqref{eq:expqmsm}.
 \begin{align*}
    U(x) &= \frac{\Delta U}{1+e^{-2x/\lambda}} \numberthis \label{eq:expqmsm}
 \end{align*}
-Quantum mechanical scattering from a finite--width barrier with ``exponential'' shape, meaning the form of the potential energy barrier is assumed to be \eqref{eq:expqmsm}. This barrier function represents a smooth `s--shaped' transition from $U(x)=0$ well to the left of the barrier to $U(x)=\Delta U$ well to the right. $\lambda$ is a measure of the width of the barrier. Roughly half (~46\%) of the transition occurs over a distance equal to $\lambda$ (from $x = -\lambda/2$ to $x = \lambda/2$), $90\%$ over $3\lambda$. 
- 
+
+This barrier function represents a smooth `s--shaped' transition from $U(x)=0$ well to the left of the barrier to $U(x)=\Delta U$ well to the right. $\lambda$ is a measure of the width of the barrier. Roughly half $\~46\%$ of the transition occurs over a distance equal to $\lambda$ (from $x = -\lambda/2$ to $x = \lambda/2$), $90\%$ over $3\lambda$. 
+
 In the limit that lambda is ``large'', this probability approaches the classical result. In the limit that lambda goes to $0$, it approaches the transmission probability for sharp barriers encountered in elementary quantum mechanics texts. For most purposes the useful range of $\lambda$ values is from $0 m$ to $1E-9 m$. Anything larger than this is essentially classical. 
- 
+
 This is therefore a general implementation of barrier scattering that includes classical and sharp--barrier quantum mechanical scattering as special cases. Two constructors are provided. Both constructors accept a material as input (from which the barrier height is determined). One constructor additionally allows specification of $\lambda$. The other does not. The constructor without $\lambda$ specification implements classical barrier scattering (the large lambda limit). This method of implementing classical barrier scattering is preferred to giving an explict but large value of $\lambda$ because it uses a simpler limiting--case formula, and it avoids possible numerical issues associated with large arguments. The constructor with an explicit $\lambda$ specification implements quantum mechanical scattering for a barrier of the specified width. Equation \ref{eq:expqmsm} is an instance of the sigmoid function. 
 
 A barrier scattering mechanism is associated with each region of our sample, but barrier transmission is a pair-wise phenomenon. That is, the barrier height and width at an interface between materials A and B depends in principle upon the properties of both materials. If the electron starts inside material A, then it is material A's barrier scatter mechanism that governs that particular scattering event. The present scatter mechanism determines the barrier height by comparing the potential energies in the materials on each side of the interface. It uses the barrier width associated with material A. This scattering mechanism uses the property energyCBbottom, which therefore need to be properly defined for the materials on both sides of the interface.
@@ -203,15 +201,6 @@ NISTMott randomized scatter tries to provide a comprehensive model for all energ
 \item Cutoff energy is $100 eV$, linear interpolation
 \end{enumerate}
 In all three methods, the cross section is zero when the energy is zero, and the cross section matches the tabulated value when energy is at some minimum cutoff value, which may or may not be the minimum tabulated value at $50eV$. Findally, for energies above the tabulated range, computations use Screened Rutherford Scattering Angle.
-
-\begin{appendices}
-\chapter{Lagrange Interpolation}
-Given $n+1$ points $(x_0, y_0)$, ... $(x_n, y_n)$, the Lagrange Interpolation is given by 
-\begin{align*}
-    f_n(x) = \sum^{n}_{i=0} L_i(x)f(x_i)
-\end{align*}
-where $f(x_i) = y_i$ and $L_i(x)=\prod_{j=0,j\ne i}^{n}\frac{x-x_j}{x_i-x_j}$.
-\end{appendices}
 
 NISTMottScatteringAngle uses 2nd order Lagrange interpolation in $log(E)$ for the totalCrossSection calculation. For randomScatteringAngle it uses $0^{th}$ order interpolation (i.e., it chooses the nearest tabulated value) in $log(E)$ and 1st order in the random number. In contrast the present class uses 3rd order for all interpolations. Orders can be set by the constants \textit{qINTERPOLATIONORDER} and \textit{sigmaINTERPOLATIONORDER}. The interpolation tables are given by
 \begin{enumerate}
